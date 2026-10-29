@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vfs"
+version = "1.0.0+extraction4"
+description = "Spherical Voronoi C-grid solver package."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy",
+  "netCDF4",
+  "pyyaml",
+  "scipy",
+  "torch",
+  "xarray",
+]
+
+[project.optional-dependencies]
+data = ["dask", "gcsfs", "zarr"]
+diagnostics = ["imageio", "imageio-ffmpeg", "matplotlib"]
+plotting = ["cartopy", "imageio", "imageio-ffmpeg", "matplotlib"]
+surface = ["pyyaml"]
+validation = ["cartopy", "imageio", "imageio-ffmpeg", "matplotlib", "pyyaml", "xarray", "netCDF4"]
+workflows = [
+  "cartopy",
+  "dask",
+  "gcsfs",
+  "imageio",
+  "imageio-ffmpeg",
+  "matplotlib",
+  "pyyaml",
+  "zarr",
+]
+dev = [
+  "cartopy",
+  "dask",
+  "gcsfs",
+  "imageio",
+  "imageio-ffmpeg",
+  "ipykernel",
+  "jupyter",
+  "matplotlib",
+  "pytest",
+  "pyyaml",
+  "zarr",
+]
+docs = [
+  "myst-parser",
+  "pydata-sphinx-theme",
+  "sphinx>=8",
+]
+book = [
+  "jupyter-book>=1,<2",
+  "matplotlib",
+  "sphinxcontrib-bibtex",
+]
+all = [
+  "cartopy",
+  "dask",
+  "gcsfs",
+  "imageio",
+  "imageio-ffmpeg",
+  "ipykernel",
+  "jupyter",
+  "matplotlib",
+  "myst-parser",
+  "pydata-sphinx-theme",
+  "pytest",
+  "pyyaml",
+  "sphinx>=8",
+  "zarr",
+]
+
+[tool.setuptools.packages.find]
+include = ["vfs*"]

@@ -1,0 +1,82 @@
+"""Additional same-environment regression fixture for dry helper extraction.
+
+Capture with the pass-2 installed package before testing pass 3. Covers
+canonical dry and conservative diagonal models, including public diagnostics.
+"""
+import argparse
+import json
+from pathlib import Path
+import torch
+from vfs import DryHydrostaticDynamics, DryHydrostaticConservativeDynamics
+from vfs.geometry.mesh import VoronoiMesh
+from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
+from vfs.core.state import State
+from vfs.atmosphere.conservative import v
+from vfs.core.integrators import ssprk3
+
+
+def clean(value):
+    if hasattr(value,'location'):return v(value).detach().clone()
+    if isinstance(value,torch.Tensor):return value.detach().clone()
+    if isinstance(value,dict):return {k:clean(x) for k,x in value.items()}
+    if isinstance(value,(list,tuple)):return [clean(x) for x in value]
+    if isinstance(value,State):return {k:clean(getattr(value,k)) for k in ('u_e','ps','mtheta_i','tracer_m')}
+    if value is None or isinstance(value,(float,int,str,bool)):return value
+    raise TypeError(type(value))
+
+
+def capture():
+    torch.set_default_dtype(torch.float64);torch.set_num_threads(1)
+    mesh=VoronoiMesh(n_cells=32,lloyd_iters=0,verbose=False)
+    A,B=make_hybrid_coefficients(4,p_top=5000.,sigma_power=1.2)
+    col=CharneyPhillipsColumn(4,A,B,phi_s=200*mesh.cell_xyz[:,0],phi_full_mode='direct_u_gl2_adjoint')
+    gen=torch.Generator().manual_seed(35)
+    rand=lambda *shape:torch.randn(*shape,generator=gen)
+    s=State.from_theta(8*rand(mesh.nEdges,4),300+3*rand(32,5),1e5+500*rand(32,1),mesh=mesh,column=col)
+    result={}
+    with torch.no_grad():
+        for name,d in [('canonical',DryHydrostaticDynamics()),('diagonal',DryHydrostaticConservativeDynamics())]:
+            ctx=d._transport_primitives(s)
+            outputs={'primitives':ctx,'rhs':d.tendency(s),'step':ssprk3(d,s,1.)}
+            for method in ['tendency_terms','energy_terms','pressure_fields','thermo_fields','wind_fields',
+                           'force_terms','force_balance_terms','rotation_work_terms','cfl_terms',
+                           'divergence','vorticity','omega','scalar_energy_gradients',
+                           'scalar_pressure_energy_gradient_terms','total_mass','total_energy']:
+                outputs[method]=getattr(d,method)(s, dt=1.) if method=='cfl_terms' else getattr(d,method)(s)
+            # Exercise retained passive-tracer hooks in the canonical model.
+            if name=='canonical':
+                tracer=v(s.layer_dp())[...,None]*torch.tensor([.01,.002])
+                st=State(v(s.u_e),v(s.mtheta_i),v(s.ps),tracer_m=tracer,mesh=mesh,column=col)
+                outputs['tracer_rhs']=d.tendency(st)
+                outputs['tracer_terms']=d.tracer_tendency_terms(st)
+                outputs['tracer_inventory']=d.total_tracer_mass(st)
+            result[name]=clean(outputs)
+    return result
+
+
+def compare(a,b,path='dry'):
+    if isinstance(b,torch.Tensor):
+        torch.testing.assert_close(a,b,rtol=0,atol=0,equal_nan=True,msg=lambda s:f'{path}: {s}')
+        return 1
+    if isinstance(b,dict):
+        assert a.keys()==b.keys(),path
+        return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+    if isinstance(b,list):
+        assert len(a)==len(b)
+        return sum(compare(x,y,path) for x,y in zip(a,b))
+    assert a==b,(path,a,b)
+    return 0
+
+
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--capture',action='store_true');p.add_argument('--report',type=Path);a=p.parse_args()
+    fixture=Path(__file__).resolve().parents[1]/'tests/fixtures/dry_helpers_pass2.pt'
+    actual=capture()
+    if a.capture:torch.save(actual,fixture);result={'mode':'capture_pass2'}
+    else:result={'mode':'exact_comparison','tensor_comparisons':compare(actual,torch.load(fixture,weights_only=True))}
+    import vfs
+    result.update(source=vfs.__file__,torch=str(torch.__version__))
+    print(json.dumps(result,indent=2))
+    if a.report:a.report.write_text(json.dumps(result,indent=2)+'\n')
+
+if __name__=='__main__':main()

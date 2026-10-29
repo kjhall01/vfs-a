@@ -1,0 +1,6 @@
+{
+  "mode": "exact_comparison",
+  "tensor_comparisons": 193,
+  "source": "/workspace/scratch/b8ffd945c718/pass3_installed/vfs/__init__.py",
+  "torch": "2.15.0+cpu"
+}

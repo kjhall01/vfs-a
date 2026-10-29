@@ -1,0 +1,13 @@
+name: vfs-joint
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10
+  - pytorch
+  - numpy
+  - scipy
+  - xarray
+  - pyyaml
+  - netcdf4
+  - pytest
+  - matplotlib

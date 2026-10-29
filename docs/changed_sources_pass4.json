@@ -1,0 +1,5 @@
+[
+  "vfs/__init__.py",
+  "vfs/atmosphere/__init__.py",
+  "vfs/atmosphere/model.py"
+]

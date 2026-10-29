@@ -1,0 +1,12 @@
+{
+  "mode": "exact_comparison",
+  "tensor_comparisons": 142,
+  "torch": "2.15.0+cpu",
+  "source": "/workspace/scratch/b8ffd945c718/pass2_installed/vfs/__init__.py",
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "fixture_sha256": "00219b583824ef19c15ba8ffae4a2394942c072a260f73337ab22a3b418d7716"
+}

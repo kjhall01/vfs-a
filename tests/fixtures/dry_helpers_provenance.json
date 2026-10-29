@@ -1,0 +1,5 @@
+{
+  "mode": "capture_pass2",
+  "source": "/workspace/scratch/b8ffd945c718/pass2_installed/vfs/__init__.py",
+  "torch": "2.15.0+cpu"
+}

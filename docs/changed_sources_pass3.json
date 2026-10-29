@@ -1,0 +1,10 @@
+[
+  "vfs/__init__.py",
+  "vfs/atmosphere/dry_dynamics.py",
+  "vfs/atmosphere/dry_energy.py",
+  "vfs/atmosphere/dry_momentum.py",
+  "vfs/atmosphere/dry_terms.py",
+  "vfs/atmosphere/dry_thermo.py",
+  "vfs/atmosphere/dry_tracers.py",
+  "vfs/atmosphere/dry_transport.py"
+]
