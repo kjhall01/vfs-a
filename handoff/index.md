@@ -1,4 +1,25 @@
-# Current handoff — extraction pass 4
+# Current handoff — GitHub development and CI
+
+Development is now on https://github.com/kjhall01/vfs-a. See
+[CONTRIBUTING.md](../CONTRIBUTING.md) for the small test extra, local setup,
+installed-wheel checks and focused PR preparation. The new GitHub Actions
+workflow targets Ubuntu CPU/Python 3.12/PyTorch 2.15.0+cpu and runs the suite,
+both unchanged exact baseline tools and examples/moist_atmosphere.py outside
+the checkout. The public Linux CPU wheel was successfully downloaded.
+
+See [CI setup results](../docs/CI_SETUP_RESULTS.md) for local validation and
+remaining failures; GitHub Actions execution has not yet been verified.
+No numerical operators, defaults, state conventions or integrators changed.
+MoistAtmosphere retains release_as_heat=True and its bounded species amount
+ledger. Vapor remains strictly positive with no floor; exact-zero-water dry
+equivalence is not established. GPU, long-run and full backward behavior remain
+untested. Package publication and license selection still require direction.
+
+Earlier sections below are historical snapshots.
+
+---
+
+# Historical handoff — extraction pass 4
 
 Read docs/PASS4_RESULTS.md and docs/PHYSICAL_FIELDS_API.md first.
 Earlier sections below are history.
