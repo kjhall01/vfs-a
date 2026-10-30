@@ -90,10 +90,10 @@ _COMPAT_EXPORTS = {
     "ProcessPhysicsDriver": (".process", "ProcessPhysicsDriver"),
 }
 
-from .atmosphere.steppers import BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX
+from .atmosphere.steppers import BoundedSSPRK3, CenteredIMEX
 
 __all__ = [
-    "BoundedSSPRK3", "CenteredSSPRK3", "CenteredIMEX",
+    "BoundedSSPRK3", "CenteredIMEX",
     "MoistAtmosphere",
     "DryHydrostaticDynamics",
     "State",

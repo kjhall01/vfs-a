@@ -10,6 +10,8 @@ import vfs
 
 
 REMOVED = (
+    'integrators.imex.ark2', 'integrators.imex.higher_order',
+    'integrators.imex.legacy_pressure',
     'ocean', 'ocean_model', 'ocean_diagnostics', 'land', 'ice', 'surface',
     'coupling', 'core.graph', 'geometry.mesh.kernels',
     'atmosphere.pgf_correction', 'transport.neural_reconstruction',
@@ -82,3 +84,12 @@ def test_retained_source_has_no_imports_from_removed_modules():
             for target in targets:
                 assert not any(target == 'vfs.' + n or target.startswith('vfs.' + n + '.')
                                for n in REMOVED), (path, node.lineno, target)
+
+
+def test_only_ark4_and_bounded_explicit_are_public_moist_choices():
+    from vfs import imex, atmosphere
+    for module, names in ((imex, ("ARK2_TABLEAU", "ARK3_TABLEAU", "DryPEIMEXARK2", "PressureCorrectionCG")),
+                          (atmosphere, ("CenteredSSPRK3",))):
+        for name in names:
+            assert not hasattr(module, name)
+    assert imex.ARK4_TABLEAU.order == 4

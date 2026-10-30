@@ -29,12 +29,11 @@ def test_analytic_pressure_and_transport(levels):
  _,expected=torch.autograd.functional.jvp(transport,(s.u_e,),(z.u_e,))
  for a,b in zip(w.transport(z.u_e),expected):torch.testing.assert_close(a,b,rtol=2e-12,atol=1e-12)
 
-@pytest.mark.parametrize('method',['ark2','ark4'])
-def test_step_no_autograd_and_conservation(method,monkeypatch):
+def test_step_no_autograd_and_conservation(monkeypatch):
  d,s,z=setup()
  def forbidden(*args,**kwargs):raise AssertionError('runtime autograd')
  monkeypatch.setattr(torch.autograd.functional,'jvp',forbidden);monkeypatch.setattr(torch.func,'jvp',forbidden);monkeypatch.setattr(torch.autograd,'grad',forbidden)
- with torch.no_grad():r,info=MoistPEIMEXARK(d,method=method).step_with_info(s,1800.)
+ with torch.no_grad():r,info=MoistPEIMEXARK(d).step_with_info(s,1800.)
  assert info.converged
  A=s.mesh.cell_area[:,None]
  torch.testing.assert_close((A*r.ps).sum(),(A*s.ps).sum(),rtol=2e-14,atol=0)
@@ -65,8 +64,7 @@ def test_entropy_reference_invariant_norm():
  torch.testing.assert_close(w.wind(z.entropy_content,z.water_content,z.ps),w2.wind(z2.entropy_content,z2.water_content,z2.ps),rtol=2e-9,atol=1e-15)
 
 
-@pytest.mark.parametrize('method',['ark2','ark3','ark4'])
-def test_moist_native_order_against_independent_dop853(method):
+def test_moist_native_order_against_independent_dop853():
  d,s,z=setup();keys=('u_e','ps','entropy_content','water_content')
  shapes=[getattr(s,k).shape for k in keys];sizes=[int(np.prod(x)) for x in shapes]
  def pack(z):return np.concatenate([getattr(z,k).detach().numpy().ravel() for k in keys])
@@ -78,12 +76,12 @@ def test_moist_native_order_against_independent_dop853(method):
   assert ref.success
   ref=unpack(ref.y[:,-1]);inner=_MoistInner(MoistPressureWave(d,s));errors=[]
   for dt in [600,300,150]:
-   stepper=MoistPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=100),method=method)
+   stepper=MoistPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=100))
    out=s
    for _ in range(3600//dt):out=stepper.step(out,dt)
    errors.append(float(inner.norm(_Vector.pack(out)-_Vector.pack(ref))))
-  print(method,errors)
-  order={'ark2':2,'ark3':3,'ark4':4}[method]
+  print("ark4",errors)
+  order=4
   assert min(errors[0]/errors[1],errors[1]/errors[2])>2**(order-.4)
 
 

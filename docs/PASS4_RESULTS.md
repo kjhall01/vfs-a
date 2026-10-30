@@ -97,3 +97,11 @@ with real transfers and up to two leading batch axes. Local installed-wheel
 portable suite: 603 passed, 1 CUDA skip; both standalone comparisons and examples
 pass. No operators, transfer weights, fixtures or tolerances changed. See the
 ownership guide for the audit and the limited scope of batched coverage.
+
+## Subsequent supported-path scope slice
+
+Merged PR #8 is the baseline for [the scientific-readability plan](SIMPLIFICATION_MAP.md).
+ARK4-only public IMEX selection preserves 298 captured tensors and all stage solver
+diagnostics exactly. Installed-wheel portable suite: 601 passed, 1 CUDA skip;
+335 frozen fixture tensors and both examples pass. See CURRENT_PATHS.md for
+explicit/implicit guarantees and the precise representative-case evidence.

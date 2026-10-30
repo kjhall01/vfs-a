@@ -1,4 +1,4 @@
-"""Matrix-free ARK2 stepping for the Field-native dry hydrostatic state.
+"""Matrix-free ARK4 stepping for the tensor dry hydrostatic state.
 
 This module ports the solver architecture of the ``vfs-imex`` research tree
 onto VFS's richer ``State``/``VoronoiMesh`` API and its historical
@@ -12,7 +12,7 @@ from __future__ import annotations
 import copy
 import math
 from dataclasses import dataclass
-from typing import Callable, NamedTuple
+from typing import Callable
 
 import torch
 
@@ -20,39 +20,7 @@ from ...core.state import State
 from ...geometry.mesh.multilevel import VoronoiMeshHierarchy
 
 
-class ARKTableau(NamedTuple):
-    explicit: tuple[tuple[float, ...], ...]
-    implicit: tuple[tuple[float, ...], ...]
-    weights: tuple[float, ...]
-    order: int
-    name: str
-
-    @property
-    def n_stages(self) -> int:
-        return len(self.weights)
-
-
-_SQRT2 = math.sqrt(2.0)
-_GAMMA = 1.0 - 1.0 / _SQRT2
-_A32 = (3.0 + 2.0 * _SQRT2) / 6.0
-_B12 = 1.0 / (2.0 * _SQRT2)
-
-# Giraldo, Kelly, and Constantinescu's three-stage, second-order ARK pair.
-ARK2_TABLEAU = ARKTableau(
-    explicit=(
-        (0.0, 0.0, 0.0),
-        (2.0 - _SQRT2, 0.0, 0.0),
-        (1.0 - _A32, _A32, 0.0),
-    ),
-    implicit=(
-        (0.0, 0.0, 0.0),
-        (_GAMMA, _GAMMA, 0.0),
-        (_B12, _B12, _GAMMA),
-    ),
-    weights=(_B12, _B12, _GAMMA),
-    order=2,
-    name="ark2-giraldo-3stage",
-)
+from .tableau import ARK4_TABLEAU
 
 
 @dataclass(frozen=True)
@@ -1345,8 +1313,8 @@ def _hydrostatic_schur_solve(
     )
 
 
-class DryPEIMEXARK2:
-    """Second-order frozen-JVP ARK2 stepper for Field-native VFS states.
+class DryPEIMEXARK:
+    """Fourth-order frozen-wave ARK stepper for tensor dry states.
 
     ``explicit_tendency_providers`` add source terms to the nonlinear,
     explicit ARK residual at every stage.  This is the appropriate path for
@@ -1367,7 +1335,7 @@ class DryPEIMEXARK2:
         self.dynamics = dynamics
         self.solver_config = solver_config or IMEXSolverConfig()
         self.solver_config.validate()
-        self.tableau = ARK2_TABLEAU
+        self.tableau = ARK4_TABLEAU
         if explicit_tendency_providers is None:
             self.explicit_tendency_providers = ()
         elif isinstance(explicit_tendency_providers, (list, tuple)):
@@ -1703,8 +1671,8 @@ class DryPEIMEXARK2:
 
 
 __all__ = [
-    "ARK2_TABLEAU",
-    "DryPEIMEXARK2",
+    "ARK4_TABLEAU",
+    "DryPEIMEXARK",
     "DryPELinearOperator",
     "IMEXConvergenceError",
     "IMEXSolverConfig",

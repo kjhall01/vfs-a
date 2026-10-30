@@ -1,4 +1,26 @@
-# Current handoff — tensor-only State ownership
+# Current handoff — scientific readability, supported-path scope slice
+
+Start from merged PR #8 (849ccb8). Read [the pre-edit map](../docs/SIMPLIFICATION_MAP.md)
+and [current paths](../docs/CURRENT_PATHS.md). First branch simplify/supported-paths
+removes pressure-prototype solvers, ARK2/3 selectors and CenteredSSPRK3 model
+selection; shared ARK4 machinery moves to dry_ark.py/tableau.py without changes
+to the retained formulas. Bounded explicit remains default, release_as_heat=True;
+centered ARK4 is explicit opt-in and has no bounded species guarantee.
+
+Capture tools/capture_readability.py records retained outputs/stages/ledgers and
+gradients outside fixtures. Same-environment pre/post: 298 tensors and complete
+solver diagnostics exactly equal. Local installed wheel: 601 passed, 1 CUDA skip;
+335 portable fixture tensors and both examples pass. IMEX backward is untested.
+
+Next dependent implementation work: simplify dry equation ownership and remove
+superseded dry recipes after extracting required helpers; replace entropy in
+mtheta_i with a named shared scalar-transport input. Preserve the baseline capture
+and constants/arithmetic/gradients. Final PR reconciles current and historical
+guidance. No numerical or performance campaign.
+
+---
+
+# Historical handoff — tensor-only State ownership
 
 PR #7 is merged. The focused branch `cleanup/state-tensor-ownership` makes dry
 State/PrognosticFields expose plain tensors, matching the existing MoistState

@@ -7,10 +7,10 @@ approximation. The native mixture-energy nonlinear RHS is unchanged.
 import math
 import torch
 
-from .ark2 import (
+from .dry_ark import (
     _gmres, IMEXSolverConfig, IMEXStageInfo, IMEXStepInfo, IMEXConvergenceError,
 )
-from .higher_order import TABLEAUX
+from .tableau import ARK4_TABLEAU
 from .moist_wave import MoistPressureWave
 from ...atmosphere.moist_conservative import MoistState
 from ...atmosphere.moist_cp import reconstruct_moist_cp
@@ -98,11 +98,9 @@ class MoistPEIMEXARK:
     provider is applied. Nonfinite or inadmissible states raise without
     changing the input. Supports eager analytic waves with full or Schur GMRES.
     """
-    def __init__(self, dynamics, solver_config=None, *, method='ark4', stage_validator=None):
-        if method not in TABLEAUX:
-            raise ValueError('unknown ARK method')
+    def __init__(self, dynamics, solver_config=None, *, stage_validator=None):
         self.dynamics = dynamics
-        self.tableau = TABLEAUX[method]
+        self.tableau = ARK4_TABLEAU
         self.solver_config = solver_config or IMEXSolverConfig(
             implicit_operator='gravity_wave', preconditioner='hydrostatic_schur',
             rtol=1e-9, max_iterations=80, restart=30,

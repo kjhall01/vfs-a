@@ -6,11 +6,11 @@ import pytest
 import torch
 
 from test_model_api import model, init
-from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX
+from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredIMEX
 from vfs.atmosphere import MoistConservativeDynamics, MoistState, BoundedGibbs
 from vfs.atmosphere.bounded_transport import graph
 from vfs.integrators.imex import IMEXSolverConfig, IMEXConvergenceError
-from vfs.integrators.imex.higher_order import ARK2_TABLEAU, ARK3_TABLEAU, ARK4_TABLEAU
+from vfs.integrators.imex.tableau import ARK4_TABLEAU
 from vfs.integrators.imex.moist_ark import MoistPEIMEXARK
 
 KEYS = ("u_e", "ps", "entropy_content", "water_content")
@@ -48,9 +48,6 @@ def test_registration_and_state_dict(model):
     "factory",
     [
         BoundedSSPRK3,
-        CenteredSSPRK3,
-        lambda: CenteredIMEX(method=ARK2_TABLEAU),
-        lambda: CenteredIMEX(method=ARK3_TABLEAU),
         lambda: CenteredIMEX(method=ARK4_TABLEAU),
     ],
 )
@@ -59,11 +56,8 @@ def test_delegation_and_hooks(model, factory):
     s = init(m, normal_wind=1.0)
     if isinstance(m.stepper, BoundedSSPRK3):
         expected = BoundedGibbs(m.dynamics, release_as_heat=True).step(s, 1.0)
-    elif isinstance(m.stepper, CenteredSSPRK3):
-        expected = m.dynamics.step(s, 1.0)
     else:
-        name = {2: "ark2", 3: "ark3", 4: "ark4"}[m.stepper.method.order]
-        expected = MoistPEIMEXARK(m.dynamics, method=name).step(s, 1.0)
+        expected = MoistPEIMEXARK(m.dynamics).step(s, 1.0)
     seen = []
     handle = m.register_forward_hook(lambda module, args, out: seen.append(out))
     equal(m(s, 1.0), expected)

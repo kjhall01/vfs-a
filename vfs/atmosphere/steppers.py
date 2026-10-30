@@ -12,7 +12,7 @@ from .bounded_moist import BoundedGibbs
 
 def _default_ark():
     # Import the experimental solver stack only when explicitly selected.
-    from ..integrators.imex.higher_order import ARK4_TABLEAU
+    from ..integrators.imex.tableau import ARK4_TABLEAU
 
     return ARK4_TABLEAU
 
@@ -63,30 +63,10 @@ class BoundedSSPRK3:
 
 
 @dataclass(frozen=True, eq=False)
-class CenteredSSPRK3:
-    """Existing centered SSPRK3; no bounded species transport."""
-
-    _dynamics: object = field(default=None, init=False, repr=False)
-    _implementation: object = field(default=None, init=False, repr=False)
-
-    def _bind(self, dynamics):
-        _bind_once(self, dynamics, dynamics)
-
-    def _check_binding(self, dynamics):
-        _check(self, dynamics)
-        if self._implementation is not dynamics:
-            raise ValueError("centered stepper no longer matches model dynamics")
-
-    def advance(self, state, dt):
-        self._check_binding(self._dynamics)
-        return self._implementation.step(state, dt)
-
-
-@dataclass(frozen=True, eq=False)
 class CenteredIMEX:
     """Existing experimental centered ARK; never a bounded transport option.
 
-    Select an existing ARK2/3/4_TABLEAU object (default ARK4). The solver is
+    ARK4 is the only retained implicit method. The solver is
     constructed once when the model binds dynamics. Its analytic wave is still
     rebuilt at each outer-step anchor by the unchanged solver implementation.
     stage_validator receives outer dt for rejection, not an Euler ledger budget.
@@ -99,42 +79,28 @@ class CenteredIMEX:
     _implementation: object = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
-        from ..integrators.imex.higher_order import (
-            ARK2_TABLEAU,
-            ARK3_TABLEAU,
-            ARK4_TABLEAU,
-        )
-        from ..integrators.imex.ark2 import IMEXSolverConfig
+        from ..integrators.imex.tableau import ARK4_TABLEAU
+        from ..integrators.imex.dry_ark import IMEXSolverConfig
 
         if self.solver_config is not None and not isinstance(
             self.solver_config, IMEXSolverConfig
         ):
             raise TypeError("solver_config must be IMEXSolverConfig or None")
-        if not any(
-            self.method is t for t in (ARK2_TABLEAU, ARK3_TABLEAU, ARK4_TABLEAU)
-        ):
-            raise ValueError("method must be an existing ARK2/3/4_TABLEAU object")
+        if self.method is not ARK4_TABLEAU:
+            raise ValueError("method must be ARK4_TABLEAU")
         if self.stage_validator is not None and not callable(self.stage_validator):
             raise TypeError("stage_validator must be callable or None")
 
     _bound_config: object = field(default=None, init=False, repr=False)
 
     def _bind(self, dynamics):
-        from ..integrators.imex.higher_order import ARK2_TABLEAU, ARK3_TABLEAU
         from ..integrators.imex.moist_ark import MoistPEIMEXARK
 
         if self._dynamics is not None:
             raise ValueError("stepper is already bound; construct a fresh stepper")
-        # Translate only at the existing solver API; public selection is an object.
-        method = (
-            "ark2"
-            if self.method is ARK2_TABLEAU
-            else "ark3" if self.method is ARK3_TABLEAU else "ark4"
-        )
         solver = MoistPEIMEXARK(
             dynamics,
             self.solver_config,
-            method=method,
             stage_validator=self.stage_validator,
         )
         _bind_once(self, dynamics, solver)
