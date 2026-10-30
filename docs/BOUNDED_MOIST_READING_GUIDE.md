@@ -93,6 +93,14 @@ separate from comparison to the historical cross-backend fixtures.
 
 AST normalization confirmed the four edited modules preserve executable syntax
 relative to `9f82a0c`; wheel Python files match the current source, and
-`git diff --check` passed. GitHub Actions has not yet run this commit; actual
-hosted results will be linked in the PR. CPU float64 checks do not qualify GPU,
-long-run or full backward behavior.
+`git diff --check` passed.
+
+Actual Linux [push run 41003311864](https://github.com/kjhall01/vfs-a/actions/runs/41003311864)
+at `4046f3b` passed **527 portable tests**, both standalone portable tools and
+both examples. Runner: AMD EPYC 7763 / AVX2, Python 3.12.15, torch 2.15.0+cpu
+with MKL, CPU float64. Separately, both exact fixture tests and both exact tools
+failed against the historical fixtures; these remain explicit informational
+failures, not portable passes. Full CPU/backend details and mode-specific reports
+are in the run's `cpu-checks` artifact. Subsequent PR/final-head runs are linked
+in [PR #4](https://github.com/kjhall01/vfs-a/pull/4). CPU float64 checks do not
+qualify GPU, long-run or full backward behavior.
