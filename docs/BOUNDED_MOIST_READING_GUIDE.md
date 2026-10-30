@@ -177,5 +177,12 @@ site-packages; tests/tools/examples ran outside the checkout with `-I`:
   check and `git diff --check` passed. Black was temporary tooling only; no
   dependency or formatting-policy change was added to the package.
 
-GitHub Actions has not yet run this commit; actual hosted results will be linked
-in the PR. These are regression checks, not a scientific verification campaign.
+Actual Linux [push run 41005300530](https://github.com/kjhall01/vfs-a/actions/runs/41005300530)
+at implementation commit `4058876` passed **527 portable tests**, both standalone
+portable comparisons and both examples. It used AMD EPYC 9V45 / AVX512,
+Python 3.12.15, torch 2.15.0+cpu / MKL and CPU float64. **Both exact fixture tests
+and both exact standalone tools also passed on this runner**; that is not a
+cross-platform guarantee. Full environment and separate mode reports are in its
+`cpu-checks` artifact. Subsequent PR/final-head runs are linked in
+[PR #5](https://github.com/kjhall01/vfs-a/pull/5). These are regression checks,
+not a scientific verification campaign.
