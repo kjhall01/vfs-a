@@ -81,9 +81,19 @@ modules, each matching current retained source bytes. `git diff --check` passed;
 fixtures and regression policy are unchanged. The suite also exercises explicit
 exact CLI status reporting; it does not turn exact failures into passes.
 
-GitHub Actions has not yet run this scope-reduction commit. Its required
-installed-wheel gate now runs both examples, in addition to the full portable
-suite and both standalone comparisons. Hosted results will be linked in the PR.
+Actual GitHub Actions [push run 40996519750](https://github.com/kjhall01/vfs-a/actions/runs/40996519750)
+at implementation commit `06b94d3` passed: **527 portable tests**, **142 + 193
+portable tool comparisons**, and **both examples**. This clean Ubuntu 24.04
+runner used AMD EPYC 9V45 / AVX512, Python 3.12.15, torch 2.15.0+cpu (MKL),
+NumPy 2.5.4 and SciPy 1.18.1. Full CPU/backend and dependency details are in its
+`cpu-checks/environment.json` artifact.
+
+Separately, **both exact fixture tests and both exact tools passed on this
+runner**. That observed exact success is not a cross-CPU guarantee; the earlier
+CI investigation documents other environments' exact failures. Mode-specific
+JSON/JUnit reports are retained in the run artifact. The required installed-wheel
+gate now runs both examples. Additional PR/final-head runs are linked in
+[PR #3](https://github.com/kjhall01/vfs-a/pull/3), distinct from this recorded run.
 
 Only CPU float64 forward regression is qualified by these checks. Portable and
 exact remain separate modes; known cross-backend exact failures are not passes.
