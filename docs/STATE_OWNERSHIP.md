@@ -133,3 +133,23 @@ claimed for this pass.
 GitHub Actions results will be recorded separately in the PR after it runs.
 This is ownership regression coverage, not a new scientific verification campaign,
 full-rollout qualification, or expansion of supported precision/accelerators.
+
+### PR #8 review follow-up: coarse tracer restriction
+
+The coarse Schur builder still read `anchor.tracer_m.horizontal_axis`, which
+fails for the new tensor payload. It now passes `horizontal_axis=-3`, matching
+`[..., cell, full, tracer]`; no transfer weights or numerical operators changed.
+The new regression fails with the old access and passes after this correction
+for no batch axes, one leading axis `(2,)`, and two leading axes `(2, 3)`.
+It executes real hierarchy transfers and coarse linear-operator construction,
+checks the complete tracer shape and values against an independent weighted
+donor sum, and verifies the fine input is unchanged. The test isolates coarse
+construction from modal fitting; it does not qualify a complete batched solver.
+
+An audit of retained Python consumers found no further Field-only metadata
+accesses on state tensors. Remaining placement/axis accesses are in standalone
+Field mesh/regridding paths, guarded Field input conversion, and StateSpec metadata.
+Local rebuilt-wheel validation on the same macOS CPU environment: **603 passed,
+1 CUDA skip**, both portable tools (142 + 193 tensors) and both examples pass.
+The existing subcycle scalar-conversion warning remains. Fixtures are unchanged;
+this follow-up makes no new exact cross-environment or accelerator claim.

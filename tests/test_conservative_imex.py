@@ -98,3 +98,48 @@ def test_multilevel_matches_direct_schur():
         outputs.append(stepper.step(s,1800.))
     for name in ['u_e','ps','mtheta_i']:
         torch.testing.assert_close(getattr(outputs[0],name),getattr(outputs[1],name),rtol=1e-9,atol=1e-7)
+
+
+@pytest.mark.parametrize('batch_shape', [(), (2,), (2, 3)])
+def test_coarse_system_restricts_tensor_tracers(batch_shape):
+    """Exercise real coarse transfers, independently of the unbatched modal fit."""
+    from types import SimpleNamespace
+    from vfs.atmosphere import DryHydrostaticDynamics
+    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy
+    from vfs.integrators.imex.ark2 import (
+        _HydrostaticSchurSystem, _MultilevelHydrostaticSchurPreconditioner,
+    )
+
+    _, state, _ = setup()
+    hierarchy = VoronoiMeshHierarchy.build(state.mesh)
+    assert hierarchy.transfers  # A no-op hierarchy would miss the regression.
+    shape = (*batch_shape, state.mesh.nCells, state.column.n_levels, 2)
+    tracer = torch.arange(torch.tensor(shape).prod().item(), dtype=state.ps.dtype).reshape(shape) + 1
+    anchor = State(
+        state.u_e.expand(*batch_shape, *state.u_e.shape),
+        state.mtheta_i.expand(*batch_shape, *state.mtheta_i.shape),
+        state.ps.expand(*batch_shape, *state.ps.shape),
+        tracer, mesh=state.mesh, column=state.column,
+    )
+    saved = tracer.clone()
+    operator = DryPELinearOperator(DryHydrostaticDynamics(), anchor, implicit_operator='gravity_wave')
+    # Only the coarse builder's inputs: no mock transfer or replacement operator.
+    context = SimpleNamespace(system=_HydrostaticSchurSystem(operator, 1.0), hierarchy=hierarchy)
+    coarse = _MultilevelHydrostaticSchurPreconditioner._coarse_system(context).anchor
+
+    # Independent weighted donor sum, retaining every batch/level/species index.
+    expected = tracer
+    for transfer in hierarchy.transfers:
+        restricted = expected.new_zeros((*batch_shape, transfer.n_coarse_cells, shape[-2], shape[-1]))
+        for fine in range(transfer.n_fine_cells):
+            for slot in range(transfer.coarse_indices.shape[1]):
+                donor = int(transfer.coarse_indices[fine, slot])
+                restricted[..., donor, :, :] += (
+                    expected[..., fine, :, :] * transfer.restriction_weights[fine, slot]
+                )
+        expected = restricted
+    assert coarse.tracer_m.shape == (*batch_shape, hierarchy.meshes[-1].nCells, shape[-2], shape[-1])
+    torch.testing.assert_close(coarse.tracer_m, expected, rtol=0, atol=0)
+    assert coarse.mesh is hierarchy.meshes[-1]
+    assert anchor.tracer_m is tracer
+    torch.testing.assert_close(tracer, saved, rtol=0, atol=0)

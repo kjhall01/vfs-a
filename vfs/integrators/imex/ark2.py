@@ -1079,7 +1079,7 @@ class _MultilevelHydrostaticSchurPreconditioner:
                 if anchor.tracer_m is None
                 else transfer.restrict(
                     anchor.tracer_m,
-                    horizontal_axis=anchor.tracer_m.horizontal_axis,
+                    horizontal_axis=-3,  # [..., cell, full, tracer]
                 )
             )
             assert isinstance(mtheta, torch.Tensor) and isinstance(ps, torch.Tensor)

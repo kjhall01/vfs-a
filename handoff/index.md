@@ -15,11 +15,18 @@ stepping dtype/device and implicit tracer casts are rejected. Derived dry fields
 are available through model.physical_fields(state), with legacy State diagnostic
 methods retained as uncached compatibility helpers. Xarray stays external.
 
-Local installed wheel: 600 passed, 1 CUDA skip; both portable tools and examples
+Local installed wheel after PR review: 603 passed, 1 CUDA skip; both portable tools and examples
 pass. All 335 capture tensors plus 47 additional forward/gradient tensors are
 exactly equal pre/post on the same CPU environment. Frozen-fixture exact mode
 still fails separately on this macOS host. No new accelerator/full-rollout claim.
 GitHub check status is recorded separately in the PR. Development remains on GitHub.
+
+PR #8 review follow-up fixes coarse Schur tracer restriction to use axis -3 for
+[..., cell, full, tracer]. Three regression cases exercise actual transfers
+with zero, one and two batch axes and check exact weighted values/shape without
+input mutation. This covers coarse construction, not a complete batched solver.
+Retained consumers were audited; other Field metadata accesses serve explicit
+Field operations or schema metadata, not state tensors. Operators are unchanged.
 
 Remaining legacy boundaries: private entropy in mtheta_i, dry State convenience
 methods/attrs/restart shell, and the older dry recipe configuration. Keep future
