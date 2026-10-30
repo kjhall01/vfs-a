@@ -58,7 +58,9 @@ jobs:
       - name: MoistAtmosphere smoke test
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I examples/moist_atmosphere.py
+        run: |
+          python -I examples/moist_atmosphere.py
+          python -I examples/bounded_moist.py
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true

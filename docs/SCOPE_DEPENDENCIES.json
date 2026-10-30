@@ -1,0 +1,294 @@
+{
+  "base": "35cf019",
+  "removed_files": [
+    "vfs/atmosphere/pgf_correction.py",
+    "vfs/core/graph/__init__.py",
+    "vfs/core/graph/contracts.py",
+    "vfs/core/graph/model.py",
+    "vfs/core/graph/registry.py",
+    "vfs/coupling/__init__.py",
+    "vfs/coupling/ark_stage_sources.py",
+    "vfs/coupling/atmosphere_stepper.py",
+    "vfs/coupling/mass_correction.py",
+    "vfs/coupling/model.py",
+    "vfs/coupling/momentum.py",
+    "vfs/coupling/saturation_adjustment.py",
+    "vfs/coupling/scm_process.py",
+    "vfs/coupling/state.py",
+    "vfs/coupling/steppers/__init__.py",
+    "vfs/coupling/steppers/imex_ark2.py",
+    "vfs/coupling/surface/__init__.py",
+    "vfs/coupling/surface/finite_map.py",
+    "vfs/coupling/surface/stage_map.py",
+    "vfs/coupling/surface/strang.py",
+    "vfs/coupling/surface_flux.py",
+    "vfs/geometry/mesh/kernels.py",
+    "vfs/ice/__init__.py",
+    "vfs/ice/albedo.py",
+    "vfs/ice/evp.py",
+    "vfs/ice/parameters.py",
+    "vfs/ice/state.py",
+    "vfs/ice/thermo.py",
+    "vfs/ice/transport.py",
+    "vfs/land/__init__.py",
+    "vfs/land/energy_balance.py",
+    "vfs/land/hydrology.py",
+    "vfs/land/model.py",
+    "vfs/land/parameters.py",
+    "vfs/land/snow.py",
+    "vfs/land/soil_thermal.py",
+    "vfs/land/state.py",
+    "vfs/land/vegetation.py",
+    "vfs/ocean/__init__.py",
+    "vfs/ocean/column.py",
+    "vfs/ocean/constants.py",
+    "vfs/ocean/domain.py",
+    "vfs/ocean/dynamics.py",
+    "vfs/ocean/eos.py",
+    "vfs/ocean/helpers.py",
+    "vfs/ocean/initial_conditions.py",
+    "vfs/ocean/mixed_layer.py",
+    "vfs/ocean/physics.py",
+    "vfs/ocean/state.py",
+    "vfs/ocean_diagnostics.py",
+    "vfs/ocean_model.py",
+    "vfs/surface/__init__.py",
+    "vfs/surface/config.py",
+    "vfs/surface/conservation.py",
+    "vfs/surface/exchange.py",
+    "vfs/surface/fractions.py",
+    "vfs/surface/glacier_land_ice.py",
+    "vfs/surface/icebergs.py",
+    "vfs/surface/land_surface.py",
+    "vfs/surface/packets.py",
+    "vfs/surface/runoff_router.py",
+    "vfs/surface/sea_ice.py",
+    "vfs/surface/state.py",
+    "vfs/surface/system.py",
+    "vfs/surface/utils.py",
+    "vfs/transport/neural_reconstruction.py",
+    "vfs/transport/reversible_advection.py",
+    "vfs/transport/shadow_replay.py"
+  ],
+  "retained_inbound_references_before": [
+    {
+      "file": "vfs/__init__.py",
+      "line": 74,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 75,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 76,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 77,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 78,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 88,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 92,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 93,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 94,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 95,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 96,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 97,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 98,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 99,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 100,
+      "target": "vfs.ocean_diagnostics"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 101,
+      "target": "vfs.ocean_model"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 102,
+      "target": "vfs.ocean_model"
+    },
+    {
+      "file": "vfs/__init__.py",
+      "line": 106,
+      "target": "vfs.ocean_model"
+    },
+    {
+      "file": "vfs/model.py",
+      "line": 11,
+      "target": "vfs.coupling"
+    },
+    {
+      "file": "vfs/model.py",
+      "line": 63,
+      "target": "vfs.ocean"
+    },
+    {
+      "file": "vfs/model.py",
+      "line": 64,
+      "target": "vfs.ocean_model"
+    },
+    {
+      "file": "vfs/model.py",
+      "line": 66,
+      "target": "vfs.surface"
+    },
+    {
+      "file": "vfs/transport/__init__.py",
+      "line": 13,
+      "target": "vfs.transport.reversible_advection"
+    },
+    {
+      "file": "vfs/transport/__init__.py",
+      "line": 32,
+      "target": "vfs.transport.neural_reconstruction"
+    },
+    {
+      "file": "vfs/transport/__init__.py",
+      "line": 59,
+      "target": "vfs.transport.shadow_replay"
+    },
+    {
+      "file": "vfs/atmosphere/dry_dynamics.py",
+      "line": 198,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 136,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 140,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 144,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 145,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 146,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 150,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 154,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/atmosphere/__init__.py",
+      "line": 155,
+      "target": "vfs.atmosphere.pgf_correction"
+    },
+    {
+      "file": "vfs/geometry/mesh/__init__.py",
+      "line": 23,
+      "target": "vfs.geometry.mesh.kernels"
+    },
+    {
+      "file": "vfs/geometry/mesh/__init__.py",
+      "line": 24,
+      "target": "vfs.geometry.mesh.kernels"
+    },
+    {
+      "file": "vfs/geometry/mesh/__init__.py",
+      "line": 25,
+      "target": "vfs.geometry.mesh.kernels"
+    },
+    {
+      "file": "vfs/geometry/mesh/__init__.py",
+      "line": 26,
+      "target": "vfs.geometry.mesh.kernels"
+    },
+    {
+      "file": "vfs/geometry/mesh/__init__.py",
+      "line": 27,
+      "target": "vfs.geometry.mesh.kernels"
+    },
+    {
+      "file": "vfs/data/topography.py",
+      "line": 326,
+      "target": "vfs.ocean"
+    }
+  ],
+  "retained_files_byte_identical": 59,
+  "modified_retained_files": [
+    "vfs/__init__.py",
+    "vfs/model.py",
+    "vfs/transport/__init__.py",
+    "vfs/atmosphere/dry_strategies.py",
+    "vfs/atmosphere/dry_dynamics.py",
+    "vfs/atmosphere/__init__.py",
+    "vfs/atmosphere/recipes.py",
+    "vfs/geometry/__init__.py",
+    "vfs/geometry/mesh/__init__.py",
+    "vfs/data/topography.py",
+    "vfs/data/__init__.py"
+  ],
+  "modified_retained_functions": [
+    "vfs/model.py:_build_component",
+    "vfs/model.py:VFSModel.from_config",
+    "vfs/atmosphere/dry_dynamics.py:DryHydrostaticDynamics.__init__"
+  ]
+}

@@ -20,11 +20,6 @@ _COMPAT_EXPORTS = {
     "_save_mesh": (".grid", "_save_mesh"),
     "load_mpas_mesh": (".io", "load_mpas_mesh"),
     "load_vfs_imex_mesh": (".io", "load_vfs_imex_mesh"),
-    "CellMeshKernelConv": (".kernels", "CellMeshKernelConv"),
-    "CellMeshKernelNetwork": (".kernels", "CellMeshKernelNetwork"),
-    "EdgeMeshKernelConv": (".kernels", "EdgeMeshKernelConv"),
-    "EdgeMeshKernelNetwork": (".kernels", "EdgeMeshKernelNetwork"),
-    "MeshKernelConfig": (".kernels", "MeshKernelConfig"),
     "CellTransfer": (".multilevel", "CellTransfer"),
     "VoronoiMeshHierarchy": (".multilevel", "VoronoiMeshHierarchy"),
 }

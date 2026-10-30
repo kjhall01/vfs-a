@@ -8,7 +8,6 @@ from typing import Any
 import torch.nn as nn
 
 from .core.config import DataRequirement
-from .coupling import AirSeaMomentumCoupler
 from .atmosphere import (
     DryHydrostaticDynamics,
     DryHydrostaticLogPressureSigmaDynamics,
@@ -24,7 +23,6 @@ from .core.state import PrognosticFields, State
 
 
 _DEFAULT_COMPONENTS = {
-    "air_sea_momentum_coupler": AirSeaMomentumCoupler,
     "held_suarez": HeldSuarezPhysics,
     "scm_physics": SCMPhysics,
     "vfs_native_scm": VFSNativeSCM,
@@ -35,36 +33,6 @@ _DEFAULT_INTEGRATORS = {
     "rk4": rk4,
     "ssprk3": ssprk3,
 }
-
-_LAZY_OCEAN_REGISTRY_NAMES = {
-    "multilayer_ocean",
-    "hydrostatic_boussinesq_ocean",
-    "ocean_surface_forcing",
-    "ocean_surface_flux_physics",
-    "ocean_ekman_surface_physics",
-    "forced_ocean",
-    "ocean_planet_flux",
-    "ocean_ekman_surface",
-}
-_LAZY_SURFACE_REGISTRY_NAMES = {
-    "surface_boundary",
-    "surface_exchange",
-    "surface_system",
-    "land_surface",
-    "sea_ice_thermo",
-    "glacier_land_ice",
-    "iceberg_tracer",
-    "runoff_router",
-}
-
-
-def _load_lazy_builtin_registry(type_name: str) -> None:
-    if str(type_name) in _LAZY_OCEAN_REGISTRY_NAMES:
-        from . import ocean as _ocean  # noqa: F401
-        from . import ocean_model as _ocean_model  # noqa: F401
-    if str(type_name) in _LAZY_SURFACE_REGISTRY_NAMES:
-        from . import surface as _surface  # noqa: F401
-
 
 def _spec_kwargs(spec: dict[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
     kwargs = dict(spec.get("kwargs", {}))
@@ -157,9 +125,6 @@ def _build_component(spec: Any, *, name: str, mesh, column):
     if type_name in ("mesh_to_latlon_knn", "latlon_to_mesh_bilinear") or get_regrid_operator(type_name) is not None:
         return _build_regrid_component(type_name, spec, mesh=mesh)
     constructor = get_component(type_name) or _DEFAULT_COMPONENTS.get(type_name)
-    if constructor is None:
-        _load_lazy_builtin_registry(type_name)
-        constructor = get_component(type_name) or _DEFAULT_COMPONENTS.get(type_name)
     if constructor is None:
         raise ValueError(f"unknown component type {type_name!r}")
     kwargs = dict(spec.get("kwargs", {}))
@@ -494,9 +459,6 @@ class VFSModel(nn.Module):
         if model_type and "plan" not in config:
             constructor = get_model(str(model_type))
             if constructor is None:
-                _load_lazy_builtin_registry(str(model_type))
-                constructor = get_model(str(model_type))
-            if constructor is None:
                 raise ValueError(f"unknown model type {model_type!r}")
             kwargs = dict(config.get("kwargs", {}))
             mesh = config.get("mesh", kwargs.get("mesh"))
@@ -545,7 +507,6 @@ class VFSModel(nn.Module):
         return None if dry is None else getattr(dry, "diagnostics", None)
 
 
-register_component("air_sea_momentum_coupler", AirSeaMomentumCoupler)
 register_component("held_suarez", HeldSuarezPhysics)
 register_component("scm_physics", SCMPhysics)
 register_component("vfs_native_scm", VFSNativeSCM)

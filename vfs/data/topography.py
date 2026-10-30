@@ -1,9 +1,4 @@
-"""Shared terrain and bathymetry helpers for VFS workflows.
-
-This module is the common home for atmospheric topography and ocean
-bathymetry/ETOPO ingest utilities. It owns terrain/bathymetry setup, while
-model-specific earth/ocean modules consume these helpers.
-"""
+"""Atmospheric terrain and shared ETOPO initialization/I/O helpers."""
 
 from __future__ import annotations
 
@@ -36,8 +31,6 @@ ETOPO_2022_60S_BEDROCK_NETCDF_URL = ETOPO_2022_60S_BEDROCK_DOWNLOAD_URL
 ETOPO_2022_METADATA_URL = "https://www.ncei.noaa.gov/products/etopo-global-relief-model"
 ETOPO_ELEVATION_ALIASES = ("z", "elevation", "elev", "Band1", "topography", "relief")
 
-OCEAN_BATHYMETRY_DEFAULT_GRAVITY = GRAVITY
-OCEAN_BATHYMETRY_DEFAULT_RHO0 = 1025.0
 
 
 def build_atmospheric_topographic_column(
@@ -302,296 +295,12 @@ def etopo_native_elevation_from_xarray(
     return elevation_native[:, 0], attrs
 
 
-def build_ocean_domain_from_native_elevation(
-    mesh,
-    elevation_native: torch.Tensor | Any,
-    *,
-    n_layers: int,
-    ocean_threshold_m: float = 0.0,
-    min_depth: float = 50.0,
-    max_depth: float | None = 6000.0,
-    land_depth: float | None = None,
-    depth_smoothing_passes: int = 0,
-    depth_smoothing_alpha: float = 0.5,
-    preserve_wet_mean_depth: bool = True,
-    min_wet_component_cells: int = 0,
-    keep_largest_wet_component: bool = False,
-    rest_thickness: torch.Tensor | None = None,
-    gravity: float = OCEAN_BATHYMETRY_DEFAULT_GRAVITY,
-    rho0: float = OCEAN_BATHYMETRY_DEFAULT_RHO0,
-    metadata: dict[str, Any] | None = None,
-):
-    """Build ``OceanDomain`` and ``OceanColumn`` from native elevation."""
-
-    from vfs.ocean import OceanColumn, OceanDomain
-
-    elevation_native = torch.as_tensor(elevation_native, dtype=torch.float64).reshape(int(mesh.nCells))
-    finite = torch.isfinite(elevation_native)
-    wet_cell = finite & (elevation_native < float(ocean_threshold_m))
-    if not bool(wet_cell.any().item()):
-        raise ValueError("native elevation produced no wet ocean cells")
-    component_metadata = filter_wet_components_on_mesh(
-        mesh,
-        wet_cell,
-        min_component_cells=int(min_wet_component_cells),
-        keep_largest=bool(keep_largest_wet_component),
-    )
-    wet_cell = component_metadata["wet_cell"]
-    if not bool(wet_cell.any().item()):
-        raise ValueError("ETOPO wet-component filtering removed all wet ocean cells")
-    elevation_native = torch.where(finite, elevation_native, torch.zeros_like(elevation_native))
-    depth = (float(ocean_threshold_m) - elevation_native).clamp_min(float(min_depth))
-    if max_depth is not None:
-        depth = depth.clamp_max(float(max_depth))
-    depth = smooth_ocean_depth_on_mesh(
-        mesh,
-        depth,
-        wet_cell,
-        passes=int(depth_smoothing_passes),
-        alpha=float(depth_smoothing_alpha),
-        min_depth=float(min_depth),
-        max_depth=max_depth,
-        preserve_wet_mean=bool(preserve_wet_mean_depth),
-    )
-    dummy_depth = float(min_depth if land_depth is None else land_depth)
-    if dummy_depth <= 0.0:
-        raise ValueError("land_depth must be positive")
-    total_depth = torch.where(wet_cell, depth, torch.full_like(depth, dummy_depth)).reshape(int(mesh.nCells), 1)
-    if rest_thickness is None:
-        rest_thickness = torch.full(
-            (int(n_layers),),
-            float(depth[wet_cell].mean().item()) / float(n_layers),
-            dtype=torch.float64,
-        )
-    column = OceanColumn(
-        int(n_layers),
-        total_depth=total_depth.detach().cpu(),
-        rest_thickness=rest_thickness.detach().cpu(),
-        gravity=float(gravity),
-        rho0=float(rho0),
-    )
-    domain = OceanDomain(mesh, wet_cell.detach().cpu(), depth=total_depth.detach().cpu())
-    wet_depth = depth[wet_cell]
-    out_metadata = dict(metadata or {})
-    out_metadata.update(
-        {
-        "ocean_threshold_m": float(ocean_threshold_m),
-        "min_depth": float(min_depth),
-        "max_depth": None if max_depth is None else float(max_depth),
-        "land_depth": float(dummy_depth),
-        "depth_smoothing_passes": int(depth_smoothing_passes),
-        "depth_smoothing_alpha": float(depth_smoothing_alpha),
-        "preserve_wet_mean_depth": bool(preserve_wet_mean_depth),
-        "min_wet_component_cells": int(min_wet_component_cells),
-        "keep_largest_wet_component": bool(keep_largest_wet_component),
-        "wet_component_count_raw": int(component_metadata["component_count_raw"]),
-        "wet_component_count_kept": int(component_metadata["component_count_kept"]),
-        "wet_cells_removed_by_component_filter": int(component_metadata["wet_cells_removed"]),
-        "largest_wet_component_cells": int(component_metadata["largest_component_cells"]),
-        "wet_cell_count": int(wet_cell.sum().item()),
-        "land_cell_count": int((~wet_cell).sum().item()),
-        "wet_fraction": float(wet_cell.to(dtype=torch.float64).mean().item()),
-        "depth_min": float(wet_depth.min().item()),
-        "depth_max": float(wet_depth.max().item()),
-        "depth_mean": float(wet_depth.mean().item()),
-        "elevation_min": float(elevation_native.min().item()),
-        "elevation_max": float(elevation_native.max().item()),
-        }
-    )
-    return domain, column, out_metadata
 
 
-def build_ocean_domain_from_etopo(
-    ds_or_da,
-    mesh,
-    *,
-    n_layers: int,
-    grid_to_mesh: LatLonToMeshBilinear | None = None,
-    elevation_var: str | None = None,
-    coarsen: int = 1,
-    coarsen_cache_dir: str | Path | None = None,
-    ocean_threshold_m: float = 0.0,
-    min_depth: float = 50.0,
-    max_depth: float | None = 6000.0,
-    land_depth: float | None = None,
-    depth_smoothing_passes: int = 0,
-    depth_smoothing_alpha: float = 0.5,
-    preserve_wet_mean_depth: bool = True,
-    min_wet_component_cells: int = 0,
-    keep_largest_wet_component: bool = False,
-    rest_thickness: torch.Tensor | None = None,
-    gravity: float = OCEAN_BATHYMETRY_DEFAULT_GRAVITY,
-    rho0: float = OCEAN_BATHYMETRY_DEFAULT_RHO0,
-):
-    """Build ``OceanDomain`` and ``OceanColumn`` from ETOPO elevation."""
-
-    elevation_native, attrs = etopo_native_elevation_from_xarray(
-        ds_or_da,
-        mesh,
-        grid_to_mesh=grid_to_mesh,
-        elevation_var=elevation_var,
-        coarsen=int(coarsen),
-        coarsen_cache_dir=coarsen_cache_dir,
-    )
-    metadata = {
-        "source": "ETOPO_2022",
-        "source_url": ETOPO_2022_METADATA_URL,
-        "elevation_var": attrs.get("source_name"),
-        "coarsen": int(coarsen),
-        "coarsen_cache_path": attrs.get("coarsen_cache_path"),
-        "coarsen_cache_hit": attrs.get("coarsen_cache_hit"),
-    }
-    return build_ocean_domain_from_native_elevation(
-        mesh,
-        elevation_native,
-        n_layers=n_layers,
-        ocean_threshold_m=ocean_threshold_m,
-        min_depth=min_depth,
-        max_depth=max_depth,
-        land_depth=land_depth,
-        depth_smoothing_passes=depth_smoothing_passes,
-        depth_smoothing_alpha=depth_smoothing_alpha,
-        preserve_wet_mean_depth=preserve_wet_mean_depth,
-        min_wet_component_cells=min_wet_component_cells,
-        keep_largest_wet_component=keep_largest_wet_component,
-        rest_thickness=rest_thickness,
-        gravity=gravity,
-        rho0=rho0,
-        metadata=metadata,
-    )
 
 
-def smooth_ocean_depth_on_mesh(
-    mesh,
-    depth: torch.Tensor,
-    wet_cell: torch.Tensor,
-    *,
-    passes: int = 0,
-    alpha: float = 0.5,
-    min_depth: float | None = None,
-    max_depth: float | None = None,
-    preserve_wet_mean: bool = True,
-) -> torch.Tensor:
-    """Smooth wet-cell ocean depth over wet-wet mesh edges."""
-
-    depth_in = torch.as_tensor(depth, dtype=torch.float64)
-    original_shape = tuple(depth_in.shape)
-    depth_flat = depth_in.reshape(int(mesh.nCells), -1)
-    if int(depth_flat.shape[1]) != 1:
-        raise ValueError(f"depth must map to one value per mesh cell, got {original_shape}")
-    out = depth_flat[:, 0].clone()
-    wet = torch.as_tensor(wet_cell, dtype=torch.bool, device=out.device).reshape(int(mesh.nCells))
-    if not bool(wet.any().item()):
-        raise ValueError("cannot smooth ocean depth with no wet cells")
-    n_passes = int(passes)
-    if n_passes < 0:
-        raise ValueError("passes must be >= 0")
-    alpha = float(alpha)
-    if not (0.0 <= alpha <= 1.0):
-        raise ValueError("alpha must be in [0, 1]")
-    if n_passes == 0 or alpha == 0.0:
-        return out.reshape(original_shape)
-
-    cells = mesh.cellsOnEdge.to(device=out.device)
-    c0 = cells[:, 0]
-    c1 = cells[:, 1]
-    valid = (c0 >= 0) & (c1 >= 0)
-    c0 = c0[valid].to(dtype=torch.long)
-    c1 = c1[valid].to(dtype=torch.long)
-    active = wet[c0] & wet[c1]
-    c0 = c0[active]
-    c1 = c1[active]
-    if int(c0.numel()) == 0:
-        return out.reshape(original_shape)
-
-    for _ in range(n_passes):
-        old_mean = out[wet].mean()
-        accum = torch.zeros_like(out)
-        count = torch.zeros_like(out)
-        one = torch.ones_like(c0, dtype=out.dtype)
-        accum.index_add_(0, c0, out[c1])
-        accum.index_add_(0, c1, out[c0])
-        count.index_add_(0, c0, one)
-        count.index_add_(0, c1, one)
-        has_neighbor = count > 0.0
-        neighbor_mean = torch.where(has_neighbor, accum / count.clamp_min(1.0), out)
-        proposal = out + alpha * (neighbor_mean - out)
-        if min_depth is not None:
-            proposal = proposal.clamp_min(float(min_depth))
-        if max_depth is not None:
-            proposal = proposal.clamp_max(float(max_depth))
-        if preserve_wet_mean:
-            new_mean = proposal[wet].mean()
-            proposal = torch.where(wet, proposal + (old_mean - new_mean), proposal)
-            if min_depth is not None:
-                proposal = proposal.clamp_min(float(min_depth))
-            if max_depth is not None:
-                proposal = proposal.clamp_max(float(max_depth))
-        out = torch.where(wet, proposal, out)
-    return out.reshape(original_shape)
 
 
-def filter_wet_components_on_mesh(
-    mesh,
-    wet_cell: torch.Tensor,
-    *,
-    min_component_cells: int = 0,
-    keep_largest: bool = False,
-) -> dict[str, Any]:
-    """Return a wet mask with optional small-component filtering metadata."""
-
-    wet = torch.as_tensor(wet_cell, dtype=torch.bool).detach().cpu().reshape(int(mesh.nCells))
-    cells = mesh.cellsOnEdge.detach().cpu().to(dtype=torch.long)
-    adjacency: list[list[int]] = [[] for _ in range(int(mesh.nCells))]
-    for c0_t, c1_t in cells:
-        c0 = int(c0_t.item())
-        c1 = int(c1_t.item())
-        if c0 < 0 or c1 < 0 or not bool(wet[c0].item()) or not bool(wet[c1].item()):
-            continue
-        adjacency[c0].append(c1)
-        adjacency[c1].append(c0)
-
-    visited = torch.zeros_like(wet)
-    components: list[list[int]] = []
-    for start in torch.nonzero(wet, as_tuple=False).reshape(-1).tolist():
-        start = int(start)
-        if bool(visited[start].item()):
-            continue
-        stack = [start]
-        visited[start] = True
-        component: list[int] = []
-        while stack:
-            cell = stack.pop()
-            component.append(cell)
-            for neighbor in adjacency[cell]:
-                if not bool(visited[neighbor].item()):
-                    visited[neighbor] = True
-                    stack.append(neighbor)
-        components.append(component)
-
-    keep = torch.zeros_like(wet)
-    if components:
-        largest = max(components, key=len)
-        min_size = max(0, int(min_component_cells))
-        for component in components:
-            if bool(keep_largest):
-                should_keep = component is largest
-            else:
-                should_keep = min_size <= 1 or len(component) >= min_size
-            if should_keep:
-                keep[torch.as_tensor(component, dtype=torch.long)] = True
-        if not bool(keep.any().item()):
-            keep[torch.as_tensor(largest, dtype=torch.long)] = True
-
-    filtered = bool(keep_largest) or int(min_component_cells) > 1
-    result_wet = keep if filtered else wet
-    return {
-        "wet_cell": result_wet,
-        "component_count_raw": len(components),
-        "component_count_kept": int(sum(1 for component in components if bool(result_wet[component[0]].item()))) if components else 0,
-        "wet_cells_removed": int(wet.sum().item() - result_wet.sum().item()) if filtered else 0,
-        "largest_component_cells": max((len(component) for component in components), default=0),
-    }
 
 
 def _as_tensor(value: Any, *, dtype: torch.dtype, device: torch.device | str | None = None) -> torch.Tensor:
@@ -751,15 +460,11 @@ __all__ = [
     "atmospheric_surface_geopotential_from_elevation",
     "atmospheric_surface_height_from_elevation",
     "build_atmospheric_topographic_column",
-    "build_ocean_domain_from_etopo",
-    "build_ocean_domain_from_native_elevation",
     "build_topographic_column",
     "download_etopo2022",
     "earth_surface_pressure_from_phi_s",
     "etopo_native_elevation_from_xarray",
     "etopo_elevation_from_xarray",
     "etopo_grid_from_xarray",
-    "filter_wet_components_on_mesh",
     "open_etopo2022",
-    "smooth_ocean_depth_on_mesh",
 ]

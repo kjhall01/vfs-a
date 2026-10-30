@@ -1,4 +1,4 @@
-# VFS — package extraction, pass 4
+# VFS — spherical atmospheric dycores
 
 This is an incremental packaging pass from checkpoint 54, not a new scientific
 formulation or a finished public API. The original checkpoint is unchanged.
@@ -14,8 +14,9 @@ python -m pip install .
 python examples/moist_atmosphere.py
 ```
 
-For local development: `python -m pip install -e '.[dev]'` (the inherited dev
-extra is large; `pip install pytest` suffices for the included focused tests).
+For local development: `python -m pip install -e '.[test]'`. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for installed-wheel portable checks and exact
+comparison mode. Optional data/plotting extras are only needed for those workflows.
 `environment.yml` provides a Conda environment; this is not yet a conda-channel
 release. No public package name/version availability or license was established
 in this pass. The local build version is `1.0.0+extraction4`, derived from the
@@ -42,7 +43,7 @@ next_state = model.step(state, dt=30.0)
 energy = base.boundary_total_energy(next_state)
 ```
 
-Use `release_as_heat=True` to match the verification campaign. The original
+Use `release_as_heat=True` to match the frozen bounded moist baseline. The original
 wrapper's default remains False. `MoistConservativeDynamics.step` alone uses
 centered transport and is NOT the bounded configuration. Do not substitute a
 generic `state + dt * rhs`: the bounded Euler stage updates species using its
@@ -58,8 +59,9 @@ calculations do not. Full backward/GPU qualification is not claimed.
 ## Verify the extraction
 
 ```bash
-python tools/check_baseline.py
-python -m pytest tests -q
+python tools/check_baseline.py --mode portable
+python tools/check_dry_helpers.py --mode portable
+python -m pytest tests --fixture-mode=portable -q
 ```
 
 The first command compares against a checked-in fixture captured from the
@@ -69,18 +71,24 @@ SSPRK3 steps, flux amounts, energy gradients and budgets. It also rejects
 research-module imports. Exact comparisons are a migration check on the recorded
 CPU/float64 environment, not a cross-platform bitwise reproducibility promise.
 
-Read `docs/PASS4_RESULTS.md` for current measured results (and PASS1_RESULTS.md for the first extraction) and `handoff/index.md` before
-continuing development. The core still contains legacy/out-of-scope modules:
-removing them and simplifying the public API are later passes, not hidden changes
-in this extraction. No xarray initialization, conservative regridding, new
-TrajectoryWriter or implicit-solver promotion was added.
+## Package scope
 
-## Pass 2 import boundary
+Retained: spherical geometry and mesh generation; dry and moist atmospheric
+dycores; explicit and existing experimental implicit integrators; conservation
+and differentiable diagnostics; atmospheric initialization, regridding and I/O.
+Implicit methods remain experimental. The bounded moist ledger and positive-vapor
+restriction are unchanged.
 
-The core models are also available from `vfs` directly. Optional historical
-names remain available by explicit named import, but wildcard imports now expose
-only the small core API. Do not rely on import-time registration of every old
-domain; import its owning module explicitly. BoundedGibbs now has no private
-wrapper ancestors. Pass 3 removes the six dry mixins; equation helpers are ordinary functions
-with an explicit method index in DryHydrostaticDynamics. See
-docs/PASS3_RESULTS.md for scope and test evidence.
+Ocean, land, ice, surface-process and atmosphere–ocean coupling packages, coupled
+component-graph orchestration, learned PGF/damping/transport models and ML mesh
+kernels have been deliberately removed. These imports and learned recipes are
+no longer supported. Mesh hierarchy and non-ML tracer helpers remain. No second
+legacy package is provided; removed code remains in Git history.
+
+See [scope reduction and migration notes](docs/SCOPE_REDUCTION.md), including
+retained dependencies, validation and the next readability work. Read
+[the handoff](handoff/index.md) before further changes. Historical extraction
+reports remain under docs/PASS1_RESULTS.md through docs/PASS4_RESULTS.md.
+The small root API and explicit named atmospheric compatibility imports remain.
+No numerical kernel reorganization or scientific verification campaign is part
+of this reduction.
