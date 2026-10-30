@@ -40,10 +40,41 @@ Bash syntax checks passed locally. No fixture was regenerated.
 
 ## GitHub Actions Linux
 
-Pending the implementation push. Prior diagnostic Linux runs in the
-investigation are evidence for the budgets, not completed tests of this new
-required portable gate. This section will record the actual implementation run,
-CPU/backends, portable and exact outcomes separately.
+Both implementation runs at `6c8b79b` completed successfully:
+[push 40993224721](https://github.com/kjhall01/vfs-a/actions/runs/40993224721)
+and [PR 40993229024](https://github.com/kjhall01/vfs-a/actions/runs/40993229024).
+These are actual installed-wheel runs of the new workflow, not the earlier
+diagnostic campaign. GitHub timestamps are 2026-10-30 UTC (October 29 locally).
+
+Both used Intel Xeon Platinum 8573C, Ubuntu 24.04 x86_64, Python 3.12.15,
+PyTorch 2.15.0+cpu / MKL 2024.2 / oneDNN 3.13.3 / AVX512, NumPy 2.5.4 and
+SciPy 1.18.1 with OpenBLAS, and pytest 9.2.0. Thread controls were all 1;
+ATEN_CPU_CAPABILITY and MKL_CBWR were unset. Both recorded identical installed
+versions; CPU feature lists differ despite the same model designation. Linux
+netCDF4 was 1.7.5.1.post1 versus macOS 1.7.4. Full configurations and dependency
+lists are retained for [PR](portable_regression/linux-pr/environment.json) and
+[push](portable_regression/linux-push/environment.json).
+
+| Check (both runs) | Portable | Exact |
+| --- | --- | --- |
+| pytest | 511 passed, zero skipped | Both fixture tests failed |
+| checkpoint-54 tool | 142 tensors passed | Failed at smooth/rhs/u_e |
+| dry helper tool | 193 tensors passed | Failed at canonical/wind_fields/cell_wind_vector |
+| MoistAtmosphere example | Passed | Not mode-dependent |
+
+Exact tools exited 1; failure JSON and JUnit artifacts are retained. The job is
+successful because portable checks are required and exact checks are explicitly
+informational. The first exact mismatches have maximum absolute errors
+1.0842021724855044e-18 (moist) and 3.552713678800501e-15 (dry). They remain exact
+failures. Portable maximum budget fractions were 0.003163 (gradient, moist)
+and 0.000516 (dry helper), with all independent invariants passing. Both runs
+produced the same comparison metrics.
+
+Reports and pytest summaries are retained under
+[linux-pr](portable_regression/linux-pr/) and
+[linux-push](portable_regression/linux-push/); full JUnit reports remain in each
+run's `cpu-checks` artifact. The implementation needed no Linux-specific budget
+changes. The original investigation still provides broader CPU/dispatch evidence.
 
 No GPU, long-run, full backward or broader dependency-version qualification
 is claimed. Portable success does not establish bitwise reproducibility.
