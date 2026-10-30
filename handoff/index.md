@@ -1,4 +1,30 @@
-# Current handoff — bounded moist readability
+# Current handoff — centered moist readability
+
+`moist_conservative.py` now expands packed statements, uses consistent formatting
+and names energy/transport intermediates explicitly. Follow the
+[updated reading guide](../docs/BOUNDED_MOIST_READING_GUIDE.md#inside-the-centered-moist-base)
+from tendency through the private adapter, mixture energy gradients, matched
+momentum assembly and total-energy diagnostics. Function boundaries specify
+units and staggering; familiar mathematical symbols remain defined locally.
+
+The private State.mtheta_i buffer still aliases MoistState.entropy_content.
+Inherited theta accessors mean specific entropy only on this adapter; it must
+not escape to dry thermodynamic diagnostics or I/O. No tensor copies/detaches,
+state redesign, new helper layer or cache were introduced. Arithmetic, evaluation
+order, defaults, gradient connections and fixtures are unchanged. The bounded
+wrapper's species amount ledger, release_as_heat=True and strictly positive
+vapor requirement remain intact; no new floor or verification campaign is added.
+
+The guide records local and hosted validation separately. Next: document the dry
+RHS call order and wider State/Field ownership. Any adapter redesign or reuse of
+intermediates needs a separate numerical/gradient review. CPU float64 checks do
+not qualify GPU, long-run or full backward behavior.
+
+Earlier handoffs below are historical snapshots.
+
+---
+
+# Historical handoff — bounded moist readability
 
 Read [the bounded-step guide](../docs/BOUNDED_MOIST_READING_GUIDE.md) for the
 execution order from MoistAtmosphere.step through SSPRK3, Euler transport,

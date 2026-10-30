@@ -48,6 +48,50 @@ Inside each `evaluate`, in execution order:
    tendencies with limited-flux divergence plus entropy heating. The water RHS
    describes transfer, but the Euler water update still uses the ledger directly.
 
+## Inside the centered moist base
+
+The bounded wrapper calls into `moist_conservative.py` for its base RHS and
+energy gradients. Read these functions in execution order:
+
+1. [tendency](../vfs/atmosphere/moist_conservative.py#L469) calls
+   [_adapter](../vfs/atmosphere/moist_conservative.py#L425): validate composition,
+   then wrap the **same** wind, pressure and entropy tensors and geometry.
+   `adapter.mtheta_i.values` is `MoistState.entropy_content`; there is no copy,
+   detach or conversion to dry potential temperature. Inherited `theta` accessors
+   divide this buffer by pressure thickness, so they mean specific entropy here.
+   This private State must not be used for dry thermodynamic diagnostics or I/O.
+2. [_assemble](../vfs/atmosphere/moist_conservative.py#L152) obtains continuity
+   primitives and centered horizontal entropy transport, then calls
+   [mixture_gradients](../vfs/atmosphere/moist_conservative.py#L64). This reconstructs
+   two Gauss points per layer, forms species enthalpy/entropy/chemical potentials,
+   and pulls temperature and water-minus-dry chemical potentials back to CP
+   contents. Its pressure derivative includes quadrature motion, normalization
+   at fixed contents and surface geopotential. Kinetic energy is excluded here.
+3. `_assemble` pairs entropy and each water-species transport with momentum work
+   through explicit transposes. It then assembles skew rotation, centered vertical
+   velocity exchange with the changing mass metric, and Bernoulli work. Finally
+   it solves for acceleration and completes entropy divergence/continuity.
+   `tendency` solves the summed momentum covectors; `tendency_terms` solves each
+   component separately and renames the private `mtheta_i` output to entropy.
+   These two arithmetic paths are preserved, not merged for apparent simplicity.
+4. [energy_terms](../vfs/atmosphere/moist_conservative.py#L504) reconstructs the same
+   pressure quadrature, integrates geopotential upward, and sums internal,
+   potential, top-reservoir and kinetic energies (J). Interface geopotential is
+   a separate `(cells, interfaces)` tensor in m²/s².
+5. [energy_gradients](../vfs/atmosphere/moist_conservative.py#L557) starts with
+   `mixture_gradients`, adds the surface-pressure dependence of kinetic layer
+   mass, then obtains the kinetic wind derivative. Outputs have state shapes,
+   but units of **energy per stored variable**, not prognostic-state units.
+   [boundary_energy_rate](../vfs/atmosphere/moist_conservative.py#L588) contracts
+   these derivatives with an RHS to return watts. The formulas are analytic;
+   their tensor results remain connected for differentiation.
+
+The source defines retained symbols `p`, `dp`, `dm`, `S`, `T`, `q` and `pg`,
+with units/staggering at the function boundaries. The private entropy adapter,
+its repeated access paths, in-place pressure-gradient additions, and the two
+momentum assembly paths are unchanged. Redesigning that boundary or combining
+those evaluations requires a separate numerical/ownership review.
+
 ## Units and conservation landmarks
 
 `C` = cells, `E` = horizontal edges, `L` = layers, `I=L+1` = CP interfaces.
@@ -68,7 +112,7 @@ SSPRK3 energy exactly conserved. Existing dry/vapor transfer lower bounds are
 unchanged; they are not input clipping or a new state floor. Vapor must already
 be strictly positive, and exact-zero-water dry equivalence is not established.
 
-## Change boundary and validation
+## Earlier bounded-wrapper readability validation
 
 This PR adds source explanations and renames locals only. No helper extraction,
 method reordering, cached/shared intermediates or algebraic simplification is
@@ -104,3 +148,41 @@ failures, not portable passes. Full CPU/backend details and mode-specific report
 are in the run's `cpu-checks` artifact. Subsequent PR/final-head runs are linked
 in [PR #4](https://github.com/kjhall01/vfs-a/pull/4). CPU float64 checks do not
 qualify GPU, long-run or full backward behavior.
+
+## Centered moist readability validation
+
+This follow-up formats only `moist_conservative.py`, expands packed statements,
+renames ambiguous locals and explains the existing execution/adapter boundary.
+No new helper file, class, cache, registry or functionality is introduced.
+Executable AST comparison with `850dd21`, excluding docstrings and reversing
+local renames, preserves all expressions, calls, defaults, branches, in-place
+updates and evaluation order. Fixtures and comparison policies remain unchanged.
+
+Local validation used Apple M3 / macOS 14.6.1, Python 3.12.13, torch 2.15.0 /
+Accelerate, CPU float64 and one thread. A fresh staging wheel was installed into
+site-packages; tests/tools/examples ran outside the checkout with `-I`:
+
+- **527 portable tests passed**, including both fixture tests and existing
+  derivative/invariant checks; standalone tools passed **142 + 193 tensors**.
+- Both examples completed 300 simulated seconds.
+- Same-environment captures before/after matched all **335 fixture tensors**
+  exactly, plus **33 additional tensors**: component tendencies (15), energy
+  terms (6), energy autograd derivatives (4), a fixed RHS vector–Jacobian product
+  (4) and combined RHS (4). Additional comparisons required finite values and
+  zero absolute/relative tolerance. The fixed contraction is a connectivity
+  check, not a physical objective or full backward-rollout qualification.
+- Adapter wind/pressure/entropy tensor identities and shared geometry were
+  checked in both captures. Temporary captures did not touch repository fixtures.
+- Executable AST comparison, wheel/source byte checks, single-file formatter
+  check and `git diff --check` passed. Black was temporary tooling only; no
+  dependency or formatting-policy change was added to the package.
+
+Actual Linux [push run 41005300530](https://github.com/kjhall01/vfs-a/actions/runs/41005300530)
+at implementation commit `4058876` passed **527 portable tests**, both standalone
+portable comparisons and both examples. It used AMD EPYC 9V45 / AVX512,
+Python 3.12.15, torch 2.15.0+cpu / MKL and CPU float64. **Both exact fixture tests
+and both exact standalone tools also passed on this runner**; that is not a
+cross-platform guarantee. Full environment and separate mode reports are in its
+`cpu-checks` artifact. Subsequent PR/final-head runs are linked in
+[PR #5](https://github.com/kjhall01/vfs-a/pull/5). These are regression checks,
+not a scientific verification campaign.
