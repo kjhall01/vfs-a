@@ -1,7 +1,9 @@
 # Tensor-first moist workflow
 
-This provisional API wraps the existing bounded moist configuration. It does
-not change its equations. Start with examples/moist_atmosphere.py.
+This provisional nn.Module API owns geometry and dynamics and delegates to
+explicitly selected existing steppers. Bounded SSPRK3 remains the default. See
+[module ownership and stepping](MOIST_MODULE_API.md); start with
+examples/moist_atmosphere.py. Numerical equations are unchanged.
 
 ## Construct and run
 
@@ -26,7 +28,7 @@ state = model.state_from_fields(
     normal_wind=model.normal_wind(eastward=10.0, northward=0.0),
     vapor=0.01, liquid=0.0, ice=0.0,
 )
-with torch.no_grad():  # omit this context when differentiating
+with torch.no_grad():  # forward-only example; see bounded gradient limitation below
     before = model.diagnostics(state)
     state = model.step(state, dt=30.0)
     after = model.diagnostics(state)
@@ -93,8 +95,9 @@ does not qualify every limiter branch or long rollout backward computation.
 The model does not implicitly disable autograd; use torch.no_grad for forward
 verification runs to avoid retaining graphs.
 
-dynamics and transport are exposed for inspecting the underlying implementation.
-The facade is not an nn.Module and does not promise model.to() behavior.
+dynamics and the selected stepper are exposed for inspection; transport is
+BoundedGibbs in the default configuration and None for centered configurations.
+The facade is an nn.Module; use the explicit movement workflow documented below.
 
 ## Scope and known limitation
 
@@ -111,3 +114,9 @@ solver promotion, phase adjustment, precipitation or column physics is added.
 
 For the implementation call sequence and ledger/heat units, see the
 [bounded moist reading guide](BOUNDED_MOIST_READING_GUIDE.md).
+
+The module now supports explicit state conversion and configurable existing
+steppers; see [ownership, movement and checkpoint requirements](MOIST_MODULE_API.md).
+Diagnostic gradients remain supported, but gradient-enabled bounded timesteps
+encounter a [pre-existing allclose failure](BOUNDED_GRADIENT_LIMITATION.md).
+Removing no_grad from a forward example does not establish rollout support.

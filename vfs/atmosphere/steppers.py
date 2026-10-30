@@ -1,0 +1,161 @@
+"""Explicitly configured moist steppers; plain, single-model collaborators.
+
+The public advance(state, dt) interface returns a MoistState. A model binds a
+stepper once to its owned dynamics; construct a fresh stepper for another model.
+No RK expressions live here. Detailed stage results remain on transport or solver.
+"""
+
+from dataclasses import dataclass, field
+
+from .bounded_moist import BoundedGibbs
+
+
+def _default_ark():
+    # Import the experimental solver stack only when explicitly selected.
+    from ..integrators.imex.higher_order import ARK4_TABLEAU
+
+    return ARK4_TABLEAU
+
+
+def _bind_once(stepper, dynamics, implementation):
+    if stepper._dynamics is not None:
+        raise ValueError("stepper is already bound; construct a fresh stepper")
+    object.__setattr__(stepper, "_dynamics", dynamics)
+    object.__setattr__(stepper, "_implementation", implementation)
+
+
+def _check(stepper, dynamics):
+    if stepper._dynamics is None or stepper._dynamics is not dynamics:
+        raise ValueError("stepper must remain bound to this model's dynamics")
+
+
+@dataclass(frozen=True, eq=False)
+class BoundedSSPRK3:
+    """Existing bounded Euler-ledger SSPRK3, with heat release by default."""
+
+    release_as_heat: bool = True
+    _dynamics: object = field(default=None, init=False, repr=False)
+    _implementation: object = field(default=None, init=False, repr=False)
+
+    def __post_init__(self):
+        if not isinstance(self.release_as_heat, bool):
+            raise TypeError("release_as_heat must be bool")
+
+    def _bind(self, dynamics):
+        _bind_once(
+            self, dynamics, BoundedGibbs(dynamics, release_as_heat=self.release_as_heat)
+        )
+
+    @property
+    def transport(self):
+        return self._implementation
+
+    def _check_binding(self, dynamics):
+        _check(self, dynamics)
+        if self.transport.base is not dynamics:
+            raise ValueError("bounded transport.base no longer matches model dynamics")
+        if self.transport.release_as_heat != self.release_as_heat:
+            raise ValueError("bounded heat configuration changed after binding")
+
+    def advance(self, state, dt):
+        self._check_binding(self._dynamics)
+        return self.transport.step(state, dt)
+
+
+@dataclass(frozen=True, eq=False)
+class CenteredSSPRK3:
+    """Existing centered SSPRK3; no bounded species transport."""
+
+    _dynamics: object = field(default=None, init=False, repr=False)
+    _implementation: object = field(default=None, init=False, repr=False)
+
+    def _bind(self, dynamics):
+        _bind_once(self, dynamics, dynamics)
+
+    def _check_binding(self, dynamics):
+        _check(self, dynamics)
+        if self._implementation is not dynamics:
+            raise ValueError("centered stepper no longer matches model dynamics")
+
+    def advance(self, state, dt):
+        self._check_binding(self._dynamics)
+        return self._implementation.step(state, dt)
+
+
+@dataclass(frozen=True, eq=False)
+class CenteredIMEX:
+    """Existing experimental centered ARK; never a bounded transport option.
+
+    Select an existing ARK2/3/4_TABLEAU object (default ARK4). The solver is
+    constructed once when the model binds dynamics. Its analytic wave is still
+    rebuilt at each outer-step anchor by the unchanged solver implementation.
+    stage_validator receives outer dt for rejection, not an Euler ledger budget.
+    """
+
+    method: object = field(default_factory=_default_ark)
+    solver_config: object = None
+    stage_validator: object = None
+    _dynamics: object = field(default=None, init=False, repr=False)
+    _implementation: object = field(default=None, init=False, repr=False)
+
+    def __post_init__(self):
+        from ..integrators.imex.higher_order import (
+            ARK2_TABLEAU,
+            ARK3_TABLEAU,
+            ARK4_TABLEAU,
+        )
+        from ..integrators.imex.ark2 import IMEXSolverConfig
+
+        if self.solver_config is not None and not isinstance(
+            self.solver_config, IMEXSolverConfig
+        ):
+            raise TypeError("solver_config must be IMEXSolverConfig or None")
+        if not any(
+            self.method is t for t in (ARK2_TABLEAU, ARK3_TABLEAU, ARK4_TABLEAU)
+        ):
+            raise ValueError("method must be an existing ARK2/3/4_TABLEAU object")
+        if self.stage_validator is not None and not callable(self.stage_validator):
+            raise TypeError("stage_validator must be callable or None")
+
+    _bound_config: object = field(default=None, init=False, repr=False)
+
+    def _bind(self, dynamics):
+        from ..integrators.imex.higher_order import ARK2_TABLEAU, ARK3_TABLEAU
+        from ..integrators.imex.moist_ark import MoistPEIMEXARK
+
+        if self._dynamics is not None:
+            raise ValueError("stepper is already bound; construct a fresh stepper")
+        # Translate only at the existing solver API; public selection is an object.
+        method = (
+            "ark2"
+            if self.method is ARK2_TABLEAU
+            else "ark3" if self.method is ARK3_TABLEAU else "ark4"
+        )
+        solver = MoistPEIMEXARK(
+            dynamics,
+            self.solver_config,
+            method=method,
+            stage_validator=self.stage_validator,
+        )
+        _bind_once(self, dynamics, solver)
+        object.__setattr__(self, "_bound_config", solver.solver_config)
+
+    @property
+    def solver(self):
+        return self._implementation
+
+    def _check_binding(self, dynamics):
+        _check(self, dynamics)
+        if self.solver.dynamics is not dynamics:
+            raise ValueError("IMEX solver.dynamics no longer matches model dynamics")
+        if self.solver.solver_config is not self._bound_config:
+            raise ValueError("IMEX solver configuration replaced after binding")
+        if (
+            self.solver.tableau is not self.method
+            or self.solver.stage_validator is not self.stage_validator
+        ):
+            raise ValueError("IMEX configuration changed after binding")
+
+    def advance(self, state, dt):
+        self._check_binding(self._dynamics)
+        return self.solver.step(state, dt)

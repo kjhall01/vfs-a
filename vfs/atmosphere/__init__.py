@@ -122,7 +122,10 @@ _COMPAT_EXPORTS = {
     "HorizontalScalarFluxPackage": (".operators", "HorizontalScalarFluxPackage"),
 }
 
+from .steppers import BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX
+
 __all__ = [
+    "BoundedSSPRK3", "CenteredSSPRK3", "CenteredIMEX",
     "MoistAtmosphere",
     "GRAVITY",
     "OMEGA",

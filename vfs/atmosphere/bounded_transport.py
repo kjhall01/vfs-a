@@ -27,7 +27,7 @@ def graph(d, s):
     mass = v(ctx["dm"]) * m.cell_area[:, None]
     n = mass.shape[1]
     c0, c1 = m.cellsOnEdge.T
-    k = torch.arange(n)
+    k = torch.arange(n, device=mass.device, dtype=torch.long)
     i = (c0[:, None] * n + k).flatten()
     j = (c1[:, None] * n + k).flatten()
     layer = v(ctx["mass_flux"]) * m.dv_edge[:, None]
@@ -36,7 +36,7 @@ def graph(d, s):
         [0.5 * layer[:, :1], 0.5 * (layer[:, :-1] + layer[:, 1:]), 0.5 * layer[:, -1:]],
         -1,
     )
-    ids = torch.arange(m.nCells * n).reshape(m.nCells, n)
+    ids = torch.arange(m.nCells * n, device=mass.device, dtype=torch.long).reshape(m.nCells, n)
     # Down-column links join adjacent interfaces. omega already includes the
     # hybrid-coordinate continuity response; multiply by horizontal cell area.
     i = torch.cat([i, ids[:, :-1].flatten()])
