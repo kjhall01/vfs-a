@@ -69,5 +69,23 @@ conversion/index tests establish ownership behavior, not numerical accuracy.
 
 ## GitHub Actions
 
-No GitHub Actions run for this ownership branch has completed yet. Hosted results
-will be recorded separately after push; local results above are not CI results.
+[Installed-wheel Linux run 41009154563](https://github.com/kjhall01/vfs-a/actions/runs/41009154563)
+completed on implementation commit `a272947` for
+[PR #6](https://github.com/kjhall01/vfs-a/pull/6). This is separate hosted evidence,
+not the local macOS run. Ubuntu runner: AMD EPYC 7763, AVX2, Python 3.12.15,
+PyTorch 2.15.0+cpu, Intel oneAPI MKL 2024.2 / MKL-DNN 3.13.3, CPU float64;
+OMP/MKL/OpenBLAS thread limits were 1.
+
+- Required portable pytest: **561 passed, 1 skipped** (CUDA unavailable).
+- Required portable tools: **142 moist + 193 dry tensors pass**, including the
+  existing ledger, limiter and independent invariant checks.
+- Both installed-wheel examples completed successfully.
+- Informational exact pytest: **2 failed**. Both exact standalone tools also
+  **failed**, with exit status 1 and failing JSON reports. The first moist
+  mismatch is initial wind (max absolute 1.78e-15), dry edge pressure thickness
+  1.09e-11. No fixture or tolerance changes were made.
+
+The overall job is green because exact steps use the existing continue-on-error
+policy; the downloaded XML/JSON artifacts and logs establish their failures.
+Step conclusions alone are not evidence that exact comparisons passed. The run's
+`cpu-checks` artifact contains the environment, portable and exact results.

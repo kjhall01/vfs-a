@@ -1,6 +1,7 @@
 # Current handoff — moist module ownership and explicit steppers
 
-PR #5 is merged. The ownership branch is `api/moist-module-ownership`.
+PR #5 is merged. The ownership branch is `api/moist-module-ownership`, published as
+[PR #6](https://github.com/kjhall01/vfs-a/pull/6).
 Read the [module API](../docs/MOIST_MODULE_API.md) and
 [validation results](../docs/MOIST_MODULE_RESULTS.md).
 MoistAtmosphere registers mesh, column and dynamics once; dynamics owns kernel.
