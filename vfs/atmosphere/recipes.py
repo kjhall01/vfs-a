@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from typing import Any
 
 import torch
-import torch.nn as nn
 
 from ..core.registry import register_component
 from ..core.state import State
@@ -549,199 +548,10 @@ class DryHydrostaticSoftMUSCLMthetaTransportDynamics(DryHydrostaticMUSCLMthetaTr
         super().__init__(*args, muscl_blend=muscl_blend, muscl_limiter=muscl_limiter, **kwargs)
 
 
-MTHETA_MUSCL_ACTIVATOR_FEATURE_DIM = 17
 
 
-class MthetaMUSCLActivatorMLP(nn.Module):
-    """Small bounded gate for active ``mtheta_i`` MUSCL activation."""
-
-    feature_dim = MTHETA_MUSCL_ACTIVATOR_FEATURE_DIM
-
-    def __init__(
-        self,
-        *,
-        hidden_dim: int = 32,
-        depth: int = 2,
-        init_logit: float = -16.0,
-    ) -> None:
-        super().__init__()
-        layers: list[nn.Module] = []
-        in_dim = int(self.feature_dim)
-        for _ in range(max(0, int(depth))):
-            layers.append(nn.Linear(in_dim, int(hidden_dim)))
-            layers.append(nn.Tanh())
-            in_dim = int(hidden_dim)
-        layers.append(nn.Linear(in_dim, 1))
-        self.net = nn.Sequential(*layers)
-        final = self.net[-1]
-        if isinstance(final, nn.Linear):
-            nn.init.zeros_(final.weight)
-            nn.init.constant_(final.bias, float(init_logit))
-
-    def forward(self, features: torch.Tensor) -> torch.Tensor:
-        return self.net(features).squeeze(-1)
 
 
-@register_component("dry_hydrostatic_learned_soft_muscl_mtheta_transport")
-class DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics(DryHydrostaticSoftMUSCLMthetaTransportDynamics):
-    """Bounded learned activator for soft-MUSCL active ``mtheta_i`` transport.
-
-    The flux remains conservative because the network only chooses a bounded
-    edge/full-layer blend between donor-cell upwind and the existing
-    tanh-limited MUSCL reconstruction.  With the default initialization the
-    activator is effectively off, so the untrained branch is upwind-like.
-    """
-
-    recipe_name = "learned_soft_muscl_mtheta_transport"
-
-    def __init__(
-        self,
-        *args,
-        activator_model: nn.Module | None = None,
-        activator_max_blend: float = 0.1,
-        activator_hidden_dim: int = 32,
-        activator_depth: int = 2,
-        activator_init_blend: float = 0.0,
-        activator_range_floor: float = 1.0e-6,
-        **kwargs,
-    ) -> None:
-        max_blend = float(activator_max_blend)
-        if max_blend < 0.0 or max_blend > 1.0:
-            raise ValueError("activator_max_blend must be between 0 and 1")
-        init_blend = float(activator_init_blend)
-        if init_blend < 0.0 or init_blend > max_blend:
-            raise ValueError("activator_init_blend must be between 0 and activator_max_blend")
-        if init_blend <= 0.0 or max_blend <= 0.0:
-            init_logit = -16.0
-        else:
-            p = min(max(init_blend / max_blend, 1.0e-6), 1.0 - 1.0e-6)
-            init_logit = float(torch.logit(torch.as_tensor(p)).item())
-        super().__init__(*args, muscl_blend=1.0, **kwargs)
-        self.activator_max_blend = max_blend
-        self.activator_range_floor = float(activator_range_floor)
-        self.activator_model = activator_model or MthetaMUSCLActivatorMLP(
-            hidden_dim=int(activator_hidden_dim),
-            depth=int(activator_depth),
-            init_logit=init_logit,
-        )
-
-    @staticmethod
-    def _cell_neighbor_bounds(state: State, phi_c: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        mesh = state.mesh
-        device = phi_c.device
-        n_cells = int(mesh.nCells)
-        leading_ndim = phi_c.ndim - 2
-        lead = (1,) * leading_ndim
-
-        cell_index = torch.arange(n_cells, device=device, dtype=torch.long).view(n_cells, 1)
-        safe_edges = mesh.safe_edges_on_cell.to(device=device).long()
-        edge_cells = mesh.safe_cells_on_edge.to(device=device).long()
-        neighbor0 = edge_cells[safe_edges, 0]
-        neighbor1 = edge_cells[safe_edges, 1]
-        neighbor_index = torch.where(neighbor0 == cell_index, neighbor1, neighbor0)
-        valid = mesh.valid_edges_on_cell.to(device=device)
-        neighbor_index = torch.where(valid, neighbor_index, cell_index)
-
-        neighbor_phi = phi_c[..., neighbor_index, :]
-        center_phi = phi_c.unsqueeze(-2)
-        valid_view = valid.view(*lead, n_cells, -1, 1)
-        neighbor_phi = torch.where(valid_view, neighbor_phi, center_phi)
-        return (
-            torch.minimum(phi_c, neighbor_phi.min(dim=-2).values),
-            torch.maximum(phi_c, neighbor_phi.max(dim=-2).values),
-        )
-
-    def _activator_features(
-        self,
-        state: State,
-        theta_i: torch.Tensor,
-        mass_flux: torch.Tensor,
-    ) -> torch.Tensor:
-        mesh = state.mesh
-        dtype = theta_i.dtype
-        device = theta_i.device
-        theta_layer = 0.5 * (theta_i[..., :-1] + theta_i[..., 1:])
-        n_levels = theta_layer.shape[-1]
-        leading_ndim = theta_layer.ndim - 2
-        lead = (1,) * leading_ndim
-
-        c0 = mesh.cellsOnEdge[:, 0].to(device=device).long()
-        c1 = mesh.cellsOnEdge[:, 1].to(device=device).long()
-        theta0 = theta_layer[..., c0, :]
-        theta1 = theta_layer[..., c1, :]
-        cell_min, cell_max = self._cell_neighbor_bounds(state, theta_layer)
-        edge_min = torch.minimum(cell_min[..., c0, :], cell_min[..., c1, :])
-        edge_max = torch.maximum(cell_max[..., c0, :], cell_max[..., c1, :])
-        edge_range = (edge_max - edge_min).clamp_min(float(self.activator_range_floor))
-
-        donor = torch.where(mass_flux >= 0.0, theta0, theta1)
-        receiver = torch.where(mass_flux >= 0.0, theta1, theta0)
-        jump = (theta1 - theta0) / edge_range
-        donor_norm = 2.0 * (donor - edge_min) / edge_range - 1.0
-        receiver_norm = 2.0 * (receiver - edge_min) / edge_range - 1.0
-        flatness = 2.0 * (edge_max - edge_min) / ((edge_max - edge_min) + float(self.activator_range_floor)) - 1.0
-        range_feature = torch.tanh(torch.log1p((edge_max - edge_min) / float(self.activator_range_floor)) / 8.0)
-
-        static = theta_i[..., :-1] - theta_i[..., 1:]
-        static0 = static[..., c0, :] / edge_range
-        static1 = static[..., c1, :] / edge_range
-        static_donor = torch.where(mass_flux >= 0.0, static0, static1)
-
-        level = torch.linspace(-1.0, 1.0, n_levels, dtype=dtype, device=device)
-        level = level.view(*lead, 1, n_levels).expand_as(theta0)
-        edge_xyz = mesh.edge_xyz.to(dtype=dtype, device=device).view(*lead, mesh.nEdges, 1, 3).expand(*theta0.shape, 3)
-        edge_normal = mesh.edge_normal.to(dtype=dtype, device=device).view(*lead, mesh.nEdges, 1, 3).expand(
-            *theta0.shape,
-            3,
-        )
-        sign = torch.sign(mass_flux)
-
-        scalar = torch.stack(
-            [
-                torch.tanh(jump),
-                torch.tanh(jump.abs()),
-                torch.tanh(donor_norm),
-                torch.tanh(receiver_norm),
-                range_feature,
-                flatness,
-                torch.tanh(static0),
-                torch.tanh(static1),
-                torch.tanh(static_donor),
-                level,
-                sign,
-            ],
-            dim=-1,
-        )
-        return torch.cat([scalar, edge_xyz, edge_normal], dim=-1)
-
-    def _activator_blend(self, state: State, theta_i: torch.Tensor, mass_flux: torch.Tensor) -> torch.Tensor:
-        if self.activator_max_blend <= 0.0:
-            return torch.zeros_like(mass_flux)
-        model = self.activator_model
-        first_param = next(model.parameters(), None)
-        if first_param is not None and (first_param.dtype != theta_i.dtype or first_param.device != theta_i.device):
-            model.to(dtype=theta_i.dtype, device=theta_i.device)
-        features = self._activator_features(state, theta_i, mass_flux)
-        logits = model(features)
-        return float(self.activator_max_blend) * torch.sigmoid(logits)
-
-    def _blend_muscl_edge_values(
-        self,
-        state: State,
-        theta_i: torch.Tensor,
-        mass_flux: torch.Tensor,
-        theta_upper_muscl: torch.Tensor,
-        theta_lower_muscl: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        mesh = state.mesh
-        c0 = mesh.cellsOnEdge[:, 0].to(device=theta_i.device).long()
-        c1 = mesh.cellsOnEdge[:, 1].to(device=theta_i.device).long()
-        theta_upper_upwind = torch.where(mass_flux >= 0.0, theta_i[..., c0, :-1], theta_i[..., c1, :-1])
-        theta_lower_upwind = torch.where(mass_flux >= 0.0, theta_i[..., c0, 1:], theta_i[..., c1, 1:])
-        blend = self._activator_blend(state, theta_i, mass_flux)
-        theta_upper_e = theta_upper_upwind + blend * (theta_upper_muscl - theta_upper_upwind)
-        theta_lower_e = theta_lower_upwind + blend * (theta_lower_muscl - theta_lower_upwind)
-        return theta_upper_e, theta_lower_e
 
 
 @register_component("dry_hydrostatic_fct_mtheta_transport")
@@ -1058,11 +868,6 @@ _DRY_OPERATOR_SETS: dict[str, DryOperatorSet] = {
     "soft_muscl_mtheta_transport": DryOperatorSet(
         "soft_muscl_mtheta_transport", DryHydrostaticSoftMUSCLMthetaTransportDynamics, "soft-limited MUSCL transport"
     ),
-    "learned_soft_muscl_mtheta_transport": DryOperatorSet(
-        "learned_soft_muscl_mtheta_transport",
-        DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics,
-        "learned soft-MUSCL research transport",
-    ),
     "fct_mtheta_transport": DryOperatorSet(
         "fct_mtheta_transport", DryHydrostaticFCTMthetaTransportDynamics, "FCT CP scalar transport"
     ),
@@ -1112,7 +917,6 @@ __all__ = [
     "DryHydrostaticFCTMthetaTransportDynamics",
     "DryHydrostaticFluxPackageMUSCLDynamics",
     "DryHydrostaticKiteCenteredMthetaTransportDynamics",
-    "DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics",
     "DryHydrostaticLogPressureSigmaDynamics",
     "DryHydrostaticMassKiteCenteredMthetaTransportDynamics",
     "DryHydrostaticMildVerticalMomentumDynamics",
@@ -1122,8 +926,6 @@ __all__ = [
     "DryHydrostaticUnscaledCoordWorkDynamics",
     "DryHydrostaticVelocityHyperdiffusionDynamics",
     "DryHydrostaticVirtualTemperatureDynamics",
-    "MTHETA_MUSCL_ACTIVATOR_FEATURE_DIM",
-    "MthetaMUSCLActivatorMLP",
     "build_dry_dynamics",
     "dry_operator_sets",
     "get_dry_operator_set",

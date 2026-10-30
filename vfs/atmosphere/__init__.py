@@ -34,10 +34,6 @@ _COMPAT_EXPORTS = {
         "ExnerSecantSigmaPressureGradient",
     ),
     "FCTTracerTransport": (".dry_strategies", "FCTTracerTransport"),
-    "LearnedAdaptiveDivergenceDamping": (
-        ".dry_strategies",
-        "LearnedAdaptiveDivergenceDamping",
-    ),
     "LogPressureSigmaPressureGradient": (
         ".dry_strategies",
         "LogPressureSigmaPressureGradient",
@@ -87,10 +83,6 @@ _COMPAT_EXPORTS = {
         ".recipes",
         "DryHydrostaticKiteCenteredMthetaTransportDynamics",
     ),
-    "DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics": (
-        ".recipes",
-        "DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics",
-    ),
     "DryHydrostaticLogPressureSigmaDynamics": (
         ".recipes",
         "DryHydrostaticLogPressureSigmaDynamics",
@@ -124,38 +116,10 @@ _COMPAT_EXPORTS = {
         ".recipes",
         "DryHydrostaticVirtualTemperatureDynamics",
     ),
-    "MTHETA_MUSCL_ACTIVATOR_FEATURE_DIM": (
-        ".recipes",
-        "MTHETA_MUSCL_ACTIVATOR_FEATURE_DIM",
-    ),
-    "MthetaMUSCLActivatorMLP": (".recipes", "MthetaMUSCLActivatorMLP"),
     "build_dry_dynamics": (".recipes", "build_dry_dynamics"),
     "dry_operator_sets": (".recipes", "dry_operator_sets"),
     "get_dry_operator_set": (".recipes", "get_dry_operator_set"),
     "HorizontalScalarFluxPackage": (".operators", "HorizontalScalarFluxPackage"),
-    "LearnedPotentialPressureGradientCorrection": (
-        ".pgf_correction",
-        "LearnedPotentialPressureGradientCorrection",
-    ),
-    "PGFPotentialCorrectionMeshConv": (
-        ".pgf_correction",
-        "PGFPotentialCorrectionMeshConv",
-    ),
-    "PGFPotentialCorrectionMLP": (".pgf_correction", "PGFPotentialCorrectionMLP"),
-    "PotentialPGFCorrectionConfig": (".pgf_correction", "PotentialPGFCorrectionConfig"),
-    "build_pgf_correction_features": (
-        ".pgf_correction",
-        "build_pgf_correction_features",
-    ),
-    "load_pgf_correction_checkpoint": (
-        ".pgf_correction",
-        "load_pgf_correction_checkpoint",
-    ),
-    "pgf_correction_feature_dim": (".pgf_correction", "pgf_correction_feature_dim"),
-    "save_pgf_correction_checkpoint": (
-        ".pgf_correction",
-        "save_pgf_correction_checkpoint",
-    ),
 }
 
 __all__ = [

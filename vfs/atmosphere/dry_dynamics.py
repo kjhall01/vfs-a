@@ -156,15 +156,6 @@ class DryHydrostaticDynamics(nn.Module):
         momentum_transport=None,
         momentum_diffusion=None,
         pgf_correction_mode: str = "none",
-        pgf_correction_max_fraction: float = 0.02,
-        pgf_correction_checkpoint: str | None = None,
-        pgf_correction_stop_grad_inputs: bool = False,
-        pgf_correction_zero_rest_guard: bool = True,
-        pgf_correction_model=None,
-        pgf_correction_model_type: str = "mlp",
-        pgf_correction_hidden_dim: int = 64,
-        pgf_correction_depth: int = 3,
-        pgf_correction_geom_hidden_dim: int = 32,
     ) -> None:
         """Create a dry dynamics operator.
 
@@ -188,52 +179,9 @@ class DryHydrostaticDynamics(nn.Module):
             if pressure_gradient is None
             else pressure_gradient
         )
-        mode = str(pgf_correction_mode)
-        if mode not in ("none", "learned_potential"):
-            raise ValueError(
-                "pgf_correction_mode must be 'none' or 'learned_potential', "
-                f"got {pgf_correction_mode!r}"
-            )
-        if mode == "learned_potential":
-            from .pgf_correction import (
-                LearnedPotentialPressureGradientCorrection,
-                PGFPotentialCorrectionMeshConv,
-                PGFPotentialCorrectionMLP,
-                PotentialPGFCorrectionConfig,
-                load_pgf_correction_checkpoint,
-            )
-            checkpoint_config = None
-            if pgf_correction_checkpoint is not None:
-                pgf_correction_model, checkpoint_config, _metadata = load_pgf_correction_checkpoint(
-                    pgf_correction_checkpoint,
-                    map_location="cpu",
-                )
-            if pgf_correction_model is None:
-                model_type = str(pgf_correction_model_type).lower()
-                if model_type == "mlp":
-                    pgf_correction_model = PGFPotentialCorrectionMLP(
-                        hidden_dim=int(pgf_correction_hidden_dim),
-                        depth=int(pgf_correction_depth),
-                    )
-                elif model_type == "meshconv":
-                    pgf_correction_model = PGFPotentialCorrectionMeshConv(
-                        hidden_dim=int(pgf_correction_hidden_dim),
-                        depth=int(pgf_correction_depth),
-                        geom_hidden_dim=int(pgf_correction_geom_hidden_dim),
-                    )
-                else:
-                    raise ValueError("pgf_correction_model_type must be 'mlp' or 'meshconv'")
-            config = checkpoint_config or PotentialPGFCorrectionConfig()
-            config.max_fraction = float(pgf_correction_max_fraction)
-            config.stop_grad_inputs = bool(pgf_correction_stop_grad_inputs)
-            config.zero_rest_guard = bool(pgf_correction_zero_rest_guard)
-            self.pressure_gradient = LearnedPotentialPressureGradientCorrection(
-                base_pressure_gradient,
-                model=pgf_correction_model,
-                config=config,
-            )
-        else:
-            self.pressure_gradient = base_pressure_gradient
+        if str(pgf_correction_mode) != "none":
+            raise ValueError("learned PGF corrections were removed; pgf_correction_mode must be 'none'")
+        self.pressure_gradient = base_pressure_gradient
         self.momentum_transport = (
             EdgeUpwindVerticalMomentumTransport()
             if momentum_transport is None

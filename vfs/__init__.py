@@ -2,8 +2,7 @@
 
 The root namespace is intentionally small. It is for beginner-friendly dry-core
 usage plus a few documented provisional integration points. Optional or
-experimental systems such as ETOPO/ERA5 ingest, surface/cryosphere skeletons,
-SCM adapters, IMEX, split-explicit steppers, and ESMF/xESMF regridders stay
+experimental systems such as ETOPO/ERA5 ingest, SCM adapters, IMEX, split-explicit steppers, and ESMF/xESMF regridders stay
 behind explicit owner-module imports. That keeps ``import vfs`` reliable on
 machines without the heavier geoscience workflow stack installed.
 """
@@ -40,7 +39,7 @@ from .atmosphere import DryHydrostaticConservativeDynamics
 
 from .atmosphere.model import MoistAtmosphere
 
-# Historical imports remain available explicitly, but are not eagerly loaded.
+# Retained atmospheric compatibility imports resolve only on request.
 _COMPAT_EXPORTS = {
     "ComponentConfig": (".core.config", "ComponentConfig"),
     "DataFieldRequirement": (".core.config", "DataFieldRequirement"),
@@ -71,11 +70,6 @@ _COMPAT_EXPORTS = {
     "StateSpec": (".core.state", "StateSpec"),
     "TracerRequirement": (".core.state", "TracerRequirement"),
     "TracerSpec": (".core.state", "TracerSpec"),
-    "AirSeaMomentumCoupler": (".coupling", "AirSeaMomentumCoupler"),
-    "AirSeaSurfaceFluxCoupler": (".coupling", "AirSeaSurfaceFluxCoupler"),
-    "CoupledAtmosphereOceanModel": (".coupling", "CoupledAtmosphereOceanModel"),
-    "CoupledState": (".coupling", "CoupledState"),
-    "CoupledStepResult": (".coupling", "CoupledStepResult"),
     "DryHydrostaticDiagnostics": (".diagnostics", "DryHydrostaticDiagnostics"),
     "Field": (".field", "Field"),
     "load_mpas_mesh": (".geometry.mesh", "load_mpas_mesh"),
@@ -85,25 +79,6 @@ _COMPAT_EXPORTS = {
     "DryHydrostaticModel": (".model", "DryHydrostaticModel"),
     "HeldSuarezModel": (".model", "HeldSuarezModel"),
     "VFSModel": (".model", "VFSModel"),
-    "HydrostaticBoussinesqOceanDynamics": (
-        ".ocean",
-        "HydrostaticBoussinesqOceanDynamics",
-    ),
-    "MultilayerOceanDynamics": (".ocean", "MultilayerOceanDynamics"),
-    "OceanColumn": (".ocean", "OceanColumn"),
-    "OceanDomain": (".ocean", "OceanDomain"),
-    "OceanState": (".ocean", "OceanState"),
-    "OceanStateRequirement": (".ocean", "OceanStateRequirement"),
-    "OceanSurfaceFluxPhysics": (".ocean", "OceanSurfaceFluxPhysics"),
-    "OceanSurfaceForcing": (".ocean", "OceanSurfaceForcing"),
-    "ocean_planet_initial_state": (".ocean", "ocean_planet_initial_state"),
-    "OceanDiagnostics": (".ocean_diagnostics", "OceanDiagnostics"),
-    "ForcedOceanModel": (".ocean_model", "ForcedOceanModel"),
-    "HydrostaticBoussinesqOceanModel": (
-        ".ocean_model",
-        "HydrostaticBoussinesqOceanModel",
-    ),
-    "MultilayerOceanModel": (".ocean_model", "MultilayerOceanModel"),
     "HeldSuarezConstants": (".physics", "HeldSuarezConstants"),
     "HeldSuarezPhysics": (".physics", "HeldSuarezPhysics"),
     "held_suarez_equilibrium_temperature": (

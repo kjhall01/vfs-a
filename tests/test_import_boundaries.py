@@ -26,7 +26,7 @@ def test_explicit_compatibility_imports_and_unknown_names():
     run('''
 import vfs
 from vfs.atmosphere import build_dry_dynamics
-from vfs.geometry.mesh import VoronoiMeshHierarchy, CellMeshKernelConv
+from vfs.geometry.mesh import VoronoiMeshHierarchy
 from vfs.geometry import LatLonGrid
 from vfs.imex import DryPEIMEXARK, MoistPEIMEXARK
 assert build_dry_dynamics("conservative_diagonal").recipe_name == "conservative_diagonal"
@@ -40,11 +40,13 @@ else:
 ''')
 
 
-def test_learned_pressure_option_still_constructs_explicitly():
+def test_removed_learned_pressure_option_fails_explicitly():
     run('''
-import sys
 from vfs import DryHydrostaticDynamics
-assert 'vfs.atmosphere.pgf_correction' not in sys.modules
-model = DryHydrostaticDynamics(pgf_correction_mode='learned_potential')
-assert 'vfs.atmosphere.pgf_correction' in sys.modules
+try:
+    DryHydrostaticDynamics(pgf_correction_mode='learned_potential')
+except ValueError as error:
+    assert 'removed' in str(error)
+else:
+    raise AssertionError('removed learned PGF mode must fail')
 ''')

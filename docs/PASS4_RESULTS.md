@@ -62,3 +62,6 @@ regression mode without changing pass-4 numerical code or fixtures. The
 [validation results](PORTABLE_REGRESSION_RESULTS.md) distinguish portable and
 exact outcomes. Historical exact results above describe their original environment,
 not a cross-platform bitwise guarantee.
+
+The later [scope-reduction PR](SCOPE_REDUCTION.md) deliberately removes non-atmospheric
+and ML APIs while preserving this physical-field workflow and its numerical baseline.

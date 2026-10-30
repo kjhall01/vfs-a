@@ -50,6 +50,7 @@ python -I -m pytest tests --fixture-mode=portable -q
 python -I tools/check_baseline.py --mode portable
 python -I tools/check_dry_helpers.py --mode portable
 python -I examples/moist_atmosphere.py
+python -I examples/bounded_moist.py
 ```
 
 Apply the same macOS version substitution here. Confirm the printed package
@@ -95,3 +96,7 @@ separately (link the run when available). CPU float64 forward checks do not
 qualify GPU, long runs or full backward rollouts. Keep numerical changes and
 scientific verification separate. Do not publish packages or select a license
 as part of routine contributor setup.
+
+Package scope and deliberate API removals are documented in
+[the scope-reduction guide](docs/SCOPE_REDUCTION.md). Do not restore removed
+domain/ML APIs merely to satisfy historical compatibility expectations.

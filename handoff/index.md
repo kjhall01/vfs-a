@@ -1,4 +1,31 @@
-# Current handoff — GitHub development and CI
+# Current handoff — atmospheric package scope
+
+Development remains on GitHub. This scope-reduction PR removes ocean, land, ice,
+surface-process, coupling, coupled graph orchestration and ML-specific code from
+the distributed package. See [scope/migration/results](../docs/SCOPE_REDUCTION.md)
+and [dependency trace](../docs/SCOPE_DEPENDENCIES.json). Removed code remains in
+Git history; there is no second legacy package.
+
+Retained: spherical geometry/mesh generation, dry/moist dycores, explicit and
+existing experimental implicit integrators, conservation/differentiable
+diagnostics, atmospheric initialization and I/O. Shared State/Field/configuration,
+model/process support, ETOPO terrain ingestion and IMEX mesh hierarchy remain
+because retained paths use them. The obsolete surface dependency extra is gone.
+
+Numerical expressions/defaults, fixtures and integrators are unchanged. The
+bounded amount ledger, release_as_heat=True MoistAtmosphere configuration and
+strictly positive vapor requirement remain; no floor is added. Portable is the
+required installed-wheel gate; exact is separate and retains failure status.
+CPU float64 results do not qualify GPU, long runs or full backward rollouts.
+
+Next: explain the dry RHS method index/call order, document State/Field ownership,
+and annotate the bounded Euler/Gibbs/heat ledger sequence. Keep those focused
+readability changes separate from kernel changes or scientific verification.
+Earlier handoffs below are historical snapshots.
+
+---
+
+# Historical handoff — GitHub development and CI
 
 Development is now on https://github.com/kjhall01/vfs-a. See
 [CONTRIBUTING.md](../CONTRIBUTING.md) for the small test extra, local setup,

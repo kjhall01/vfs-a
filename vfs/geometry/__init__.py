@@ -6,12 +6,7 @@ from .column import make_hybrid_coefficients
 
 # Historical imports remain available explicitly, but are not eagerly loaded.
 _COMPAT_EXPORTS = {
-    "CellMeshKernelConv": (".mesh", "CellMeshKernelConv"),
-    "CellMeshKernelNetwork": (".mesh", "CellMeshKernelNetwork"),
     "CellTransfer": (".mesh", "CellTransfer"),
-    "EdgeMeshKernelConv": (".mesh", "EdgeMeshKernelConv"),
-    "EdgeMeshKernelNetwork": (".mesh", "EdgeMeshKernelNetwork"),
-    "MeshKernelConfig": (".mesh", "MeshKernelConfig"),
     "VoronoiMeshHierarchy": (".mesh", "VoronoiMeshHierarchy"),
     "load_mpas_mesh": (".mesh", "load_mpas_mesh"),
     "ESMFGridToMesh": (".regrid", "ESMFGridToMesh"),

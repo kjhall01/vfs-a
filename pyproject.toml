@@ -22,7 +22,6 @@ test = ["pytest"]
 data = ["dask", "gcsfs", "zarr"]
 diagnostics = ["imageio", "imageio-ffmpeg", "matplotlib"]
 plotting = ["cartopy", "imageio", "imageio-ffmpeg", "matplotlib"]
-surface = ["pyyaml"]
 validation = ["cartopy", "imageio", "imageio-ffmpeg", "matplotlib", "pyyaml", "xarray", "netCDF4"]
 workflows = [
   "cartopy",
