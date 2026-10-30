@@ -1,4 +1,33 @@
-# Current handoff — bounded tensor tolerance and one-step gradients
+# Current handoff — tensor-only State ownership
+
+PR #7 is merged. The focused branch `cleanup/state-tensor-ownership` makes dry
+State/PrognosticFields expose plain tensors, matching the existing MoistState
+boundary. Compatible Field inputs unwrap by identity; standalone Field remains
+for placement-aware mesh/regridding. Dry IMEX accesses were adjusted mechanically.
+No operators, arithmetic order, fixtures, tolerances, bounded ledger, moist
+steppers or private entropy-adapter method bodies were changed.
+
+Read [ownership rules, dry/moist examples and validation](../docs/STATE_OWNERSHIP.md).
+Models own geometry (including column topography), dynamics and stepping setup;
+states borrow geometry and share prognostic tensors. Dry model binding now rejects
+unrelated geometry. Explicit state_to_model preserves gradients; mismatched
+stepping dtype/device and implicit tracer casts are rejected. Derived dry fields
+are available through model.physical_fields(state), with legacy State diagnostic
+methods retained as uncached compatibility helpers. Xarray stays external.
+
+Local installed wheel: 600 passed, 1 CUDA skip; both portable tools and examples
+pass. All 335 capture tensors plus 47 additional forward/gradient tensors are
+exactly equal pre/post on the same CPU environment. Frozen-fixture exact mode
+still fails separately on this macOS host. No new accelerator/full-rollout claim.
+GitHub check status is recorded separately in the PR. Development remains on GitHub.
+
+Remaining legacy boundaries: private entropy in mtheta_i, dry State convenience
+methods/attrs/restart shell, and the older dry recipe configuration. Keep future
+cleanup of those interfaces separate from numerical changes and verification.
+
+---
+
+# Historical handoff — bounded tensor tolerance and one-step gradients
 
 PR #6 was merged after confirming both required CPU checks at its final head.
 The separate branch `fix/bounded-tensor-tolerance`,

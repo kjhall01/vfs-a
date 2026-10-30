@@ -25,14 +25,14 @@ def interface_mass(dp: torch.Tensor) -> torch.Tensor:
     return torch.cat([half[..., :1], interior, half[..., -1:]], dim=-1)
 
 
-def _as_prognostic_field(
+def _as_prognostic_tensor(
     value: Field | torch.Tensor,
     *,
     location: str,
     vertical_location: str,
     name: str,
     component_axes: tuple[str, ...] = (),
-) -> Field:
+) -> torch.Tensor:
     if isinstance(value, Field):
         if (
             value.location != location
@@ -43,57 +43,46 @@ def _as_prognostic_field(
                 f"{name} must be a {location}/{vertical_location} Field with "
                 f"component_axes={component_axes!r}"
             )
-        return value
-    return Field(
-        value,
-        location=location,
-        vertical_location=vertical_location,
-        name=name,
-        component_axes=component_axes,
-    )
+        value = value.values
+    if not isinstance(value, torch.Tensor):
+        raise TypeError(f"{name} must be a torch.Tensor or a compatible Field")
+    if value.ndim < 2 + len(component_axes):
+        raise ValueError(f"{name} needs at least {2 + len(component_axes)} axes")
+    return value
 
 
 @dataclass
 class PrognosticFields:
-    """Field-native atmospheric prognostic payload.
+    """Tensor-only dry payload; geometry is borrowed by State.
 
-    This is the algebraic part of a model state: tensors only, no mesh/column
-    module ownership.  ``State`` binds these fields to geometry and vertical
-    interpretation.
+    Compatible legacy Field inputs are unwrapped without copying. Assignments
+    obey the same rule, so public payload attributes always expose tensors.
     """
 
-    u_e: Field | torch.Tensor
-    mtheta_i: Field | torch.Tensor
-    ps: Field | torch.Tensor
-    tracer_m: Field | torch.Tensor | None = None
+    u_e: torch.Tensor
+    mtheta_i: torch.Tensor
+    ps: torch.Tensor
+    tracer_m: torch.Tensor | None = None
 
-    def __post_init__(self) -> None:
-        self.u_e = _as_prognostic_field(
-            self.u_e,
-            location="edge",
-            vertical_location="full",
-            name="u_e",
-        )
-        self.mtheta_i = _as_prognostic_field(
-            self.mtheta_i,
-            location="cell",
-            vertical_location="interface",
-            name="mtheta_i",
-        )
-        self.ps = _as_prognostic_field(
-            self.ps,
-            location="cell",
-            vertical_location="surface",
-            name="ps",
-        )
-        if self.tracer_m is not None:
-            self.tracer_m = _as_prognostic_field(
-                self.tracer_m,
-                location="cell",
-                vertical_location="full",
-                name="tracer_m",
+    def __setattr__(self, name, value):
+        if name == "u_e":
+            value = _as_prognostic_tensor(
+                value, location="edge", vertical_location="full", name=name
+            )
+        elif name == "mtheta_i":
+            value = _as_prognostic_tensor(
+                value, location="cell", vertical_location="interface", name=name
+            )
+        elif name == "ps":
+            value = _as_prognostic_tensor(
+                value, location="cell", vertical_location="surface", name=name
+            )
+        elif name == "tracer_m" and value is not None:
+            value = _as_prognostic_tensor(
+                value, location="cell", vertical_location="full", name=name,
                 component_axes=("tracer",),
             )
+        super().__setattr__(name, value)
 
     def to(self, *args, **kwargs) -> "PrognosticFields":
         return PrognosticFields(
@@ -129,10 +118,10 @@ class PrognosticFields:
 
     def zeros_like(self) -> "PrognosticFields":
         return PrognosticFields(
-            self.u_e.zeros_like(),
-            self.mtheta_i.zeros_like(),
-            self.ps.zeros_like(),
-            None if self.tracer_m is None else self.tracer_m.zeros_like(),
+            torch.zeros_like(self.u_e),
+            torch.zeros_like(self.mtheta_i),
+            torch.zeros_like(self.ps),
+            None if self.tracer_m is None else torch.zeros_like(self.tracer_m),
         )
 
     def __add__(self, other: "PrognosticFields") -> "PrognosticFields":
@@ -479,7 +468,9 @@ class State:
 
     ``State`` is intentionally not an ``nn.Module``. Recipe/model classes own
     long-lived mesh and column modules; State carries references to them so the
-    tensor fields can describe themselves.
+    tensor fields can describe themselves. Derived methods remain uncached legacy
+    compatibility helpers; prefer model.physical_fields(state) in new workflows.
+    Construction shares tensors without copying, detaching or converting them.
     """
 
     fields: PrognosticFields | None
@@ -527,7 +518,7 @@ class State:
         return self.fields
 
     @property
-    def u_e(self) -> Field:
+    def u_e(self) -> torch.Tensor:
         return self._require_fields().u_e
 
     @u_e.setter
@@ -536,7 +527,7 @@ class State:
         self.fields = PrognosticFields(value, fields.mtheta_i, fields.ps, fields.tracer_m)
 
     @property
-    def mtheta_i(self) -> Field:
+    def mtheta_i(self) -> torch.Tensor:
         return self._require_fields().mtheta_i
 
     @mtheta_i.setter
@@ -545,7 +536,7 @@ class State:
         self.fields = PrognosticFields(fields.u_e, value, fields.ps, fields.tracer_m)
 
     @property
-    def ps(self) -> Field:
+    def ps(self) -> torch.Tensor:
         return self._require_fields().ps
 
     @ps.setter
@@ -554,7 +545,7 @@ class State:
         self.fields = PrognosticFields(fields.u_e, fields.mtheta_i, value, fields.tracer_m)
 
     @property
-    def tracer_m(self) -> Field | None:
+    def tracer_m(self) -> torch.Tensor | None:
         return self._require_fields().tracer_m
 
     @tracer_m.setter
@@ -576,7 +567,11 @@ class State:
         attrs: dict[str, Any] | None = None,
         spec: StateSpec | None = None,
     ) -> "State":
-        """Construct a State from physical theta at CP interfaces."""
+        """Construct from interface theta (K) and surface pressure (Pa).
+
+        Tracers must already match pressure dtype/device; conversion is explicit.
+        The stored mtheta_i is pressure-weighted theta, not moist entropy.
+        """
 
         if tracer_m is not None and q_tracers is not None:
             raise ValueError("pass only one of tracer_m or q_tracers")
@@ -584,11 +579,14 @@ class State:
         dp = column.layer_thickness(ps_values)
         dm = interface_mass(dp)
         tracer_state = None
+        for name, tensor in (("q_tracers", q_tracers), ("tracer_m", tracer_m)):
+            if tensor is not None and (tensor.dtype != dp.dtype or tensor.device != dp.device):
+                raise ValueError(f"{name} must match pressure dtype/device; convert explicitly with .to()")
         if q_tracers is not None:
-            q = _normalize_tracer_tensor(q_tracers.to(dtype=dp.dtype, device=dp.device), mesh.nCells, column.n_levels)
+            q = _normalize_tracer_tensor(q_tracers, mesh.nCells, column.n_levels)
             tracer_state = q * dp[..., None]
         elif tracer_m is not None:
-            tracer_state = _normalize_tracer_tensor(tracer_m.to(dtype=dp.dtype, device=dp.device), mesh.nCells, column.n_levels)
+            tracer_state = _normalize_tracer_tensor(tracer_m, mesh.nCells, column.n_levels)
         out_attrs = dict(attrs or {})
         out_attrs.setdefault("gravity", DEFAULT_GRAVITY)
         theta_values = theta_i.values if isinstance(theta_i, Field) else theta_i
@@ -785,36 +783,36 @@ class State:
         return self._require_mesh().cell_wind_vector(self.u_e if edge_wind is None else edge_wind)
 
     def layer_dp(self) -> torch.Tensor:
-        return self._require_column().layer_thickness(self.ps.values)
+        return self._require_column().layer_thickness(self.ps)
 
     def interface_pressure(self) -> torch.Tensor:
-        return self._require_column().interface_pressure(self.ps.values)
+        return self._require_column().interface_pressure(self.ps)
 
     def full_pressure(self) -> torch.Tensor:
-        return self._require_column().full_pressure(self.ps.values)
+        return self._require_column().full_pressure(self.ps)
 
     def exner_interface(self) -> torch.Tensor:
-        return self._require_column().exner_interface(self.ps.values)
+        return self._require_column().exner_interface(self.ps)
 
     def exner_full(self) -> torch.Tensor:
-        return self._require_column().exner_full(self.ps.values)
+        return self._require_column().exner_full(self.ps)
 
     def theta(self) -> torch.Tensor:
-        return self.mtheta_i.values / interface_mass(self.layer_dp())
+        return self.mtheta_i / interface_mass(self.layer_dp())
 
     def temperature(self) -> torch.Tensor:
-        return self._require_column().temperature_full(self.theta(), self.ps.values)
+        return self._require_column().temperature_full(self.theta(), self.ps)
 
     def geopotential(self) -> torch.Tensor:
-        return self._require_column().geopotential_full(self.theta(), self.ps.values)
+        return self._require_column().geopotential_full(self.theta(), self.ps)
 
     def specific_volume(self) -> torch.Tensor:
-        return self._require_column().specific_volume_full(self.theta(), self.ps.values)
+        return self._require_column().specific_volume_full(self.theta(), self.ps)
 
     def tracers(self) -> torch.Tensor | None:
         if self.tracer_m is None:
             return None
-        tracer_m = _normalize_tracer_tensor(self.tracer_m.values, self._require_mesh().nCells, self._require_column().n_levels)
+        tracer_m = _normalize_tracer_tensor(self.tracer_m, self._require_mesh().nCells, self._require_column().n_levels)
         dp = self.layer_dp()
         return tracer_m / dp[..., None].clamp_min(torch.finfo(dp.dtype).tiny)
 
@@ -825,7 +823,7 @@ class State:
     def total_tracer_mass(self) -> torch.Tensor | None:
         if self.tracer_m is None:
             return None
-        tracer_m = _normalize_tracer_tensor(self.tracer_m.values, self._require_mesh().nCells, self._require_column().n_levels)
+        tracer_m = _normalize_tracer_tensor(self.tracer_m, self._require_mesh().nCells, self._require_column().n_levels)
         return self._require_mesh().integrate_cell(tracer_m.sum(dim=-2)) / self._gravity()
 
     def static_stability(self) -> torch.Tensor:

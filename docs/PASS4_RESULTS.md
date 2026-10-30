@@ -79,3 +79,14 @@ The subsequent [tensor-tolerance fix](BOUNDED_GRADIENT_LIMITATION.md) preserves
 forward results and adds scoped CPU float64 one-step directional derivative
 checks. It fixes the allclose argument error without qualifying full rollouts
 or differentiability at limiter switches.
+
+## Subsequent State/Field ownership cleanup
+
+See [the ownership guide and validation](STATE_OWNERSHIP.md). Dry prognostic
+attributes now return tensors; standalone Field retains its mesh/regridding role.
+Dry geometry mismatches and implicit tracer casts are rejected, explicit
+conversion preserves gradients, and model methods expose uncached physical fields.
+Local installed-wheel portable tests: 600 passed, 1 CUDA skip. Both comparison
+tools and examples pass; 382 same-environment capture tensors agree exactly.
+Frozen-fixture exact failures remain reported separately. No numerical operator,
+fixture, moist stepper or private entropy-adapter body changed.

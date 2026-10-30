@@ -425,7 +425,7 @@ class MoistConservativeDynamics(torch.nn.Module):
     def _adapter(self, s):
         """Validate composition, then wrap existing tensors for private transport.
 
-        State.mtheta_i.values aliases s.entropy_content, not dry m*theta.
+        State.mtheta_i aliases s.entropy_content, not dry m*theta.
         State.theta() and transport['theta'] divide this entropy buffer by
         interface pressure thickness and thus represent specific entropy here.
         Wind/pressure tensors and geometry are shared too: no clone, detach,

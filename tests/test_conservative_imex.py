@@ -31,8 +31,8 @@ def test_coefficients_match_existing_energy_and_gradient(levels):
     gm,gp = d.thermal_gradients(s)
     torch.testing.assert_close(a,gm,rtol=2e-13,atol=1e-4)
     surface = s.mesh.cell_area[:,None]/d.gravity*s.column.phi_s[:,None]
-    torch.testing.assert_close((a1*s.mtheta_i.values).sum(-1,keepdim=True)+surface*s.column.B_interface[-1],gp,rtol=2e-12,atol=1e-3)
-    energy = (a*s.mtheta_i.values).sum()+(surface*s.column.interface_pressure(s.ps)[:,-1:]).sum()
+    torch.testing.assert_close((a1*s.mtheta_i).sum(-1,keepdim=True)+surface*s.column.B_interface[-1],gp,rtol=2e-12,atol=1e-3)
+    energy = (a*s.mtheta_i).sum()+(surface*s.column.interface_pressure(s.ps)[:,-1:]).sum()
     torch.testing.assert_close(energy,(d.boundary_total_energy(s)-d.total_kinetic_energy(s)).squeeze(),rtol=1e-14,atol=0)
 
 
@@ -41,14 +41,14 @@ def test_pressure_tangent_against_autodiff_oracle(levels):
     d,s,z=setup(levels)
     op=DryPELinearOperator(d,s,implicit_operator='gravity_wave')
     def pgf(m,p):
-        return d.pgf_term(State(s.u_e.values,m,p,mesh=s.mesh,column=s.column))
-    _,expected=torch.autograd.functional.jvp(pgf,(s.mtheta_i.values,s.ps.values),(z.mtheta_i.values,z.ps.values))
-    torch.testing.assert_close(op.gravity_wave_wind(z.mtheta_i.values,z.ps.values),expected,rtol=3e-10,atol=2e-16)
+        return d.pgf_term(State(s.u_e,m,p,mesh=s.mesh,column=s.column))
+    _,expected=torch.autograd.functional.jvp(pgf,(s.mtheta_i,s.ps),(z.mtheta_i,z.ps))
+    torch.testing.assert_close(op.gravity_wave_wind(z.mtheta_i,z.ps),expected,rtol=3e-10,atol=2e-16)
     def scalar(u):
-        r=d.tendency(State(u,s.mtheta_i.values,s.ps.values,mesh=s.mesh,column=s.column))
-        return r.mtheta_i.values,r.ps.values
-    _,expected=torch.autograd.functional.jvp(scalar,(s.u_e.values,),(z.u_e.values,))
-    got=op.gravity_wave_thermodynamic(z.u_e.values)
+        r=d.tendency(State(u,s.mtheta_i,s.ps,mesh=s.mesh,column=s.column))
+        return r.mtheta_i,r.ps
+    _,expected=torch.autograd.functional.jvp(scalar,(s.u_e,),(z.u_e,))
+    got=op.gravity_wave_thermodynamic(z.u_e)
     for x,y in zip(got,expected):torch.testing.assert_close(x,y,rtol=2e-12,atol=1e-12)
 
 
@@ -72,7 +72,7 @@ def test_schur_and_full_solve_agree():
         stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=80))
         results.append(stepper.step(s,600.))
     for name in ['u_e','ps','mtheta_i']:
-        torch.testing.assert_close(getattr(results[0],name).values,getattr(results[1],name).values,rtol=1e-10,atol=1e-8)
+        torch.testing.assert_close(getattr(results[0],name),getattr(results[1],name),rtol=1e-10,atol=1e-8)
 
 
 def test_time_refinement_recovers_explicit_solution():
@@ -85,7 +85,7 @@ def test_time_refinement_recovers_explicit_solution():
             stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=80))
             out=s
             for _ in range(round(60/dt)):out=stepper.step(out,dt)
-            errors.append(float((out.u_e.values-ref.u_e.values).square().mean().sqrt()))
+            errors.append(float((out.u_e-ref.u_e).square().mean().sqrt()))
         assert errors[0]/errors[1]>3.5
         assert errors[1]/errors[2]>3.5
 
@@ -97,4 +97,4 @@ def test_multilevel_matches_direct_schur():
         stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-10,max_iterations=80))
         outputs.append(stepper.step(s,1800.))
     for name in ['u_e','ps','mtheta_i']:
-        torch.testing.assert_close(getattr(outputs[0],name).values,getattr(outputs[1],name).values,rtol=1e-9,atol=1e-7)
+        torch.testing.assert_close(getattr(outputs[0],name),getattr(outputs[1],name),rtol=1e-9,atol=1e-7)

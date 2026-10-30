@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+import torch
 import torch.nn as nn
 
 from .core.config import DataRequirement
@@ -279,7 +280,7 @@ class VFSModel(nn.Module):
     ) -> PhysicsStepResult:
         """Advance one model step and return both prognostic and process state."""
 
-        current = self.bind_state(state)
+        current = self._checked_state(state)
         if physics_state is None:
             root = self.initial_physics_state(current)
         elif isinstance(physics_state, PhysicsState):
@@ -313,6 +314,10 @@ class VFSModel(nn.Module):
     def bind_state(self, state: State) -> State:
         """Bind a State to model-owned mesh/column when available."""
 
+        for name in ("mesh", "column"):
+            owned, borrowed = getattr(self, name), getattr(state, name)
+            if owned is not None and borrowed is not None and owned is not borrowed:
+                raise ValueError(f"state {name} must be the model-owned object; no implicit regridding")
         mesh = self.mesh if self.mesh is not None else state.mesh
         column = self.column if self.column is not None else state.column
         if mesh is state.mesh and column is state.column:
@@ -342,10 +347,29 @@ class VFSModel(nn.Module):
 
         return self.bind_state(state).to(*args, **kwargs)
 
+    def state_to_model(self, state: State) -> State:
+        """Explicit differentiable conversion; geometry must already be shared."""
+        if self.mesh is None or self.column is None:
+            raise ValueError("state_to_model requires model geometry")
+        if state.mesh is not self.mesh or state.column is not self.column:
+            raise ValueError("state must borrow the model mesh and column")
+        reference = self.mesh.cell_area
+        return state.to(device=reference.device, dtype=reference.dtype)
+
+    def _checked_state(self, state: State) -> State:
+        state = self.bind_state(state)
+        if self.mesh is not None:
+            reference = self.mesh.cell_area
+            for name in ("u_e", "mtheta_i", "ps", "tracer_m"):
+                value = getattr(state, name)
+                if value is not None and (value.device != reference.device or value.dtype != reference.dtype):
+                    raise ValueError(f"state {name} dtype/device must match model; use state_to_model explicitly")
+        return state
+
     def validate_state(self, state: State, *, components: tuple[str, ...] | list[str] | None = None) -> State:
         """Validate a State against model geometry and component requirements."""
 
-        bound = self.bind_state(state)
+        bound = self._checked_state(state)
         names = [str(name) for name in components] if components is not None else list(self.components)
         for name in names:
             if name not in self.components:
@@ -553,8 +577,29 @@ class DryHydrostaticModel(VFSModel):
             ingestion=ingestion,
         )
 
+    def physical_fields(self, state: State) -> dict[str, torch.Tensor]:
+        """Compute uncached dry fields from the supplied tensor state.
+
+        Wind: [..., edge, full] m/s; surface pressure: [..., cell, 1] Pa;
+        potential temperature: [..., cell, interface] K; temperature: full K;
+        pressures: cell/interface or cell/full Pa. Optional tracer mixing
+        ratios are [..., cell, full, tracer], with units defined by StateSpec.
+        """
+        state = self._checked_state(state)
+        fields = {
+            "normal_wind": state.u_e,
+            "surface_pressure": state.ps,
+            "potential_temperature": state.theta(),
+            "temperature": state.temperature(),
+            "pressure_interface": state.interface_pressure(),
+            "pressure_full": state.full_pressure(),
+        }
+        if state.tracer_m is not None:
+            fields["tracer_mixing_ratios"] = state.tracers()
+        return fields
+
     def tendency(self, state: State) -> State:
-        state = self.bind_state(state)
+        state = self._checked_state(state)
         return self.dry.tendency(state)
 
 
