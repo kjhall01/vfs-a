@@ -129,8 +129,24 @@ Local installed-wheel results:
   before on this CPU/backend; portable passes are not reclassified exact passes.
 
 Fixtures and comparison policies are unchanged. Frozen-fixture exact outcomes
-are separate from same-environment forward equivalence. GitHub Actions for this
-fix branch has not completed yet; these are local results, not hosted evidence.
+are separate from same-environment forward equivalence.
+
+Hosted evidence: [Linux run 41011055196](https://github.com/kjhall01/vfs-a/actions/runs/41011055196)
+completed on implementation commit `c68a52b` for
+[PR #7](https://github.com/kjhall01/vfs-a/pull/7). Intel Xeon Platinum 8573C,
+AVX512, Python 3.12.15, PyTorch 2.15.0+cpu, MKL 2024.2 / MKL-DNN 3.13.3,
+CPU float64 with one numerical thread:
+
+- Required portable pytest: **595 passed, 1 skipped, 1 warning**, including
+  the new smooth, active-cloud and switching derivative tests.
+- Both required portable tools and both examples passed.
+- Informational exact fixture pytest: **2 failed**; both exact standalone tools
+  also **failed with exit status 1**. The overall job is green under the existing
+  continue-on-error policy, not because exact comparisons passed.
+
+These hosted results come from the run logs; local directional measurements above
+are not represented as Linux measurements. No full-rollout claim follows from
+passing either environment's regression checks.
 
 Reproduce the derivative/validation probes with
 `python -I -m pytest tests/test_bounded_gradients.py -q -s` from the copied test

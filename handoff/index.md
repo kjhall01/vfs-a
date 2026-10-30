@@ -1,7 +1,8 @@
 # Current handoff — bounded tensor tolerance and one-step gradients
 
 PR #6 was merged after confirming both required CPU checks at its final head.
-The separate branch `fix/bounded-tensor-tolerance` changes only bounded_transfer's
+The separate branch `fix/bounded-tensor-tolerance`,
+[PR #7](https://github.com/kjhall01/vfs-a/pull/7), changes only bounded_transfer's
 flux-sum validation to the equivalent tensor-valued inequality, preserving the
 128*eps scale, finite-error rejection, operators, defaults and species ledger.
 There is no detach, disabled-autograd workaround or limiter redesign.
