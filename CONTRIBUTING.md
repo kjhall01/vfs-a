@@ -52,6 +52,9 @@ python -I tools/check_dry_helpers.py --mode portable
 python -I examples/moist_atmosphere.py
 python -I examples/bounded_moist.py
 python -I examples/held_suarez.py
+python -I examples/dry_atmosphere.py
+python -I examples/dry_atmosphere.py --imex
+python -I examples/moist_atmosphere.py --imex
 ```
 
 Apply the same macOS version substitution here. Confirm the printed package
@@ -87,7 +90,7 @@ version alone does not guarantee bitwise agreement across platforms.
 
 Create a topic branch and keep one concern per PR. Preserve numerical defaults,
 state conventions, interface/edge staggering and integrators. MoistAtmosphere
-uses `BoundedGibbs(base, release_as_heat=True)` and its bounded Euler species
+uses `BoundedGibbs(base)` and its bounded Euler species
 amount ledger. Vapor must remain strictly positive, with no floor; exact-zero
 water equivalence to the dry core is not established.
 
@@ -102,3 +105,11 @@ as part of routine contributor setup.
 Package scope and deliberate API removals are documented in
 [current paths](docs/CURRENT_PATHS.md) and [the removal record](docs/READABILITY_RESULTS.md). Do not restore removed
 domain/ML APIs merely to satisfy historical compatibility expectations.
+
+Before numerical changes, use `tools/capture_readability.py --save /tmp/before.pt`
+with the baseline installed wheel, then `--compare /tmp/before.pt` with the changed
+wheel in the same environment. It checks retained states, energies, gradients,
+ledgers, ARK4 stages and solver records exactly; it never replaces fixtures.
+See [the Held–Suarez archive command](docs/HELD_SUAREZ.md#reproduce-the-archive-comparison).
+The next phase is [scientific verification](docs/VERIFICATION_HANDOFF.md), with the
+implementation frozen; Conda packaging is deferred.

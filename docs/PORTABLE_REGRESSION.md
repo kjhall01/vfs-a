@@ -3,15 +3,16 @@
 Portable mode implements the reviewed budgets in the
 [911aada investigation](CI_911AADA_INVESTIGATION.md). It checks CPU float64
 forward regression across the measured environments, not scientific accuracy,
-GPU behavior, long integrations or full backward rollouts. Numerical package
-code and both fixtures are unchanged. Exact comparison is still the default
+GPU behavior, long integrations or full backward rollouts. Both frozen fixtures and their retained tolerances are unchanged. Exact comparison is still the default
 in pytest and both tools; select `--fixture-mode=portable` or `--mode portable`
 explicitly. Exact failures remain failures, with no automatic fallback.
 
 ## Mapping and budgets
 
 [`fixture_quantities.json`](../tools/fixture_quantities.json) explicitly maps
-all 372 leaves (335 tensors) to a quantity and component count. Unknown paths,
+the original 372 leaves (335 tensors) to a quantity and component count. The
+retained subset checks 235 tensors; the 100 canonical-core tensors were explicitly
+retired with that removed algorithm, without rewriting the archive. Unknown paths,
 containers, categories or fixtures fail; there is no name-based fallback.
 `components` identifies the last axis: three water species, four ledger
 species including dry air, or two tracers. Each component gets its own scale.
@@ -67,7 +68,8 @@ and any nonfinite float, including matching NaNs. It also requires:
   rotation has independent closure and exact normalized-work identity checks.
 
 Finite-step energy drift is reported separately; SSPRK3 is not asserted to
-conserve energy exactly. The existing 99 helper AST checks remain in pytest.
+conserve energy exactly. The old external dry helper binding table was removed; retained methods,
+fixture checks and independent physical/derivative assertions remain in pytest.
 Adversarial tests perturb every mapped tensor and each comparison category,
 species scaling, structures, nonfinite values and each invariant. Perturbations
 below numerical budgets also demonstrate independent mask, ledger, positivity,

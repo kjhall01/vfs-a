@@ -9,9 +9,9 @@ dataclass referencing the same geometry. Default numerical behavior is unchanged
 from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredIMEX
 from vfs.integrators.imex import ARK4_TABLEAU, IMEXSolverConfig
 
-model = MoistAtmosphere(mesh, column)  # bounded SSPRK3, release_as_heat=True
+model = MoistAtmosphere(mesh, column)  # bounded SSPRK3, intrinsic heat release
 # Alternatively, construct ONE of these choices with a fresh stepper:
-model = MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3(release_as_heat=True))
+model = MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3())
 model = MoistAtmosphere(mesh, column, stepper=CenteredIMEX(method=ARK4_TABLEAU))
 ```
 
@@ -57,9 +57,9 @@ configurations have `transport=None`. Each of its three Euler maps uses the full
 dt budget and installs water directly from `info['amounts'] / area`. Keep the
 three stage ledgers separate from the final convex combination. Detailed results
 remain available through `model.transport.step_with_info`; no common IMEX/bounded
-ledger is invented. The `release_as_heat` constructor keyword must be True
-when the stepper is omitted; the non-heat bounded configuration was removed. With an explicit stepper, configure heat on
-BoundedSSPRK3; a conflicting nondefault facade keyword raises.
+ledger is invented. Heat release is intrinsic; the former `release_as_heat` keyword is removed
+from the model, stepper and low-level transport. Passing it raises TypeError.
+
 
 Tendencies remain separate: `model.dynamics.tendency(state)` is centered;
 `model.transport.tendency(state, stage_dt)` is budgeted but is NOT a substitute

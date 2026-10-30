@@ -45,7 +45,7 @@ def test_schur_full_agree():
  d,s,z=setup();out=[]
  with torch.no_grad():
   for pre in ['none','hydrostatic_schur']:
-   out.append(MoistPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=100)).step(s,600))
+   out.append(MoistPEIMEXARK(d,IMEXSolverConfig(preconditioner=pre,rtol=1e-11,max_iterations=100)).step(s,600))
  for k in ['u_e','ps','entropy_content','water_content']:
   torch.testing.assert_close(getattr(out[0],k),getattr(out[1],k),rtol=2e-9,atol=1e-7)
 
@@ -76,7 +76,7 @@ def test_moist_native_order_against_independent_dop853():
   assert ref.success
   ref=unpack(ref.y[:,-1]);inner=_MoistInner(MoistPressureWave(d,s));errors=[]
   for dt in [600,300,150]:
-   stepper=MoistPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=100))
+   stepper=MoistPEIMEXARK(d,IMEXSolverConfig(preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=100))
    out=s
    for _ in range(3600//dt):out=stepper.step(out,dt)
    errors.append(float(inner.norm(_Vector.pack(out)-_Vector.pack(ref))))
@@ -140,6 +140,6 @@ def test_zero_vapor_is_rejected():
 
 def test_unsupported_wave_block_rejected():
  d,s,z=setup()
- for cfg in [IMEXSolverConfig(),IMEXSolverConfig(implicit_operator='gravity_wave',compile_kernels=True),IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='multilevel_hydrostatic_schur')]:
+ for cfg in [IMEXSolverConfig(preconditioner='multilevel_hydrostatic_schur')]:
   with pytest.raises(ValueError,match='supports eager analytic waves'):
    MoistPEIMEXARK(d,cfg)

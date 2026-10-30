@@ -108,7 +108,7 @@ def test_retained_dry_model_delegation_and_module_ownership(dry, implicit):
     from vfs.imex import DryPEIMEXARK, IMEXSolverConfig
 
     _, state = dry
-    cfg = IMEXSolverConfig(implicit_operator='gravity_wave', preconditioner='hydrostatic_schur')
+    cfg = IMEXSolverConfig( preconditioner='hydrostatic_schur')
     model = DryAtmosphere(state.mesh, state.column, stepper=DryIMEX(cfg) if implicit else DrySSPRK3())
     expected = (DryPEIMEXARK(model.dynamics, cfg).step(state, 1.) if implicit
                 else ssprk3(model.dynamics, state, 1.))

@@ -39,7 +39,7 @@ def test_coefficients_match_existing_energy_and_gradient(levels):
 @pytest.mark.parametrize('levels',[1,3,12])
 def test_pressure_tangent_against_autodiff_oracle(levels):
     d,s,z=setup(levels)
-    op=DryPELinearOperator(d,s,implicit_operator='gravity_wave')
+    op=DryPELinearOperator(d,s)
     def pgf(m,p):
         return d.pgf_term(State(s.u_e,m,p,mesh=s.mesh,column=s.column))
     _,expected=torch.autograd.functional.jvp(pgf,(s.mtheta_i,s.ps),(z.mtheta_i,z.ps))
@@ -58,7 +58,7 @@ def test_analytic_step_uses_no_autodiff_and_conserves_mass(monkeypatch):
     monkeypatch.setattr(torch.func,'jvp',forbidden)
     monkeypatch.setattr(torch.autograd.functional,'jvp',forbidden)
     monkeypatch.setattr(torch.autograd,'grad',forbidden)
-    stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-11,max_iterations=80))
+    stepper=DryPEIMEXARK(d,IMEXSolverConfig(preconditioner='hydrostatic_schur',rtol=1e-11,max_iterations=80))
     out,info=stepper.step_with_info(s,1800.)
     assert info.converged
     assert info.linear_operator=='frozen_analytic_conservative_gravity_wave'
@@ -69,7 +69,7 @@ def test_schur_and_full_solve_agree():
     d,s,z=setup()
     results=[]
     for pre in ['none','hydrostatic_schur']:
-        stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=80))
+        stepper=DryPEIMEXARK(d,IMEXSolverConfig(preconditioner=pre,rtol=1e-11,max_iterations=80))
         results.append(stepper.step(s,600.))
     for name in ['u_e','ps','mtheta_i']:
         torch.testing.assert_close(getattr(results[0],name),getattr(results[1],name),rtol=1e-10,atol=1e-8)
@@ -99,7 +99,7 @@ def test_ark4_time_refinement_against_independent_dop853():
         errors = []
         for dt in (600, 300, 150):
             stepper = DryPEIMEXARK(d, IMEXSolverConfig(
-                implicit_operator='gravity_wave', preconditioner='hydrostatic_schur',
+                 preconditioner='hydrostatic_schur',
                 rtol=1e-12, max_iterations=100,
             ))
             out = s
@@ -114,7 +114,7 @@ def test_multilevel_matches_direct_schur():
     d,s,z=setup()
     outputs=[]
     for pre in ['hydrostatic_schur','multilevel_hydrostatic_schur']:
-        stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-10,max_iterations=80))
+        stepper=DryPEIMEXARK(d,IMEXSolverConfig(preconditioner=pre,rtol=1e-10,max_iterations=80))
         outputs.append(stepper.step(s,1800.))
     for name in ['u_e','ps','mtheta_i']:
         torch.testing.assert_close(getattr(outputs[0],name),getattr(outputs[1],name),rtol=1e-9,atol=1e-7)

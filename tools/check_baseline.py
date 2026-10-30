@@ -31,21 +31,21 @@ def imports(reference=None):
     from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
     from vfs.initial_conditions.jablonski_williamson import JWInitialConditions
     from vfs.core.integrators import ssprk3
-    from vfs.atmosphere.conservative import v
 
     return locals()
 
 
-def tensors(state, v):
+def tensors(state):
     names = FIELDS if hasattr(state, "water_content") else ("u_e", "ps", "mtheta_i")
-    return {k: v(getattr(state, k)).detach().clone() for k in names}
+    # Serialization also supports the archived standalone Field boundary.
+    return {k: (getattr(state, k).values if hasattr(getattr(state, k), "location")
+                else getattr(state, k)).detach().clone() for k in names}
 
 
 def capture(api):
     """Deterministic 64-cell, six-level tests; active sharp cloud in both winds."""
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
-    v = api["v"]
     mesh = api["VoronoiMesh"](n_cells=64, lloyd_iters=0, verbose=False)
     A, B = api["make_hybrid_coefficients"](6, p_top=5000.0, sigma_power=1.0)
     column = api["CharneyPhillipsColumn"](
@@ -56,7 +56,7 @@ def capture(api):
     with torch.no_grad():
         for case in ("smooth", "cloud", "cloud_reverse"):
             d = api["MoistConservativeDynamics"]()
-            p = v(column.interface_pressure(torch.full((64, 1), 1e5)))
+            p = column.interface_pressure(torch.full((64, 1), 1e5))
             from vfs.atmosphere.moist_cp import interface_pressure_mass
 
             dm = interface_pressure_mass(p.diff())
@@ -86,7 +86,7 @@ def capture(api):
                 mesh,
                 column,
             )
-            model = api["BoundedGibbs"](d, release_as_heat=True)
+            model = api["BoundedGibbs"](d, **({"release_as_heat": True} if api["reference"] else {}))
             rhs, info = model.evaluate(state, dt)
             euler, ei = model.euler_with_info(state, dt)
             final = state
@@ -98,7 +98,7 @@ def capture(api):
 
             def budgets(s):
                 dm_s = interface_pressure_mass(
-                    v(column.interface_pressure(s.ps)).diff()
+                    column.interface_pressure(s.ps).diff()
                 )
                 return {
                     "mass": (area * dm_s).sum() / d.kernel.gravity,
@@ -108,10 +108,10 @@ def capture(api):
                 }
 
             result[case] = dict(
-                initial=tensors(state, v),
-                rhs=tensors(rhs, v),
-                euler=tensors(euler, v),
-                final=tensors(final, v),
+                initial=tensors(state),
+                rhs=tensors(rhs),
+                euler=tensors(euler),
+                final=tensors(final),
                 stages=stages,
                 limiter={
                     k: info[k]
@@ -125,7 +125,7 @@ def capture(api):
                         "beta",
                     )
                 },
-                gradients=tensors(d.energy_gradients(state), v),
+                gradients=tensors(d.energy_gradients(state)),
                 initial_budgets=budgets(state),
                 final_budgets=budgets(final),
                 energy_rate=d.boundary_energy_rate(state, rhs),
@@ -153,9 +153,9 @@ def capture(api):
         for _ in range(3):
             s = api["ssprk3"](dry, s, dt)
         result["dry"] = dict(
-            initial=tensors(s0, v),
-            rhs=tensors(rhs, v),
-            final=tensors(s, v),
+            initial=tensors(s0),
+            rhs=tensors(rhs),
+            final=tensors(s),
             initial_energy=dry.boundary_total_energy(s0),
             final_energy=dry.boundary_total_energy(s),
             initial_mass=dry.total_mass(s0),

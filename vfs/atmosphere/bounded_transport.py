@@ -8,7 +8,6 @@ incident horizontal/vertical face. It is not a local-extremum limiter.
 
 import math
 import torch
-from .conservative import v
 from .moist_cp import interface_pressure_mass
 
 
@@ -24,13 +23,13 @@ def graph(d, s):
     a = d.transport_state(s)
     ctx = d.kernel._transport_primitives(a)
     m = s.mesh
-    mass = v(ctx["dm"]) * m.cell_area[:, None]
+    mass = ctx["dm"] * m.cell_area[:, None]
     n = mass.shape[1]
     c0, c1 = m.cellsOnEdge.T
     k = torch.arange(n, device=mass.device, dtype=torch.long)
     i = (c0[:, None] * n + k).flatten()
     j = (c1[:, None] * n + k).flatten()
-    layer = v(ctx["mass_flux"]) * m.dv_edge[:, None]
+    layer = ctx["mass_flux"] * m.dv_edge[:, None]
     # Layer-edge transport -> CP interfaces; half weights at top/bottom.
     h = torch.cat(
         [0.5 * layer[:, :1], 0.5 * (layer[:, :-1] + layer[:, 1:]), 0.5 * layer[:, -1:]],
@@ -41,7 +40,7 @@ def graph(d, s):
     # hybrid-coordinate continuity response; multiply by horizontal cell area.
     i = torch.cat([i, ids[:, :-1].flatten()])
     j = torch.cat([j, ids[:, 1:].flatten()])
-    f = torch.cat([h.flatten(), (v(ctx["omega"]) * m.cell_area[:, None]).flatten()])
+    f = torch.cat([h.flatten(), (ctx["omega"] * m.cell_area[:, None]).flatten()])
     return mass, i, j, f
 
 

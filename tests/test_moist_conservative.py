@@ -3,7 +3,6 @@ from unittest.mock import patch
 from vfs.atmosphere.moist_conservative import MoistState,MoistConservativeDynamics
 from vfs.atmosphere.bounded_moist import BoundedGibbs
 from vfs.atmosphere.moist_cp import interface_pressure_mass
-from vfs.atmosphere.conservative import v
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.geometry.column import CharneyPhillipsColumn,make_hybrid_coefficients
 
@@ -17,7 +16,7 @@ def case(mesh,n,uniform=False):
  col=CharneyPhillipsColumn(n,A,B,phi_s=0. if uniform else 1000*torch.rand(mesh.nCells),phi_full_mode='direct_u_gl2_adjoint')
  ps=torch.ones(mesh.nCells,1)*1e5
  if not uniform:ps+=2000*torch.randn_like(ps)
- p=v(col.interface_pressure(ps));dm=interface_pressure_mass(p.diff())
+ p=col.interface_pressure(ps);dm=interface_pressure_mass(p.diff())
  entropy=200+80*torch.log(1e5/p)
  q=torch.ones(mesh.nCells,n+1,3)*torch.tensor([.01,.001,.0001])
  u=torch.zeros(mesh.nEdges,n)
@@ -40,11 +39,11 @@ def test_full_gradient_energy_and_mass(mesh,n):
  for value in [rhs.ps,rhs.entropy_content,*rhs.water_content.unbind(-1)]:
   z=area*value;assert float(z.sum().abs()/z.abs().sum().clamp_min(1))<1e-12
  terms=d.tendency_terms(s)
- for k in KEYS:torch.testing.assert_close(v(terms[k]['total']),getattr(rhs,k),rtol=1e-12,atol=1e-12)
+ for k in KEYS:torch.testing.assert_close(terms[k]['total'],getattr(rhs,k),rtol=1e-12,atol=1e-12)
  if n>1:assert terms['u_e']['vertical'].abs().max()>0
  # The hydrostatic energy decomposition equals the independently reduced H.
  from vfs.atmosphere.moist_cp import reconstruct_moist_cp
- p=v(s.column.interface_pressure(s.ps));r=reconstruct_moist_cp(p,s.entropy_content,s.water_content,d.thermodynamics)
+ p=s.column.interface_pressure(s.ps);r=reconstruct_moist_cp(p,s.entropy_content,s.water_content,d.thermodynamics)
  reduced=(area/d.kernel.gravity*(r['dp']*d.thermodynamics.enthalpy(r['temperature'],r['fractions']).mean(-1)).sum(-1,keepdim=True)).sum()
  reduced+=(area/d.kernel.gravity*s.ps*torch.as_tensor(s.column.phi_s).reshape(-1,1)).sum()
  reduced+=d.energy_terms(s)['kinetic']
@@ -55,14 +54,14 @@ def test_uniform_rest_and_short_integration(mesh):
  assert d.tendency(s).u_e.abs().max()<1e-12
  s=case(mesh,4);e0=d.boundary_total_energy(s);initial=s
  for _ in range(10):
-  s=BoundedGibbs(d, release_as_heat=True).step(s,1.)
+  s=BoundedGibbs(d).step(s,1.)
  assert abs(float((d.boundary_total_energy(s)-e0)/e0))<1e-9
  assert all(torch.isfinite(getattr(s,k)).all() for k in KEYS)
 
 
 def test_constant_species_and_dry_mass(mesh):
  d=MoistConservativeDynamics();s=case(mesh,4)
- p=v(s.column.interface_pressure(s.ps));dm=interface_pressure_mass(p.diff())
+ p=s.column.interface_pressure(s.ps);dm=interface_pressure_mass(p.diff())
  q=torch.tensor([.02,.002,.0003]);s.water_content=dm[...,None]*q
  rhs=d.tendency(s);dmdt=rhs.ps*interface_pressure_mass(s.column.B_interface.diff())
  torch.testing.assert_close(rhs.water_content,dmdt[...,None]*q,rtol=1e-11,atol=1e-12)
@@ -72,7 +71,7 @@ def test_constant_species_and_dry_mass(mesh):
 
 def test_vanishing_vapor_limit_and_invalid_state(mesh):
  d=MoistConservativeDynamics();s=case(mesh,4)
- dm=interface_pressure_mass(v(s.column.interface_pressure(s.ps)).diff())
+ dm=interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
  tendencies=[]
  for vapor in [1e-6,1e-8,1e-10]:
   s.water_content=torch.zeros_like(s.water_content);s.water_content[...,0]=dm*vapor
@@ -88,7 +87,7 @@ def test_condensate_roundoff_retains_state_and_energy_closure(mesh,species):
  # Exercise a negative Gauss-point fraction as well as a negative interface.
  # Condensate thermodynamics are smooth here; no state/energy clipping is used.
  s=case(mesh,4);d=MoistConservativeDynamics()
- dm=interface_pressure_mass(v(s.column.interface_pressure(s.ps)).diff())
+ dm=interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
  q=s.water_content/dm[...,None]
  scale=q[...,species].max()
  s.water_content[0,:2,species]=-8*torch.finfo(q.dtype).eps*scale*dm[0,:2]
@@ -112,7 +111,7 @@ def test_condensate_roundoff_retains_state_and_energy_closure(mesh,species):
  terms=d.tendency_terms(s)
  for k,before in zip(KEYS,original):
   assert torch.equal(getattr(s,k),before)
-  torch.testing.assert_close(v(terms[k]['total']),getattr(rhs,k),rtol=1e-12,atol=1e-12)
+  torch.testing.assert_close(terms[k]['total'],getattr(rhs,k),rtol=1e-12,atol=1e-12)
  strict=MoistConservativeDynamics(allow_condensate_roundoff=False)
  for method in [strict.tendency,strict.energy_terms,strict.energy_gradients]:
   with pytest.raises(ValueError,match='nonnegative condensates'):method(s)
@@ -121,7 +120,7 @@ def test_condensate_roundoff_retains_state_and_energy_closure(mesh,species):
 @pytest.mark.parametrize('bad',['above_roundoff','absent_species','other_species_scale'])
 def test_roundoff_policy_does_not_hide_negative_condensate(mesh,bad):
  s=case(mesh,4);d=MoistConservativeDynamics()
- dm=interface_pressure_mass(v(s.column.interface_pressure(s.ps)).diff())
+ dm=interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
  if bad=='above_roundoff':
   s.water_content[0,0,1]=-1e-10*dm[0,0]
  elif bad=='absent_species':
@@ -142,7 +141,7 @@ def test_roundoff_policy_leaves_positive_composition_bitwise_unchanged(mesh):
   a=getattr(default,method)(s);b=getattr(strict,method)(s)
   for k in KEYS:assert torch.equal(getattr(a,k),getattr(b,k))
  assert torch.equal(default.boundary_total_energy(s),strict.boundary_total_energy(s))
- a=BoundedGibbs(default, release_as_heat=True).step(s,1.);b=BoundedGibbs(strict, release_as_heat=True).step(s,1.)
+ a=BoundedGibbs(default).step(s,1.);b=BoundedGibbs(strict).step(s,1.)
  for k in KEYS:assert torch.equal(getattr(a,k),getattr(b,k))
 
 

@@ -1,4 +1,37 @@
-# Current handoff — readable retained atmospheric paths
+# Current handoff — implementation freeze for verification
+
+Final bounded cleanup follows merged PRs #9–#11. Read the concise
+[README](../README.md), [cleanup results](../docs/FINAL_CLEANUP_RESULTS.md), and
+[verification handoff](../docs/VERIFICATION_HANDOFF.md). Conda packaging is deferred.
+Recommend freezing the implementation after review, not another stylistic refactor.
+
+IMEX has only the analytic ARK4 operator: obsolete operator/compile fields are
+removed, default configs work, and public steppers preserve their effective
+solver settings. Bounded moist heat release is intrinsic; release_as_heat is
+removed from constructors, with its inactive branches deleted. Tensor-only
+numerical paths no longer use v(x); standalone Field boundaries remain intact.
+The pinned Held–Suarez archive comparison is now a committed developer tool.
+No equations, stage formulas, species ledgers, boundary accounting or fixtures
+were changed. Class-instance ownership and gradient connections remain.
+
+Installed-wheel local CPU float64: 536 passed, 1 CUDA skip; portable tools pass
+235 retained tensors. Existing 298 pre/post captures and full solver records,
+15 additional default-step/bounded-gradient tensors, and 132 Held–Suarez archive
+comparisons are exact. All explicit/ARK4/forcing example commands run; the moist
+ARK4 example uses smooth positive composition, not the bounded sharp-cloud case.
+Frozen exact/hosted outcomes are reported separately in results and the PR.
+
+The next phase needs reproducible benchmark drivers, references and convergence
+metrics. JW initialization and HS forcing exist; topographic rest requires a
+consistent pressure setup, standalone dry tracer transport is absent, and a
+hydrostatic mountain-wave case needs specification/initialization and attention
+to the fixed lid and absent absorbing/open boundaries. No new benchmark physics
+was added. IMEX backward, long-rollout/GPU and general limiter-switch derivatives
+remain unqualified. Report missing capability work separately from verification.
+
+---
+
+# Historical handoff — readable retained atmospheric paths
 
 The three dependent readability PRs start from merged PR #8: #9 removes obsolete
 public paths; #10 consolidates retained equations and ownership; the final slice

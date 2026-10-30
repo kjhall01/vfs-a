@@ -13,11 +13,6 @@ from .dry_energy import DryEnergy
 from .scalar_transport import ScalarTransportState
 
 
-def v(x):
-    """Unwrap a Field while retaining the computation graph."""
-    return x.values if hasattr(x, "location") else x
-
-
 class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
     """Unfitted diagonal KE, matched pressure/rotation/momentum transport.
 
@@ -38,7 +33,7 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
             raise ValueError("conservative dynamics requires State mesh and column")
         if state.tracer_m is not None:
             raise ValueError("conservative_diagonal currently supports dry states only")
-        if v(state.u_e).ndim != 2:
+        if state.u_e.ndim != 2:
             raise ValueError("conservative_diagonal requires an unbatched state")
         if state.column.phi_full_mode != "direct_u_gl2_adjoint":
             raise ValueError("conservative_diagonal requires direct_u_gl2_adjoint")
@@ -82,7 +77,7 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
 
     def boundary_reservoir(self, state):
         """Fixed-pressure lid reservoir in joules."""
-        top_phi = v(state.column.geopotential_interface(state.theta(), state.ps))[..., 0]
+        top_phi = state.column.geopotential_interface(state.theta(), state.ps)[..., 0]
         return state.column.A_interface[0] / self.gravity * (state.mesh.cell_area * top_phi).sum()
 
     def boundary_total_energy(self, state):
@@ -92,14 +87,14 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
     def metric_action(self, state, z, thickness):
         mesh = state.mesh
         return (mesh.dc_edge[:, None] * mesh.dv_edge[:, None]
-                * v(mesh.cell_to_edge(thickness)) * z / self.gravity)
+                * mesh.cell_to_edge(thickness) * z / self.gravity)
 
     def solve_kinetic_metric(self, state, covector):
-        diagonal = self.metric_action(state, torch.ones_like(v(state.u_e)), v(state.layer_dp()))
+        diagonal = self.metric_action(state, torch.ones_like(state.u_e), state.layer_dp())
         return covector / diagonal
 
     def cell_kinetic_energy(self, state):
-        mesh, u = state.mesh, v(state.u_e)
+        mesh, u = state.mesh, state.u_e
         edge_area = mesh.dc_edge * mesh.dv_edge
         weights = mesh.edge_side_area / mesh.edge_side_area.sum(-1, keepdim=True)
         contribution = 0.5 * edge_area[:, None, None] * weights[:, :, None] * u[:, None, :].square()
@@ -110,17 +105,17 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         return cell_total / mesh.cell_area[:, None]
 
     def total_kinetic_energy(self, state):
-        return (0.5 * v(state.u_e) * self.metric_action(state, v(state.u_e), v(state.layer_dp()))).sum()
+        return (0.5 * state.u_e * self.metric_action(state, state.u_e, state.layer_dp())).sum()
 
     def kinetic_energy_gradient_u_terms(self, state):
-        gradient = self.metric_action(state, v(state.u_e), v(state.layer_dp()))
+        gradient = self.metric_action(state, state.u_e, state.layer_dp())
         return {"normal": gradient, "tangential": torch.zeros_like(gradient), "total": gradient}
 
     def _dry_energy_gradient_ps_local_terms(self, state, theta_i, **kwargs):
         terms = super()._dry_energy_gradient_ps_local_terms(state, theta_i, **kwargs)
         delta_B = state.column.B_interface[1:] - state.column.B_interface[:-1]
         layer = state.mesh.cell_area[:, None] * delta_B * self.cell_kinetic_energy(state) / self.gravity
-        change = layer.sum(-1, keepdim=True) - v(terms["column"]["kinetic_mass"])
+        change = layer.sum(-1, keepdim=True) - terms["column"]["kinetic_mass"]
         terms["layer"]["kinetic_mass"] = layer
         terms["column"]["kinetic_mass"] = layer.sum(-1, keepdim=True)
         terms["column"]["total"] = terms["column"]["total"] + change
@@ -133,12 +128,12 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         dependence on pressure-weighted interface mass is included.
         """
         column = state.column
-        theta, dp = v(state.theta()), v(state.layer_dp())
+        theta, dp = state.theta(), state.layer_dp()
         dm = interface_mass(dp)
-        gm = v(self._dry_energy_gradient_mtheta_for_coord_work(state, state.theta(), dp=dp, dm=dm))
+        gm = self._dry_energy_gradient_mtheta_for_coord_work(state, state.theta(), dp=dp, dm=dm)
         parts = self._dry_energy_gradient_ps_terms(state, state.theta(), dp=dp, dm=dm, grad_mtheta=gm)
-        gp = v(parts["potential"] + parts["internal"] + parts["theta_mass_coupling"])
-        pi, pressure = v(column.exner_interface(state.ps)), v(column.interface_pressure(state.ps))
+        gp = (parts["potential"] + parts["internal"] + parts["theta_mass_coupling"])
+        pi, pressure = column.exner_interface(state.ps), column.interface_pressure(state.ps)
         factor = state.mesh.cell_area[:, None] * column.A_interface[0] / self.gravity
         delta = pi[:, 1:] - pi[:, :-1]
         lid_gradient = torch.cat([
@@ -171,19 +166,19 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         self.check_state_compatible(state)
         ctx = self._transport_primitives(state) if primitives is None else primitives
         mesh = state.mesh
-        u, theta = v(state.u_e), v(state.theta())
-        dp, dp_edge = v(ctx["dp"]), v(ctx["dp_e"])
-        mu, omega = v(ctx["mu"]), v(ctx["omega"])
-        horizontal = v(self.centered_scalar_transport(
+        u, theta = state.u_e, state.theta()
+        dp, dp_edge = ctx["dp"], ctx["dp_e"]
+        mu, omega = ctx["mu"], ctx["omega"]
+        horizontal = self.centered_scalar_transport(
             state, state.u_e, ctx["theta"], ctx["dp"],
             dp_e=ctx["dp_e"], mass_flux=ctx["mass_flux"],
-        ))
+        )
         gm, gp = self.thermal_gradients(state)
         edge_area = mesh.dc_edge[:, None] * mesh.dv_edge[:, None]
 
         def divergence_transpose(covector):
             # Euclidean transpose; cell areas belong inside the gradient.
-            return -edge_area * v(mesh.grad(covector / mesh.cell_area[:, None]))
+            return -edge_area * mesh.grad(covector / mesh.cell_area[:, None])
 
         # Transpose centered horizontal theta transport.
         c0, c1 = mesh.cellsOnEdge.T
@@ -206,7 +201,7 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         pressure_covector = -dp_edge * (horizontal_adjoint + divergence_transpose(grad_div))
 
         # Fixed-vorticity skew transpose in the actual diagonal KE metric.
-        vorticity = v(mesh.curl(u)) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
+        vorticity = mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
         vertices = mesh.verticesOnEdge
         q_edge = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
         indices = mesh.safe_rotation_stencil
@@ -221,7 +216,7 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         )
 
         # Centered vertical exchange and the time-dependent metric correction.
-        mu_edge = v(state.cell_to_edge(mu))
+        mu_edge = state.cell_to_edge(mu)
 
         def metric(z, thickness=dp):
             return self.metric_action(state, z, thickness)
@@ -239,7 +234,7 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         vertical_covector = 0.5 * (
             metric(vertical(u)) - vertical_transpose - metric(u, mu[:, :-1] - mu[:, 1:])
         )
-        bernoulli_covector = metric_diagonal * v(-state.grad(self.cell_kinetic_energy(state)))
+        bernoulli_covector = metric_diagonal * (-state.grad(self.cell_kinetic_energy(state)))
         momentum = {"momentum_diffusion": torch.zeros_like(u), "diffusion": torch.zeros_like(u)}
         if combine:
             momentum["total"] = self.solve_kinetic_metric(
@@ -295,8 +290,8 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         db = state.column.B_interface[1:] - state.column.B_interface[:-1]
         gp = gp + (state.mesh.cell_area[:, None] * db *
                    self.cell_kinetic_energy(state) / self.gravity).sum(-1, keepdim=True)
-        return ((self.kinetic_energy_gradient_u(state) * v(tendency.u_e)).sum()
-                + (gm * v(tendency.mtheta_i)).sum() + (gp * v(tendency.ps)).sum())
+        return ((self.kinetic_energy_gradient_u(state) * tendency.u_e).sum()
+                + (gm * tendency.mtheta_i).sum() + (gp * tendency.ps).sum())
 
 
     def _validate_mass_geometry(

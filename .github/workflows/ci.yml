@@ -19,6 +19,8 @@ jobs:
       PYTHONPATH: ""
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -55,13 +57,19 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_dry_helpers.py --mode portable --report dry-helpers-portable.json
-      - name: MoistAtmosphere smoke test
+      - name: Supported timestep smoke examples
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
         run: |
           python -I examples/moist_atmosphere.py
           python -I examples/bounded_moist.py
           python -I examples/held_suarez.py
+          python -I examples/dry_atmosphere.py
+          python -I examples/dry_atmosphere.py --imex
+          python -I examples/moist_atmosphere.py --imex
+      - name: Held-Suarez pinned archive comparison
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/check_held_suarez_archive.py --archive-repo "$GITHUB_WORKSPACE" --report held-suarez.json
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -105,4 +113,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/*-portable.json
             ${{ runner.temp }}/vfs-check/*-exact.json
             ${{ runner.temp }}/vfs-check/environment.json
+            ${{ runner.temp }}/vfs-check/held-suarez.json
           if-no-files-found: warn

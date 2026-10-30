@@ -41,11 +41,11 @@ Inside each `evaluate`, in execution order:
 5. `limited_traces` returns the amount ledger plus limiter-minus-Gibbs trace
    changes. `evaluate` contracts those changes with jumps of area-normalized
    energy derivatives. Carrier flux times this contraction is face power.
-6. With `release_as_heat=True`, negative scalar work becomes nonnegative heat;
+6. With intrinsic heat release, negative scalar work becomes nonnegative heat;
    other work receives a mechanical correction through `pullback`. Each face
    allocates half its heat power to each endpoint, dividing by that endpoint's
    entropy-energy derivative. Equal power does not mean equal entropy increment.
-   The retained configuration requires release_as_heat=True.
+   There is no alternate no-heat formulation or switch.
 7. The assembled RHS retains matched momentum/continuity and replaces scalar
    tendencies with limited-flux divergence plus entropy heating. The water RHS
    describes transfer, but the Euler water update still uses the ledger directly.

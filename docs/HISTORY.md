@@ -1,6 +1,7 @@
 # Historical reports and measurements
 
-For current usage start with [retained paths](CURRENT_PATHS.md),
+For current usage start with [the verification handoff](VERIFICATION_HANDOFF.md),
+[cleanup results](FINAL_CLEANUP_RESULTS.md), [retained paths](CURRENT_PATHS.md),
 [ownership](STATE_OWNERSHIP.md) and [readability results](READABILITY_RESULTS.md).
 The reports below record earlier source trees, APIs and validation. Their old
 next-step instructions and supported-option lists are not current guidance.

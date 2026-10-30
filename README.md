@@ -1,76 +1,61 @@
 # VFS — spherical atmospheric dynamics
 
-VFS contains a conservative dry core and an energy-closing, transport-bounded
-moist core on a spherical Voronoi C-grid. The default model steppers use SSPRK3.
-Existing dry and centered moist ARK4 IMEX paths remain available through explicit
-stepper instances. Centered moist ARK4 does **not** provide bounded species
-transport, and is never selected as a fallback for bounded explicit stepping.
+VFS provides conservative dry and energy-closing, transport-bounded moist
+hydrostatic dynamics on a spherical Voronoi C-grid, with PyTorch tensor states,
+explicit or ARK4 stepping, differentiable diagnostics, and atmospheric I/O.
+Models own fixed geometry; states hold prognostic tensors. Positive vapor is
+required by the moist core; no input moisture floor is added.
 
-## Start here
+## Install and try
 
-- [Current configurations and follow one timestep](docs/CURRENT_PATHS.md): four
-  retained paths, equation owners, units, conservation pairings and solver limits.
-- [State/model ownership and short dry/moist examples](docs/STATE_OWNERSHIP.md).
-- [Moist physical-field initialization](docs/PHYSICAL_FIELDS_API.md) and
-  [bounded Euler → SSPRK3 reading guide](docs/BOUNDED_MOIST_READING_GUIDE.md).
-- [Regression evidence and deliberate API removals](docs/READABILITY_RESULTS.md).
-  [Historical reports](docs/HISTORY.md) describe earlier trees, not current APIs.
-
-## Install and run
+Use Python 3.10+ (CI uses 3.12). From this repository:
 
 ```bash
 python -m pip install .
 python examples/moist_atmosphere.py
-python examples/bounded_moist.py
-python examples/held_suarez.py
 ```
 
-Use Python 3.10+; CI uses 3.12. For development, install `-e '.[test]'`.
-The small test extra needs no plotting/cloud stack. See
-[CONTRIBUTING.md](CONTRIBUTING.md) for installed-wheel checks outside the checkout.
-Optional data/plotting extras serve external workflows. The local version
-`1.0.0+extraction4` does not imply package publication; no license is selected here.
+For development use `python -m pip install -e '.[test]'`; see
+[CONTRIBUTING.md](CONTRIBUTING.md) for isolated installed-wheel checks.
+Conda packaging is deferred. No package publication or license selection is
+part of this cleanup.
 
-Models own fixed geometry and dynamics; ordinary states hold tensors and borrow
-geometry. Move the model before initialization. Derived physical fields and
-budgets are computed from the supplied state, without stale caches. Use explicit
-`state_to_model` for existing states on the same geometry; no hidden cast,
-detach, clipping or regridding is performed. Vapor must be strictly positive.
+```python
+import torch
+from vfs import MoistAtmosphere, VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients
 
-The bounded moist Euler update installs species amounts from its ledger. A generic
-`state + dt * rhs` replacement would lose its cancellation-safe update. Gibbs and
-limiter work are allocated with `release_as_heat=True`; the non-heat alternative
-is removed. Energy closure is semidiscrete, not exact finite-step RK conservation.
-
-[Held–Suarez thermal relaxation and Rayleigh drag](docs/HELD_SUAREZ.md) remain
-available as a standalone source. Sum it explicitly with the conservative dry
-RHS at each SSPRK3 stage and report thermal/drag budget contributions separately;
-the model's default step remains unforced.
-
-## Scope and validation
-
-Retained: spherical geometry, mesh generation/transfers, conservative dry and
-bounded moist dynamics, explicit and ARK4 stepping, differentiable diagnostics,
-atmospheric initialization, regridding and I/O. ARK4 uses retained analytic wave
-operators, residual-checked solvers and supported preconditioners. Evidence for
-specific configurations is documented; arbitrary solver flags are not qualified.
-
-Removed: other domains/ML, old dry recipes and general process/forcing composition,
-canonical dry alternatives, ARK2/3 and pressure prototypes, compiled/coupled-JVP/
-fixed-work IMEX alternatives and centered explicit moist stepping. Necessary
-centered candidates, donor transport, limiter corrections and shared dry
-operations remain inside the retained algorithms. Git history is the archive.
-
-```bash
-python -m pytest tests --fixture-mode=portable -q
-python tools/check_baseline.py --mode portable
-python tools/check_dry_helpers.py --mode portable
+mesh = VoronoiMesh(n_cells=16, lloyd_iters=0, verbose=False)
+a, b = make_hybrid_coefficients(3, p_top=5000.)
+column = CharneyPhillipsColumn(3, a, b, phi_full_mode="direct_u_gl2_adjoint")
+model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)
+state = model.state_from_fields(temperature=280., surface_pressure=100000.,
+                                normal_wind=0., vapor=.01)
+state = model(state, dt=1.)  # bounded SSPRK3 with intrinsic heat release
+budgets = model.diagnostics(state)  # tensor mass, species, entropy and energy
 ```
 
-Portable checks retain independent positivity, conservation, limiter and exact
-ledger checks. Frozen fixtures and tolerances are unchanged; exact mode remains
-separate and can fail across CPU/backend environments. Same-environment pre/post
-comparison covers states, RHS, energies, representative gradients, ledgers, ARK4
-stages and solver diagnostics. One-step bounded derivative checks do not qualify
-IMEX backward, arbitrary limiter switches, accelerators or full rollouts.
-Read [the handoff](handoff/index.md) before further changes.
+## Supported configurations
+
+| Configuration | Runnable command | Important distinction |
+|---|---|---|
+| Dry `DrySSPRK3()` (default) | `python examples/dry_atmosphere.py` | Conservative, unbatched, tracer-free core |
+| Moist `BoundedSSPRK3()` (default) | `python examples/moist_atmosphere.py` | Authoritative Euler species ledger; intrinsic heat allocation |
+| Dry `DryIMEX()` | `python examples/dry_atmosphere.py --imex` | ARK4 analytic wave split; residual-checked solves |
+| Moist `CenteredIMEX()` | `python examples/moist_atmosphere.py --imex` | Smooth-composition demo; **not bounded species transport** |
+| Standalone Held–Suarez forcing | `python examples/held_suarez.py` | Explicit sum at each dry RK stage; separate thermal/drag budgets |
+
+These short runs demonstrate the API, not balanced benchmarks or safe timesteps
+at arbitrary resolutions. Instantaneous energy closure includes the fixed-lid
+reservoir; it does not imply exact finite-step energy conservation. Tested
+one-step derivatives do not qualify IMEX backward, arbitrary limiter switches,
+GPU execution or long-rollout gradients.
+
+## Read further
+
+- [Follow one timestep](docs/CURRENT_PATHS.md) and [bounded moist details](docs/BOUNDED_MOIST_READING_GUIDE.md).
+- [State/model ownership](docs/STATE_OWNERSHIP.md), [physical initialization](docs/PHYSICAL_FIELDS_API.md), [Held–Suarez sources](docs/HELD_SUAREZ.md).
+- [Cleanup evidence](docs/FINAL_CLEANUP_RESULTS.md) and [verification handoff](docs/VERIFICATION_HANDOFF.md).
+- [Portable regression policy](docs/PORTABLE_REGRESSION.md), [historical reports](docs/HISTORY.md), and [development handoff](handoff/index.md).
+
+Freeze the retained implementation for the verification phase. Numerical fixes
+or missing benchmark capabilities should be proposed separately from cleanup.

@@ -136,3 +136,11 @@ Before merging the simplification stack, preserve existing Held–Suarez thermal
 relaxation and Rayleigh drag in [a standalone source](HELD_SUAREZ.md). No legacy
 framework is restored. Original method ASTs and 132 same-environment comparisons
 are exact, including forced-stage states and representative energy gradients.
+
+## Final bounded cleanup and verification handoff
+
+The [cleanup report](FINAL_CLEANUP_RESULTS.md) records removal of obsolete IMEX
+configuration, intrinsic bounded heat release and redundant tensor wrappers,
+with exact same-environment comparisons and unchanged fixtures. The committed
+Held–Suarez archive tool and five supported scenario types are runnable. Freeze
+implementation for [verification](VERIFICATION_HANDOFF.md); Conda is deferred.

@@ -14,7 +14,7 @@ from dataclasses import dataclass
 import torch
 from ..core.state import interface_mass
 from .scalar_transport import ScalarTransportState
-from .conservative import DryHydrostaticConservativeDynamics, v
+from .conservative import DryHydrostaticConservativeDynamics
 from .moist_cp import interface_pressure_mass, reconstruct_moist_cp
 from .mixture_thermodynamics import MixtureThermodynamics
 
@@ -89,10 +89,10 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         or spatial gradients. Kinetic energy is added by energy_gradients.
         """
         # 1. Reconstruct thermodynamics from CP contents at two points per layer.
-        p = v(state.column.interface_pressure(state.ps))
+        p = state.column.interface_pressure(state.ps)
         dp = p.diff()
         dm = interface_pressure_mass(dp)
-        S = v(state.scalar_content)
+        S = state.scalar_content
         quadrature = reconstruct_moist_cp(p, S, water, self.mixture)
         T, q, pg = (
             quadrature["temperature"],
@@ -181,19 +181,17 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         mesh = state.mesh
         # Both entropy access paths divide by CP mass. Keep their
         # existing evaluations: do not replace one with the other or cache them.
-        u, specific_entropy = v(state.u_e), v(state.specific_scalar())
-        dp, dp_edge = v(transport["dp"]), v(transport["dp_e"])
-        mu, omega = v(transport["mu"]), v(transport["omega"])
+        u, specific_entropy = state.u_e, state.specific_scalar()
+        dp, dp_edge = transport["dp"], transport["dp_e"]
+        mu, omega = transport["mu"], transport["omega"]
         # mu (C,I) and its interface-to-layer average omega (C,L): Pa/s.
-        horizontal_entropy = v(
-            self.centered_scalar_transport(
-                state,
-                state.u_e,
-                transport["specific_scalar"],
-                transport["dp"],
-                dp_e=transport["dp_e"],
-                mass_flux=transport["mass_flux"],
-            )
+        horizontal_entropy = self.centered_scalar_transport(
+            state,
+            state.u_e,
+            transport["specific_scalar"],
+            transport["dp"],
+            dp_e=transport["dp_e"],
+            mass_flux=transport["mass_flux"],
         )
         entropy_gradient, pressure_gradient, water_gradient = self.mixture_gradients(
             state, water
@@ -202,7 +200,7 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
 
         def divergence_transpose(covector):
             # Euclidean transpose; cell areas belong inside the gradient.
-            return -edge_area * v(mesh.grad(covector / mesh.cell_area[:, None]))
+            return -edge_area * mesh.grad(covector / mesh.cell_area[:, None])
 
         # 2. Transpose centered horizontal entropy transport against dE/dS.
         c0, c1 = mesh.cellsOnEdge.T
@@ -272,15 +270,13 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
             pressure_covector -= dp_edge * (
                 species_horizontal_adjoint + divergence_transpose(species_grad_div)
             )
-            horizontal_species = v(
-                self.centered_scalar_transport(
-                    state,
-                    state.u_e,
-                    q,
-                    transport["dp"],
-                    dp_e=transport["dp_e"],
-                    mass_flux=transport["mass_flux"],
-                )
+            horizontal_species = self.centered_scalar_transport(
+                state,
+                state.u_e,
+                q,
+                transport["dp"],
+                dp_e=transport["dp_e"],
+                mass_flux=transport["mass_flux"],
             )
             flux = omega * 0.5 * (q[:, :-1] + q[:, 1:])
             water_tendencies.append(
@@ -294,7 +290,7 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         # Vorticity is 1/s on vertex layers, averaged to edge layers; the metric
         # is edge_area*dp_edge/gravity (kg). Skew pairing cancels rotational work.
         vorticity = (
-            v(mesh.curl(u)) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
+            mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
         )
         vertices = mesh.verticesOnEdge
         edge_vorticity = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
@@ -316,7 +312,7 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
 
         # 5. Centered vertical velocity exchange and time-dependent mass metric.
         # Keep the metric-rate correction: layer mass changes during transport.
-        mu_edge = v(state.mesh.cell_to_edge(mu))
+        mu_edge = state.mesh.cell_to_edge(mu)
 
         def metric(z, thickness=dp):
             return self.metric_action(state, z, thickness)
@@ -336,9 +332,7 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         vertical_covector = 0.5 * (
             metric(vertical(u)) - vertical_transpose - metric(u, mu[:, :-1] - mu[:, 1:])
         )
-        bernoulli_covector = metric_diagonal * v(
-            -state.mesh.grad(self.cell_kinetic_energy(state))
-        )
+        bernoulli_covector = metric_diagonal * (-state.mesh.grad(self.cell_kinetic_energy(state)))
         # 6. Bernoulli work uses cell kinetic energy (J/kg). Preserve the two
         # assembly paths: solve the sum for tendency, or solve each term for
         # diagnostics. Reassociating these operations can change roundoff.
@@ -424,7 +418,7 @@ class MoistConservativeDynamics(torch.nn.Module):
         The latter is the magnitude of the negative inventory, not a correction.
         Nothing is clipped or written back to the state.
         """
-        dm = interface_pressure_mass(v(s.column.interface_pressure(s.ps)).diff())
+        dm = interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
         q = s.water_content / dm[..., None]
         negative = -s.water_content[..., 1:].clamp_max(0)
         return dict(
@@ -443,7 +437,7 @@ class MoistConservativeDynamics(torch.nn.Module):
         or conversion to potential temperature. No dry thermodynamic diagnostic
         accepts this view. Every call recomputes its masses from supplied ps.
         """
-        p = v(s.column.interface_pressure(s.ps))
+        p = s.column.interface_pressure(s.ps)
         dp = p.diff()
         dm = interface_pressure_mass(dp)
         if s.water_content.shape != (*p.shape, 3):
@@ -486,7 +480,7 @@ class MoistConservativeDynamics(torch.nn.Module):
         terms = self.kernel._assemble(transport_view, s.water_content, combine=True)
         return MoistState(
             terms["u_e"]["total"],
-            v(terms["ps"]["total"]),
+            terms["ps"]["total"],
             terms["entropy_content"]["total"],
             terms["water_content"]["total"],
             s.mesh,
@@ -502,7 +496,7 @@ class MoistConservativeDynamics(torch.nn.Module):
         All outputs retain gradients; no reporting detach occurs here.
         """
         transport_view = self.transport_state(s)
-        p = v(s.column.interface_pressure(s.ps))
+        p = s.column.interface_pressure(s.ps)
         quadrature = reconstruct_moist_cp(
             p, s.entropy_content, s.water_content, self.thermodynamics
         )

@@ -8,7 +8,7 @@ explicit state conversion rather than casting inside a tendency.
 | Path | Entry | Guarantees and limits |
 |---|---|---|
 | Dry conservative SSPRK3 | `DryAtmosphere(mesh, column, stepper=DrySSPRK3())` then `model(state, dt)` | Matched semidiscrete energy/continuity; time integration is not exactly energy conserving. Unbatched, tracer-free, positive fixed lid, direct_u_gl2_adjoint. |
-| Bounded moist SSPRK3 | `MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3(release_as_heat=True))` then `model(state, dt)` | Bounded Euler species amounts are authoritative; three dt-sized Euler budgets and convex combinations. Positive vapor required, no floor. |
+| Bounded moist SSPRK3 | `MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3())` then `model(state, dt)` | Bounded Euler species amounts are authoritative; three dt-sized Euler budgets and convex combinations. Positive vapor required, no floor. |
 | Dry ARK4 | `DryAtmosphere(mesh, column, stepper=DryIMEX(solver_config=...))` | Frozen analytic conservative wave plus nonlinear explicit residual. No scalar bound/SSP guarantee. |
 | Moist ARK4 | `MoistAtmosphere(mesh, column, stepper=CenteredIMEX())` | Explicit opt-in to centered mixture transport; admissibility rejection, not repair or bounded transport. No bounded IMEX scheme. |
 
@@ -20,7 +20,7 @@ Use an explicit configuration:
 
 ```python
 solver_config = IMEXSolverConfig(
-    implicit_operator="gravity_wave", preconditioner="hydrostatic_schur",
+    preconditioner="hydrostatic_schur",
     rtol=1e-11, max_iterations=100,
 )
 ```
@@ -28,7 +28,8 @@ solver_config = IMEXSolverConfig(
 This is a documented tested selection. `DryIMEX()` defaults to analytic waves
 and Schur with the original config tolerance/restart/iteration defaults; the
 explicit tolerance above is the one used in the pre/post stage capture. Low-level
-dry solver construction requires an explicit gravity_wave configuration.
+IMEXSolverConfig() is now valid for both retained analytic ARK4 paths. There is
+no operator selector or compiled configuration. Public stepper settings are unchanged.
 Moist CenteredIMEX's existing defaults are analytic gravity waves, Schur,
 rtol=1e-9, 80 iterations, restart=30. ARK4 is the only retained implicit tableau;
 ARK2/3 selectors and pressure-prototype classes were deliberately removed.
@@ -137,12 +138,11 @@ independent check uses the moist test's 3600 s interval and 600/300/150 s steps.
 Dry wind RMS errors were 3.0452565571e-8, 1.9060099373e-9, 1.1889634595e-10.
 No IMEX backward, accelerator or full-rollout support is established here.
 
-## What to inspect next
+## Verification next
 
-Use [ownership examples](STATE_OWNERSHIP.md) to initialize and call both models,
-then inspect the equation owners above. External [Field](../vfs/field.py)
-placement/regridding and dry State diagnostic/I/O helpers remain meaningful
-boundaries; neither changes the tensor-only state payload. Current regression
-and intentional removal details are in [readability results](READABILITY_RESULTS.md).
-[Historical reports](HISTORY.md) retain earlier evidence without advertising
-removed APIs as current configurations.
+Use [ownership examples](STATE_OWNERSHIP.md) for state construction and the
+[verification handoff](VERIFICATION_HANDOFF.md) for all runnable commands and
+benchmark gaps. [Final cleanup evidence](FINAL_CLEANUP_RESULTS.md) distinguishes
+regression preservation from scientific validation. Freeze the retained
+implementation; propose numerical fixes or missing benchmark capabilities as
+separate work, not further stylistic restructuring.

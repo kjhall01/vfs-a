@@ -51,7 +51,7 @@ def main():
     torch.set_num_threads(1)
     with torch.no_grad():
         base, state = initialize()
-        model = BoundedGibbs(base, release_as_heat=True)
+        model = BoundedGibbs(base)
         before = inventories(base, state)
         for _ in range(10):
             state = model.step(state, dt=30.0)

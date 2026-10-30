@@ -3,7 +3,7 @@
 Read `handoff/index.md` and `docs/PASS4_RESULTS.md` (and pass-1 history) first.
 
 - Preserve checkpoint-54 numerical expressions and defaults during packaging.
-- Current moist baseline is BoundedGibbs(base, release_as_heat=True), not the
+- Current moist baseline is BoundedGibbs(base) with intrinsic heat release, not the
   centered base alone. Its Euler species-amount ledger must remain intact.
 - Keep the package teachable, inspectable, object-oriented and concise. Avoid
   deep inheritance, plugin registries and hidden state conversions.

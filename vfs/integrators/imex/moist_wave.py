@@ -6,7 +6,6 @@ The off-diagonal block is an exact derivative of those parts of the RHS, not
 of the whole nonlinear tendency. Advection, rotation and KE remain explicit.
 """
 import torch
-from ...atmosphere.conservative import v
 from ...atmosphere.moist_cp import interface_pressure_mass, reconstruct_moist_cp
 
 
@@ -16,7 +15,7 @@ class MoistPressureWave:
         self.d = dynamics
         self.s = state
         self.transport_view = dynamics.transport_state(state)
-        self.p = v(state.column.interface_pressure(state.ps))
+        self.p = state.column.interface_pressure(state.ps)
         self.dp = self.p.diff()
         self.dm = interface_pressure_mass(self.dp)
         self.db = state.column.B_interface.diff()
@@ -45,7 +44,7 @@ class MoistPressureWave:
         self.mu = chemical[..., 1:] - chemical[..., :1]
         self.weight = state.mesh.cell_area[:, None] / dynamics.kernel.gravity
         self.edge_area = state.mesh.dc_edge[:, None] * state.mesh.dv_edge[:, None]
-        self.dp_e = v(state.mesh.cell_to_edge(self.dp))
+        self.dp_e = state.mesh.cell_to_edge(self.dp)
 
     def interpolate(self, z):
         """Interface scalar to the two native Gauss points in each layer."""
@@ -106,7 +105,7 @@ class MoistPressureWave:
         i, j = mesh.cellsOnEdge.T
 
         def div_transpose(x):
-            return -self.edge_area * v(mesh.grad(x / mesh.cell_area[:, None]))
+            return -self.edge_area * mesh.grad(x / mesh.cell_area[:, None])
 
         horizontal = torch.zeros_like(self.s.u_e)
         grad_omega = torch.zeros_like(self.dp)
@@ -131,16 +130,16 @@ class MoistPressureWave:
     def transport(self, u):
         """Exact wind-to-content tendency at frozen ps, entropy and fractions."""
         flux = self.dp_e * u
-        div = v(self.s.mesh.div(flux))
+        div = self.s.mesh.div(flux)
         ps = -div.sum(-1, keepdim=True)
-        mu = v(self.d.kernel._vertical_mass_flux(self.transport_view, div, ps))
+        mu = self.d.kernel._vertical_mass_flux(self.transport_view, div, ps)
         omega = .5 * (mu[:, :-1] + mu[:, 1:])
         fields = []
         for k in range(4):
             z = self.scalars[..., k]
-            horizontal = v(self.d.kernel.centered_scalar_transport(
+            horizontal = self.d.kernel.centered_scalar_transport(
                 self.transport_view, u, z, self.dp, dp_e=self.dp_e, mass_flux=flux,
-            ))
+            )
             vertical = omega * .5 * (z[:, :-1] + z[:, 1:])
             fields.append(horizontal + torch.cat([
                 -vertical[:, :1], vertical[:, :-1] - vertical[:, 1:], vertical[:, -1:],

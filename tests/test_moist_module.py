@@ -55,7 +55,7 @@ def test_delegation_and_hooks(model, factory):
     m = MoistAtmosphere(model.mesh, model.column, stepper=factory())
     s = init(m, normal_wind=1.0)
     if isinstance(m.stepper, BoundedSSPRK3):
-        expected = BoundedGibbs(m.dynamics, release_as_heat=True).step(s, 1.0)
+        expected = BoundedGibbs(m.dynamics).step(s, 1.0)
     else:
         expected = MoistPEIMEXARK(m.dynamics).step(s, 1.0)
     seen = []
@@ -83,7 +83,7 @@ def test_borrowed_references_and_reuse(model):
     with pytest.raises(ValueError, match="already bound"):
         MoistAtmosphere(model.mesh, model.column, stepper=model.stepper)
     with pytest.raises(FrozenInstanceError):
-        model.stepper.release_as_heat = False
+        model.stepper._dynamics = None
     s = init(model)
     model.transport.base = MoistConservativeDynamics()
     with pytest.raises(ValueError, match="transport.base"):
@@ -96,7 +96,7 @@ def test_borrowed_references_and_reuse(model):
 
 @pytest.mark.parametrize(
     "bad",
-    ["ssprk3", object(), lambda s, dt: s, BoundedGibbs(MoistConservativeDynamics(), release_as_heat=True)],
+    ["ssprk3", object(), lambda s, dt: s, BoundedGibbs(MoistConservativeDynamics())],
 )
 def test_reject_unsupported_stepper(model, bad):
     with pytest.raises(TypeError, match="stepper must be"):
@@ -112,9 +112,9 @@ def test_reject_configuration(model):
         MoistAtmosphere(
             model.mesh,
             model.column,
-            stepper=CenteredIMEX(solver_config=IMEXSolverConfig()),
+            stepper=CenteredIMEX(solver_config=IMEXSolverConfig(preconditioner="multilevel_hydrostatic_schur")),
         )
-    with pytest.raises(ValueError, match="configure release_as_heat"):
+    with pytest.raises(TypeError, match="release_as_heat"):
         MoistAtmosphere(
             model.mesh, model.column, stepper=CenteredIMEX(), release_as_heat=False
         )
@@ -123,7 +123,7 @@ def test_reject_configuration(model):
         MoistAtmosphere(
             model.mesh, model.column, stepper=CenteredIMEX(), transport="bounded"
         )
-    with pytest.raises(ValueError, match="requires release_as_heat=True"):
+    with pytest.raises(TypeError, match="release_as_heat"):
         MoistAtmosphere(model.mesh, model.column, release_as_heat=False)
 
 

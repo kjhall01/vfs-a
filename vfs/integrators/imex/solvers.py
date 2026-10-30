@@ -15,14 +15,18 @@ from ...geometry.mesh.multilevel import VoronoiMeshHierarchy
 
 @dataclass(frozen=True)
 class IMEXSolverConfig:
-    """Controls for the matrix-free tensor-state ARK solve."""
+    """Residual controls for the retained analytic ARK4 wave solve.
+
+    Defaults are valid for dry and moist full solves. Public model steppers
+    select hydrostatic Schur and their documented iteration/tolerance settings.
+    Multilevel controls apply only to the dry multilevel preconditioner.
+    """
 
     rtol: float | None = None
     atol: float = 0.0
     max_iterations: int = 40
     restart: int = 20
     reorthogonalize: bool = True
-    implicit_operator: str = "coupled"
     preconditioner: str = "none"
     schur_tolerance_safety: float = 0.8
     multilevel_coarsening: int = 3
@@ -31,9 +35,6 @@ class IMEXSolverConfig:
     multilevel_stencil_size: int = 3
     multilevel_smoothing_iterations: int = 1
     multilevel_jacobi_weight: float = 0.85
-    compile_kernels: bool = False
-    compile_backend: str | None = None
-    compile_mode: str | None = None
 
     def resolved_rtol(self, dtype: torch.dtype) -> float:
         return float(self.rtol) if self.rtol is not None else (1.0e-8 if dtype == torch.float64 else 1.0e-5)
@@ -45,8 +46,6 @@ class IMEXSolverConfig:
             raise ValueError("atol must be nonnegative")
         if self.max_iterations < 1 or self.restart < 1:
             raise ValueError("max_iterations and restart must be positive")
-        if self.implicit_operator not in {"coupled", "fast_wave", "gravity_wave"}:
-            raise ValueError("implicit_operator must be 'coupled', 'fast_wave', or 'gravity_wave'")
         if self.preconditioner not in {"none", "hydrostatic_schur", "multilevel_hydrostatic_schur"}:
             raise ValueError(
                 "preconditioner must be 'none', 'hydrostatic_schur', or "
@@ -66,10 +65,6 @@ class IMEXSolverConfig:
             raise ValueError("multilevel_smoothing_iterations must be positive")
         if not 0.0 < self.multilevel_jacobi_weight < 1.0:
             raise ValueError("multilevel_jacobi_weight must be in (0, 1)")
-        if self.compile_backend is not None and not str(self.compile_backend).strip():
-            raise ValueError("compile_backend must be non-empty when provided")
-        if self.compile_mode is not None and not str(self.compile_mode).strip():
-            raise ValueError("compile_mode must be non-empty when provided")
 
 
 @dataclass(frozen=True)
@@ -350,8 +345,6 @@ class _HydrostaticSchurSystem:
     """Exact reduced factorization of the analytic gravity-wave stage block."""
 
     def __init__(self, operator: DryPELinearOperator, factor: float) -> None:
-        if operator.implicit_operator != "gravity_wave":
-            raise ValueError("hydrostatic_schur requires implicit_operator='gravity_wave'")
         self.operator = operator
         self.factor = float(factor)
         self.anchor = operator.anchor
@@ -521,7 +514,6 @@ class _MultilevelHydrostaticSchurPreconditioner:
         operator = DryPELinearOperator(
             self.system.operator.dynamics,
             anchor,
-            implicit_operator="gravity_wave",
             tendency=self.system.operator.tendency,
         )
         return _HydrostaticSchurSystem(operator, self.system.factor)
