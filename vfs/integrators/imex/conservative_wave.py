@@ -7,6 +7,7 @@ Cache a, a', a'' once per step; apply the exact derivative of the matched PGF.
 Advection, rotation and kinetic forces remain in the nonlinear ARK residual.
 """
 import torch
+from ...core.state import interface_mass
 from ...atmosphere.conservative import v
 
 
@@ -69,9 +70,9 @@ class ConservativePressureWave:
         self.gravity = dynamics.gravity
         self.a, self.a1, self.a2 = thermal_coefficients(anchor, dynamics.gravity)
         self.theta = v(anchor.theta())
-        self.dm = dynamics._interface_mass(v(anchor.layer_dp()))
+        self.dm = interface_mass(v(anchor.layer_dp()))
         self.db = anchor.column.B_interface.diff()
-        self.dm1 = dynamics._interface_mass(self.db.expand_as(v(anchor.layer_dp())))
+        self.dm1 = interface_mass(self.db.expand_as(v(anchor.layer_dp())))
 
     def wind(self, mtheta, ps):
         s, mesh = self.state, self.state.mesh

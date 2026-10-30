@@ -1,6 +1,7 @@
 import pytest,torch
 from unittest.mock import patch
 from vfs.atmosphere.moist_conservative import MoistState,MoistConservativeDynamics
+from vfs.atmosphere.bounded_moist import BoundedGibbs
 from vfs.atmosphere.moist_cp import interface_pressure_mass
 from vfs.atmosphere.conservative import v
 from vfs.geometry.mesh import VoronoiMesh
@@ -54,7 +55,7 @@ def test_uniform_rest_and_short_integration(mesh):
  assert d.tendency(s).u_e.abs().max()<1e-12
  s=case(mesh,4);e0=d.boundary_total_energy(s);initial=s
  for _ in range(10):
-  s=d.step(s,1.)
+  s=BoundedGibbs(d, release_as_heat=True).step(s,1.)
  assert abs(float((d.boundary_total_energy(s)-e0)/e0))<1e-9
  assert all(torch.isfinite(getattr(s,k)).all() for k in KEYS)
 
@@ -141,18 +142,11 @@ def test_roundoff_policy_leaves_positive_composition_bitwise_unchanged(mesh):
   a=getattr(default,method)(s);b=getattr(strict,method)(s)
   for k in KEYS:assert torch.equal(getattr(a,k),getattr(b,k))
  assert torch.equal(default.boundary_total_energy(s),strict.boundary_total_energy(s))
- a=default.step(s,1.);b=strict.step(s,1.)
+ a=BoundedGibbs(default, release_as_heat=True).step(s,1.);b=BoundedGibbs(strict, release_as_heat=True).step(s,1.)
  for k in KEYS:assert torch.equal(getattr(a,k),getattr(b,k))
 
 
-def test_step_validates_returned_stage(mesh):
- # Isolate a violation that first appears in the last RHS update. Earlier
- # stage validation cannot detect it, and step must not return it as valid.
- s=case(mesh,4);d=MoistConservativeDynamics()
- zero=MoistState(*(torch.zeros_like(getattr(s,k)) for k in KEYS),mesh,s.column)
- last=MoistState(*(getattr(zero,k).clone() for k in KEYS),mesh,s.column)
- last.water_content[...,2]=-100.
- original=s.water_content.clone()
- with patch.object(d,'tendency',side_effect=[zero,zero,last]):
-  with pytest.raises(ValueError,match='nonnegative condensates'):d.step(s,1.)
- assert torch.equal(s.water_content,original)
+def test_centered_explicit_step_is_deliberately_removed():
+ assert not hasattr(MoistConservativeDynamics(), 'step')
+ # Final-stage physical validation remains independently exercised by
+ # test_moist_imex.test_returned_state_is_validated and bounded ledger tests.

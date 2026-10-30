@@ -25,12 +25,12 @@ print(json.dumps([n for n in sys.modules if n.startswith("vfs.")]))
 def test_explicit_compatibility_imports_and_unknown_names():
     run('''
 import vfs
-from vfs.atmosphere import build_dry_dynamics
+from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMeshHierarchy
 from vfs.geometry import LatLonGrid
 from vfs.imex import DryPEIMEXARK, MoistPEIMEXARK
-assert build_dry_dynamics("conservative_diagonal").recipe_name == "conservative_diagonal"
-assert vfs.LatLonGrid is LatLonGrid
+assert DryHydrostaticConservativeDynamics().recipe_name == "conservative_diagonal"
+assert LatLonGrid is not None
 try:
     vfs.this_name_does_not_exist
 except AttributeError:
@@ -40,13 +40,11 @@ else:
 ''')
 
 
-def test_removed_learned_pressure_option_fails_explicitly():
+def test_removed_dry_alternatives_have_no_compatibility_dispatch():
     run('''
-from vfs import DryHydrostaticDynamics
-try:
-    DryHydrostaticDynamics(pgf_correction_mode='learned_potential')
-except ValueError as error:
-    assert 'removed' in str(error)
-else:
-    raise AssertionError('removed learned PGF mode must fail')
+import vfs
+from vfs import atmosphere
+for owner, name in [(vfs, 'DryHydrostaticDynamics'), (vfs, 'VFSModel'),
+                    (atmosphere, 'build_dry_dynamics')]:
+    assert not hasattr(owner, name)
 ''')

@@ -34,12 +34,12 @@ def samples():
     result = {}
     for name, tool in TOOLS.items():
         actual = tool.capture(tool.imports()) if name == 'checkpoint54.pt' else tool.capture()
-        reference = torch.load(ROOT / 'tests/fixtures' / name, weights_only=True)
+        reference = policy.retained_reference(torch.load(ROOT / 'tests/fixtures' / name, weights_only=True), name)
         result[name] = actual, reference
     return result
 
 
-def test_manifest_covers_all_335_tensors_and_all_categories(samples):
+def test_manifest_covers_all_235_retained_tensors_and_all_categories(samples):
     tensors = 0
     categories = set()
     for name, (actual, reference) in samples.items():
@@ -47,8 +47,8 @@ def test_manifest_covers_all_335_tensors_and_all_categories(samples):
         assert len(leaves) == len(policy.MANIFEST[name])
         tensors += sum(isinstance(b, torch.Tensor) for _, _, b in leaves)
         categories.update(s['quantity'] for s in policy.MANIFEST[name].values())
-        assert policy.compare_portable(actual, reference, name)['tensor_comparisons'] == (142 if name == 'checkpoint54.pt' else 193)
-    assert tensors == 335
+        assert policy.compare_portable(actual, reference, name)['tensor_comparisons'] == (142 if name == 'checkpoint54.pt' else 93)
+    assert tensors == 235
     assert categories == set(policy.TOLERANCES) | {'exact'}
 
 
@@ -243,9 +243,9 @@ def test_full_portable_check_keeps_invariants_below_numerical_budgets(samples, c
 
 @pytest.mark.parametrize('change', ['pressure', 'layer mass', 'temperature', 'theta',
                                    'mass', 'reported mass', 'rotation scale', 'rotation closure',
-                                   'normalized rotation closure', 'rotation identity', 'tracer'])
+                                   'normalized rotation closure', 'rotation identity'])
 def test_dry_invariants_reject_incorrect_results_independently(samples, change):
-    actual = copy.deepcopy(samples['dry_helpers_pass2.pt'][0]); c = actual['canonical']
+    actual = copy.deepcopy(samples['dry_helpers_pass2.pt'][0]); c = actual['diagonal']
     if change == 'pressure': c['pressure_fields']['ps'][0, 0] = 0
     elif change == 'layer mass': c['step']['ps'][0, 0] = 4000
     elif change == 'temperature': c['thermo_fields']['temperature'][0, 0] = 0
@@ -256,7 +256,6 @@ def test_dry_invariants_reject_incorrect_results_independently(samples, change):
     elif change == 'rotation closure': c['rotation_work_terms']['work'] = c['rotation_work_terms']['work_abs_scale'].clone()
     elif change == 'normalized rotation closure': c['rotation_work_terms']['work_relative'].fill_(1.)
     elif change == 'rotation identity': c['rotation_work_terms']['work_relative'] += 1e-16
-    elif change == 'tracer': c['tracer_rhs']['tracer_m'][..., 1] += 1.
     labels = {
         'pressure': 'pressure_fields/ps: positivity', 'layer mass': 'step/layer mass: positivity',
         'temperature': 'temperature: positivity', 'theta': 'thermal contents: positivity',
@@ -282,7 +281,7 @@ def test_exact_comparator_and_default_still_reject_one_ulp(samples, name):
     tool = TOOLS[name]
     source = samples[name][0]
     actual = copy.deepcopy(source)
-    path = 'smooth/initial/u_e' if name == 'checkpoint54.pt' else 'canonical/wind_fields/u_e'
+    path = 'smooth/initial/u_e' if name == 'checkpoint54.pt' else 'diagonal/wind_fields/u_e'
     a = at(actual, path)
     a[0, 0] = torch.nextafter(a[0, 0], torch.tensor(float('inf')))
     tool.check(actual, source, 'portable')
@@ -291,7 +290,7 @@ def test_exact_comparator_and_default_still_reject_one_ulp(samples, name):
             tool.check(actual, source, **kwargs)
     with pytest.raises(ValueError, match='unknown comparison mode'):
         tool.check(source, source, 'automatic')
-    assert tool.check(source, source, 'exact')['tensor_comparisons'] == (142 if name == 'checkpoint54.pt' else 193)
+    assert tool.check(source, source, 'exact')['tensor_comparisons'] == (142 if name == 'checkpoint54.pt' else 93)
 
 
 @pytest.mark.parametrize('tool', ['check_baseline', 'check_dry_helpers'])

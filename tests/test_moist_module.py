@@ -96,7 +96,7 @@ def test_borrowed_references_and_reuse(model):
 
 @pytest.mark.parametrize(
     "bad",
-    ["ssprk3", object(), lambda s, dt: s, BoundedGibbs(MoistConservativeDynamics())],
+    ["ssprk3", object(), lambda s, dt: s, BoundedGibbs(MoistConservativeDynamics(), release_as_heat=True)],
 )
 def test_reject_unsupported_stepper(model, bad):
     with pytest.raises(TypeError, match="stepper must be"):
@@ -123,8 +123,8 @@ def test_reject_configuration(model):
         MoistAtmosphere(
             model.mesh, model.column, stepper=CenteredIMEX(), transport="bounded"
         )
-    old = MoistAtmosphere(model.mesh, model.column, release_as_heat=False)
-    assert old.transport.release_as_heat is False
+    with pytest.raises(ValueError, match="requires release_as_heat=True"):
+        MoistAtmosphere(model.mesh, model.column, release_as_heat=False)
 
 
 @pytest.mark.parametrize("field", KEYS)

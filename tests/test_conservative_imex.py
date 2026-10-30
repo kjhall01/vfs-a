@@ -123,12 +123,8 @@ def test_multilevel_matches_direct_schur():
 @pytest.mark.parametrize('batch_shape', [(), (2,), (2, 3)])
 def test_coarse_system_restricts_tensor_tracers(batch_shape):
     """Exercise real coarse transfers, independently of the unbatched modal fit."""
-    from types import SimpleNamespace
-    from vfs.atmosphere import DryHydrostaticDynamics
-    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy
-    from vfs.integrators.imex.dry_ark import (
-        _HydrostaticSchurSystem, _MultilevelHydrostaticSchurPreconditioner,
-    )
+    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy, restrict_state
+
 
     _, state, _ = setup()
     hierarchy = VoronoiMeshHierarchy.build(state.mesh)
@@ -142,10 +138,9 @@ def test_coarse_system_restricts_tensor_tracers(batch_shape):
         tracer, mesh=state.mesh, column=state.column,
     )
     saved = tracer.clone()
-    operator = DryPELinearOperator(DryHydrostaticDynamics(), anchor, implicit_operator='gravity_wave')
-    # Only the coarse builder's inputs: no mock transfer or replacement operator.
-    context = SimpleNamespace(system=_HydrostaticSchurSystem(operator, 1.0), hierarchy=hierarchy)
-    coarse = _MultilevelHydrostaticSchurPreconditioner._coarse_system(context).anchor
+    # Tracer transport in the removed canonical dycore is not retained; test
+    # the extracted geometry operation directly, including supported batches.
+    coarse = restrict_state(anchor, hierarchy)
 
     # Independent weighted donor sum, retaining every batch/level/species index.
     expected = tracer

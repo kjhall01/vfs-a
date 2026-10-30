@@ -1,6 +1,6 @@
-"""Explicitly configured moist steppers; plain, single-model collaborators.
+"""Explicitly configured atmospheric steppers; plain, single-model collaborators.
 
-The public advance(state, dt) interface returns a MoistState. A model binds a
+The public advance(state, dt) interface returns the corresponding dry or moist state. A model binds a
 stepper once to its owned dynamics; construct a fresh stepper for another model.
 No RK expressions live here. Detailed stage results remain on transport or solver.
 """
@@ -38,8 +38,8 @@ class BoundedSSPRK3:
     _implementation: object = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
-        if not isinstance(self.release_as_heat, bool):
-            raise TypeError("release_as_heat must be bool")
+        if self.release_as_heat is not True:
+            raise ValueError("retained bounded dynamics requires release_as_heat=True")
 
     def _bind(self, dynamics):
         _bind_once(
@@ -80,7 +80,7 @@ class CenteredIMEX:
 
     def __post_init__(self):
         from ..integrators.imex.tableau import ARK4_TABLEAU
-        from ..integrators.imex.dry_ark import IMEXSolverConfig
+        from ..integrators.imex.solvers import IMEXSolverConfig
 
         if self.solver_config is not None and not isinstance(
             self.solver_config, IMEXSolverConfig
@@ -121,6 +121,66 @@ class CenteredIMEX:
             or self.solver.stage_validator is not self.stage_validator
         ):
             raise ValueError("IMEX configuration changed after binding")
+
+    def advance(self, state, dt):
+        self._check_binding(self._dynamics)
+        return self.solver.step(state, dt)
+
+
+@dataclass(frozen=True, eq=False)
+class DrySSPRK3:
+    """The retained conservative dry RHS with the existing SSPRK3 formula."""
+    _dynamics: object = field(default=None, init=False, repr=False)
+    _implementation: object = field(default=None, init=False, repr=False)
+
+    def _bind(self, dynamics):
+        _bind_once(self, dynamics, dynamics)
+
+    def _check_binding(self, dynamics):
+        _check(self, dynamics)
+        if self._implementation is not dynamics:
+            raise ValueError("dry stepper no longer matches model dynamics")
+
+    def advance(self, state, dt):
+        from ..core.integrators import ssprk3
+        self._check_binding(self._dynamics)
+        return ssprk3(self._dynamics, state, dt)
+
+
+@dataclass(frozen=True, eq=False)
+class DryIMEX:
+    """Conservative dry ARK4 with an explicitly configured analytic wave solve."""
+    solver_config: object = None
+    _dynamics: object = field(default=None, init=False, repr=False)
+    _implementation: object = field(default=None, init=False, repr=False)
+    _bound_config: object = field(default=None, init=False, repr=False)
+
+    def _bind(self, dynamics):
+        from ..integrators.imex import DryPEIMEXARK, IMEXSolverConfig
+        if self._dynamics is not None:
+            raise ValueError("stepper is already bound; construct a fresh stepper")
+        config = self.solver_config
+        if config is None:
+            config = IMEXSolverConfig(implicit_operator="gravity_wave", preconditioner="hydrostatic_schur")
+        if not isinstance(config, IMEXSolverConfig):
+            raise TypeError("solver_config must be IMEXSolverConfig or None")
+        if config.implicit_operator != "gravity_wave" or config.compile_kernels:
+            raise ValueError("DryIMEX retains eager analytic gravity waves")
+        solver = DryPEIMEXARK(dynamics, config)
+        _bind_once(self, dynamics, solver)
+        object.__setattr__(self, "_bound_config", config)
+
+    @property
+    def solver(self):
+        return self._implementation
+
+    def _check_binding(self, dynamics):
+        _check(self, dynamics)
+        if self.solver.dynamics is not dynamics or self.solver.solver_config is not self._bound_config:
+            raise ValueError("dry IMEX collaborator binding changed")
+        from ..integrators.imex.tableau import ARK4_TABLEAU
+        if self.solver.tableau is not ARK4_TABLEAU:
+            raise ValueError("dry IMEX requires the retained ARK4 tableau")
 
     def advance(self, state, dt):
         self._check_binding(self._dynamics)

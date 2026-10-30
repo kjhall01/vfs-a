@@ -13,7 +13,6 @@ from typing import Any, Iterable
 import torch
 import torch.nn as nn
 
-from vfs.core.registry import register_regrid_operator
 from vfs.field import Field, require_field
 
 
@@ -232,7 +231,6 @@ class LatLonGrid(nn.Module):
         return _xyz_from_lat_lon(torch.deg2rad(lat_deg), torch.deg2rad(lon_deg))
 
 
-@register_regrid_operator("mesh_to_latlon_knn")
 class MeshToLatLonKNN(nn.Module):
     """Differentiable diagnostic remap from native cell centers to lat/lon."""
 
@@ -601,7 +599,6 @@ class MeshToLatLonAdjoint(nn.Module):
         return _native_field_from_latlon_layout(grid_field, mapped, batch_ndim=batch_ndim)
 
 
-@register_regrid_operator("latlon_to_mesh_bilinear")
 class LatLonToMeshBilinear(nn.Module):
     """Differentiable bilinear remap from a regular lat/lon grid to mesh cells."""
 
@@ -655,7 +652,6 @@ class LatLonToMeshBilinear(nn.Module):
         return _native_field_from_latlon_layout(grid_field, mapped, batch_ndim=batch_ndim)
 
 
-@register_regrid_operator("esmf_grid_to_mesh")
 class ESMFGridToMesh:
     """Optional xESMF regular-grid to mesh-cell remapper.
 
@@ -702,7 +698,6 @@ class ESMFGridToMesh:
         return _native_field_from_latlon_layout(grid_field, mapped, batch_ndim=batch_ndim)
 
 
-@register_regrid_operator("esmf_mesh_to_grid")
 class ESMFMeshToGrid:
     """Optional xESMF mesh-cell to regular-grid remapper.
 

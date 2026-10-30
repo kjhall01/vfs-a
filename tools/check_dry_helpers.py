@@ -1,13 +1,14 @@
 """Additional same-environment regression fixture for dry helper extraction.
 
 Capture with the pass-2 installed package before testing pass 3. Covers
-canonical dry and conservative diagonal models, including public diagnostics.
+the retained conservative diagonal model, including public diagnostics.
+The unchanged fixture also archives 100 tensors from the removed canonical core.
 """
 import argparse
 import json
 from pathlib import Path
 import torch
-from vfs import DryHydrostaticDynamics, DryHydrostaticConservativeDynamics
+from vfs import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.core.state import State
@@ -35,7 +36,7 @@ def capture():
     s=State.from_theta(8*rand(mesh.nEdges,4),300+3*rand(32,5),1e5+500*rand(32,1),mesh=mesh,column=col)
     result={}
     with torch.no_grad():
-        for name,d in [('canonical',DryHydrostaticDynamics()),('diagonal',DryHydrostaticConservativeDynamics())]:
+        for name,d in [('diagonal',DryHydrostaticConservativeDynamics())]:
             ctx=d._transport_primitives(s)
             outputs={'primitives':ctx,'rhs':d.tendency(s),'step':ssprk3(d,s,1.)}
             for method in ['tendency_terms','energy_terms','pressure_fields','thermo_fields','wind_fields',
@@ -43,13 +44,6 @@ def capture():
                            'divergence','vorticity','omega','scalar_energy_gradients',
                            'scalar_pressure_energy_gradient_terms','total_mass','total_energy']:
                 outputs[method]=getattr(d,method)(s, dt=1.) if method=='cfl_terms' else getattr(d,method)(s)
-            # Exercise retained passive-tracer hooks in the canonical model.
-            if name=='canonical':
-                tracer=v(s.layer_dp())[...,None]*torch.tensor([.01,.002])
-                st=State(v(s.u_e),v(s.mtheta_i),v(s.ps),tracer_m=tracer,mesh=mesh,column=col)
-                outputs['tracer_rhs']=d.tendency(st)
-                outputs['tracer_terms']=d.tracer_tendency_terms(st)
-                outputs['tracer_inventory']=d.total_tracer_mass(st)
             result[name]=clean(outputs)
     return result
 

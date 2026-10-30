@@ -21,7 +21,7 @@ def graph(d, s):
     Divide amounts/fluxes by gravity for kg and kg/s. This staggering matches
     entropy/water on cell interfaces, with velocity still on edge layers.
     """
-    a = d._adapter(s)
+    a = d.transport_state(s)
     ctx = d.kernel._transport_primitives(a)
     m = s.mesh
     mass = v(ctx["dm"]) * m.cell_area[:, None]

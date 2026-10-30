@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from vfs.geometry.column import CharneyPhillipsColumn
-from vfs.atmosphere import DryHydrostaticDynamics
+from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.core.state import State
 from vfs.geometry.mesh import VoronoiMesh
 
@@ -481,7 +481,7 @@ class JWInitialConditions:
 
     def make_state(
         self,
-        dyn: DryHydrostaticDynamics | None = None,
+        dyn: DryHydrostaticConservativeDynamics | None = None,
         *,
         perturb: bool = False,
         project_mass_flux: bool = False,
@@ -568,7 +568,7 @@ class JWInitialConditions:
 def compare_initial_states(
     analytic: State,
     balanced: State,
-    dyn: DryHydrostaticDynamics,
+    dyn: DryHydrostaticConservativeDynamics,
 ) -> ICDifferenceReport:
     """Return normed differences between two JW-like initial states."""
     with torch.no_grad():
