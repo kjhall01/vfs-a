@@ -21,6 +21,9 @@ import vfs
 from vfs import VoronoiMesh
 
 BASELINE = "8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648"
+# User-approved stage-sequence extraction; not a new numerical baseline.
+INTERFACE_COMMIT = "ae132773e621671f70bfa6a698eebb1a82cffa94"
+INTERFACE_PATH = "vfs/atmosphere/bounded_moist.py"
 
 
 def git(repo, *args):
@@ -40,7 +43,10 @@ def verify_package(repo, package):
     for name in paths:
         expected = git(repo, "show", f"{BASELINE}:{name}")
         installed = package / Path(name).relative_to("vfs")
-        if not installed.is_file() or installed.read_bytes() != expected:
+        actual = installed.read_bytes() if installed.is_file() else None
+        if actual != expected and name == INTERFACE_PATH:
+            expected = git(repo, "show", f"{INTERFACE_COMMIT}:{name}")
+        if actual != expected:
             raise ValueError(f"Installed runtime differs from baseline: {name}")
         hashes[name] = sha256(expected)
     expected_python = {name for name in paths if name.endswith(".py")}
@@ -140,6 +146,12 @@ def recorded_run(repo, output, experiment_id, configuration, driver):
         "driver_sha256": sha256(Path(driver).read_bytes()),
         "environment_driver_sha256": sha256(environment_path.read_bytes()),
         "runtime_sha256": hashes,
+        "interface_change_commit": (
+            INTERFACE_COMMIT if hashes.get(INTERFACE_PATH) == sha256(
+                git(repo, "show", f"{INTERFACE_COMMIT}:{INTERFACE_PATH}")
+            ) else None
+        ),
+        "approved_interface_path": INTERFACE_PATH,
         "started_utc": datetime.now(timezone.utc).isoformat(),
         "configuration": configuration,
         "environment": environment_module.environment(),

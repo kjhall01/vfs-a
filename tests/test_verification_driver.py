@@ -52,3 +52,21 @@ def test_runtime_provenance_rejects_changed_missing_and_extra_files(tmp_path, mo
     (package / "__init__.py").write_text("# changed\n")
     with pytest.raises(ValueError, match="differs"):
         driver.verify_package(tmp_path, package)
+
+
+def test_only_pinned_interface_blob_is_allowed(tmp_path, monkeypatch):
+    original, extracted = b'original', b'extracted stage sequence'
+    def git(repo, *args):
+        if args[0] == 'ls-tree':
+            return (driver.INTERFACE_PATH + '\n').encode()
+        return extracted if args[1].startswith(driver.INTERFACE_COMMIT) else original
+    monkeypatch.setattr(driver, 'git', git)
+    package = tmp_path / 'vfs'
+    path = package / Path(driver.INTERFACE_PATH).relative_to('vfs')
+    path.parent.mkdir(parents=True)
+    for content in (original, extracted):
+        path.write_bytes(content)
+        assert driver.verify_package(tmp_path, package)[driver.INTERFACE_PATH] == driver.sha256(content)
+    path.write_bytes(extracted + b' unapproved change')
+    with pytest.raises(ValueError, match='differs'):
+        driver.verify_package(tmp_path, package)

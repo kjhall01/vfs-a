@@ -1,24 +1,20 @@
-# Current handoff — increment 1c boundary proposal
+# Current handoff — approved SSPRK3 extraction (#16)
 
-PRs #13 and #14 are merged. This branch begins at #14's main merge,
-`ba241cdcae1fb98f01231f632bacb16fbedb5e90`; numerical baseline remains
-`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` and vfs/ is unchanged.
+PRs #13 and #14 are merged. Numerical baseline remains
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`. The sole runtime change is the
+approved stage-sequence extraction at
+`ae132773e621671f70bfa6a698eebb1a82cffa94` in `bounded_moist.py`.
+Read [extraction evidence](../verification/SSPRK3_EXTRACTION_RESULTS.md).
+The atmospheric wrapper still validates and returns the same state and ledgers.
+The manifest verifier accepts only the original blob or this exact approved
+blob, rejecting all other runtime modifications. Keep #16 unmerged for review.
 
-Read the [1c boundary proposal](../verification/INCREMENT_1C_BOUNDARY_PROPOSAL.md).
-The complete production Gibbs/limiter/Euler path can consume a prescribed state
-velocity, but the bounded SSPRK3 sequence lacks stage-time/callback arguments.
-The user explicitly requested a separate proposal before any runtime-interface
-change. Proposed prerequisite: extract only that existing sequence into a timed
-Euler-callback function, preserving every convex combination and default path.
-No extraction or source-check exception has been implemented. Await the user's
-choice; do not emulate the new interface with state-mutating monkey patches.
-
-The single-Euler t=0 probe demonstrates nonzero discrete divergence for sampled
-continuum-nondivergent flow and constant-composition carrier consistency. It is
-not an isolated return test. C5 quadrature references, actual time integration,
-full-stage audit and resolution/timestep runs remain pending. The original
-Williamson and Nair–Lauritzen specifications have been read and linked with
-planned equations, coordinates, units and limitations. Terrain rest remains next.
+Next: dependent C5 prescribed horizontal transport harness using actual timed
+production Euler maps, not copied RK formulas or invented candidate fluxes.
+Replace prescribed wind at all RHS times and final output; evolve carrier,
+entropy and species. Record discrete divergence and reference quadrature error.
+Keep terrain-rest construction queued afterward. No coupled energy, GPU,
+IMEX backward or long-rollout qualification follows from this work.
 
 ---
 

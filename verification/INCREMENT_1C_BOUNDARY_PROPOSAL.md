@@ -1,9 +1,8 @@
 # Increment 1c: prescribed-transport boundary proposal
 
-**Status: proposal, not a completed C5 experiment. No runtime extraction has been
-implemented.** The user's instruction requires presenting a separate proposal
-before changing a runtime interface to isolate transport. That condition applies
-here; neither a copied RK scheme nor a stage-mutating monkey patch is used.
+**Status: approved and implemented in PR #16; C5 experiments follow in a
+separate dependent PR.** See [extraction evidence](SSPRK3_EXTRACTION_RESULTS.md).
+The proposal below records the rationale and original boundary investigation.
 
 ## Source and dependency boundary
 
@@ -13,7 +12,8 @@ Their merge commits are respectively `7a1c99e30aa139637bd0dc380af04b9d724bf6a3`
 and `ba241cdcae1fb98f01231f632bacb16fbedb5e90` (confirmed through GitHub API).
 This proposal starts from the latter; no dependency branch is needed.
 The numerical baseline stays **8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648**.
-The complete `vfs/` source tree still matches that baseline.
+Only the approved bounded SSPRK3 stage-sequence extraction differs; its commit
+and source-check exception are recorded separately in the extraction evidence.
 
 ## Actual production trace
 

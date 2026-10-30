@@ -9,7 +9,7 @@ No new algorithm or scientific verification campaign accompanies this guide.
    checks geometry, dtype/device and positive finite `dt` (seconds). The default
    [BoundedSSPRK3.advance](../vfs/atmosphere/steppers.py) then delegates to
    [BoundedGibbs.step](../vfs/atmosphere/bounded_moist.py).
-2. [step_with_info](../vfs/atmosphere/bounded_moist.py) performs three
+2. [step_with_info](../vfs/atmosphere/bounded_moist.py) delegates the unchanged sequence to `bounded_ssprk3_with_info`, which performs three
    bounded Euler maps, each with the full `dt` budget. The second RK state is
    `3/4 initial + 1/4 Euler(Euler(initial))`; the final state is
    `1/3 initial + 2/3 Euler(second RK state)`. Combinations operate on contents,
