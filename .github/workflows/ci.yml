@@ -1,17 +1,17 @@
-name: Installed wheel
-
+name: Fixture CPU investigation (no tolerance changes)
 on:
   push:
-  pull_request:
-  workflow_dispatch:
-
+    branches: [audit/ci-911aada]
 permissions:
   contents: read
-
 jobs:
-  cpu:
+  audit:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        repeat: [1, 2, 3, 4]
+    timeout-minutes: 15
     env:
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
@@ -21,59 +21,37 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Build and install wheel
-        id: install
-        shell: bash
+          python-version: "3.12.15"
+      - name: Build unchanged numerical package and reproduce recorded dependencies
         run: |
-          python -m pip install build
+          python -m pip install -c ci-audit-constraints.txt build
           python -m build --wheel --outdir "$RUNNER_TEMP/wheels"
-          python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -c ci-audit-constraints.txt 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
-          python -m pip install --prefer-binary "${wheels[0]}[test]"
+          python -m pip install --prefer-binary -c ci-audit-constraints.txt "${wheels[0]}[test]"
           python -m pip check
-          mkdir -p "$RUNNER_TEMP/vfs-check"
-          cp -R tests tools examples "$RUNNER_TEMP/vfs-check/"
-      - name: Verify installed import and record environment
-        working-directory: ${{ runner.temp }}/vfs-check
+          mkdir -p "$RUNNER_TEMP/audit"
+          cp -R tests tools examples "$RUNNER_TEMP/audit/"
+          python -m pip freeze > "$RUNNER_TEMP/audit/dependencies.txt"
+          lscpu > "$RUNNER_TEMP/audit/lscpu.txt"
+          cat /proc/cpuinfo > "$RUNNER_TEMP/audit/cpuinfo.txt"
+          python -I -c 'import numpy, scipy; numpy.show_config(); scipy.show_config()' > "$RUNNER_TEMP/audit/numerical-libraries.txt"
+      - name: Collect every tensor under controlled CPU dispatch
+        working-directory: ${{ runner.temp }}/audit
         run: |
-          python -I - <<'PY'
-          import os
-          from pathlib import Path
-          import platform
-          import sysconfig
-          import torch
-          import vfs
-          source = Path(vfs.__file__).resolve()
-          assert source.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()), source
-          assert not source.is_relative_to(Path(os.environ["GITHUB_WORKSPACE"]).resolve()), source
-          assert str(torch.__version__) == "2.15.0+cpu"
-          print(platform.platform(), platform.python_version(), torch.__version__, source)
-          PY
-          python -m pip freeze
-      - name: Tests
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        working-directory: ${{ runner.temp }}/vfs-check
+          python -I tools/audit_fixture_differences.py --report native.json
+          ATEN_CPU_CAPABILITY=avx2 python -I tools/audit_fixture_differences.py --report aten-avx2.json
+          ATEN_CPU_CAPABILITY=default python -I tools/audit_fixture_differences.py --report aten-default.json
+          MKL_CBWR=COMPATIBLE python -I tools/audit_fixture_differences.py --report mkl-compatible.json
+      - name: Existing suite (exact failures retained)
+        working-directory: ${{ runner.temp }}/audit
         run: python -I -m pytest tests -q --junitxml=pytest.xml
-      - name: Checkpoint-54 exact comparison
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I tools/check_baseline.py --report baseline.json
-      - name: Dry helpers exact comparison
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I tools/check_dry_helpers.py --report dry-helpers.json
-      - name: MoistAtmosphere smoke test
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I examples/moist_atmosphere.py
-      - name: Save comparison reports
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - name: Upload evidence regardless of exact result
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: cpu-checks
+          name: fixture-audit-${{ matrix.repeat }}
           path: |
-            ${{ runner.temp }}/vfs-check/pytest.xml
-            ${{ runner.temp }}/vfs-check/baseline.json
-            ${{ runner.temp }}/vfs-check/dry-helpers.json
-          if-no-files-found: warn
+            ${{ runner.temp }}/audit/*.json
+            ${{ runner.temp }}/audit/*.txt
+            ${{ runner.temp }}/audit/*.xml
