@@ -1,28 +1,29 @@
-# Current handoff — scientific verification increment 1a
+# Current handoff — verification increments 1a and 1b
 
-PR #12 is merged. The frozen scientific source baseline is
-`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; no release or tag was created.
-Read the [C1–C12 claim-to-evidence tracker](../verification/README.md) and
-[initial results](../verification/RESULTS.md). Bounded moist SSPRK3 is primary;
-dry controls and centered dry/moist ARK4 evidence remain distinct.
+Baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` (merged PR #12).
+PR #13 is increment 1a: geometry/provenance and the full C1–C12 tracker.
+Its updated head e657729 passed both required hosted runs and remains unmerged
+for review. No numerical package source, fixtures or tolerances changed.
 
-The first driver measures shared geometry identities and one analytic gradient
-on a resolution sequence. It verifies installed runtime source against the
-baseline, archives mesh/inputs and executed drivers, and records CPU/backend,
-configuration, artifact hashes and completion/failure in run manifests. No
-scientific pass threshold is imposed. C2–C12 campaign drivers remain pending;
-existing unit/regression evidence is not relabeled as completed verification.
-Next is increment 1b: C2 derivative sweeps, C3 component work and C4 actual
-Euler-stage recording. Prescribed transport and terrain-rest construction are
-queued afterward. C10 integrated budgets, C11 Held–Suarez statistics and C12
-repeat/restart equivalence are explicitly tracked as pending.
-The mountain-wave reference/boundary design and transport harness specifications
-remain concrete setup gaps. Numerical defects require separate reproductions
-and proposed fixes; keep the core frozen.
+Increment 1b is developed separately, dependent on #13. Read the
+[tracker](../verification/README.md), [1b methods](../verification/INCREMENT_1B.md)
+and [1b results](../verification/INCREMENT_1B_RESULTS.md).
+It adds scalar-energy AD/analytic/FD sweeps (C2), component work matrices including
+fixed-lid reservoir and bounded heat (C3), and observation of the three actual
+production Euler stages with independent incidence/inventory audits (C4).
+The shared manifest approach archives drivers, geometry, prognostic inputs,
+directions and actual stage diagnostics. No RK formulas are duplicated.
 
-Local installed-wheel validation: 539 passed, one CUDA skip, both portable tools
-and all six example commands passed. Exact fixtures were not rerun in this
-increment. GPU, IMEX backward and long-rollout differentiation remain unqualified.
+Small 16/3 and 32/4 cell/layer CPU float64 cases run first. Local installed-wheel
+suite: 548 passed, one CUDA skip. Broad campaign qualification remains pending.
+No IMEX backward, rollout or GPU support is inferred from these diagnostics.
+
+Next queued work is prescribed horizontal/vertical/combined transport (C5), then
+physically consistent terrain-rest construction (C6). Do not treat the current
+nonuniform-terrain diagnostic states as balanced rest. C10 integrated budgets,
+C11 Held–Suarez statistics and C12 repeat/restart equivalence remain explicitly
+pending. Numerical defects require separate reproductions/proposed fixes;
+keep the runtime frozen, and do not silently expand benchmark physics.
 
 ---
 

@@ -75,6 +75,11 @@ jobs:
         run: >-
           python -I tools/run_verification.py --repo "$GITHUB_WORKSPACE"
           --output verification-c1 --cells 16 64 256
+      - name: Small energy derivative, work and actual-stage measurements
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: >-
+          python -I tools/run_energy_verification.py --repo "$GITHUB_WORKSPACE"
+          --output verification-energy --cells 16 --levels 3 --dt 1
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -120,4 +125,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/environment.json
             ${{ runner.temp }}/vfs-check/held-suarez.json
             ${{ runner.temp }}/vfs-check/verification-c1/
+            ${{ runner.temp }}/vfs-check/verification-energy/
           if-no-files-found: warn
