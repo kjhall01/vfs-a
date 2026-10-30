@@ -99,7 +99,11 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
     if not torch.allclose(Q0.sum(-1), m0, rtol=128 * eps, atol=0):
         raise ValueError("initial species must sum to carrier")
     scale = G.abs().max().clamp_min(torch.finfo(G.dtype).tiny)
-    if not torch.allclose(J.sum(-1), G, rtol=128 * eps, atol=128 * eps * scale):
+    # allclose's inequality, with a tensor tolerance that may carry gradients.
+    # Keep its finite-error guard too: finite inputs can overflow in subtraction.
+    flux_error = (J.sum(-1) - G).abs()
+    flux_tolerance = 128 * eps * scale + 128 * eps * G.abs()
+    if not bool((torch.isfinite(flux_error) & (flux_error <= flux_tolerance)).all()):
         raise ValueError("species fluxes must sum to carrier flux")
     dm = divergence(i, j, G, nodes)
     m1 = m0 + dm

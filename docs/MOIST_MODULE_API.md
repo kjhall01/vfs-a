@@ -102,8 +102,8 @@ configuration, then load with the usual `load_state_dict` (default `assign=False
 Move the model and initialize or explicitly convert a compatible state afterward.
 Do not load state_dict as a substitute for reconstructing the chosen configuration.
 
-See [validation results](MOIST_MODULE_RESULTS.md) and the separately reproduced
-[bounded gradient failure](BOUNDED_GRADIENT_LIMITATION.md). Module ownership,
+See [validation results](MOIST_MODULE_RESULTS.md) and the
+[bounded gradient fix and remaining limits](BOUNDED_GRADIENT_LIMITATION.md). Module ownership,
 forward numerical equivalence, diagnostic gradients and timestep backpropagation
 are distinct claims. Device movement alone does not establish accelerator or
 reduced-precision numerical support.

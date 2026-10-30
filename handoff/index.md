@@ -1,4 +1,35 @@
-# Current handoff — moist module ownership and explicit steppers
+# Current handoff — bounded tensor tolerance and one-step gradients
+
+PR #6 was merged after confirming both required CPU checks at its final head.
+The separate branch `fix/bounded-tensor-tolerance`,
+[PR #7](https://github.com/kjhall01/vfs-a/pull/7), changes only bounded_transfer's
+flux-sum validation to the equivalent tensor-valued inequality, preserving the
+128*eps scale, finite-error rejection, operators, defaults and species ledger.
+There is no detach, disabled-autograd workaround or limiter redesign.
+
+Read [the fixed gradient failure, measurements and remaining limits](../docs/BOUNDED_GRADIENT_LIMITATION.md).
+Backward now completes through one bounded SSPRK3 step for wind, ps, entropy
+and water. Smooth CPU float64 directional checks use three finite-difference
+sizes with inactive limiter margins. A sharp-cloud case also agrees along the
+tested support-preserving directions with stable active masks and subcycle counts.
+A controlled switch has different left/right derivatives: autograd follows the
+selected branch, not a globally smooth limiter. The donor-count scalar-conversion
+warning remains. No further backward exception appeared in these probes.
+
+Installed-wheel results and any hosted CI evidence are recorded in the linked
+document, separately from frozen-fixture exact failures. Same-environment
+pre/post forward captures are exact; fixtures and portable tolerances are unchanged.
+No full-rollout, arbitrary-switch, higher-derivative, IMEX-backward or accelerator
+backward qualification is claimed. Positive vapor remains required; no floor,
+new physics, integration scheme or scientific verification campaign was added.
+
+Next work must distinguish fixed-branch derivatives from switch behavior; do not
+turn this narrow fix into a limiter redesign or broad backward-support claim.
+Development remains on GitHub.
+
+---
+
+# Historical handoff — moist module ownership and explicit steppers
 
 PR #5 is merged. The ownership branch is `api/moist-module-ownership`, published as
 [PR #6](https://github.com/kjhall01/vfs-a/pull/6).

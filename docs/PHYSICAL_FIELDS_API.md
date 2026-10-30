@@ -117,6 +117,7 @@ For the implementation call sequence and ledger/heat units, see the
 
 The module now supports explicit state conversion and configurable existing
 steppers; see [ownership, movement and checkpoint requirements](MOIST_MODULE_API.md).
-Diagnostic gradients remain supported, but gradient-enabled bounded timesteps
-encounter a [pre-existing allclose failure](BOUNDED_GRADIENT_LIMITATION.md).
+Diagnostic gradients remain supported. The separate
+[allclose fix and one-step derivative checks](BOUNDED_GRADIENT_LIMITATION.md)
+remove the documented tensor-atol failure; limiter switches remain nonsmooth.
 Removing no_grad from a forward example does not establish rollout support.
