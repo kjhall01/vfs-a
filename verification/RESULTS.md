@@ -1,4 +1,4 @@
-# Initial infrastructure results — 30 October 2026
+# Increment 1a infrastructure results — 30 October 2026
 
 Frozen runtime: `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` (merged PR #12).
 No `vfs/` sources, numerical fixtures or comparison tolerances changed.
@@ -45,6 +45,6 @@ reproduction commands are in the [entry document](README.md).
 
 CI now runs this measurement against the installed baseline and uploads its
 manifest, metrics, mesh/input tensors and executed driver sources in `cpu-checks`.
-Hosted execution has not yet been claimed here. C2–C9 remain planned campaign
+Hosted execution has not yet been claimed here. C2–C12 remain planned campaign
 work with existing tests mapped as starting evidence in the tracker. No numerical
 defect was diagnosed or fixed by this increment.

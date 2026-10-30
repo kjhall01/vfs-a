@@ -1,4 +1,4 @@
-# Scientific verification: evidence plan and run contract
+# Scientific verification — increment 1a: geometry and provenance
 
 Baseline: **`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`**, the merge commit of
 [PR #12](https://github.com/kjhall01/vfs-a/pull/12), merged
@@ -49,6 +49,34 @@ Figure/table names are planned, not generated evidence.
 | **C7 JW-B development**: `C7-JWB-001` | D-E/D-I original dry JW-B [R1], `perturb=True`. M-B/M-I moist extension only after independently documenting a thermodynamically consistent positive-vapor IC; never label it the original dry benchmark. | Surface-pressure and 850-hPa temperature maps, wind/vorticity development, reference error norms with common projection, resolution/timestep dependence and budgets. F7 evolution/reference differences; T7 errors. | Existing dry builder and small fixture control only. Campaign/output/reference acquisition pending. Pin reference dataset version/checksum and interpolation procedure before comparing; no assumed growth envelope. |
 | **C8 Hydrostatic mountain wave**: `C8-MW-001` | D-E/D-I first; moist cases separate extensions. Candidate small-amplitude broad ridge, stable background. Independent linear hydrostatic reference **not yet selected**: must match fixed lid, sphere/local approximation and time window. | Perturbation wind/pressure phase and amplitude, vertical structure, momentum/energy flux, linearity and resolution study. F8 reference profiles/phase; T8 flux errors. | Specification/IC/reference/driver blocked on boundary-compatible design. No absorbing top or open lateral boundaries. Assess reflection and recirculation; do not compare to an unbounded radiation solution without quantifying boundary effects or add new physics here. |
 | **C9 Time integration/solver sensitivity**: `C9-TIME-001`, `C9-SOLVE-001` | M-B/D-E SSPRK3; separate D-I/M-I ARK4 [R3]. Independent high-accuracy DOP853 reference on the same spatial semi-discretization for smooth cases; tighter dt reference for bounded stage-dependent transport. | State-component weighted errors vs dt at fixed spatial grid, observed slopes, stage residual/iteration counts, work/energy drift vs solver tolerance, failure records. F9 temporal curves; T9 solver costs/errors. | Existing small DOP853 ARK4 and solver-failure tests. Campaign driver pending. Bounded Euler fluxes depend on dt/limiter branch; generic RHS integration is not its reference. Keep spatial, temporal and solve errors separate; no IMEX backward claim. |
+
+| **C10 Integrated budgets**: `C10-BUDGET-001` | M-B primary, D-E controls, D-I/M-I separately; time-integrated production inventories and independent sums including the fixed-lid reservoir. | Carrier/species/entropy/energy histories, cumulative source and boundary work, residual vs dt/duration; F10 budget histories, T10 accumulated residuals. | **Pending.** Instantaneous closure and one-step regression are not finite-step or long-run conservation. Match source quadrature to the actual stages; distinguish conservative, dissipative and externally forced contributions. |
+| **C11 Held–Suarez statistics**: `C11-HS-001` | Forced D-E using standalone HeldSuarezForcing; original Held–Suarez specification and archived-equation comparison. | Spin-up and zonal/time-mean temperature/wind, eddy statistics, thermal/drag budgets, sampling uncertainty and resolution dependence; F11 mean climate/variability, T11 sampling periods and uncertainties. | **Pending.** Forcing and short example exist; no equilibrated climate claim. Specify initialization, spin-up, averaging, autocorrelation-aware uncertainty and reference dataset provenance before running. Forced ARK4 is not qualified. |
+| **C12 Reproducibility/restart equivalence**: `C12-REPRO-001`, `C12-RESTART-001` | All retained paths separately; same-environment reruns and uninterrupted vs interrupted/reconstructed simulation. | Source/environment/input hashes, exact and portable outcomes separately, per-state/budget/solver differences after restart; T12 reproducibility matrix. | Provenance foundation implemented in 1a; **restart and cross-platform campaigns pending**. Model state_dict is not a complete restart: archive configuration, geometry, prognostic state, stepper/solver settings, time, forcing and RNG state as applicable. No new restart API or cross-backend bitwise claim. |
+
+## Delivery increments and outstanding first-increment tasks
+
+**Increment 1a (this delivery)** provides the fixed baseline, complete C1–C12
+tracker, provenance manifests, and a first geometry measurement. It does not
+complete the original first increment or the scientific campaign.
+
+Outstanding first-increment work, in execution order:
+
+1. **Increment 1b:** C2 discrete-energy directional derivative/epsilon sweeps;
+   C3 component energy-work closure with independent scalar-energy derivatives;
+   C4 recording of the actual bounded Euler stage carrier/species budgets.
+   Start with small CPU float64 cases and preserve the full-dt stage ledgers.
+2. **Queued after 1b:** prescribed horizontal, vertical and combined transport
+   protocols/drivers (C5), then physically consistent terrain-rest construction
+   and flat/terrain balance measurements (C6). Neither is hidden in 1b.
+3. Complete C1 operator accuracy/rotations/transfers; expand initial measurements
+   into refinement sequences, figures/tables and archived reproducible evidence.
+   Initial C10 budget and C12 repeat/restart recording remain pending; they are
+   not established by a provenance manifest alone.
+
+Later campaign work remains JW-A/JW-B, boundary-compatible hydrostatic mountain
+waves, separate ARK4 temporal/solver studies, integrated long-run budgets and
+Held–Suarez statistics. No part of the paper is declared complete by this split.
 
 ## References and reference selection
 
