@@ -51,6 +51,7 @@ python -I tools/check_baseline.py --mode portable
 python -I tools/check_dry_helpers.py --mode portable
 python -I examples/moist_atmosphere.py
 python -I examples/bounded_moist.py
+python -I examples/held_suarez.py
 ```
 
 Apply the same macOS version substitution here. Confirm the printed package

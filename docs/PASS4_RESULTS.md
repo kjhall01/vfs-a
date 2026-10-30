@@ -129,3 +129,10 @@ readability/ownership measurements are preserved under [history](HISTORY.md).
 The final guide slice changes no executable expressions; both usage snippets ran
 against the installed wheel. PR #10 final-head hosted CPU checks passed; its push
 artifact records 519 portable passes, 1 skip and separate exact failures.
+
+## Standalone retained dry forcing
+
+Before merging the simplification stack, preserve existing Held–Suarez thermal
+relaxation and Rayleigh drag in [a standalone source](HELD_SUAREZ.md). No legacy
+framework is restored. Original method ASTs and 132 same-environment comparisons
+are exact, including forced-stage states and representative energy gradients.

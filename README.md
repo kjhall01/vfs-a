@@ -22,6 +22,7 @@ transport, and is never selected as a fallback for bounded explicit stepping.
 python -m pip install .
 python examples/moist_atmosphere.py
 python examples/bounded_moist.py
+python examples/held_suarez.py
 ```
 
 Use Python 3.10+; CI uses 3.12. For development, install `-e '.[test]'`.
@@ -41,6 +42,11 @@ The bounded moist Euler update installs species amounts from its ledger. A gener
 limiter work are allocated with `release_as_heat=True`; the non-heat alternative
 is removed. Energy closure is semidiscrete, not exact finite-step RK conservation.
 
+[Held–Suarez thermal relaxation and Rayleigh drag](docs/HELD_SUAREZ.md) remain
+available as a standalone source. Sum it explicitly with the conservative dry
+RHS at each SSPRK3 stage and report thermal/drag budget contributions separately;
+the model's default step remains unforced.
+
 ## Scope and validation
 
 Retained: spherical geometry, mesh generation/transfers, conservative dry and
@@ -49,7 +55,7 @@ atmospheric initialization, regridding and I/O. ARK4 uses retained analytic wave
 operators, residual-checked solvers and supported preconditioners. Evidence for
 specific configurations is documented; arbitrary solver flags are not qualified.
 
-Removed: other domains/ML, old dry recipes and process/forcing composition,
+Removed: other domains/ML, old dry recipes and general process/forcing composition,
 canonical dry alternatives, ARK2/3 and pressure prototypes, compiled/coupled-JVP/
 fixed-work IMEX alternatives and centered explicit moist stepping. Necessary
 centered candidates, donor transport, limiter corrections and shared dry

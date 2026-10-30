@@ -22,6 +22,15 @@ exact mode fails separately on this macOS CPU. GitHub outcomes are recorded in
 the results and PR descriptions, not inferred from local checks. No IMEX backward,
 full-rollout or accelerator qualification follows from this refactor.
 
+Held–Suarez thermal relaxation and Rayleigh drag remain as a standalone
+[source](../docs/HELD_SUAREZ.md), with a runnable forced-step example and separate
+thermal/drag budget contributions. Explicitly sum it with conservative dynamics
+at each SSPRK3 stage; model(state, dt) alone remains unforced. No registry,
+process framework, legacy dycore or forced IMEX support is restored. Local updated
+wheel: 527 passed, 1 skip; both portable tools and all three examples pass.
+Original forcing method ASTs and 132 tensor comparisons are exact, including
+forced stages, energy and representative gradients. Hosted results are in PRs.
+
 Next specific readability work, if requested: inspect the remaining dry State
 uncached diagnostic/I/O conveniences and clarify their model/external boundaries;
 review long analytic pressure-derivative blocks against their adjoint expressions.

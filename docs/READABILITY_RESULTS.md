@@ -16,7 +16,7 @@ is regression evidence, not a new scientific verification campaign.
 - Conservative equations are ordinary methods in `conservative.py`; the
   `DryEnergy` base groups thermal-energy derivatives and budget diagnostics.
   The externally bound dry function table, canonical/strategy alternatives,
-  process/forcing/SCM recipes, split explicit and shadow tracer paths are removed.
+  process/SCM and registry-based forcing recipes, split explicit and shadow tracer paths are removed.
   Existing atmospheric initial states, humidity/I/O, spherical geometry,
   topography, regridding and mesh transfers remain. Nonzero analytic-climate
   nonlinear-balance tuning tied to the removed canonical core now rejects;
@@ -104,3 +104,12 @@ The final documentation slice changes guides and the root module docstring only;
 executable AST is unchanged. Both short ownership examples ran against the
 installed wheel, and relative guide links were checked. Final hosted doc-head
 results are recorded separately in its PR.
+
+## Held–Suarez retention before merge
+
+The standalone [Held–Suarez source](HELD_SUAREZ.md) preserves PR #8 thermal
+relaxation and Rayleigh drag without restoring the old physics module/framework.
+All original methods have identical executable ASTs; 132 archived/new tensors
+(rates, RHS, forced stages/state, energy and gradients) agree exactly on the
+local CPU environment. Separate source tendencies expose distinguishable budget
+work. The new runnable example is included in installed-wheel CI.
