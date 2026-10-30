@@ -1,4 +1,28 @@
-# Current handoff — verification increments 1a and 1b
+# Current handoff — increment 1c boundary proposal
+
+PRs #13 and #14 are merged. This branch begins at #14's main merge,
+`ba241cdcae1fb98f01231f632bacb16fbedb5e90`; numerical baseline remains
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` and vfs/ is unchanged.
+
+Read the [1c boundary proposal](../verification/INCREMENT_1C_BOUNDARY_PROPOSAL.md).
+The complete production Gibbs/limiter/Euler path can consume a prescribed state
+velocity, but the bounded SSPRK3 sequence lacks stage-time/callback arguments.
+The user explicitly requested a separate proposal before any runtime-interface
+change. Proposed prerequisite: extract only that existing sequence into a timed
+Euler-callback function, preserving every convex combination and default path.
+No extraction or source-check exception has been implemented. Await the user's
+choice; do not emulate the new interface with state-mutating monkey patches.
+
+The single-Euler t=0 probe demonstrates nonzero discrete divergence for sampled
+continuum-nondivergent flow and constant-composition carrier consistency. It is
+not an isolated return test. C5 quadrature references, actual time integration,
+full-stage audit and resolution/timestep runs remain pending. The original
+Williamson and Nair–Lauritzen specifications have been read and linked with
+planned equations, coordinates, units and limitations. Terrain rest remains next.
+
+---
+
+# Historical handoff — verification increments 1a and 1b
 
 Baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` (merged PR #12).
 PR #13 is increment 1a: geometry/provenance and the full C1–C12 tracker.
