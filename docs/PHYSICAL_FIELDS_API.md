@@ -108,3 +108,6 @@ conversion, restart/output datasets and averaged trajectory writing remain
 future work. External arrays are rejected at this tensor boundary; a later
 state_from_xarray adapter will make those conversions explicit. No implicit
 solver promotion, phase adjustment, precipitation or column physics is added.
+
+For the implementation call sequence and ledger/heat units, see the
+[bounded moist reading guide](BOUNDED_MOIST_READING_GUIDE.md).

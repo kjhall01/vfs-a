@@ -164,7 +164,11 @@ class MoistAtmosphere:
         )
 
     def step(self, state, dt):
-        """One bounded SSPRK3 step, dt in seconds. No automatic CFL choice."""
+        """One bounded SSPRK3 step, dt in seconds. No automatic CFL choice.
+
+        BoundedGibbs.step -> step_with_info -> three euler_with_info calls.
+        Each Euler call recovers water from its amount ledger, not RHS addition.
+        """
         self._check_geometry(state)
         if not isinstance(dt, (int, float)) or not math.isfinite(dt) or dt <= 0:
             raise ValueError("dt must be a finite positive scalar in seconds")

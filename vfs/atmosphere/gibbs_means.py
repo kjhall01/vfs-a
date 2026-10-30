@@ -23,6 +23,12 @@ def logmean(a, b):
 
 
 def partial_chemical(t, T, p, q):
+    """Species chemical potentials (last axis dry/vapor/liquid/ice), J/kg.
+
+    T/p have the same leading shape, K/Pa; q adds a length-four fraction axis.
+    partial holds gas partial pressures (Pa), sa partial entropies J/(kg K),
+    ha partial enthalpies J/kg. Condensates have zero gas constants.
+    """
     cp = T.new_tensor([t.cp_d, t.cp_v, t.cp_l, t.cp_i])
     R = T.new_tensor([t.R_d, t.R_v, 0.0, 0.0])
     href = T.new_tensor([0.0, t.L_v_ref, 0.0, -t.L_f_ref])
@@ -41,6 +47,12 @@ def partial_chemical(t, T, p, q):
 def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
     """Return s*, q*, alpha* such that Delta mu_d+s*Delta T+
     q_water*dot(Delta(mu_water-mu_d)) = alpha*Delta p.
+
+    Called on horizontal edges × CP interfaces: endpoint T (E,I) K,
+    p (E,I) Pa, q (E,I,4) kg/kg. Returns specific entropy (E,I) J/(kg K),
+    species fractions (E,I,4) and specific volume alpha (E,I) m³/kg.
+    rhoi/rhoj and di/dj/dstar are mixture/partial densities, kg/m³.
+    eta here is mean mu/T, J/(kg K), not the composition derivative below.
 
     Gas densities use logarithmic means; condensates use arithmetic means.
     The latter is free in this identity because their gas constants are zero.
@@ -62,6 +74,8 @@ def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
     cp = t.heat_capacity_p(q)
     R = t.gas_constant(q)
     cv = cp - R
+    # cp/R/cv are J/(kg K); k is the reference enthalpy offset (J/kg).
+    # The resulting entropy trace satisfies the face Gibbs identity above.
     k = t.enthalpy_reference(q) - cp * t.T_ref
     Tavg = 0.5 * (Ti + Tj)
     s = (
@@ -76,6 +90,10 @@ def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
 def composition_entropy_derivatives(t, T, p, q):
     """ds/d(q_v,q_l,q_i) at fixed T,p, with q_d=1-sum(q_water).
     Analytic ideal-mixture partial entropies; requires positive dry/vapor.
+
+    T (C,I) K, p (C,I) Pa, q (C,I,4) kg/kg -> (C,I,3) J/(kg K).
+    Each water-species change replaces dry air; subtracting sd enforces that
+    composition convention. evaluate averages these derivatives onto graph faces.
     """
     R = t.gas_constant(q)
     pd = p * q[..., 0] * t.R_d / R

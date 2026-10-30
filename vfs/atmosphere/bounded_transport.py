@@ -13,6 +13,14 @@ from .moist_cp import interface_pressure_mass
 
 
 def graph(d, s):
+    """Connect CP nodes and return pressure-weighted carrier amounts/fluxes.
+
+    For C cells, E edges, L layers and I=L+1 interfaces: mass (C,I), Pa m²;
+    i,j (H,) integer node IDs; f (H,), Pa m²/s; H=E*I+C*L. Positive flux
+    goes i -> j. Horizontal faces (E,I) precede vertical faces (C,L).
+    Divide amounts/fluxes by gravity for kg and kg/s. This staggering matches
+    entropy/water on cell interfaces, with velocity still on edge layers.
+    """
     a = d._adapter(s)
     ctx = d.kernel._transport_primitives(a)
     m = s.mesh
@@ -23,11 +31,14 @@ def graph(d, s):
     i = (c0[:, None] * n + k).flatten()
     j = (c1[:, None] * n + k).flatten()
     layer = v(ctx["mass_flux"]) * m.dv_edge[:, None]
+    # Layer-edge transport -> CP interfaces; half weights at top/bottom.
     h = torch.cat(
         [0.5 * layer[:, :1], 0.5 * (layer[:, :-1] + layer[:, 1:]), 0.5 * layer[:, -1:]],
         -1,
     )
     ids = torch.arange(m.nCells * n).reshape(m.nCells, n)
+    # Down-column links join adjacent interfaces. omega already includes the
+    # hybrid-coordinate continuity response; multiply by horizontal cell area.
     i = torch.cat([i, ids[:, :-1].flatten()])
     j = torch.cat([j, ids[:, 1:].flatten()])
     f = torch.cat([h.flatten(), (v(ctx["omega"]) * m.cell_area[:, None]).flatten()])
@@ -35,6 +46,11 @@ def graph(d, s):
 
 
 def divergence(i, j, flux, nodes):
+    """Net incoming amount/rate per node, with the same units as flux.
+
+    Subtract each oriented face at i and add it at j: global sums cancel.
+    Trailing axes (e.g. species) are carried unchanged; no area division here.
+    """
     shape = (nodes, *flux.shape[1:])
     return (
         torch.zeros(shape, dtype=flux.dtype, device=flux.device)
@@ -45,6 +61,12 @@ def divergence(i, j, flux, nodes):
 
 def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass=None):
     """Return species amounts and one common limited flux for all species.
+
+    m0/target_mass (N,) and Q0 (N,4) are Pa m²; G (H,) and J (H,4)
+    are time-integrated carrier/species transfers, also Pa m². Species order
+    is dry/vapor/liquid/ice. floors (4,) are dimensionless lower bounds.
+    Result (N,4) is the Euler ledger, limited (H,4) its integrated transfer;
+    beta (H,) is a common dimensionless face factor for all four species.
 
     Requires m0>0, m1=m0+B G>0 and sum_a J_a=G. A donor remap along the
     straight mass path supplies the low-order state. Only that cheap graph
@@ -110,6 +132,8 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
     out.index_add_(0, i, G.clamp_min(0))
     out.index_add_(0, j, (-G).clamp_min(0))
     steps = max(1, math.ceil(float((out / torch.minimum(m0, m1)).max()) / safety))
+    # Donor reference on the straight carrier path. low is a running amount
+    # ledger; lowflux is cumulative transfer; lowface is the mean donor fraction.
     low = Q0
     lowflux = torch.zeros_like(J)
     lowface = torch.zeros_like(J)
@@ -122,6 +146,8 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
         low = low + divergence(i, j, transfer, nodes)
         lowflux = lowflux + transfer
     anti = J - lowflux
+    # anti (H,4), Pa m², is the correction to donor transfer. demand (N,4)
+    # sums all outgoing correction amounts, including horizontal/vertical faces.
     demand = (
         torch.zeros_like(Q0)
         .index_add(0, i, anti.clamp_min(0))
@@ -131,6 +157,9 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
     if bool((low - lower < -tol).any()):
         raise RuntimeError("donor reference violates bounds")
     allowance = (low - lower).clamp_min(0)
+    # Available amount above the lower bound / total demand gives node ratios.
+    # A single minimum over species and the losing endpoints preserves the
+    # sum-to-carrier constraint while limiting every incident-face demand.
     ratios = torch.where(
         demand > 0, allowance / demand.clamp_min(torch.finfo(Q0.dtype).tiny), 1
     ).clamp(max=1)
@@ -139,6 +168,8 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
     ).amin(-1)
     beta = torch.where(beta < 1, beta * (1 - 64 * eps), beta)
     limited = lowflux + beta[:, None] * anti
+    # Keep this donor-plus-correction ledger expression: recomputing from a
+    # diagnosed tendency or reconstructed fractions changes cancellation.
     result = low + divergence(i, j, beta[:, None] * anti, nodes)
     return (
         result,
@@ -156,6 +187,11 @@ def bounded_transfer(m0, Q0, i, j, G, J, floors=None, *, safety=0.9, target_mass
 def limited_traces(m, q, sh, qh, eta, i, j, F, dt, *, target=None, floors=None):
     """Limit the ACTUAL high flux; pair its change without dividing by F.
 
+    m (N,) is Pa m²; q (N,4) and qh (H,4) are species fractions. sh (H,)
+    is Gibbs specific entropy, J/(kg K). eta (H,3), J/(kg K), is the face
+    composition derivative for vapor/liquid/ice. F (H,) is Pa m²/s; dt is s.
+    Return entropy/fraction traces plus the authoritative amounts/flux ledger.
+
     eta is the arithmetic face mean of ds/dq at fixed T,p. It attaches the
     existing composition-entropy convention to dq relative to Gibbs, not
     relative to an unrelated arithmetic high flux. This convention closes
@@ -171,10 +207,14 @@ def limited_traces(m, q, sh, qh, eta, i, j, F, dt, *, target=None, floors=None):
         m, m[:, None] * q, i, j, G, J, floors, target_mass=target
     )
     if info["limited_faces"]:
+        # Recover the trace CHANGE from beta/donor fractions, not flux/F:
+        # zero carrier faces remain well-defined. Q/flux stay authoritative.
         dq = (1 - info["beta"][:, None]) * (info["low_face"] - qh)
     else:
         dq = torch.zeros_like(qh)
     ds = (eta * dq[:, 1:]).sum(-1)
+    # dq (H,4) is dimensionless; ds (H,) is J/(kg K). They describe the
+    # limiter-minus-Gibbs change used by evaluate's matched work correction.
     info.update(
         amounts=Q,
         integrated_flux=flux,

@@ -1,4 +1,28 @@
-# Current handoff — atmospheric package scope
+# Current handoff — bounded moist readability
+
+Read [the bounded-step guide](../docs/BOUNDED_MOIST_READING_GUIDE.md) for the
+execution order from MoistAtmosphere.step through SSPRK3, Euler transport,
+Gibbs traces, species ledger limiting and heat allocation. Source comments now
+state intermediate shapes, units, staggering and conservation roles; descriptive
+locals distinguish Gibbs correction, limiter correction and RK stage states.
+
+This is comments/docstrings/local renaming only. No operator, expression,
+operation order, default, state convention, fixture or exact/portable policy
+changed. Euler water still comes directly from the exact species amount ledger.
+MoistAtmosphere retains release_as_heat=True and strictly positive input vapor;
+no state floor is added. Existing transfer lower bounds remain unchanged.
+
+The guide records validation and the boundary for any later structural work.
+No scientific verification campaign, GPU/long-run/full-backward qualification,
+new abstraction layer or caching/reorganization is included. Next readability
+work remains the dry RHS call order and State/Field ownership guide; any
+structural simplification needs its own numerical/gradient review.
+
+Earlier handoffs below are historical snapshots.
+
+---
+
+# Historical handoff — atmospheric package scope
 
 Development remains on GitHub. This scope-reduction PR removes ocean, land, ice,
 surface-process, coupling, coupled graph orchestration and ML-specific code from
