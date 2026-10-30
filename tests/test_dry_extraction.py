@@ -18,7 +18,7 @@ def test_equations_are_declared_methods_not_external_binding_tables():
                 assert not isinstance(node.value, ast.Attribute)
 
 
-def test_expanded_retained_dry_baseline(fixture_mode):
+def test_expanded_dry_baseline(fixture_mode):
     path = ROOT / 'tools/check_dry_helpers.py'
     spec = importlib.util.spec_from_file_location('dry_helpers', path)
     mod = importlib.util.module_from_spec(spec)
