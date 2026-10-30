@@ -15,7 +15,7 @@ class MoistPressureWave:
     def __init__(self, dynamics, state):
         self.d = dynamics
         self.s = state
-        self.adapter = dynamics._adapter(state)
+        self.transport_view = dynamics.transport_state(state)
         self.p = v(state.column.interface_pressure(state.ps))
         self.dp = self.p.diff()
         self.dm = interface_pressure_mass(self.dp)
@@ -26,7 +26,7 @@ class MoistPressureWave:
         self.r = reconstruct_moist_cp(
             self.p, state.entropy_content, state.water_content, dynamics.thermodynamics,
         )
-        self.gs, self.gp, self.gc = dynamics.kernel.mixture_gradients(self.adapter, state.water_content)
+        self.gs, self.gp, self.gc = dynamics.kernel.mixture_gradients(self.transport_view, state.water_content)
         self.scalars = torch.cat([state.entropy_content[..., None], state.water_content], -1) / self.dm[..., None]
         thermo = dynamics.thermodynamics
         T, q, pg = self.r['temperature'], self.r['fractions'], self.r['pressure']
@@ -133,13 +133,13 @@ class MoistPressureWave:
         flux = self.dp_e * u
         div = v(self.s.mesh.div(flux))
         ps = -div.sum(-1, keepdim=True)
-        mu = v(self.d.kernel._vertical_mass_flux(self.adapter, div, ps))
+        mu = v(self.d.kernel._vertical_mass_flux(self.transport_view, div, ps))
         omega = .5 * (mu[:, :-1] + mu[:, 1:])
         fields = []
         for k in range(4):
             z = self.scalars[..., k]
-            horizontal = v(self.d.kernel._mtheta_tendency(
-                self.adapter, u, z, self.dp, dp_e=self.dp_e, mass_flux=flux,
+            horizontal = v(self.d.kernel.centered_scalar_transport(
+                self.transport_view, u, z, self.dp, dp_e=self.dp_e, mass_flux=flux,
             ))
             vertical = omega * .5 * (z[:, :-1] + z[:, 1:])
             fields.append(horizontal + torch.cat([

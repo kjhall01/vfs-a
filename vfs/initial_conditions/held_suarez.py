@@ -8,9 +8,8 @@ from typing import Any
 
 import torch
 
-from vfs.atmosphere import DryHydrostaticDynamics
-from vfs.model import HeldSuarezModel
-from vfs.physics import HeldSuarezConstants, held_suarez_equilibrium_temperature
+from vfs.atmosphere import DryHydrostaticConservativeDynamics
+from .equilibrium import HeldSuarezConstants, held_suarez_equilibrium_temperature
 from vfs.core.state import State
 
 
@@ -110,7 +109,7 @@ def isothermal_rest_state(
     mesh,
     column,
     *,
-    dyn: DryHydrostaticDynamics | None = None,
+    dyn: DryHydrostaticConservativeDynamics | None = None,
     constants: HeldSuarezConstants | None = None,
     temperature: float = 288.0,
     wind_mode: str = "none",
@@ -145,7 +144,7 @@ def held_suarez_equilibrium_state(
     mesh,
     column,
     *,
-    dyn: DryHydrostaticDynamics | None = None,
+    dyn: DryHydrostaticConservativeDynamics | None = None,
     constants: HeldSuarezConstants | None = None,
     equilibrium_wind: str = "small_noise",
     initial_wind_noise: float = 0.05,
@@ -182,49 +181,8 @@ def held_suarez_equilibrium_state(
     return (state, info) if return_info else state
 
 
-def build_held_suarez_initial_state(
-    base: DryHydrostaticDynamics,
-    mesh,
-    column,
-    *,
-    constants: HeldSuarezConstants | None = None,
-    initial_condition: str = "isothermal_rest",
-    equilibrium_wind: str = "small_noise",
-    initial_wind_noise: float = 0.05,
-    seed: int = 0,
-) -> tuple[HeldSuarezModel, State, dict[str, Any]]:
-    constants = constants or HeldSuarezConstants()
-    initial_condition = normalize_held_suarez_initial_condition(initial_condition)
-    if initial_condition == "isothermal_rest":
-        state, info = isothermal_rest_state(
-            mesh,
-            column,
-            dyn=base,
-            constants=constants,
-            wind_mode="small_noise",
-            initial_wind_noise=initial_wind_noise,
-            seed=seed,
-            return_info=True,
-        )
-    elif initial_condition == "hs_equilibrium":
-        state, info = held_suarez_equilibrium_state(
-            mesh,
-            column,
-            dyn=base,
-            constants=constants,
-            equilibrium_wind=equilibrium_wind,
-            initial_wind_noise=initial_wind_noise,
-            seed=seed,
-            return_info=True,
-        )
-    else:
-        raise RuntimeError(f"unhandled initial condition {initial_condition!r}")
-    return HeldSuarezModel(mesh=mesh, column=column, dynamics=base, constants=constants), state, asdict(info)
-
-
 __all__ = [
     "HeldSuarezInitialConditionInfo",
-    "build_held_suarez_initial_state",
     "held_suarez_equilibrium_state",
     "isothermal_rest_state",
     "normalize_held_suarez_initial_condition",

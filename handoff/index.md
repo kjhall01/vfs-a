@@ -1,4 +1,34 @@
-# Current handoff — scientific readability, supported-path scope slice
+# Current handoff — retained equations and explicit ownership
+
+The dependent implementation slice follows PR #9, both based on merged PR #8.
+Read [changes and evidence](../docs/READABILITY_RESULTS.md) and the
+[pre-edit dependency map](../docs/SIMPLIFICATION_MAP.md). DryAtmosphere owns the
+conservative core with DrySSPRK3/DryIMEX instances. Moist default remains bounded
+SSPRK3 with heat; centered ARK4 is explicit opt-in without species bounds.
+The dry external binding/recipe stack is removed. ScalarTransportState now names
+borrowed entropy/thermal contents explicitly; no entropy-in-mtheta adapter remains.
+ARK4 stages and residual solvers have cohesive owners, with retained wave/mesh
+machinery. Removed algorithms stay in Git history, not a legacy package.
+
+Local installed wheel: 519 passed, 1 CUDA skip; 235 retained portable fixture
+quantities and both examples pass. All 298 pre/post captures and solver diagnostics
+are exact against merged PR #8. Frozen-fixture exact mode fails separately on
+macOS. No fixtures/tolerances changed; 100 canonical-core paths are explicitly
+retired. IMEX backward/accelerator/full-rollout qualification is not claimed.
+PR #9's two GitHub CPU checks passed; dependent hosted checks are reported in PRs.
+Held–Suarez thermal relaxation and Rayleigh drag are retained as a small
+standalone component; see [forcing and its runnable example](../docs/HELD_SUAREZ.md).
+The conservative model remains unforced unless its RHS is explicitly summed with
+the source at each SSPRK3 stage. Thermal/drag energy work is reported separately.
+No registry, legacy dycore or forced IMEX framework is restored. Original method
+ASTs and 132 pre/post rate/RHS/stage/state/energy/gradient tensors agree exactly.
+
+Next: reconcile current guides with intentional API removals in a docs-only PR.
+Development remains on GitHub. Do not start a verification/performance campaign.
+
+---
+
+# Historical handoff — scientific readability, supported-path scope slice
 
 Start from merged PR #8 (849ccb8). Read [the pre-edit map](../docs/SIMPLIFICATION_MAP.md)
 and [current paths](../docs/CURRENT_PATHS.md). First branch simplify/supported-paths

@@ -29,6 +29,21 @@ TOLERANCES = {
 }
 FIELDS = ('u_e', 'ps', 'entropy_content', 'water_content')
 MANIFEST = json.loads(Path(__file__).with_name('fixture_quantities.json').read_text())
+# The canonical dry algorithm is deliberately removed. Preserve its frozen
+# archive and quantity table, but require full coverage of the retained branch.
+MANIFEST['dry_helpers_pass2.pt'] = {
+    path: spec for path, spec in MANIFEST['dry_helpers_pass2.pt'].items()
+    if path.startswith('diagonal/')
+}
+
+
+def retained_reference(reference, fixture):
+    if fixture == 'dry_helpers_pass2.pt':
+        require(set(reference) in ({'canonical', 'diagonal'}, {'diagonal'}),
+                'unexpected dry fixture branches')
+        return {'diagonal': reference['diagonal']}
+    return reference
+
 
 
 def require(condition, label):
@@ -109,10 +124,10 @@ def positive(value, label, strict=True):
 
 
 def geometry(n_cells, levels, sigma_power):
-    from vfs import VoronoiMesh, DryHydrostaticDynamics, make_hybrid_coefficients
+    from vfs import VoronoiMesh, DryHydrostaticConservativeDynamics, make_hybrid_coefficients
     mesh = VoronoiMesh(n_cells=n_cells, lloyd_iters=0, verbose=False)
     A, B = make_hybrid_coefficients(levels, p_top=5000., sigma_power=sigma_power)
-    return mesh, torch.as_tensor(A), torch.as_tensor(B), DryHydrostaticDynamics().gravity
+    return mesh, torch.as_tensor(A), torch.as_tensor(B), DryHydrostaticConservativeDynamics().gravity
 
 
 def check_checkpoint_invariants(actual, reference):
@@ -189,7 +204,7 @@ def check_dry_invariants(actual):
     mesh, A, B, gravity = geometry(32, 4, 1.2)
     area = mesh.cell_area[:, None]
     report = {}
-    for name in ('canonical', 'diagonal'):
+    for name in ('diagonal',):
         case = actual[name]
         for key, value in case['pressure_fields'].items():
             positive(value, f'{name}/pressure_fields/{key}')
@@ -212,14 +227,12 @@ def check_dry_invariants(actual):
         require(0 <= work['work_relative'] <= EPS128, f'{name}/normalized rotation closure')
         require(torch.equal(work['work_relative'], work['work'].abs() / work['work_abs_scale']),
                 f'{name}/rotation work identity')
-    tracer_rate = area[..., None] * actual['canonical']['tracer_rhs']['tracer_m'] / gravity
-    conserved(tracer_rate.sum((0, 1)), torch.zeros(2, dtype=torch.float64),
-              'canonical/tracer tendency', tracer_rate.abs().sum((0, 1)))
     return report
 
 
 def compare_portable(actual, reference, fixture):
     require(fixture in MANIFEST, f'unknown fixture: {fixture}')
+    reference = retained_reference(reference, fixture)
     manifest = MANIFEST[fixture]
     leaves = list(flatten_pair(actual, reference, manifest))
     require({p for p, _, _ in leaves} == manifest.keys(), 'manifest coverage mismatch')
@@ -249,6 +262,7 @@ def compare_portable(actual, reference, fixture):
 
 
 def compare_selected(actual, reference, fixture, mode, exact):
+    reference = retained_reference(reference, fixture)
     if mode == 'exact':
         return dict(tensor_comparisons=exact(actual, reference))
     if mode == 'portable':

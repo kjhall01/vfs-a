@@ -8,7 +8,6 @@ import torch
 
 import vfs.data.topography as topography
 from vfs.geometry.column import CharneyPhillipsColumn
-from vfs.physics import HeldSuarezPhysics
 from vfs.core.state import State
 
 
@@ -82,44 +81,6 @@ def earth_like_dry_initial_state(
     return State.from_theta(u_e, theta_i, ps, mesh=mesh, column=column, attrs=attrs)
 
 
-def build_earth_like_dry_physics(
-    mesh,
-    column: CharneyPhillipsColumn,
-    *,
-    surface_temperature: torch.Tensor | Any | None = None,
-    thermal_relaxation_days: float = 20.0,
-    lower_relaxation_days: float = 5.0,
-    drag_days: float = 1.0,
-    sigma_b: float = 0.7,
-    p0: float = 1.0e5,
-) -> HeldSuarezPhysics:
-    """Build a prescribed dry thermal-relaxation/Rayleigh-drag source provider."""
-
-    phi_s = column.phi_s.detach().to(dtype=torch.float64)
-    if phi_s.ndim == 0:
-        phi_s = phi_s.expand(int(mesh.nCells))
-    ps = topography.earth_surface_pressure_from_phi_s(phi_s, p0=float(p0)).reshape(int(mesh.nCells), 1)
-    ps = ps.clamp_min(float(column.A_interface[0].detach().cpu().item()) + 1000.0)
-    Teq = prescribed_earth_temperature_interfaces(
-        mesh,
-        column,
-        ps,
-        surface_temperature=surface_temperature,
-    ).detach()
-    p_i = column.interface_pressure(ps)
-    sigma_i = (p_i / ps.clamp_min(1.0)).clamp_min(1.0e-12)
-    ramp_i = ((sigma_i - float(sigma_b)) / (1.0 - float(sigma_b))).clamp(0.0, 1.0)
-    k_upper = 1.0 / (float(thermal_relaxation_days) * 86400.0)
-    k_lower = 1.0 / (float(lower_relaxation_days) * 86400.0)
-    kT = k_upper + (k_lower - k_upper) * ramp_i
-
-    p_full = column.full_pressure(ps)
-    sigma_full = (p_full / ps.clamp_min(1.0)).clamp_min(1.0e-12)
-    ramp_full = ((sigma_full - float(sigma_b)) / (1.0 - float(sigma_b))).clamp(0.0, 1.0)
-    kv = (1.0 / (float(drag_days) * 86400.0)) * ramp_full
-    return HeldSuarezPhysics(Teq=Teq, kT=kT.detach(), kv=kv.detach())
-
-
 def _as_tensor(value: Any, *, dtype: torch.dtype, device: torch.device | str | None = None) -> torch.Tensor:
     if torch.is_tensor(value):
         return value.to(dtype=dtype, device=device if device is not None else value.device)
@@ -127,7 +88,6 @@ def _as_tensor(value: Any, *, dtype: torch.dtype, device: torch.device | str | N
 
 
 __all__ = [
-    "build_earth_like_dry_physics",
     "earth_like_dry_initial_state",
     "prescribed_earth_temperature_interfaces",
 ]

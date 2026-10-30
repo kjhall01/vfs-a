@@ -11,7 +11,6 @@ from .analytic_climate import (
 )
 from .held_suarez import (
     HeldSuarezInitialConditionInfo,
-    build_held_suarez_initial_state,
     held_suarez_equilibrium_state,
     isothermal_rest_state,
     normalize_held_suarez_initial_condition,
@@ -32,7 +31,6 @@ __all__ = [
     "HeldSuarezInitialConditionInfo",
     "JWInitialConditions",
     "JablonskiWilliamsonIC",
-    "build_held_suarez_initial_state",
     "compare_initial_states",
     "held_suarez_equilibrium_state",
     "isothermal_rest_state",

@@ -10,6 +10,11 @@ import vfs
 
 
 REMOVED = (
+    'atmosphere.dry_dynamics', 'atmosphere.dry_momentum', 'atmosphere.dry_strategies',
+    'atmosphere.dry_terms', 'atmosphere.dry_thermo', 'atmosphere.dry_tracers',
+    'atmosphere.dry_transport', 'atmosphere.recipes', 'atmosphere.operators',
+    'transport', 'forcing', 'split_explicit', 'process', 'external_scm', 'physics',
+    'diagnostics', 'core.registry',
     'integrators.imex.ark2', 'integrators.imex.higher_order',
     'integrators.imex.legacy_pressure',
     'ocean', 'ocean_model', 'ocean_diagnostics', 'land', 'ice', 'surface',
@@ -35,22 +40,16 @@ def test_retained_modules_and_lazy_exports_resolve():
         module = importlib.import_module(info.name)
         for name in getattr(module, '_COMPAT_EXPORTS', {}):
             assert getattr(module, name) is not None
-    for name in vfs._COMPAT_EXPORTS:
+    for name in getattr(vfs, '_COMPAT_EXPORTS', {}):
         assert getattr(vfs, name) is not None
 
 
 def test_removed_exports_and_recipes_are_not_advertised():
     from vfs import atmosphere, geometry
-    from vfs.atmosphere import recipes, dry_strategies
     from vfs.data import topography
-    from vfs.core.registry import get_component
-    from vfs.model import VFSModel, _build_component
     for module, names in (
-        (vfs, ('OceanState', 'CoupledState', 'AirSeaMomentumCoupler')),
-        (atmosphere, ('PGFPotentialCorrectionMLP', 'LearnedAdaptiveDivergenceDamping',
-                      'DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics')),
-        (recipes, ('MthetaMUSCLActivatorMLP',)),
-        (dry_strategies, ('LearnedAdaptiveDivergenceDamping',)),
+        (vfs, ('OceanState', 'CoupledState', 'DryHydrostaticDynamics', 'VFSModel', 'HeldSuarezModel')),
+        (atmosphere, ('build_dry_dynamics', 'DryOperatorSet', 'DryHydrostaticVirtualTemperatureDynamics')),
         (geometry, ('CellMeshKernelConv',)),
         (geometry.mesh, ('EdgeMeshKernelNetwork',)),
         (topography, ('build_ocean_domain_from_etopo', 'smooth_ocean_depth_on_mesh')),
@@ -59,12 +58,6 @@ def test_removed_exports_and_recipes_are_not_advertised():
             assert name not in dir(module)
             with pytest.raises(AttributeError):
                 getattr(module, name)
-    assert get_component('air_sea_momentum_coupler') is None
-    assert 'learned_soft_muscl_mtheta_transport' not in recipes.dry_operator_sets()
-    with pytest.raises(ValueError, match='unknown'):
-        VFSModel.from_config({'model': 'forced_ocean'})
-    with pytest.raises(ValueError, match='unknown'):
-        _build_component('surface_system', name='surface', mesh=None, column=None)
 
 
 def test_retained_source_has_no_imports_from_removed_modules():

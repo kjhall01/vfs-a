@@ -7,7 +7,7 @@ approximation. The native mixture-energy nonlinear RHS is unchanged.
 import math
 import torch
 
-from .dry_ark import (
+from .solvers import (
     _gmres, IMEXSolverConfig, IMEXStageInfo, IMEXStepInfo, IMEXConvergenceError,
 )
 from .tableau import ARK4_TABLEAU
@@ -117,7 +117,7 @@ class MoistPEIMEXARK:
     def _validate(self, state, dt):
         if not all(bool(torch.isfinite(z).all()) for z in _Vector.pack(state).values):
             raise ValueError('nonfinite moist stage state')
-        self.dynamics._adapter(state)
+        self.dynamics.transport_state(state)
         temperature = reconstruct_moist_cp(
             state.column.interface_pressure(state.ps), state.entropy_content,
             state.water_content, self.dynamics.thermodynamics,

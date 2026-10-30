@@ -26,7 +26,6 @@ def imports(reference=None):
     from vfs.atmosphere import MoistConservativeDynamics, MoistState
     from vfs.atmosphere import (
         DryHydrostaticConservativeDynamics,
-        DryHydrostaticDynamics,
     )
     from vfs.geometry.mesh import VoronoiMesh
     from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
@@ -143,7 +142,7 @@ def capture(api):
         )
         dry = api["DryHydrostaticConservativeDynamics"]()
         s0 = ic(mesh, drycol, mode="constant_ps_surface_phi").make_state(
-            api["DryHydrostaticDynamics"](),
+            dry,
             perturb=True,
             project_mass_flux=False,
             theta_source="phi_derivative",

@@ -24,19 +24,20 @@ class BoundedGibbs:
     """Bounded moist explicit operator extracted from checkpoint 54.
 
     Set release_as_heat=True to reproduce the frozen bounded moist baseline.
-    The default remains False for fidelity to the original wrapper.
+    The old no-heat experiment is not a retained stepping configuration.
     Call step/euler, not a generic RHS Euler update: the species amount
     ledger is evaluated in cancellation-safe form. dt is a stage budget.
     Semidiscrete work closure does not imply exact finite-step energy.
     """
 
     def __init__(
-        self, base, vapor_floor=1e-14, dry_floor=1e-14, *, release_as_heat=False
+        self, base, vapor_floor=1e-14, dry_floor=1e-14, *, release_as_heat
     ):
+        if release_as_heat is not True:
+            raise ValueError("retained bounded dynamics requires release_as_heat=True")
         self.base = base
         self.vapor_floor, self.dry_floor = vapor_floor, dry_floor
-        # Existing composition_work_split experiment, now applied to the
-        # correction from the actual Gibbs high flux. Research switch only.
+        # Heat allocation closes the work from the actual limited Gibbs flux.
         self.release_as_heat = release_as_heat
 
     def evaluate(self, s, dt):
@@ -129,7 +130,7 @@ class BoundedGibbs:
             .index_add(0, i, 0.5 * heat / entropy_energy_gradient[i])
             .index_add(0, j, 0.5 * heat / entropy_energy_gradient[j])
         )
-        transport = d.kernel._transport_primitives(d._adapter(s))
+        transport = d.kernel._transport_primitives(d.transport_state(s))
         # 5. Carrier transpose returns an edge force (E,L), N. The kinetic
         # velocity metric (E,L), kg, converts it to acceleration (m/s²).
         velocity_metric = (
@@ -188,7 +189,7 @@ class BoundedGibbs:
         updated = MoistState(
             updated.u_e, updated.ps, updated.entropy_content, water, s.mesh, s.column
         )
-        self.base._adapter(updated)
+        self.base.transport_state(updated)
         return updated, info
 
     def step_with_info(self, s, dt):
@@ -205,7 +206,7 @@ class BoundedGibbs:
         stage2_euler, info3 = self.euler_with_info(stage2, dt)
         # Final RK state: 1/3 initial + 2/3 Euler-from-second-stage state.
         updated = s.combine(stage2_euler, a=1 / 3, b=2 / 3)
-        self.base._adapter(updated)
+        self.base.transport_state(updated)
         return updated, [info1, info2, info3]
 
     def step(self, s, dt):
@@ -226,7 +227,7 @@ class BoundedGibbs:
         d = self.base
         m = s.mesh
         n = s.water_content.shape[1]
-        a = d._adapter(s)
+        a = d.transport_state(s)
         ctx = d.kernel._transport_primitives(a)
         dp_e = v(ctx["dp_e"])
         nh = m.nEdges * n
@@ -259,7 +260,7 @@ class BoundedGibbs:
         out = torch.zeros(mass.numel(), dtype=F.dtype, device=F.device)
         out.index_add_(0, i, F.clamp_min(0))
         out.index_add_(0, j, (-F).clamp_min(0))
-        a = self.base._adapter(s)
+        a = self.base.transport_state(s)
         ctx = self.base.kernel._transport_primitives(a)
         dp = v(ctx["dp"])
         pd = v(ctx["dps_dt"])
@@ -324,7 +325,7 @@ class BoundedGibbs:
             / area[..., None]
         ).reshape(-1, 4)
         work_per_carrier = ((energy_covector[j] - energy_covector[i]) * trace_change).sum(-1)
-        transport = d.kernel._transport_primitives(d._adapter(s))
+        transport = d.kernel._transport_primitives(d.transport_state(s))
         velocity_metric = (
             m.dc_edge[:, None] * m.dv_edge[:, None] * v(transport["dp_e"]) / d.kernel.gravity
         )

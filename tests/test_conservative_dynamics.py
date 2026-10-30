@@ -1,7 +1,7 @@
 import pytest
 import torch
 from unittest.mock import patch
-from vfs.atmosphere import DryHydrostaticConservativeDynamics, build_dry_dynamics
+from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.atmosphere.conservative import v
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
@@ -39,8 +39,8 @@ def test_energy_mass_theta(mesh,seed,levels,top):
   z=mesh.cell_area[:,None]*v(getattr(rhs,k));assert float(abs(z.sum())/z.abs().sum().clamp_min(1))<1e-12
 
 
-def test_native_recipe_and_term_sum(mesh):
-    d = build_dry_dynamics("conservative_diagonal")
+def test_conservative_terms_sum(mesh):
+    d = DryHydrostaticConservativeDynamics()
     assert isinstance(d, DryHydrostaticConservativeDynamics)
     s = case(mesh, 71)
     rhs = d.tendency(s)

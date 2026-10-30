@@ -105,3 +105,22 @@ ARK4-only public IMEX selection preserves 298 captured tensors and all stage sol
 diagnostics exactly. Installed-wheel portable suite: 601 passed, 1 CUDA skip;
 335 frozen fixture tensors and both examples pass. See CURRENT_PATHS.md for
 explicit/implicit guarantees and the precise representative-case evidence.
+
+## Subsequent retained-equation consolidation
+
+See [readability changes and validation](READABILITY_RESULTS.md). The dry function
+binding/recipe stack is replaced by ordinary conservative/energy methods and
+DryAtmosphere with explicit steppers. A borrowed scalar transport view replaces
+entropy-as-mtheta; bounded ledgers and formulas remain. ARK4 wave/stage/solver
+owners are separated without new methods. Installed-wheel portable: 519 passed,
+1 CUDA skip; both tools/examples pass, 298 same-environment pre/post tensors and
+solver diagnostics exactly equal. Frozen exact failures remain separate. The
+100 removed canonical-core fixture paths are retired explicitly, with fixture
+bytes and retained tolerances unchanged. No IMEX backward qualification.
+
+## Standalone retained dry forcing
+
+Before merging the simplification stack, preserve existing Held–Suarez thermal
+relaxation and Rayleigh drag in [a standalone source](HELD_SUAREZ.md). No legacy
+framework is restored. Original method ASTs and 132 same-environment comparisons
+are exact, including forced-stage states and representative energy gradients.
