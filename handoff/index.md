@@ -1,4 +1,40 @@
-# Current handoff — centered moist readability
+# Current handoff — moist module ownership and explicit steppers
+
+PR #5 is merged. The ownership branch is `api/moist-module-ownership`.
+Read the [module API](../docs/MOIST_MODULE_API.md) and
+[validation results](../docs/MOIST_MODULE_RESULTS.md).
+MoistAtmosphere registers mesh, column and dynamics once; dynamics owns kernel.
+BoundedGibbs and the explicit stepper instances are plain non-owning collaborators.
+Components cannot be replaced/deleted; borrowed references are checked before
+advancement. IMEX binds its solver once and retains per-step wave construction.
+
+Default bounded SSPRK3 still delegates to the exact existing Euler amount ledger
+with release_as_heat=True. CenteredSSPRK3 and CenteredIMEX (existing ARK2/3/4
+objects) are explicit opt-ins. There is no bounded IMEX option, generic RHS
+substitution or duplicated RK formula. Centered IMEX rejects inadmissible stages;
+it does not provide bounded species transport. Positive vapor remains required,
+with no new floor. Private entropy adaptation and dry APIs remain unchanged.
+
+Move the module before initialization. state_to_model explicitly converts only
+prognostic tensors on identical shared geometry, retaining gradients. state_dict
+is not a simulation restart: geometry layout and numerical/stepper configuration
+must be reconstructed separately. See the API for supported ownership operations.
+
+The [pre-existing gradient limitation](../docs/BOUNDED_GRADIENT_LIMITATION.md)
+blocks gradient-enabled bounded timesteps even though diagnostics and conversion
+retain gradients. Its allclose assertion remains unchanged; any fix must be a
+separate narrow change. Local CPU float64 forward regression, short diagnostic
+and centered one-step gradient probes, and one MPS float32 smoke are distinct
+results, not full-rollout/accelerator numerical qualification. CUDA is unavailable.
+
+Next: review this ownership PR and, separately, address the allclose scalar
+validation failure without changing tolerance semantics or hiding gradients.
+No new physics, integration scheme or scientific verification campaign belongs
+in this change. Development remains on GitHub.
+
+---
+
+# Historical handoff — centered moist readability
 
 `moist_conservative.py` now expands packed statements, uses consistent formatting
 and names energy/transport intermediates explicitly. Follow the

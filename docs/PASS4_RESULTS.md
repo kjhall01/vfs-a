@@ -65,3 +65,12 @@ not a cross-platform bitwise guarantee.
 
 The later [scope-reduction PR](SCOPE_REDUCTION.md) deliberately removes non-atmospheric
 and ML APIs while preserving this physical-field workflow and its numerical baseline.
+
+## Subsequent module-boundary work
+
+The [module API](MOIST_MODULE_API.md) owns mesh, column and dynamics once,
+with explicit non-owning steppers delegating to the existing bounded SSPRK3,
+centered SSPRK3 or experimental centered IMEX algorithms. See the separate
+[validation results](MOIST_MODULE_RESULTS.md) and [bounded gradient limitation](BOUNDED_GRADIENT_LIMITATION.md).
+These do not turn historical CPU forward results into accelerator or rollout
+qualification. Centered IMEX does not provide bounded species transport.

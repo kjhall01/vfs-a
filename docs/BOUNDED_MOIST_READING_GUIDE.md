@@ -1,11 +1,13 @@
 # Reading one bounded moist step
 
-Start with the call chain below, then follow the numbered blocks in `evaluate`.
+Start with the default call chain below, then follow the numbered blocks in `evaluate`.
+Other explicit stepper choices are described in [the module API](MOIST_MODULE_API.md).
 Source docstrings give tensor shapes, units and staggering at each boundary.
 No new algorithm or scientific verification campaign accompanies this guide.
 
-1. [MoistAtmosphere.step](../vfs/atmosphere/model.py#L166) checks geometry and
-   positive finite `dt` (seconds), then delegates to
+1. [MoistAtmosphere.step](../vfs/atmosphere/model.py) calls the module; `forward`
+   checks geometry, dtype/device and positive finite `dt` (seconds). The default
+   [BoundedSSPRK3.advance](../vfs/atmosphere/steppers.py) then delegates to
    [BoundedGibbs.step](../vfs/atmosphere/bounded_moist.py#L211).
 2. [step_with_info](../vfs/atmosphere/bounded_moist.py#L194) performs three
    bounded Euler maps, each with the full `dt` budget. The second RK state is

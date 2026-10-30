@@ -28,6 +28,8 @@ Start with [the physical-fields guide](docs/PHYSICAL_FIELDS_API.md) and
 examples/moist_atmosphere.py. MoistAtmosphere owns geometry, creates the existing
 MoistState from interface temperature, pressure, edge wind and water fractions,
 and exposes bounded stepping and differentiable conservation diagnostics.
+The [module API](docs/MOIST_MODULE_API.md) also supports explicit centered SSPRK3
+and experimental centered IMEX choices, with geometry/dynamics owned once.
 Vapor must be strictly positive; no floor is added.
 
 ## Underlying API
