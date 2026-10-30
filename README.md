@@ -55,6 +55,7 @@ GPU execution or long-rollout gradients.
 - [Follow one timestep](docs/CURRENT_PATHS.md) and [bounded moist details](docs/BOUNDED_MOIST_READING_GUIDE.md).
 - [State/model ownership](docs/STATE_OWNERSHIP.md), [physical initialization](docs/PHYSICAL_FIELDS_API.md), [Held–Suarez sources](docs/HELD_SUAREZ.md).
 - [Cleanup evidence](docs/FINAL_CLEANUP_RESULTS.md) and [verification handoff](docs/VERIFICATION_HANDOFF.md).
+- [Scientific verification tracker, frozen baseline and reproducible measurements](verification/README.md).
 - [Portable regression policy](docs/PORTABLE_REGRESSION.md), [historical reports](docs/HISTORY.md), and [development handoff](handoff/index.md).
 
 Freeze the retained implementation for the verification phase. Numerical fixes
