@@ -1,4 +1,4 @@
-"""Prescribed Held--Suarez equilibrium for explicit initialization only."""
+"""Prescribed Held--Suarez equilibrium shared by initialization and thermal forcing."""
 from dataclasses import dataclass
 import torch
 from vfs.geometry.column import CharneyPhillipsColumn

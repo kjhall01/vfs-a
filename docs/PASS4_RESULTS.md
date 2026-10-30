@@ -117,3 +117,10 @@ owners are separated without new methods. Installed-wheel portable: 519 passed,
 solver diagnostics exactly equal. Frozen exact failures remain separate. The
 100 removed canonical-core fixture paths are retired explicitly, with fixture
 bytes and retained tolerances unchanged. No IMEX backward qualification.
+
+## Standalone retained dry forcing
+
+Before merging the simplification stack, preserve existing Held–Suarez thermal
+relaxation and Rayleigh drag in [a standalone source](HELD_SUAREZ.md). No legacy
+framework is restored. Original method ASTs and 132 same-environment comparisons
+are exact, including forced-stage states and representative energy gradients.

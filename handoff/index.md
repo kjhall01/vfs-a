@@ -16,6 +16,13 @@ are exact against merged PR #8. Frozen-fixture exact mode fails separately on
 macOS. No fixtures/tolerances changed; 100 canonical-core paths are explicitly
 retired. IMEX backward/accelerator/full-rollout qualification is not claimed.
 PR #9's two GitHub CPU checks passed; dependent hosted checks are reported in PRs.
+Held–Suarez thermal relaxation and Rayleigh drag are retained as a small
+standalone component; see [forcing and its runnable example](../docs/HELD_SUAREZ.md).
+The conservative model remains unforced unless its RHS is explicitly summed with
+the source at each SSPRK3 stage. Thermal/drag energy work is reported separately.
+No registry, legacy dycore or forced IMEX framework is restored. Original method
+ASTs and 132 pre/post rate/RHS/stage/state/energy/gradient tensors agree exactly.
+
 Next: reconcile current guides with intentional API removals in a docs-only PR.
 Development remains on GitHub. Do not start a verification/performance campaign.
 
