@@ -5,6 +5,7 @@ step is taken. Extend experiments separately; do not change the baseline here
 to make a failed comparison disappear.
 """
 import argparse
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
 import importlib.util
@@ -103,39 +104,11 @@ def main():
     args = parser.parse_args()
     if any(n < 4 for n in args.cells) or len(set(args.cells)) != len(args.cells) or args.lloyd_iters < 0:
         parser.error("Use distinct cell counts >= 4 and nonnegative Lloyd iterations")
-    package = Path(vfs.__file__).resolve().parent
-    if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
-        raise ValueError("Install a baseline wheel and run outside the checkout")
-    hashes = verify_package(args.repo, package)
-    torch.set_default_dtype(torch.float64)
-    torch.set_num_threads(1)
-    environment_path = Path(__file__).with_name("record_environment.py")
-    spec = importlib.util.spec_from_file_location("verification_environment", environment_path)
-    environment_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(environment_module)
-    args.output.mkdir(parents=True, exist_ok=False)
-    manifest = {
-        "schema_version": 1, "experiment_id": "C1-GEO-001", "status": "running",
-        "baseline_commit": BASELINE, "baseline_pr": "https://github.com/kjhall01/vfs-a/pull/12",
-        "driver_commit": git(args.repo, "rev-parse", "HEAD").decode().strip(),
-        "checkout_status": git(args.repo, "status", "--porcelain").decode(),
-        "driver_sha256": sha256(Path(__file__).read_bytes()),
-        "environment_driver_sha256": sha256(environment_path.read_bytes()),
-        "runtime_sha256": hashes,
-        "started_utc": datetime.now(timezone.utc).isoformat(),
-        "configuration": {"cells": args.cells, "lloyd_iters": args.lloyd_iters,
-                          "seed": args.seed, "dtype": "float64", "device": "cpu",
-                          "threads": 1, "radius_m": 6371220.0,
-                          "mesh": "Fibonacci", "stepper": None},
-        "environment": environment_module.environment(),
-        "interpretation": "Measurements only; no scientific acceptance thresholds or dycore qualification",
-    }
-    write_json(args.output / "manifest.json", manifest)
-    try:
-        # Archive the executed sources as well as their hashes, including dirty
-        # development runs whose exact driver may not exist in Git yet.
-        shutil.copyfile(__file__, args.output / "run_verification.py")
-        shutil.copyfile(environment_path, args.output / "record_environment.py")
+    configuration = {"cells": args.cells, "lloyd_iters": args.lloyd_iters,
+                     "seed": args.seed, "dtype": "float64", "device": "cpu",
+                     "threads": 1, "radius_m": 6371220.0,
+                     "mesh": "Fibonacci", "stepper": None}
+    with recorded_run(args.repo, args.output, "C1-GEO-001", configuration, __file__):
         rows = []
         for cells in args.cells:
             mesh = VoronoiMesh(n_cells=cells, lloyd_iters=args.lloyd_iters, radius=6371220.0, verbose=False)
@@ -143,6 +116,40 @@ def main():
             rows.append({"cells": cells, "edges": mesh.nEdges, "metrics": metrics})
             torch.save({"mesh": mesh.state_dict(), "inputs": inputs}, args.output / f"geometry-{cells}.pt")
         write_json(args.output / "metrics.json", rows)
+
+
+@contextmanager
+def recorded_run(repo, output, experiment_id, configuration, driver):
+    """Share baseline checks and the run/artifact lifecycle between experiments."""
+    package = Path(vfs.__file__).resolve().parent
+    if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
+        raise ValueError("Install a baseline wheel and run outside the checkout")
+    hashes = verify_package(repo, package)
+    torch.set_default_dtype(torch.float64)
+    torch.set_num_threads(1)
+    environment_path = Path(__file__).with_name("record_environment.py")
+    spec = importlib.util.spec_from_file_location("verification_environment", environment_path)
+    environment_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(environment_module)
+    output.mkdir(parents=True, exist_ok=False)
+    manifest = {
+        "schema_version": 1, "experiment_id": experiment_id, "status": "running",
+        "baseline_commit": BASELINE, "baseline_pr": "https://github.com/kjhall01/vfs-a/pull/12",
+        "driver_commit": git(repo, "rev-parse", "HEAD").decode().strip(),
+        "checkout_status": git(repo, "status", "--porcelain").decode(),
+        "driver_sha256": sha256(Path(driver).read_bytes()),
+        "environment_driver_sha256": sha256(environment_path.read_bytes()),
+        "runtime_sha256": hashes,
+        "started_utc": datetime.now(timezone.utc).isoformat(),
+        "configuration": configuration,
+        "environment": environment_module.environment(),
+        "interpretation": "Measurements only; no scientific acceptance thresholds or dycore qualification",
+    }
+    write_json(output / "manifest.json", manifest)
+    try:
+        for source in {Path(driver), Path(__file__), environment_path}:
+            shutil.copyfile(source, output / source.name)
+        yield manifest
         manifest["status"] = "completed"
     except Exception as error:
         manifest["status"] = "failed"
@@ -150,8 +157,8 @@ def main():
         raise
     finally:
         manifest["finished_utc"] = datetime.now(timezone.utc).isoformat()
-        manifest["artifacts_sha256"] = {p.name: sha256(p.read_bytes()) for p in sorted(args.output.iterdir()) if p.name != "manifest.json"}
-        write_json(args.output / "manifest.json", manifest)
+        manifest["artifacts_sha256"] = {p.name: sha256(p.read_bytes()) for p in sorted(output.iterdir()) if p.name != "manifest.json"}
+        write_json(output / "manifest.json", manifest)
 
 
 if __name__ == "__main__":
