@@ -12,12 +12,11 @@ from vfs import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.core.state import State
-from vfs.atmosphere.conservative import v
 from vfs.core.integrators import ssprk3
 
 
 def clean(value):
-    if hasattr(value,'location'):return v(value).detach().clone()
+    if hasattr(value,'location'):return value.values.detach().clone()
     if isinstance(value,torch.Tensor):return value.detach().clone()
     if isinstance(value,dict):return {k:clean(x) for k,x in value.items()}
     if isinstance(value,(list,tuple)):return [clean(x) for x in value]

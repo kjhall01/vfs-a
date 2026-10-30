@@ -31,20 +31,13 @@ def _check(stepper, dynamics):
 
 @dataclass(frozen=True, eq=False)
 class BoundedSSPRK3:
-    """Existing bounded Euler-ledger SSPRK3, with heat release by default."""
+    """Existing bounded Euler-ledger SSPRK3, with intrinsic heat release."""
 
-    release_as_heat: bool = True
     _dynamics: object = field(default=None, init=False, repr=False)
     _implementation: object = field(default=None, init=False, repr=False)
 
-    def __post_init__(self):
-        if self.release_as_heat is not True:
-            raise ValueError("retained bounded dynamics requires release_as_heat=True")
-
     def _bind(self, dynamics):
-        _bind_once(
-            self, dynamics, BoundedGibbs(dynamics, release_as_heat=self.release_as_heat)
-        )
+        _bind_once(self, dynamics, BoundedGibbs(dynamics))
 
     @property
     def transport(self):
@@ -54,8 +47,6 @@ class BoundedSSPRK3:
         _check(self, dynamics)
         if self.transport.base is not dynamics:
             raise ValueError("bounded transport.base no longer matches model dynamics")
-        if self.transport.release_as_heat != self.release_as_heat:
-            raise ValueError("bounded heat configuration changed after binding")
 
     def advance(self, state, dt):
         self._check_binding(self._dynamics)
@@ -161,11 +152,9 @@ class DryIMEX:
             raise ValueError("stepper is already bound; construct a fresh stepper")
         config = self.solver_config
         if config is None:
-            config = IMEXSolverConfig(implicit_operator="gravity_wave", preconditioner="hydrostatic_schur")
+            config = IMEXSolverConfig(preconditioner="hydrostatic_schur")
         if not isinstance(config, IMEXSolverConfig):
             raise TypeError("solver_config must be IMEXSolverConfig or None")
-        if config.implicit_operator != "gravity_wave" or config.compile_kernels:
-            raise ValueError("DryIMEX retains eager analytic gravity waves")
         solver = DryPEIMEXARK(dynamics, config)
         _bind_once(self, dynamics, solver)
         object.__setattr__(self, "_bound_config", config)

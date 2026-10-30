@@ -79,13 +79,13 @@ def capture(original=False):
         if name == 'dry':
             values['explicit'] = clean(ssprk3(dynamics, state, 1.))
         else:
-            bounded = BoundedGibbs(dynamics, release_as_heat=True)
+            bounded = BoundedGibbs(dynamics, **({"release_as_heat": True} if original else {}))
             values['bounded_rhs'], values['ledger'] = clean(bounded.evaluate(state, 1.))
             values['euler'], values['euler_ledger'] = clean(bounded.euler_with_info(state, 1.))
             values['explicit'], values['stage_ledgers'] = clean(bounded.step_with_info(state, 1.))
         for pre in (('none', 'hydrostatic_schur', 'multilevel_hydrostatic_schur') if name == 'dry'
                     else ('none', 'hydrostatic_schur')):
-            cfg = IMEXSolverConfig(implicit_operator='gravity_wave', preconditioner=pre,
+            cfg = IMEXSolverConfig(**({"implicit_operator": "gravity_wave"} if original else {}), preconditioner=pre,
                                    rtol=1e-11, max_iterations=100)
             factory = DryPEIMEXARK if name == 'dry' else MoistPEIMEXARK
             kwargs = {'method': 'ark4'} if original else {}

@@ -26,14 +26,10 @@ class DryPELinearOperator:
         dynamics,
         anchor: State,
         *,
-        implicit_operator: str = "coupled",
         tendency: Callable[[State], State] | None = None,
     ) -> None:
-        if implicit_operator != "gravity_wave":
-            raise ValueError("dry ARK4 requires explicit implicit_operator='gravity_wave'")
         self.dynamics = dynamics
         self.anchor = anchor
-        self.implicit_operator = implicit_operator
         self.tendency = dynamics.tendency if tendency is None else tendency
         self.base_tendency = self.tendency(anchor)
         self._validate_gravity_wave_support()
@@ -41,6 +37,7 @@ class DryPELinearOperator:
         from .conservative_wave import ConservativePressureWave
         self.conservative_wave = ConservativePressureWave(dynamics, anchor)
         self.applications = 0
+
     def _validate_gravity_wave_support(self):
         from ...atmosphere.conservative import DryHydrostaticConservativeDynamics
         if type(self.dynamics) is not DryHydrostaticConservativeDynamics:
@@ -188,15 +185,11 @@ class DryPEIMEXARK:
         self.dynamics = dynamics
         self.solver_config = solver_config or IMEXSolverConfig()
         self.solver_config.validate()
-        if self.solver_config.implicit_operator != "gravity_wave":
-            raise ValueError("dry ARK4 requires explicit implicit_operator='gravity_wave'")
         self.tableau = ARK4_TABLEAU
         self.last_step_info: IMEXStepInfo | None = None
         self._tendency: Callable[[State], State] = dynamics.tendency
         self._multilevel_hierarchies: dict[int, VoronoiMeshHierarchy] = {}
         self._multilevel_modal_setups: dict[tuple[object, ...], _ModalHelmholtzSetup] = {}
-        if self.solver_config.compile_kernels:
-            raise ValueError("compiled ARK is not a retained configuration")
 
     def _multilevel_hierarchy(self, state: State) -> VoronoiMeshHierarchy:
         """Return the static geometric hierarchy associated with ``state.mesh``."""
@@ -255,18 +248,9 @@ class DryPEIMEXARK:
         dt = float(dt)
         if not math.isfinite(dt) or dt <= 0.0:
             raise ValueError(f"dt must be finite and positive, got {dt!r}")
-        if self.solver_config.preconditioner in {
-            "hydrostatic_schur",
-            "multilevel_hydrostatic_schur",
-        } and self.solver_config.implicit_operator != "gravity_wave":
-            raise ValueError(
-                f"preconditioner={self.solver_config.preconditioner!r} requires "
-                "implicit_operator='gravity_wave'"
-            )
         operator = DryPELinearOperator(
             self.dynamics,
             state,
-            implicit_operator=self.solver_config.implicit_operator,
             tendency=self._tendency,
         )
         inner = _StateInnerProduct(state)

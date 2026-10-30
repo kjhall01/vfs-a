@@ -14,7 +14,6 @@ specific entropy/vapor/liquid/ice. Pressure-weighted amounts / gravity give kg.
 
 import torch
 from .moist_conservative import MoistState
-from .conservative import v
 from .moist_cp import interface_pressure_mass
 from .bounded_transport import graph, divergence, bounded_transfer, limited_traces
 from .gibbs_means import gibbs_face, composition_entropy_derivatives
@@ -23,22 +22,16 @@ from .gibbs_means import gibbs_face, composition_entropy_derivatives
 class BoundedGibbs:
     """Bounded moist explicit operator extracted from checkpoint 54.
 
-    Set release_as_heat=True to reproduce the frozen bounded moist baseline.
-    The old no-heat experiment is not a retained stepping configuration.
+    Heat release is intrinsic to this frozen bounded moist formulation.
     Call step/euler, not a generic RHS Euler update: the species amount
     ledger is evaluated in cancellation-safe form. dt is a stage budget.
     Semidiscrete work closure does not imply exact finite-step energy.
     """
 
-    def __init__(
-        self, base, vapor_floor=1e-14, dry_floor=1e-14, *, release_as_heat
-    ):
-        if release_as_heat is not True:
-            raise ValueError("retained bounded dynamics requires release_as_heat=True")
+    def __init__(self, base, vapor_floor=1e-14, dry_floor=1e-14):
         self.base = base
         self.vapor_floor, self.dry_floor = vapor_floor, dry_floor
         # Heat allocation closes the work from the actual limited Gibbs flux.
-        self.release_as_heat = release_as_heat
 
     def evaluate(self, s, dt):
         """Return the dt-budgeted RHS and ledger/limiter diagnostics.
@@ -71,7 +64,7 @@ class BoundedGibbs:
         high_fractions = torch.cat(
             [1 - high_traces[:, 1:].sum(-1, keepdim=True), high_traces[:, 1:]], -1
         )
-        pressure = v(s.column.interface_pressure(s.ps))
+        pressure = s.column.interface_pressure(s.ps)
         T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
         composition_entropy = composition_entropy_derivatives(
             d.thermodynamics, T, pressure, species_fractions
@@ -83,7 +76,7 @@ class BoundedGibbs:
         target_ps = s.ps + dt * base.ps
         target_amount = (
             area
-            * interface_pressure_mass(v(s.column.interface_pressure(target_ps)).diff())
+            * interface_pressure_mass(s.column.interface_pressure(target_ps).diff())
         ).flatten()
         floors = species_fractions.new_tensor([self.dry_floor, self.vapor_floor, 0.0, 0.0])
         face_entropy, face_fractions, info = limited_traces(
@@ -112,12 +105,8 @@ class BoundedGibbs:
         ).reshape(-1, 4)
         work_per_carrier = ((energy_covector[j] - energy_covector[i]) * trace_change).sum(-1)
         work = F * work_per_carrier
-        heat = (-work).clamp_min(0) if self.release_as_heat else torch.zeros_like(work)
-        mechanical_b = (
-            torch.where(work < 0, 0.0, work_per_carrier)
-            if self.release_as_heat else work_per_carrier
-        )
-        # With heat release disabled, all work stays mechanical and heat is zero.
+        heat = (-work).clamp_min(0)
+        mechanical_b = torch.where(work < 0, 0.0, work_per_carrier)
         # Released scalar work becomes nonnegative face heat (H,), W. Split
         # it equally between endpoint energy budgets; divide by each endpoint's
         # dE/d(entropy_content) so entropy_source (N,) has Pa J/(kg K s).
@@ -136,7 +125,7 @@ class BoundedGibbs:
         velocity_metric = (
             mesh.dc_edge[:, None]
             * mesh.dv_edge[:, None]
-            * v(transport["dp_e"])
+            * transport["dp_e"]
             / d.kernel.gravity
         )
         limiter_force = -self.pullback(s, mechanical_b) / velocity_metric
@@ -229,7 +218,7 @@ class BoundedGibbs:
         n = s.water_content.shape[1]
         a = d.transport_state(s)
         ctx = d.kernel._transport_primitives(a)
-        dp_e = v(ctx["dp_e"])
+        dp_e = ctx["dp_e"]
         nh = m.nEdges * n
         # bh (E,I), m: horizontal face work; averaging reverses layer -> CP.
         bh = b[:nh].reshape(m.nEdges, n)
@@ -245,9 +234,7 @@ class BoundedGibbs:
         db = s.column.B_interface.diff()
         gd = gr - (gr * db).sum(-1, keepdim=True)
         # divT (E,L), m², reverses horizontal divergence; dp_e*divT is force.
-        divT = -(m.dc_edge[:, None] * m.dv_edge[:, None]) * v(
-            m.grad(gd / m.cell_area[:, None])
-        )
+        divT = -(m.dc_edge[:, None] * m.dv_edge[:, None]) * m.grad(gd / m.cell_area[:, None])
         return horizontal + dp_e * divT
 
     def cfl(self, s, dt):
@@ -262,8 +249,8 @@ class BoundedGibbs:
         out.index_add_(0, j, (-F).clamp_min(0))
         a = self.base.transport_state(s)
         ctx = self.base.kernel._transport_primitives(a)
-        dp = v(ctx["dp"])
-        pd = v(ctx["dps_dt"])
+        dp = ctx["dp"]
+        pd = ctx["dps_dt"]
         dpdot = pd * s.column.B_interface.diff()
         return max(
             float((dt * out / mass.flatten()).max()),
@@ -289,7 +276,7 @@ class BoundedGibbs:
         species_fractions = torch.cat(
             [1 - water_fractions.sum(-1, keepdim=True), water_fractions], -1
         )
-        pressure = v(s.column.interface_pressure(s.ps))
+        pressure = s.column.interface_pressure(s.ps)
         T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
         c0, c1 = m.cellsOnEdge.T
         face_entropy, face_fractions, alpha = gibbs_face(
@@ -327,7 +314,7 @@ class BoundedGibbs:
         work_per_carrier = ((energy_covector[j] - energy_covector[i]) * trace_change).sum(-1)
         transport = d.kernel._transport_primitives(d.transport_state(s))
         velocity_metric = (
-            m.dc_edge[:, None] * m.dv_edge[:, None] * v(transport["dp_e"]) / d.kernel.gravity
+            m.dc_edge[:, None] * m.dv_edge[:, None] * transport["dp_e"] / d.kernel.gravity
         )
         rhs_correction = MoistState(
             -self.pullback(s, work_per_carrier) / velocity_metric,

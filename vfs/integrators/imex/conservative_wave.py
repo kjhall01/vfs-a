@@ -8,7 +8,6 @@ Advection, rotation and kinetic forces remain in the nonlinear ARK residual.
 """
 import torch
 from ...core.state import interface_mass
-from ...atmosphere.conservative import v
 
 
 def thermal_coefficients(state, gravity):
@@ -18,14 +17,14 @@ def thermal_coefficients(state, gravity):
     energy quadrature. Derivatives are at fixed mtheta, not fixed theta.
     """
     col = state.column
-    p = v(col.interface_pressure(state.ps))
+    p = col.interface_pressure(state.ps)
     b = col.B_interface.expand_as(p)
     dp, db = p.diff(), b.diff()
-    pi = v(col.exner_interface(state.ps))
+    pi = col.exner_interface(state.ps)
     pi1 = col.kappa * pi * b / p
     pi2 = col.kappa * (col.kappa - 1) * pi * (b / p).square()
     pm, bm = .5 * (p[:, :-1] + p[:, 1:]), .5 * (b[:, :-1] + b[:, 1:])
-    u = v(col.exner_full_pmid(state.ps))
+    u = col.exner_full_pmid(state.ps)
     u1 = col.kappa * u * bm / pm
     u2 = col.kappa * (col.kappa - 1) * u * (bm / pm).square()
     delta, d1, d2 = pi.diff(), pi1.diff(), pi2.diff()
@@ -69,20 +68,20 @@ class ConservativePressureWave:
         self.state = anchor
         self.gravity = dynamics.gravity
         self.a, self.a1, self.a2 = thermal_coefficients(anchor, dynamics.gravity)
-        self.theta = v(anchor.theta())
-        self.dm = interface_mass(v(anchor.layer_dp()))
+        self.theta = anchor.theta()
+        self.dm = interface_mass(anchor.layer_dp())
         self.db = anchor.column.B_interface.diff()
-        self.dm1 = interface_mass(self.db.expand_as(v(anchor.layer_dp())))
+        self.dm1 = interface_mass(self.db.expand_as(anchor.layer_dp()))
 
     def wind(self, mtheta, ps):
         s, mesh = self.state, self.state.mesh
         theta = self.theta
         dt = (mtheta-theta*self.dm1*ps)/self.dm
         dg = self.a1*ps
-        dgp = (self.a1*mtheta+self.a2*v(s.mtheta_i)*ps).sum(-1,keepdim=True)
+        dgp = (self.a1*mtheta+self.a2*s.mtheta_i*ps).sum(-1,keepdim=True)
         edge_area = mesh.dc_edge[:,None]*mesh.dv_edge[:,None]
         def div_transpose(x):
-            return -edge_area*v(mesh.grad(x/mesh.cell_area[:,None]))
+            return -edge_area*mesh.grad(x/mesh.cell_area[:,None])
         i,j = mesh.cellsOnEdge.T
         te, dte = .5*(theta[i]+theta[j]), .5*(dt[i]+dt[j])
         h = -.5*(dte[:,:-1]*div_transpose(self.a[:,:-1])

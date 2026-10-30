@@ -53,8 +53,8 @@ prognostic state. Graph connections remain intact. Move prescribed buffers with
 ## Preservation evidence
 
 The inherited method bodies have identical executable ASTs to `849ccb8`'s
-HeldSuarezPhysics, apart from the class name and new documentation. A temporary
-same-environment comparison executes that archived source against the installed
+HeldSuarezPhysics, apart from the class name and new documentation. The committed
+`tools/check_held_suarez_archive.py` comparison executes that archived source against the installed
 new wheel for 1, 3 and 12 levels, with standard and prescribed-rate configurations.
 It compares rates, tendencies, all three forced SSPRK3 stage inputs, the resulting
 state, energy and energy gradients with respect to wind, theta content and pressure.
@@ -70,3 +70,18 @@ Local installed-wheel checks outside the checkout: **527 passed, 1 CUDA skip**;
 both portable comparison tools and all three examples passed. The existing
 bounded-donor gradient warning remains unrelated to this forcing. Hosted check
 outcomes are recorded separately in PR #10 after its updated head runs.
+
+## Reproduce the archive comparison
+
+From an installed-wheel check directory containing tools, run:
+
+```bash
+python -I tools/check_held_suarez_archive.py --archive-repo /path/to/vfs-a --report held-suarez.json
+```
+
+The tool reads only commit `849ccb829c7555ab8ecd1c11f0ae45993538f8ed` from local
+Git history and executes the four required definitions in memory. It never
+installs an old package or imports the old registry. A shallow checkout must
+first fetch that commit explicitly (`git fetch origin 849ccb829c7555ab8ecd1c11f0ae45993538f8ed`).
+It reports the source hash, method-AST equality, 132 exact tensor comparisons and
+Torch/backend details; mismatch exits nonzero. Runtime wheels contain no archive.

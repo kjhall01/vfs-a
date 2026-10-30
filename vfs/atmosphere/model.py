@@ -17,7 +17,7 @@ class MoistAtmosphere(torch.nn.Module):
     tensor dataclasses; move them explicitly with state_to_model on shared geometry.
     """
 
-    def __init__(self, mesh, column, *, release_as_heat=True, stepper=None):
+    def __init__(self, mesh, column, *, stepper=None):
         super().__init__()
         self.mesh, self.column = mesh, column
         ref = mesh.cell_area
@@ -31,9 +31,7 @@ class MoistAtmosphere(torch.nn.Module):
             raise ValueError("surface geopotential must be finite")
         self.dynamics = MoistConservativeDynamics()
         if stepper is None:
-            stepper = BoundedSSPRK3(release_as_heat=release_as_heat)
-        elif release_as_heat is not True:
-            raise ValueError("configure release_as_heat on the explicit stepper")
+            stepper = BoundedSSPRK3()
         if type(stepper) not in (BoundedSSPRK3, CenteredIMEX):
             raise TypeError("stepper must be BoundedSSPRK3 or CenteredIMEX")
         stepper._bind(self.dynamics)

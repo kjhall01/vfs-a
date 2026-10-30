@@ -19,7 +19,7 @@ A, B = make_hybrid_coefficients(6, p_top=5000.0, sigma_power=1.0)
 column = CharneyPhillipsColumn(
     6, A, B, phi_s=0.0, phi_full_mode="direct_u_gl2_adjoint",
 )
-model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)  # bounded, heat=True
+model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)  # bounded, intrinsic heat
 
 p = model.interface_pressure(100_000.0)
 state = model.state_from_fields(

@@ -12,7 +12,7 @@ def test_default_model_does_not_load_optional_systems():
     names = json.loads(run('''
 import sys, json
 import vfs
-model = vfs.BoundedGibbs(vfs.MoistConservativeDynamics(), release_as_heat=True)
+model = vfs.BoundedGibbs(vfs.MoistConservativeDynamics())
 print(json.dumps([n for n in sys.modules if n.startswith("vfs.")]))
 '''))
     excluded = ('vfs.ocean', 'vfs.land', 'vfs.ice', 'vfs.coupling',

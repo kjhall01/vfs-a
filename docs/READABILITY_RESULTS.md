@@ -1,5 +1,8 @@
 # Readability consolidation: changes and evidence
 
+> Historical simplification report. See [final cleanup results](FINAL_CLEANUP_RESULTS.md)
+> for the subsequent removal of redundant configuration switches.
+
 Baseline is merged PR #8, `849ccb829c7555ab8ecd1c11f0ae45993538f8ed`.
 [The pre-edit map](SIMPLIFICATION_MAP.md) records the dependency trace and the
 three-PR delivery. This report covers the dependent implementation slice; it

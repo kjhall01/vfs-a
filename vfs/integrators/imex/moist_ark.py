@@ -102,14 +102,12 @@ class MoistPEIMEXARK:
         self.dynamics = dynamics
         self.tableau = ARK4_TABLEAU
         self.solver_config = solver_config or IMEXSolverConfig(
-            implicit_operator='gravity_wave', preconditioner='hydrostatic_schur',
+            preconditioner='hydrostatic_schur',
             rtol=1e-9, max_iterations=80, restart=30,
         )
         self.solver_config.validate()
         cfg = self.solver_config
-        if (cfg.implicit_operator != 'gravity_wave'
-                or cfg.preconditioner not in ['none', 'hydrostatic_schur']
-                or cfg.compile_kernels):
+        if cfg.preconditioner not in ['none', 'hydrostatic_schur']:
             raise ValueError('smooth moist ARK supports eager analytic waves, none/hydrostatic_schur only')
         self.last_step_info = None
         self.stage_validator = stage_validator

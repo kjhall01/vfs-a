@@ -5,12 +5,11 @@ components/rates remain methods of MoistConservativeDynamics.
 """
 
 from .moist_cp import interface_pressure_mass
-from .conservative import v
 
 
 def inventories(model, state):
     area = state.mesh.cell_area[:, None]
-    mass = interface_pressure_mass(v(state.column.interface_pressure(state.ps)).diff())
+    mass = interface_pressure_mass(state.column.interface_pressure(state.ps).diff())
     gravity = model.kernel.gravity
     return {
         "mass": (area * mass).sum() / gravity,
