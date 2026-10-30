@@ -75,8 +75,9 @@ exit status in reports and the job summary. A portable pass is not an exact pass
 See [validation results](docs/PORTABLE_REGRESSION_RESULTS.md) for observed outcomes.
 
 Fixtures record CPU float64 with PyTorch `2.15.0+cpu`. Exact comparisons cover
-142 checkpoint-54 and 193 dry-helper tensors; the suite also checks 99 helper
-ASTs. Do not regenerate fixtures (`--reference` / `--capture`) or loosen
+142 checkpoint-54 and 93 retained conservative dry-helper tensors. The original
+dry fixture also archives 100 deliberately retired canonical-core tensors; see
+[the removal and validation record](docs/READABILITY_RESULTS.md). Do not regenerate fixtures (`--reference` / `--capture`) or loosen
 tolerances to fix CI. Report version, platform, failing fields and errors;
 investigate differences before proposing numerical changes. A matching torch
 version alone does not guarantee bitwise agreement across platforms.
@@ -98,5 +99,5 @@ scientific verification separate. Do not publish packages or select a license
 as part of routine contributor setup.
 
 Package scope and deliberate API removals are documented in
-[the scope-reduction guide](docs/SCOPE_REDUCTION.md). Do not restore removed
+[current paths](docs/CURRENT_PATHS.md) and [the removal record](docs/READABILITY_RESULTS.md). Do not restore removed
 domain/ML APIs merely to satisfy historical compatibility expectations.

@@ -16,7 +16,8 @@ Dry `State` now exposes tensors consistently through its `PrognosticFields`
 payload: `u_e` (edge/full, m/s), `ps` (cell/surface, Pa), `mtheta_i`
 (cell/interface, pressure-weighted potential temperature, Pa K), and optional
 `tracer_m` (cell/full/tracer, pressure-weighted mixing ratios). Leading batch axes
-are retained; surface pressure has a trailing singleton level axis. StateSpec
+are retained in the container, although the conservative core is unbatched and
+tracer-free; surface pressure has a trailing singleton level axis. StateSpec
 continues to describe supported tracers. No cached derived fields were added.
 
 ## Public API changes
@@ -36,7 +37,7 @@ continues to describe supported tracers. No cached derived fields were added.
   remain available; neither moves geometry.
 - `State.from_theta` no longer silently casts tracer inputs to pressure
   dtype/device. Convert those inputs explicitly with `.to(...)` first.
-- Prefer `DryHydrostaticModel.physical_fields(state)` for derived dry fields.
+- Prefer `DryAtmosphere.physical_fields(state)` for derived dry fields.
   Dry temperature is on full levels; moist temperature is on interfaces.
 
 ## Short usage examples
@@ -46,7 +47,7 @@ Both examples use this shared setup (CPU float64):
 ```python
 import torch
 from vfs import (
-    State, DryHydrostaticModel, MoistAtmosphere,
+    State, DryAtmosphere, MoistAtmosphere,
     VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients,
 )
 mesh = VoronoiMesh(n_cells=16, lloyd_iters=0, verbose=False)
@@ -59,7 +60,7 @@ column = CharneyPhillipsColumn(
 Dry potential-temperature initialization and a single step:
 
 ```python
-dry = DryHydrostaticModel(mesh=mesh, column=column).to(dtype=torch.float64)
+dry = DryAtmosphere(mesh=mesh, column=column).to(dtype=torch.float64)
 ref = dry.mesh.cell_area
 state = State.from_theta(
     ref.new_zeros((mesh.nEdges, 3)),
@@ -96,60 +97,19 @@ Dry State's geometry/diagnostic methods remain uncached compatibility helpers fo
 existing dynamics and I/O; the model method delegates to them. StateSpec/attrs,
 explicit restart/NetCDF methods and the unloaded restart shell remain supported.
 Xarray objects enter only at explicit external I/O/initialization boundaries.
-The older dry recipe's stepping configuration is unchanged in this pass.
+The old dry model/recipe configuration was removed; construct a DryAtmosphere
+with DrySSPRK3 or DryIMEX instead.
 
-The private moist adapter still places entropy content in dry `State.mtheta_i`:
-`adapter.mtheta_i is moist_state.entropy_content`. Its construction and numerical
-method bodies are unchanged. This borrowed transport view must never be treated
-as physical dry potential temperature or passed to dry physical-field output.
-See the [execution reading guide](BOUNDED_MOIST_READING_GUIDE.md).
-The model state_dict still is not a complete simulation restart format.
+The shared `ScalarTransportState` borrows scalar content without using a dry
+variable name for entropy. Dry callers label it as potential-temperature content;
+moist callers label it as entropy content. It has no dry temperature API or
+conversion, and is not the public prognostic state. See the
+[execution reading guide](BOUNDED_MOIST_READING_GUIDE.md).
 
-## Validation for this change
+A model state_dict contains geometry buffers, not prognostic state, time or
+stepper/numerical configuration. Reconstruct the matching topology, buffer shapes,
+column mode/levels and physical/solver configuration before loading. It is not a
+complete simulation restart format. See [checkpoint requirements](MOIST_MODULE_API.md).
 
-Local installed-wheel checks ran outside the checkout on macOS 14.6.1 arm64,
-Python 3.12.13, PyTorch 2.15.0, CPU float64, Accelerate BLAS/LAPACK (NumPy 2.5.4,
-SciPy 1.18.1). OMP/MKL/OpenBLAS thread environment variables were set to 1.
-The sandbox denied the CPU model sysctl query; no accelerator execution is
-claimed for this pass.
-
-- Portable pytest: **600 passed, 1 CUDA skip**, with the existing scalar-conversion
-  warning from bounded donor subcycle selection. Includes ownership tests, moist
-  module/stepper tests, dry IMEX checks, and existing one-step gradient tests.
-- Standalone portable comparisons: **142 moist + 193 dry tensors passed**.
-- Both existing moist examples and both usage snippets above completed.
-- Same-environment pre/post captures against merged PR #7 (`9021af2`): all
-  **335 fixture-capture tensors** and **47 additional tensors** are exactly equal
-  (`rtol=atol=0`). Extras cover centered moist terms/energies, diagnostic gradients,
-  RHS VJPs, bounded facade stepping, dry tracer SSPRK3, dry IMEX and dry energy
-  gradients. Private adapter aliases were checked. Captures stayed outside the
-  repository; fixtures were not rewritten.
-- Frozen-fixture **exact** mode remains a failure on this host: first reported
-  moist mismatch `smooth/initial/u_e` (max abs 4.440892098500626e-15), dry mismatch
-  `canonical/primitives/dp_e` (max abs 1.0913936421275139e-11). These are distinct
-  from exact same-environment pre/post agreement; portable success does not
-  reinterpret exact failures. See the existing CI investigation/portable policy.
-
-GitHub Actions results will be recorded separately in the PR after it runs.
-This is ownership regression coverage, not a new scientific verification campaign,
-full-rollout qualification, or expansion of supported precision/accelerators.
-
-### PR #8 review follow-up: coarse tracer restriction
-
-The coarse Schur builder still read `anchor.tracer_m.horizontal_axis`, which
-fails for the new tensor payload. It now passes `horizontal_axis=-3`, matching
-`[..., cell, full, tracer]`; no transfer weights or numerical operators changed.
-The new regression fails with the old access and passes after this correction
-for no batch axes, one leading axis `(2,)`, and two leading axes `(2, 3)`.
-It executes real hierarchy transfers and coarse linear-operator construction,
-checks the complete tracer shape and values against an independent weighted
-donor sum, and verifies the fine input is unchanged. The test isolates coarse
-construction from modal fitting; it does not qualify a complete batched solver.
-
-An audit of retained Python consumers found no further Field-only metadata
-accesses on state tensors. Remaining placement/axis accesses are in standalone
-Field mesh/regridding paths, guarded Field input conversion, and StateSpec metadata.
-Local rebuilt-wheel validation on the same macOS CPU environment: **603 passed,
-1 CUDA skip**, both portable tools (142 + 193 tensors) and both examples pass.
-The existing subcycle scalar-conversion warning remains. Fixtures are unchanged;
-this follow-up makes no new exact cross-environment or accelerator claim.
+Current validation is in [readability results](READABILITY_RESULTS.md).
+Earlier ownership measurements are preserved in [history](HISTORY.md).

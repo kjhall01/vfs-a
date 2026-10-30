@@ -1,5 +1,8 @@
 # Atmospheric package scope reduction
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 This PR narrows the distributed package from 138 to 70 Python modules. It removes
 68 modules and selected out-of-scope declarations from shared files. There is no
 second legacy package. Git history at `35cf019` retains the previous source.

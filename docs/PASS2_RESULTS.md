@@ -1,5 +1,8 @@
 # Pass 2: imports and bounded-model inheritance
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 29 October 2026. Checkpoint 54 and pass 1 are preserved separately.
 
 ## Changes

@@ -1,23 +1,32 @@
-# Current handoff — retained equations and explicit ownership
+# Current handoff — readable retained atmospheric paths
 
-The dependent implementation slice follows PR #9, both based on merged PR #8.
-Read [changes and evidence](../docs/READABILITY_RESULTS.md) and the
-[pre-edit dependency map](../docs/SIMPLIFICATION_MAP.md). DryAtmosphere owns the
-conservative core with DrySSPRK3/DryIMEX instances. Moist default remains bounded
-SSPRK3 with heat; centered ARK4 is explicit opt-in without species bounds.
-The dry external binding/recipe stack is removed. ScalarTransportState now names
-borrowed entropy/thermal contents explicitly; no entropy-in-mtheta adapter remains.
-ARK4 stages and residual solvers have cohesive owners, with retained wave/mesh
-machinery. Removed algorithms stay in Git history, not a legacy package.
+The three dependent readability PRs start from merged PR #8: #9 removes obsolete
+public paths; #10 consolidates retained equations and ownership; the final slice
+reconciles current guidance. Read [current paths and timestep traces](../docs/CURRENT_PATHS.md),
+[state/model examples](../docs/STATE_OWNERSHIP.md), and
+[changes and evidence](../docs/READABILITY_RESULTS.md). Earlier reports are indexed
+under [history](../docs/HISTORY.md), not current API instructions.
 
-Local installed wheel: 519 passed, 1 CUDA skip; 235 retained portable fixture
-quantities and both examples pass. All 298 pre/post captures and solver diagnostics
-are exact against merged PR #8. Frozen-fixture exact mode fails separately on
-macOS. No fixtures/tolerances changed; 100 canonical-core paths are explicitly
-retired. IMEX backward/accelerator/full-rollout qualification is not claimed.
-PR #9's two GitHub CPU checks passed; dependent hosted checks are reported in PRs.
-Next: reconcile current guides with intentional API removals in a docs-only PR.
-Development remains on GitHub. Do not start a verification/performance campaign.
+DryAtmosphere owns conservative dynamics with DrySSPRK3 or DryIMEX instances.
+Moist default is bounded SSPRK3 with heat; centered ARK4 is an explicit choice
+without species bounds. Required centered/donor/limiter ingredients and wave,
+solver, preconditioner and transfer infrastructure remain. External dry method
+binding/recipes are gone. ScalarTransportState names shared entropy/theta contents
+without dry thermodynamic disguise, conversion or hidden state ownership.
+
+Local installed wheel: 519 passed, 1 CUDA skip; both portable tools (235 retained
+quantities) and examples pass. All 298 pre/post tensors and complete ARK4 solver
+diagnostics exactly equal merged PR #8. Fixture files and retained tolerances
+are unchanged; 100 removed canonical-core paths are explicitly retired. Frozen
+exact mode fails separately on this macOS CPU. GitHub outcomes are recorded in
+the results and PR descriptions, not inferred from local checks. No IMEX backward,
+full-rollout or accelerator qualification follows from this refactor.
+
+Next specific readability work, if requested: inspect the remaining dry State
+uncached diagnostic/I/O conveniences and clarify their model/external boundaries;
+review long analytic pressure-derivative blocks against their adjoint expressions.
+Do not combine that work with numerical changes, performance optimization or a
+scientific verification campaign. Development remains on GitHub.
 
 ---
 

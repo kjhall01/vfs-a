@@ -1,5 +1,8 @@
 # PR: Add installed-wheel CI and contributor setup
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 Historical setup report. Subsequent hosted runs and the CPU/dependency
 investigation are documented in [CI_911AADA_INVESTIGATION.md](CI_911AADA_INVESTIGATION.md).
 The "not run yet" status below describes the initial preparation, not current CI.

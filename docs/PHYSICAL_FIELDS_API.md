@@ -19,7 +19,7 @@ A, B = make_hybrid_coefficients(6, p_top=5000.0, sigma_power=1.0)
 column = CharneyPhillipsColumn(
     6, A, B, phi_s=0.0, phi_full_mode="direct_u_gl2_adjoint",
 )
-model = MoistAtmosphere(mesh, column)  # release_as_heat=True
+model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)  # bounded, heat=True
 
 p = model.interface_pressure(100_000.0)
 state = model.state_from_fields(
@@ -63,7 +63,7 @@ them. Mesh generation and this pass's tests use CPU float64.
 The model holds mesh/column geometry; terrain stays in column.phi_s. States
 reference that geometry and own prognostic pressure, wind, entropy and species
 contents. Treat shared geometry as fixed after setup. No new state wrapper is
-introduced. The legacy MoistState includes geometry references but its
+introduced. MoistState includes geometry references but its
 prognostic members are torch tensors.
 
 ## What happens inside
@@ -102,7 +102,7 @@ The facade is an nn.Module; use the explicit movement workflow documented below.
 ## Scope and known limitation
 
 The exact-zero-vapor state is thermodynamically definable but rejected by the
-existing moist dynamics adapter. This pass exposes that limitation early, with
+retained moist composition validator. This pass exposes that limitation early, with
 no moisture floor and no automatic switch to the separate dry formulation.
 The new API therefore does not demonstrate zero-water/dry-core equivalence.
 

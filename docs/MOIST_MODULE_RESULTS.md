@@ -1,5 +1,8 @@
 # Moist module integration results
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 Scope: single module ownership, explicit supported steppers, checked collaborator
 binding, explicit state conversion and two device-aware integer graph allocations.
 BoundedGibbs, moist_conservative, IMEX algorithms and fixtures are unchanged.

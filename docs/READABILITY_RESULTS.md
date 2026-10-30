@@ -85,5 +85,22 @@ to passes. Existing CI records exact failures informationally and gates portable
 GitHub evidence: PR #9 head `465849d` completed both Linux CPU workflow runs
 [41089424874](https://github.com/kjhall01/vfs-a/actions/runs/41089424874) and
 [41089353027](https://github.com/kjhall01/vfs-a/actions/runs/41089353027)
-successfully. Implementation-slice hosted results are recorded in its PR after
-completion; local results above are not a claim of GitHub completion.
+successfully. Its PR artifact recorded 601 portable passes, 1 skip, and two
+separate exact fixture failures plus both exact-tool failures on AMD EPYC 7763 /
+AVX2, Python 3.12.15, PyTorch 2.15.0+cpu / MKL.
+
+PR #10 final head `4a5d693` completed both
+[push 41096466972](https://github.com/kjhall01/vfs-a/actions/runs/41096466972) and
+[PR 41096477165](https://github.com/kjhall01/vfs-a/actions/runs/41096477165)
+CPU checks successfully. The push artifact records 519 portable passes, 1 skip,
+both portable tools and examples completed; **2 exact fixture tests failed and
+both exact tools failed**. Runner: Intel Xeon Platinum 8573C / AVX512, Python
+3.12.15, PyTorch 2.15.0+cpu / MKL, float64. Full reports are in cpu-checks.
+An earlier implementation run exposed a stale exact-test selector (zero tests
+collected); the final head restores the selector and verifies both exact tests
+actually execute. That earlier zero-test result is not numerical evidence.
+
+The final documentation slice changes guides and the root module docstring only;
+executable AST is unchanged. Both short ownership examples ran against the
+installed wheel, and relative guide links were checked. Final hosted doc-head
+results are recorded separately in its PR.

@@ -1,5 +1,8 @@
 # Portable regression validation — 2026-10-29
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 The [policy](PORTABLE_REGRESSION.md) implements the separately reviewed
 [investigation proposal](CI_911AADA_INVESTIGATION.md). Its original evidence
 archive and all-tensor summaries remain available. No fixtures or numerical

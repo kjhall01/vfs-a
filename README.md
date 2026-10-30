@@ -1,100 +1,70 @@
-# VFS — spherical atmospheric dycores
+# VFS — spherical atmospheric dynamics
 
-This is an incremental packaging pass from checkpoint 54, not a new scientific
-formulation or a finished public API. The original checkpoint is unchanged.
-The package now contains the actual bounded moist configuration without imports
-from research directories. Existing dry/centered-moist equations are unchanged.
+VFS contains a conservative dry core and an energy-closing, transport-bounded
+moist core on a spherical Voronoi C-grid. The default model steppers use SSPRK3.
+Existing dry and centered moist ARK4 IMEX paths remain available through explicit
+stepper instances. Centered moist ARK4 does **not** provide bounded species
+transport, and is never selected as a fallback for bounded explicit stepping.
 
-## Install
+## Start here
 
-Use Python 3.10+ in a virtual or Conda environment:
+- [Current configurations and follow one timestep](docs/CURRENT_PATHS.md): four
+  retained paths, equation owners, units, conservation pairings and solver limits.
+- [State/model ownership and short dry/moist examples](docs/STATE_OWNERSHIP.md).
+- [Moist physical-field initialization](docs/PHYSICAL_FIELDS_API.md) and
+  [bounded Euler → SSPRK3 reading guide](docs/BOUNDED_MOIST_READING_GUIDE.md).
+- [Regression evidence and deliberate API removals](docs/READABILITY_RESULTS.md).
+  [Historical reports](docs/HISTORY.md) describe earlier trees, not current APIs.
+
+## Install and run
 
 ```bash
 python -m pip install .
 python examples/moist_atmosphere.py
+python examples/bounded_moist.py
 ```
 
-For local development: `python -m pip install -e '.[test]'`. See
-[CONTRIBUTING.md](CONTRIBUTING.md) for installed-wheel portable checks and exact
-comparison mode. Optional data/plotting extras are only needed for those workflows.
-`environment.yml` provides a Conda environment; this is not yet a conda-channel
-release. No public package name/version availability or license was established
-in this pass. The local build version is `1.0.0+extraction4`, derived from the
-pre-existing metadata, not a claim of a published release.
+Use Python 3.10+; CI uses 3.12. For development, install `-e '.[test]'`.
+The small test extra needs no plotting/cloud stack. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for installed-wheel checks outside the checkout.
+Optional data/plotting extras serve external workflows. The local version
+`1.0.0+extraction4` does not imply package publication; no license is selected here.
 
-Start with [current retained timestep paths](docs/CURRENT_PATHS.md).
+Models own fixed geometry and dynamics; ordinary states hold tensors and borrow
+geometry. Move the model before initialization. Derived physical fields and
+budgets are computed from the supplied state, without stale caches. Use explicit
+`state_to_model` for existing states on the same geometry; no hidden cast,
+detach, clipping or regridding is performed. Vapor must be strictly positive.
 
-## Physical-field workflow
+The bounded moist Euler update installs species amounts from its ledger. A generic
+`state + dt * rhs` replacement would lose its cancellation-safe update. Gibbs and
+limiter work are allocated with `release_as_heat=True`; the non-heat alternative
+is removed. Energy closure is semidiscrete, not exact finite-step RK conservation.
 
-Start with [the physical-fields guide](docs/PHYSICAL_FIELDS_API.md) and
-examples/moist_atmosphere.py. MoistAtmosphere owns geometry, creates the existing
-MoistState from interface temperature, pressure, edge wind and water fractions,
-and exposes bounded stepping and differentiable conservation diagnostics.
-The [module API](docs/MOIST_MODULE_API.md) also supports explicitly selected
-centered ARK4 IMEX, with geometry/dynamics owned once.
-Vapor must be strictly positive; no floor is added.
-See [State ownership and short dry/moist examples](docs/STATE_OWNERSHIP.md)
-for tensor payloads, shared geometry, and explicit state conversion.
+## Scope and validation
 
-## Underlying API
+Retained: spherical geometry, mesh generation/transfers, conservative dry and
+bounded moist dynamics, explicit and ARK4 stepping, differentiable diagnostics,
+atmospheric initialization, regridding and I/O. ARK4 uses retained analytic wave
+operators, residual-checked solvers and supported preconditioners. Evidence for
+specific configurations is documented; arbitrary solver flags are not qualified.
 
-```python
-from vfs.atmosphere import MoistConservativeDynamics, BoundedGibbs
-
-base = MoistConservativeDynamics()
-model = BoundedGibbs(base, release_as_heat=True)
-# state is a MoistState on a VoronoiMesh and CharneyPhillipsColumn
-rhs = model.tendency(state, dt=30.0)
-next_state = model.step(state, dt=30.0)
-energy = base.boundary_total_energy(next_state)
-```
-
-Use `release_as_heat=True` to match the frozen bounded moist baseline. The original
-wrapper's default remains False. `MoistConservativeDynamics.step` alone uses
-centered transport and is NOT the bounded configuration. Do not substitute a
-generic `state + dt * rhs`: the bounded Euler stage updates species using its
-cancellation-safe amount ledger. This dt is a finite transport budget, not a
-claim of positivity for arbitrary RK/IMEX combinations.
-
-`vfs.atmosphere.moist_budgets.inventories(base, state)` returns tensor-valued
-mass (kg), vapor/liquid/ice masses (kg), entropy inventory (J/K), and total energy
-(J, including the top-boundary reservoir). Existing energy components and
-analytic gradients remain on the base model. Reporting may detach; these
-calculations do not. Full backward/GPU qualification is not claimed.
-
-## Verify the extraction
+Removed: other domains/ML, old dry recipes and process/forcing composition,
+canonical dry alternatives, ARK2/3 and pressure prototypes, compiled/coupled-JVP/
+fixed-work IMEX alternatives and centered explicit moist stepping. Necessary
+centered candidates, donor transport, limiter corrections and shared dry
+operations remain inside the retained algorithms. Git history is the archive.
 
 ```bash
+python -m pytest tests --fixture-mode=portable -q
 python tools/check_baseline.py --mode portable
 python tools/check_dry_helpers.py --mode portable
-python -m pytest tests --fixture-mode=portable -q
 ```
 
-The first command compares against a checked-in fixture captured from the
-unchanged checkpoint-54 research configuration. It covers dry, smooth moist,
-cloudy and reverse-wind cloudy cases, tendencies, direct Euler update, three
-SSPRK3 steps, flux amounts, energy gradients and budgets. It also rejects
-research-module imports. Exact comparisons are a migration check on the recorded
-CPU/float64 environment, not a cross-platform bitwise reproducibility promise.
-
-## Package scope
-
-Retained: spherical geometry and mesh generation; dry and moist atmospheric
-dycores; explicit and existing experimental implicit integrators; conservation
-and differentiable diagnostics; atmospheric initialization, regridding and I/O.
-Implicit methods remain experimental. The bounded moist ledger and positive-vapor
-restriction are unchanged.
-
-Ocean, land, ice, surface-process and atmosphere–ocean coupling packages, coupled
-component-graph orchestration, learned PGF/damping/transport models and ML mesh
-kernels have been deliberately removed. These imports and learned recipes are
-no longer supported. Mesh hierarchy and non-ML tracer helpers remain. No second
-legacy package is provided; removed code remains in Git history.
-
-See [scope reduction and migration notes](docs/SCOPE_REDUCTION.md), including
-retained dependencies, validation and the next readability work. Read
-[the handoff](handoff/index.md) before further changes. Historical extraction
-reports remain under docs/PASS1_RESULTS.md through docs/PASS4_RESULTS.md.
-The small root API and explicit named atmospheric compatibility imports remain.
-No numerical kernel reorganization or scientific verification campaign is part
-of this reduction.
+Portable checks retain independent positivity, conservation, limiter and exact
+ledger checks. Frozen fixtures and tolerances are unchanged; exact mode remains
+separate and can fail across CPU/backend environments. Same-environment pre/post
+comparison covers states, RHS, energies, representative gradients, ledgers, ARK4
+stages and solver diagnostics. One-step bounded derivative checks do not qualify
+IMEX backward, arbitrary limiter switches, accelerators or full rollouts.
+Read [the handoff](handoff/index.md) before further changes.
