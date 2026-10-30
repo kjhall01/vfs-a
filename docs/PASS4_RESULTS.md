@@ -74,3 +74,8 @@ centered SSPRK3 or experimental centered IMEX algorithms. See the separate
 [validation results](MOIST_MODULE_RESULTS.md) and [bounded gradient limitation](BOUNDED_GRADIENT_LIMITATION.md).
 These do not turn historical CPU forward results into accelerator or rollout
 qualification. Centered IMEX does not provide bounded species transport.
+
+The subsequent [tensor-tolerance fix](BOUNDED_GRADIENT_LIMITATION.md) preserves
+forward results and adds scoped CPU float64 one-step directional derivative
+checks. It fixes the allclose argument error without qualifying full rollouts
+or differentiability at limiter switches.
