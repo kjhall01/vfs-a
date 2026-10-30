@@ -31,6 +31,8 @@ and exposes bounded stepping and differentiable conservation diagnostics.
 The [module API](docs/MOIST_MODULE_API.md) also supports explicit centered SSPRK3
 and experimental centered IMEX choices, with geometry/dynamics owned once.
 Vapor must be strictly positive; no floor is added.
+See [State ownership and short dry/moist examples](docs/STATE_OWNERSHIP.md)
+for tensor payloads, shared geometry, and explicit state conversion.
 
 ## Underlying API
 

@@ -58,7 +58,7 @@ energy gradients. Read these functions in execution order:
 1. [tendency](../vfs/atmosphere/moist_conservative.py#L469) calls
    [_adapter](../vfs/atmosphere/moist_conservative.py#L425): validate composition,
    then wrap the **same** wind, pressure and entropy tensors and geometry.
-   `adapter.mtheta_i.values` is `MoistState.entropy_content`; there is no copy,
+   `adapter.mtheta_i` is `MoistState.entropy_content`; there is no copy,
    detach or conversion to dry potential temperature. Inherited `theta` accessors
    divide this buffer by pressure thickness, so they mean specific entropy here.
    This private State must not be used for dry thermodynamic diagnostics or I/O.

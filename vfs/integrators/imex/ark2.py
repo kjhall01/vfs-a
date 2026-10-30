@@ -153,7 +153,7 @@ class IMEXConvergenceError(RuntimeError):
 
 
 def _values(state: State) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    return state.u_e.values, state.mtheta_i.values, state.ps.values
+    return state.u_e, state.mtheta_i, state.ps
 
 
 class _StateInnerProduct:
@@ -326,7 +326,7 @@ class DryPELinearOperator:
         ) * ps
         d_dm = self._interface_mass(d_dp)
         d_dp_e = anchor.cell_to_edge(d_dp)
-        d_mass_flux = u * base["dp_e"] + anchor.u_e.values * d_dp_e
+        d_mass_flux = u * base["dp_e"] + anchor.u_e * d_dp_e
         d_layer_div = anchor.div(d_mass_flux)
         d_dps_dt = -d_layer_div.sum(dim=-1, keepdim=True)
         d_mu = self.dynamics._vertical_mass_flux(anchor, d_layer_div, d_dps_dt)
@@ -438,8 +438,8 @@ class DryPELinearOperator:
         anchor = self.anchor
         column = anchor.column
         theta = self.primitives["theta"]
-        ps = anchor.ps.values
-        d_ps = direction.ps.values
+        ps = anchor.ps
+        d_ps = direction.ps
         tiny = torch.finfo(ps.dtype).tiny
 
         # Virtual-temperature factors are coefficients of the analytic
@@ -516,13 +516,13 @@ class DryPELinearOperator:
     def _gravity_wave_apply(self, direction: State) -> State:
         """Apply the donor gravity-wave off-diagonal implicit block."""
 
-        wind = self.gravity_wave_wind(direction.mtheta_i.values, direction.ps.values)
-        mtheta, ps = self.gravity_wave_thermodynamic(direction.u_e.values)
+        wind = self.gravity_wave_wind(direction.mtheta_i, direction.ps)
+        mtheta, ps = self.gravity_wave_thermodynamic(direction.u_e)
         return State(
             wind,
             mtheta,
             ps,
-            None if direction.tracer_m is None else torch.zeros_like(direction.tracer_m.values),
+            None if direction.tracer_m is None else torch.zeros_like(direction.tracer_m),
             mesh=self.anchor.mesh,
             column=self.anchor.column,
             attrs=self.anchor.attrs,
@@ -544,7 +544,7 @@ class DryPELinearOperator:
         if self.conservative_wave is not None:
             return self.conservative_wave.wind(mtheta, ps)
         thermodynamic = State(
-            torch.zeros_like(self.anchor.u_e.values),
+            torch.zeros_like(self.anchor.u_e),
             mtheta,
             ps,
             mesh=self.anchor.mesh,
@@ -562,15 +562,15 @@ class DryPELinearOperator:
             u,
             torch.zeros(
                 *batch_shape,
-                self.anchor.mtheta_i.values.shape[-2],
-                self.anchor.mtheta_i.values.shape[-1],
+                self.anchor.mtheta_i.shape[-2],
+                self.anchor.mtheta_i.shape[-1],
                 dtype=u.dtype,
                 device=u.device,
             ),
             torch.zeros(
                 *batch_shape,
-                self.anchor.ps.values.shape[-2],
-                self.anchor.ps.values.shape[-1],
+                self.anchor.ps.shape[-2],
+                self.anchor.ps.shape[-1],
                 dtype=u.dtype,
                 device=u.device,
             ),
@@ -587,10 +587,10 @@ class DryPELinearOperator:
         # may give diagnostic names to their Field outputs, so rebuild the
         # direction with the anchor's canonical prognostic metadata.
         direction = State(
-            direction.u_e.values,
-            direction.mtheta_i.values,
-            direction.ps.values,
-            None if direction.tracer_m is None else direction.tracer_m.values,
+            direction.u_e,
+            direction.mtheta_i,
+            direction.ps,
+            None if direction.tracer_m is None else direction.tracer_m,
             mesh=self.anchor.mesh,
             column=self.anchor.column,
             attrs=self.anchor.attrs,
@@ -917,17 +917,17 @@ class _HydrostaticSchurSystem:
             u,
             mtheta,
             ps,
-            None if self.anchor.tracer_m is None else torch.zeros_like(self.anchor.tracer_m.values),
+            None if self.anchor.tracer_m is None else torch.zeros_like(self.anchor.tracer_m),
             mesh=self.anchor.mesh,
             column=self.anchor.column,
             attrs=self.anchor.attrs,
         )
 
     def thermodynamic(self, mtheta: torch.Tensor, ps: torch.Tensor) -> State:
-        return self.make_state(self.zero.u_e.values, mtheta, ps)
+        return self.make_state(self.zero.u_e, mtheta, ps)
 
     def wind_response(self, value: State) -> torch.Tensor:
-        return self.operator.gravity_wave_wind(value.mtheta_i.values, value.ps.values)
+        return self.operator.gravity_wave_wind(value.mtheta_i, value.ps)
 
     def thermodynamic_response(self, u: torch.Tensor) -> State:
         mtheta, ps = self.operator.gravity_wave_thermodynamic(u)
@@ -936,10 +936,10 @@ class _HydrostaticSchurSystem:
     def rhs(self, value: State) -> State:
         """Eliminate wind from the full stage right-hand side."""
 
-        wind_rhs = self.thermodynamic_response(value.u_e.values)
+        wind_rhs = self.thermodynamic_response(value.u_e)
         return self.thermodynamic(
-            value.mtheta_i.values + self.factor * wind_rhs.mtheta_i.values,
-            value.ps.values + self.factor * wind_rhs.ps.values,
+            value.mtheta_i + self.factor * wind_rhs.mtheta_i,
+            value.ps + self.factor * wind_rhs.ps,
         )
 
     def matvec(self, value: State) -> State:
@@ -947,20 +947,20 @@ class _HydrostaticSchurSystem:
 
         feedback = self.thermodynamic_response(self.wind_response(value))
         return self.thermodynamic(
-            value.mtheta_i.values - self.factor * self.factor * feedback.mtheta_i.values,
-            value.ps.values - self.factor * self.factor * feedback.ps.values,
+            value.mtheta_i - self.factor * self.factor * feedback.mtheta_i,
+            value.ps - self.factor * self.factor * feedback.ps,
         )
 
     def back_substitute(self, rhs: State, thermodynamic: State) -> State:
         """Recover wind after solving the reduced thermodynamic system."""
 
         return State(
-            rhs.u_e.values + self.factor * self.wind_response(thermodynamic),
-            thermodynamic.mtheta_i.values,
-            thermodynamic.ps.values,
+            rhs.u_e + self.factor * self.wind_response(thermodynamic),
+            thermodynamic.mtheta_i,
+            thermodynamic.ps,
             # The analytic gravity-wave block has zero tracer tendency.
             # Its exact stage inverse is therefore the identity on tracers.
-            None if rhs.tracer_m is None else rhs.tracer_m.values,
+            None if rhs.tracer_m is None else rhs.tracer_m,
             mesh=self.anchor.mesh,
             column=self.anchor.column,
             attrs=self.anchor.attrs,
@@ -1057,8 +1057,8 @@ class _MultilevelHydrostaticSchurPreconditioner:
     def _pack_normalized(self, value: State) -> torch.Tensor:
         return torch.cat(
             (
-                value.mtheta_i.values / self.mtheta_scale,
-                value.ps.values / self.ps_scale,
+                value.mtheta_i / self.mtheta_scale,
+                value.ps / self.ps_scale,
             ),
             dim=-1,
         )
@@ -1072,14 +1072,14 @@ class _MultilevelHydrostaticSchurPreconditioner:
     def _coarse_system(self) -> _HydrostaticSchurSystem:
         anchor = self.system.anchor
         for transfer, mesh in zip(self.hierarchy.transfers, self.hierarchy.meshes[1:]):
-            mtheta = transfer.restrict(anchor.mtheta_i.values)
-            ps = transfer.restrict(anchor.ps.values)
+            mtheta = transfer.restrict(anchor.mtheta_i)
+            ps = transfer.restrict(anchor.ps)
             tracer = (
                 None
                 if anchor.tracer_m is None
                 else transfer.restrict(
-                    anchor.tracer_m.values,
-                    horizontal_axis=anchor.tracer_m.horizontal_axis,
+                    anchor.tracer_m,
+                    horizontal_axis=-3,  # [..., cell, full, tracer]
                 )
             )
             assert isinstance(mtheta, torch.Tensor) and isinstance(ps, torch.Tensor)
@@ -1099,9 +1099,9 @@ class _MultilevelHydrostaticSchurPreconditioner:
                     p0=column.p0,
                     g=column.g,
                 ).to(device=mtheta.device)
-            u_shape = (*anchor.u_e.values.shape[:-2], mesh.nEdges, anchor.u_e.values.shape[-1])
+            u_shape = (*anchor.u_e.shape[:-2], mesh.nEdges, anchor.u_e.shape[-1])
             anchor = State(
-                torch.zeros(u_shape, dtype=anchor.u_e.values.dtype, device=anchor.u_e.values.device),
+                torch.zeros(u_shape, dtype=anchor.u_e.dtype, device=anchor.u_e.device),
                 mtheta,
                 ps,
                 tracer,
@@ -1122,17 +1122,17 @@ class _MultilevelHydrostaticSchurPreconditioner:
         coarse_system = self._coarse_system()
         grid = self.hierarchy.meshes[-1]
         anchor = coarse_system.anchor
-        n_interfaces = anchor.mtheta_i.values.shape[-1]
+        n_interfaces = anchor.mtheta_i.shape[-1]
         n_modes = n_interfaces + 1
-        phi = grid.cell_xyz[:, 0].to(dtype=anchor.ps.values.dtype, device=anchor.ps.values.device).unsqueeze(-1)
+        phi = grid.cell_xyz[:, 0].to(dtype=anchor.ps.dtype, device=anchor.ps.device).unsqueeze(-1)
         laplacian_phi = self._scalar_laplacian(grid, phi)
         area = grid.cell_area.to(dtype=phi.dtype, device=phi.device).unsqueeze(-1)
         area = area / area.sum().clamp_min(torch.finfo(phi.dtype).tiny)
         denominator = (laplacian_phi.square() * area).sum().clamp_min(torch.finfo(phi.dtype).tiny)
         columns: list[torch.Tensor] = []
         for mode in range(n_modes):
-            mtheta = torch.zeros_like(anchor.mtheta_i.values)
-            ps = torch.zeros_like(anchor.ps.values)
+            mtheta = torch.zeros_like(anchor.mtheta_i)
+            ps = torch.zeros_like(anchor.ps)
             if mode < n_interfaces:
                 mtheta[..., :, mode] = phi[..., 0] * self.mtheta_scale
             else:
@@ -1441,10 +1441,10 @@ class DryPEIMEXARK2:
             id(operator.anchor.column),
             id(operator.dynamics),
             float(factor),
-            operator.anchor.mtheta_i.values.shape[-1],
-            operator.anchor.mtheta_i.values.dtype,
-            operator.anchor.mtheta_i.values.device.type,
-            operator.anchor.mtheta_i.values.device.index,
+            operator.anchor.mtheta_i.shape[-1],
+            operator.anchor.mtheta_i.dtype,
+            operator.anchor.mtheta_i.device.type,
+            operator.anchor.mtheta_i.device.index,
         )
         setup = self._multilevel_modal_setups.get(key)
         preconditioner = _MultilevelHydrostaticSchurPreconditioner(
@@ -1567,7 +1567,7 @@ class DryPEIMEXARK2:
                         rhs,
                         inner,
                         factor=factor,
-                        rtol=self.solver_config.resolved_rtol(state.u_e.values.dtype),
+                        rtol=self.solver_config.resolved_rtol(state.u_e.dtype),
                         atol=self.solver_config.atol,
                         max_iterations=self.solver_config.max_iterations,
                         restart=self.solver_config.restart,
@@ -1590,7 +1590,7 @@ class DryPEIMEXARK2:
                         rhs,
                         inner,
                         factor=factor,
-                        rtol=self.solver_config.resolved_rtol(state.u_e.values.dtype),
+                        rtol=self.solver_config.resolved_rtol(state.u_e.dtype),
                         atol=self.solver_config.atol,
                         max_iterations=self.solver_config.max_iterations,
                         restart=self.solver_config.restart,
@@ -1605,7 +1605,7 @@ class DryPEIMEXARK2:
                         lambda value: value - factor * operator.apply(value),
                         rhs,
                         inner,
-                        rtol=self.solver_config.resolved_rtol(state.u_e.values.dtype),
+                        rtol=self.solver_config.resolved_rtol(state.u_e.dtype),
                         atol=self.solver_config.atol,
                         max_iterations=self.solver_config.max_iterations,
                         restart=self.solver_config.restart,

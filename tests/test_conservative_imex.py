@@ -31,8 +31,8 @@ def test_coefficients_match_existing_energy_and_gradient(levels):
     gm,gp = d.thermal_gradients(s)
     torch.testing.assert_close(a,gm,rtol=2e-13,atol=1e-4)
     surface = s.mesh.cell_area[:,None]/d.gravity*s.column.phi_s[:,None]
-    torch.testing.assert_close((a1*s.mtheta_i.values).sum(-1,keepdim=True)+surface*s.column.B_interface[-1],gp,rtol=2e-12,atol=1e-3)
-    energy = (a*s.mtheta_i.values).sum()+(surface*s.column.interface_pressure(s.ps)[:,-1:]).sum()
+    torch.testing.assert_close((a1*s.mtheta_i).sum(-1,keepdim=True)+surface*s.column.B_interface[-1],gp,rtol=2e-12,atol=1e-3)
+    energy = (a*s.mtheta_i).sum()+(surface*s.column.interface_pressure(s.ps)[:,-1:]).sum()
     torch.testing.assert_close(energy,(d.boundary_total_energy(s)-d.total_kinetic_energy(s)).squeeze(),rtol=1e-14,atol=0)
 
 
@@ -41,14 +41,14 @@ def test_pressure_tangent_against_autodiff_oracle(levels):
     d,s,z=setup(levels)
     op=DryPELinearOperator(d,s,implicit_operator='gravity_wave')
     def pgf(m,p):
-        return d.pgf_term(State(s.u_e.values,m,p,mesh=s.mesh,column=s.column))
-    _,expected=torch.autograd.functional.jvp(pgf,(s.mtheta_i.values,s.ps.values),(z.mtheta_i.values,z.ps.values))
-    torch.testing.assert_close(op.gravity_wave_wind(z.mtheta_i.values,z.ps.values),expected,rtol=3e-10,atol=2e-16)
+        return d.pgf_term(State(s.u_e,m,p,mesh=s.mesh,column=s.column))
+    _,expected=torch.autograd.functional.jvp(pgf,(s.mtheta_i,s.ps),(z.mtheta_i,z.ps))
+    torch.testing.assert_close(op.gravity_wave_wind(z.mtheta_i,z.ps),expected,rtol=3e-10,atol=2e-16)
     def scalar(u):
-        r=d.tendency(State(u,s.mtheta_i.values,s.ps.values,mesh=s.mesh,column=s.column))
-        return r.mtheta_i.values,r.ps.values
-    _,expected=torch.autograd.functional.jvp(scalar,(s.u_e.values,),(z.u_e.values,))
-    got=op.gravity_wave_thermodynamic(z.u_e.values)
+        r=d.tendency(State(u,s.mtheta_i,s.ps,mesh=s.mesh,column=s.column))
+        return r.mtheta_i,r.ps
+    _,expected=torch.autograd.functional.jvp(scalar,(s.u_e,),(z.u_e,))
+    got=op.gravity_wave_thermodynamic(z.u_e)
     for x,y in zip(got,expected):torch.testing.assert_close(x,y,rtol=2e-12,atol=1e-12)
 
 
@@ -72,7 +72,7 @@ def test_schur_and_full_solve_agree():
         stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=80))
         results.append(stepper.step(s,600.))
     for name in ['u_e','ps','mtheta_i']:
-        torch.testing.assert_close(getattr(results[0],name).values,getattr(results[1],name).values,rtol=1e-10,atol=1e-8)
+        torch.testing.assert_close(getattr(results[0],name),getattr(results[1],name),rtol=1e-10,atol=1e-8)
 
 
 def test_time_refinement_recovers_explicit_solution():
@@ -85,7 +85,7 @@ def test_time_refinement_recovers_explicit_solution():
             stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=80))
             out=s
             for _ in range(round(60/dt)):out=stepper.step(out,dt)
-            errors.append(float((out.u_e.values-ref.u_e.values).square().mean().sqrt()))
+            errors.append(float((out.u_e-ref.u_e).square().mean().sqrt()))
         assert errors[0]/errors[1]>3.5
         assert errors[1]/errors[2]>3.5
 
@@ -97,4 +97,49 @@ def test_multilevel_matches_direct_schur():
         stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-10,max_iterations=80))
         outputs.append(stepper.step(s,1800.))
     for name in ['u_e','ps','mtheta_i']:
-        torch.testing.assert_close(getattr(outputs[0],name).values,getattr(outputs[1],name).values,rtol=1e-9,atol=1e-7)
+        torch.testing.assert_close(getattr(outputs[0],name),getattr(outputs[1],name),rtol=1e-9,atol=1e-7)
+
+
+@pytest.mark.parametrize('batch_shape', [(), (2,), (2, 3)])
+def test_coarse_system_restricts_tensor_tracers(batch_shape):
+    """Exercise real coarse transfers, independently of the unbatched modal fit."""
+    from types import SimpleNamespace
+    from vfs.atmosphere import DryHydrostaticDynamics
+    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy
+    from vfs.integrators.imex.ark2 import (
+        _HydrostaticSchurSystem, _MultilevelHydrostaticSchurPreconditioner,
+    )
+
+    _, state, _ = setup()
+    hierarchy = VoronoiMeshHierarchy.build(state.mesh)
+    assert hierarchy.transfers  # A no-op hierarchy would miss the regression.
+    shape = (*batch_shape, state.mesh.nCells, state.column.n_levels, 2)
+    tracer = torch.arange(torch.tensor(shape).prod().item(), dtype=state.ps.dtype).reshape(shape) + 1
+    anchor = State(
+        state.u_e.expand(*batch_shape, *state.u_e.shape),
+        state.mtheta_i.expand(*batch_shape, *state.mtheta_i.shape),
+        state.ps.expand(*batch_shape, *state.ps.shape),
+        tracer, mesh=state.mesh, column=state.column,
+    )
+    saved = tracer.clone()
+    operator = DryPELinearOperator(DryHydrostaticDynamics(), anchor, implicit_operator='gravity_wave')
+    # Only the coarse builder's inputs: no mock transfer or replacement operator.
+    context = SimpleNamespace(system=_HydrostaticSchurSystem(operator, 1.0), hierarchy=hierarchy)
+    coarse = _MultilevelHydrostaticSchurPreconditioner._coarse_system(context).anchor
+
+    # Independent weighted donor sum, retaining every batch/level/species index.
+    expected = tracer
+    for transfer in hierarchy.transfers:
+        restricted = expected.new_zeros((*batch_shape, transfer.n_coarse_cells, shape[-2], shape[-1]))
+        for fine in range(transfer.n_fine_cells):
+            for slot in range(transfer.coarse_indices.shape[1]):
+                donor = int(transfer.coarse_indices[fine, slot])
+                restricted[..., donor, :, :] += (
+                    expected[..., fine, :, :] * transfer.restriction_weights[fine, slot]
+                )
+        expected = restricted
+    assert coarse.tracer_m.shape == (*batch_shape, hierarchy.meshes[-1].nCells, shape[-2], shape[-1])
+    torch.testing.assert_close(coarse.tracer_m, expected, rtol=0, atol=0)
+    assert coarse.mesh is hierarchy.meshes[-1]
+    assert anchor.tracer_m is tracer
+    torch.testing.assert_close(tracer, saved, rtol=0, atol=0)
