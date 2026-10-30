@@ -18,6 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+test = ["pytest"]
 data = ["dask", "gcsfs", "zarr"]
 diagnostics = ["imageio", "imageio-ffmpeg", "matplotlib"]
 plotting = ["cartopy", "imageio", "imageio-ffmpeg", "matplotlib"]

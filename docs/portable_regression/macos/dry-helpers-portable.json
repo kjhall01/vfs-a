@@ -1,0 +1,19 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "tensor_comparisons": 193,
+  "maximum_budget_fraction": {
+    "dry_helper": 0.14621846786389053,
+    "energy": 0.0009452565160937543,
+    "rotation_work": 0.0005483074202375486,
+    "rotation_relative": 0.0005483074202375486,
+    "gradient": 0.00881479409342812,
+    "inventory": 0.00569421186714083
+  },
+  "invariants": {
+    "canonical_mass_delta": 0.0,
+    "diagonal_mass_delta": -1024.0
+  },
+  "source": "/tmp/vfs-ci-standalone/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0"
+}

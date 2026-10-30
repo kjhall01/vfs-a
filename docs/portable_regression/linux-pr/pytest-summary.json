@@ -1,0 +1,30 @@
+{
+  "run": 40993229024,
+  "commit": "6c8b79bbd56122b6b823a6e057d335920b67cab3",
+  "suites": {
+    "pytest-exact.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "2",
+        "skipped": "0",
+        "tests": "2",
+        "time": "2.495",
+        "timestamp": "2026-10-30T02:44:05.020753+00:00",
+        "hostname": "runnervm48cm3"
+      }
+    ],
+    "pytest-portable.xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "511",
+        "time": "39.593",
+        "timestamp": "2026-10-30T02:43:18.567101+00:00",
+        "hostname": "runnervm48cm3"
+      }
+    ]
+  }
+}

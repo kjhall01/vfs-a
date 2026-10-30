@@ -189,6 +189,16 @@ def compare(actual, expected):
     return checked
 
 
+def check(actual, expected, mode="exact"):
+    """Select a named policy without altering the historical exact comparator."""
+    import importlib.util
+    path = Path(__file__).with_name("fixture_regression.py")
+    spec = importlib.util.spec_from_file_location("fixture_regression", path)
+    policy = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(policy)
+    return policy.compare_selected(actual, expected, "checkpoint54.pt", mode, compare)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--reference", type=Path)
@@ -198,7 +208,10 @@ def main():
         default=Path(__file__).resolve().parents[1] / "tests/fixtures/checkpoint54.pt",
     )
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--mode", choices=("exact", "portable"), default="exact")
     args = parser.parse_args()
+    if args.reference and args.mode != "exact":
+        parser.error("reference capture cannot select portable comparison")
     api = imports(args.reference)
     actual = capture(api)
     import vfs
@@ -211,12 +224,12 @@ def main():
         )
     else:
         expected = torch.load(args.fixture, map_location="cpu", weights_only=True)
-        summary = dict(
-            mode="exact_comparison",
-            tensor_comparisons=compare(actual, expected),
-            torch=str(torch.__version__),
-            source=vfs.__file__,
-        )
+        summary = dict(mode=args.mode + "_comparison", status="pass",
+                       torch=str(torch.__version__), source=vfs.__file__)
+        try:
+            summary.update(check(actual, expected, args.mode))
+        except AssertionError as exc:
+            summary.update(status="fail", error=str(exc))
         assert not any(
             "vfs_energy_audit" in str(getattr(m, "__file__", ""))
             for m in list(sys.modules.values())
@@ -229,6 +242,8 @@ def main():
     print(json.dumps(summary, indent=2))
     if args.report:
         args.report.write_text(json.dumps(summary, indent=2) + "\n")
+    if summary.get("status") == "fail":
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

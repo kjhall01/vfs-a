@@ -1,4 +1,37 @@
-# Current handoff — extraction pass 4
+# Current handoff — GitHub development and CI
+
+Development is now on https://github.com/kjhall01/vfs-a. See
+[CONTRIBUTING.md](../CONTRIBUTING.md) for the small test extra, local setup,
+installed-wheel checks and focused PR preparation. The new GitHub Actions
+workflow targets Ubuntu CPU/Python 3.12/PyTorch 2.15.0+cpu and runs the suite,
+both baseline tools and examples/moist_atmosphere.py outside the checkout.
+Portable mode is required in the full pytest suite and both tools. Exact mode
+remains the default locally and runs separately in CI with failures reported
+explicitly as informational outcomes. The public Linux CPU wheel was successfully downloaded.
+
+See [CI setup results](../docs/CI_SETUP_RESULTS.md) for the initial local checks.
+GitHub commit 911aada subsequently had one passing and one failing run with
+identical recorded versions/source trees. The
+[CI investigation](../docs/CI_911AADA_INVESTIGATION.md) includes all 335 tensor
+differences from four Linux CPUs and macOS, controlled dispatch experiments,
+and the reviewed quantity-specific portable tolerances. The
+[portable implementation](../docs/PORTABLE_REGRESSION.md) now uses an exhaustive
+path manifest, separate species scales and independent physical/discrete/ledger
+checks. See [validation results](../docs/PORTABLE_REGRESSION_RESULTS.md) for
+local and hosted outcomes separately. Exact comparison expressions remain
+unchanged. Original CPU models were not logged.
+The separate audit/ci-911aada branch collects diagnostic evidence only.
+No numerical operators, defaults, state conventions or integrators changed.
+MoistAtmosphere retains release_as_heat=True and its bounded species amount
+ledger. Vapor remains strictly positive with no floor; exact-zero-water dry
+equivalence is not established. GPU, long-run and full backward behavior remain
+untested. Package publication and license selection still require direction.
+
+Earlier sections below are historical snapshots.
+
+---
+
+# Historical handoff — extraction pass 4
 
 Read docs/PASS4_RESULTS.md and docs/PHYSICAL_FIELDS_API.md first.
 Earlier sections below are history.

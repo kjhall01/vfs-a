@@ -1,0 +1,99 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "torch": "2.15.0+cpu",
+  "source": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/vfs/__init__.py",
+  "tensor_comparisons": 142,
+  "maximum_budget_fraction": {
+    "state": 0.0007379425900771279,
+    "tendency": 0.0008555512108413994,
+    "ledger": 0.0,
+    "limiter_force": 0.0,
+    "limiter_heat": 0.0,
+    "gradient": 0.0031624946014821576,
+    "inventory": 0.0,
+    "energy": 0.002162842001068519,
+    "energy_rate": 3.6357714822686667e-06,
+    "cfl": 0.0,
+    "jw_thermal": 0.0,
+    "jw_tendency": 0.0
+  },
+  "invariants": {
+    "smooth": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -16.0,
+        0.0,
+        0.0
+      ],
+      "ledger_delta": [
+        8192.0,
+        0.0,
+        8.0,
+        0.0
+      ],
+      "energy_rate": 1.0435333251953125,
+      "energy_work_scale": 1.469252289493936e+16,
+      "energy_drift": -2264924160.0
+    },
+    "cloud": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        0.25,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -16.0,
+        0.0,
+        0.0
+      ],
+      "ledger_delta": [
+        0.0,
+        0.0,
+        2.0,
+        0.0
+      ],
+      "energy_rate": 2.05120849609375,
+      "energy_work_scale": 1.4760873433940606e+16,
+      "energy_drift": -2365587456.0
+    },
+    "cloud_reverse": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -8.0,
+        -0.25,
+        0.0
+      ],
+      "ledger_delta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "energy_rate": -0.02960205078125,
+      "energy_work_scale": 1.4454611839321232e+16,
+      "energy_drift": -2264924160.0
+    },
+    "dry_mass_delta": 0.0
+  },
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "fixture_sha256": "00219b583824ef19c15ba8ffae4a2394942c072a260f73337ab22a3b418d7716"
+}

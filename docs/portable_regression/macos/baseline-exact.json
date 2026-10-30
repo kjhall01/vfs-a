@@ -1,0 +1,13 @@
+{
+  "mode": "exact_comparison",
+  "status": "fail",
+  "torch": "2.15.0",
+  "source": "/tmp/vfs-ci-standalone/lib/python3.12/site-packages/vfs/__init__.py",
+  "error": "baseline/smooth/initial/u_e: Tensor-likes are not equal!\n\nMismatched elements: 204 / 1116 (18.3%)\nGreatest absolute difference: 4.440892098500626e-15 at index (117, 0)\nGreatest relative difference: 7.036663749195453e-16 at index (117, 0)",
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "fixture_sha256": "00219b583824ef19c15ba8ffae4a2394942c072a260f73337ab22a3b418d7716"
+}
