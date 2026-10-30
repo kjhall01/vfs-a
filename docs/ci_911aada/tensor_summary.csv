@@ -1,0 +1,336 @@
+path,shape,dtype,evaluations,exact_evaluations,max_abs,max_abs_environment,max_abs_over_reference_max,max_relative_nonzero,nonfinite_evaluations,shape_dtype_mismatch_evaluations
+check_baseline/cloud/energy_rate,[],torch.float64,17,8,2.2600250244140625,fixture-audit-4/aten-avx2,1.1018017079775047,1.1018017079775047,0,0
+check_baseline/cloud/euler/entropy_content,"[64, 7]",torch.float64,17,16,1.862645149230957e-09,macos/native,2.657625001393498e-16,2.657627509361347e-16,0,0
+check_baseline/cloud/euler/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/euler/u_e,"[186, 6]",torch.float64,17,8,3.552713678800501e-15,macos/native,3.6897072685006196e-16,1.3082276953694626e-15,0,0
+check_baseline/cloud/euler/water_content,"[64, 7, 3]",torch.float64,17,8,2.842170943040401e-14,fixture-audit-4/aten-avx2,1.7950544853083251e-16,5.770281426235414e-16,0,0
+check_baseline/cloud/final/entropy_content,"[64, 7]",torch.float64,17,16,4.6566128730773926e-09,macos/native,6.644059548703944e-16,6.644061812257853e-16,0,0
+check_baseline/cloud/final/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/final/u_e,"[186, 6]",torch.float64,17,2,8.881784197001252e-15,macos/native,9.224282375882154e-16,1.4472706561401265e-15,0,0
+check_baseline/cloud/final/water_content,"[64, 7, 3]",torch.float64,17,2,8.526512829121202e-14,fixture-audit-4/aten-avx2,5.385160962471017e-16,0.019475250202867413,0,0
+check_baseline/cloud/final_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/final_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,2,5.820766091346741e-11,macos/native,2.67227763513741e-16,2.6722779523015866e-16,0,0
+check_baseline/cloud/final_budgets/energy/internal,[],torch.float64,17,16,33554432.0,macos/native,1.1232193884404744e-16,1.1232193884404744e-16,0,0
+check_baseline/cloud/final_budgets/energy/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/final_budgets/energy/potential,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/final_budgets/energy/total,[],torch.float64,17,16,33554432.0,macos/native,4.3050978571964024e-16,4.3050978571964024e-16,0,0
+check_baseline/cloud/final_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/final_budgets/species,[3],torch.float64,17,16,0.25,macos/native,5.0595513127161776e-18,1.3890977345155493e-16,0,0
+check_baseline/cloud/gradients/entropy_content,"[64, 7]",torch.float64,17,8,0.40625,macos/native,1.703401054557444e-15,1.977112915770593e-15,0,0
+check_baseline/cloud/gradients/ps,"[64, 1]",torch.float64,17,8,24.0,macos/native,1.615242021513275e-14,1.7734757352604804e-14,0,0
+check_baseline/cloud/gradients/u_e,"[186, 6]",torch.float64,17,8,216.0,macos/native,2.3598176458802593e-15,6.322350630140943e-15,0,0
+check_baseline/cloud/gradients/water_content,"[64, 7, 3]",torch.float64,17,2,544.0,macos/native,2.155168858764091e-15,2.744454504275517e-15,0,0
+check_baseline/cloud/initial/entropy_content,"[64, 7]",torch.float64,17,16,1.862645149230957e-09,macos/native,2.6576262551498854e-16,2.6576262551498854e-16,0,0
+check_baseline/cloud/initial/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial/u_e,"[186, 6]",torch.float64,17,8,4.440892098500626e-15,macos/native,4.612134085625774e-16,7.036663749195453e-16,0,0
+check_baseline/cloud/initial/water_content,"[64, 7, 3]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial_budgets/energy/internal,[],torch.float64,17,9,33554432.0,fixture-audit-4/aten-avx2,1.12321938842912e-16,1.12321938842912e-16,0,0
+check_baseline/cloud/initial_budgets/energy/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial_budgets/energy/potential,[],torch.float64,17,16,67108864.0,macos/native,2.0979642113852504e-16,2.0979642113852504e-16,0,0
+check_baseline/cloud/initial_budgets/energy/total,[],torch.float64,17,8,67108864.0,macos/native,8.610195714392544e-16,8.610195714392544e-16,0,0
+check_baseline/cloud/initial_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/initial_budgets/species,[3],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/limiter/amounts,"[448, 4]",torch.float64,17,8,224.0,macos/native,1.704151116110332e-15,2.029863719231248e-15,0,0
+check_baseline/cloud/limiter/beta,[1686],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud/limiter/entropy_source,"[64, 7]",torch.float64,17,8,8.917867271158693e-19,macos/native,5.38775126300644e-12,5.541775048045354e-10,0,0
+check_baseline/cloud/limiter/heat,[1686],torch.float64,17,8,0.00026269257068634033,macos/native,6.0308676308661015e-12,5.5417791332074e-10,0,0
+check_baseline/cloud/limiter/integrated_flux,"[1686, 4]",torch.float64,17,8,0.0166015625,macos/native,1.7053923493869305e-15,4489.0,0,0
+check_baseline/cloud/limiter/limiter_force,"[186, 6]",torch.float64,17,8,2.573405636705156e-23,macos/native,1.5611279096368342e-10,2.0834230148151513e-10,0,0
+check_baseline/cloud/rhs/entropy_content,"[64, 7]",torch.float64,17,8,3.488897538928004e-14,macos/native,3.164438031463604e-13,3.757347276339014e-11,0,0
+check_baseline/cloud/rhs/ps,"[64, 1]",torch.float64,17,8,5.138508433859268e-16,macos/native,3.4384132270362205e-13,3.29358981033547e-11,0,0
+check_baseline/cloud/rhs/u_e,"[186, 6]",torch.float64,17,8,2.0383000842727483e-17,macos/native,3.0932409742441915e-14,1.3743601970171093,0,0
+check_baseline/cloud/rhs/water_content,"[64, 7, 3]",torch.float64,17,8,9.590927591980841e-19,macos/native,9.643015829216415e-15,3.9376910553452586e-11,0,0
+check_baseline/cloud_reverse/energy_rate,[],torch.float64,17,8,2.669281005859375,macos/native,90.17216494845361,90.17216494845361,0,0
+check_baseline/cloud_reverse/euler/entropy_content,"[64, 7]",torch.float64,17,16,1.862645149230957e-09,macos/native,2.657625009216299e-16,2.657627509361346e-16,0,0
+check_baseline/cloud_reverse/euler/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/euler/u_e,"[186, 6]",torch.float64,17,8,5.329070518200751e-15,macos/native,5.534560902750929e-16,1.6115379548071623e-15,0,0
+check_baseline/cloud_reverse/euler/water_content,"[64, 7, 3]",torch.float64,17,8,5.684341886080802e-14,macos/native,3.590108970616736e-16,0.029126213592233045,0,0
+check_baseline/cloud_reverse/final/entropy_content,"[64, 7]",torch.float64,17,2,3.725290298461914e-09,macos/native,5.315242020273353e-16,5.315257493341511e-16,0,0
+check_baseline/cloud_reverse/final/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/final/u_e,"[186, 6]",torch.float64,17,2,7.105427357601002e-15,macos/native,7.379424862546749e-16,1.5723891737534276e-15,0,0
+check_baseline/cloud_reverse/final/water_content,"[64, 7, 3]",torch.float64,17,2,8.526512829121202e-14,fixture-audit-4/aten-avx2,5.385155289739847e-16,0.020979020979020862,0,0
+check_baseline/cloud_reverse/final_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/final_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,2,5.820766091346741e-11,macos/native,2.6722762911907113e-16,2.6732405307808697e-16,0,0
+check_baseline/cloud_reverse/final_budgets/energy/internal,[],torch.float64,17,8,67108864.0,fixture-audit-4/aten-avx2,2.2464387768520095e-16,2.2464387768520095e-16,0,0
+check_baseline/cloud_reverse/final_budgets/energy/kinetic,[],torch.float64,17,8,32768.0,fixture-audit-4/aten-avx2,2.0044212603001511e-16,2.0044212603001511e-16,0,0
+check_baseline/cloud_reverse/final_budgets/energy/potential,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/final_budgets/energy/total,[],torch.float64,17,8,67108864.0,fixture-audit-4/aten-avx2,8.610195714392794e-16,8.610195714392794e-16,0,0
+check_baseline/cloud_reverse/final_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/final_budgets/species,[3],torch.float64,17,8,8.0,fixture-audit-4/aten-avx2,1.6190564200691766e-16,1.6190564200691766e-16,0,0
+check_baseline/cloud_reverse/gradients/entropy_content,"[64, 7]",torch.float64,17,8,0.40625,macos/native,1.703401054557444e-15,1.977112915770593e-15,0,0
+check_baseline/cloud_reverse/gradients/ps,"[64, 1]",torch.float64,17,8,24.0,macos/native,1.615242021513275e-14,1.7734757352604804e-14,0,0
+check_baseline/cloud_reverse/gradients/u_e,"[186, 6]",torch.float64,17,8,216.0,macos/native,2.3598176458802593e-15,6.322350630140943e-15,0,0
+check_baseline/cloud_reverse/gradients/water_content,"[64, 7, 3]",torch.float64,17,2,544.0,macos/native,2.155168858764091e-15,2.744454504275517e-15,0,0
+check_baseline/cloud_reverse/initial/entropy_content,"[64, 7]",torch.float64,17,16,1.862645149230957e-09,macos/native,2.6576262551498854e-16,2.6576262551498854e-16,0,0
+check_baseline/cloud_reverse/initial/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial/u_e,"[186, 6]",torch.float64,17,8,4.440892098500626e-15,macos/native,4.612134085625774e-16,7.036663749195453e-16,0,0
+check_baseline/cloud_reverse/initial/water_content,"[64, 7, 3]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/internal,[],torch.float64,17,9,33554432.0,fixture-audit-4/aten-avx2,1.12321938842912e-16,1.12321938842912e-16,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/potential,[],torch.float64,17,16,67108864.0,macos/native,2.0979642113852504e-16,2.0979642113852504e-16,0,0
+check_baseline/cloud_reverse/initial_budgets/energy/total,[],torch.float64,17,8,67108864.0,macos/native,8.610195714392544e-16,8.610195714392544e-16,0,0
+check_baseline/cloud_reverse/initial_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/initial_budgets/species,[3],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/cloud_reverse/limiter/amounts,"[448, 4]",torch.float64,17,8,224.0,macos/native,1.7041511161103192e-15,0.02912621359223301,0,0
+check_baseline/cloud_reverse/limiter/beta,[1686],torch.float64,17,8,1.1102230246251565e-16,macos/native,1.1102230246251565e-16,3.502183197403698e-16,0,0
+check_baseline/cloud_reverse/limiter/entropy_source,"[64, 7]",torch.float64,17,8,2.722284483136516e-19,fixture-audit-4/aten-avx2,1.6250256308127798e-12,4.600571495958798e-10,0,0
+check_baseline/cloud_reverse/limiter/heat,[1686],torch.float64,17,8,6.802007555961609e-05,fixture-audit-4/aten-avx2,1.5984353673395952e-12,4.6005731592365504e-10,0,0
+check_baseline/cloud_reverse/limiter/integrated_flux,"[1686, 4]",torch.float64,17,8,0.0166015625,macos/native,1.7053923493869433e-15,4489.0,0,0
+check_baseline/cloud_reverse/limiter/limiter_force,"[186, 6]",torch.float64,17,8,2.6603381084605116e-23,macos/native,1.6325835475749929e-10,2.59815640928921e-10,0,0
+check_baseline/cloud_reverse/rhs/entropy_content,"[64, 7]",torch.float64,17,8,3.488897538928004e-14,macos/native,3.164438033331756e-13,9.655379867014138e-11,0,0
+check_baseline/cloud_reverse/rhs/ps,"[64, 1]",torch.float64,17,8,5.138508433859268e-16,macos/native,3.4384132270362205e-13,3.29358981033547e-11,0,0
+check_baseline/cloud_reverse/rhs/u_e,"[186, 6]",torch.float64,17,8,2.0383000842727483e-17,macos/native,3.3013265384650043e-14,1.0472780356886293,0,0
+check_baseline/cloud_reverse/rhs/water_content,"[64, 7, 3]",torch.float64,17,8,9.590927591980841e-19,macos/native,9.53098605843062e-15,0.020316027088036114,0,0
+check_baseline/dry/final/mtheta_i,"[64, 7]",torch.float64,17,8,1.9606202840805054e-05,fixture-audit-4/aten-avx2,3.4302353053947333e-12,3.821106143286109e-12,0,0
+check_baseline/dry/final/ps,"[64, 1]",torch.float64,17,8,2.9103830456733704e-11,fixture-audit-4/aten-avx2,2.910224668263937e-16,2.910400022755574e-16,0,0
+check_baseline/dry/final/u_e,"[186, 6]",torch.float64,17,6,4.295230837669806e-12,macos/native,1.2909087629717135e-13,6.936974399725582e-11,0,0
+check_baseline/dry/final_energy,[1],torch.float64,17,8,15837691904.0,fixture-audit-4/aten-avx2,1.232384059652399e-14,1.232384059652399e-14,0,0
+check_baseline/dry/final_mass,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/dry/initial/mtheta_i,"[64, 7]",torch.float64,17,8,1.960713416337967e-05,fixture-audit-4/aten-avx2,3.430477953876782e-12,3.821056685849957e-12,0,0
+check_baseline/dry/initial/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/dry/initial/u_e,"[186, 6]",torch.float64,17,8,1.2434497875801753e-14,macos/native,3.737290253837328e-16,1.3895643218058701e-15,0,0
+check_baseline/dry/initial_energy,[1],torch.float64,17,8,15300820992.0,fixture-audit-4/aten-avx2,1.190608328816723e-14,1.190608328816723e-14,0,0
+check_baseline/dry/initial_mass,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/dry/rhs/mtheta_i,"[64, 7]",torch.float64,17,8,7.633760290559621e-11,macos/native,2.0153532317822424e-11,3.5511321161033034e-09,0,0
+check_baseline/dry/rhs/ps,"[64, 1]",torch.float64,17,8,9.159339953157541e-16,macos/native,1.524838324360454e-14,3.195190885553944e-14,0,0
+check_baseline/dry/rhs/u_e,"[186, 6]",torch.float64,17,8,4.773221748410883e-14,macos/native,6.235560692543893e-11,30.274553231180256,0,0
+check_baseline/smooth/energy_rate,[],torch.float64,17,2,2.4757843017578125,macos/native,2.375958236624957,2.375958236624957,0,0
+check_baseline/smooth/euler/entropy_content,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/euler/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/euler/u_e,"[186, 6]",torch.float64,17,2,5.329070518200751e-15,macos/native,5.534560902750929e-16,8.429409412607776e-16,0,0
+check_baseline/smooth/euler/water_content,"[64, 7, 3]",torch.float64,17,8,5.684341886080802e-14,macos/native,3.590108970616645e-16,3.5901111682474077e-16,0,0
+check_baseline/smooth/final/entropy_content,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final/u_e,"[186, 6]",torch.float64,17,2,5.329070518200751e-15,fixture-audit-4/aten-avx2,5.53456942557846e-16,1.022303615814115e-15,0,0
+check_baseline/smooth/final/water_content,"[64, 7, 3]",torch.float64,17,8,1.1368683772161603e-13,fixture-audit-4/aten-avx2,7.180214616626628e-16,7.180225655910972e-16,0,0
+check_baseline/smooth/final_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,2,5.820766091346741e-11,fixture-audit-1/aten-avx2,2.6754998499693787e-16,2.675500118600428e-16,0,0
+check_baseline/smooth/final_budgets/energy/internal,[],torch.float64,17,3,33554432.0,fixture-audit-1/aten-avx2,1.122905202177161e-16,1.122905202177161e-16,0,0
+check_baseline/smooth/final_budgets/energy/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final_budgets/energy/potential,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final_budgets/energy/total,[],torch.float64,17,3,33554432.0,fixture-audit-1/aten-avx2,4.3256840021370374e-16,4.3256840021370374e-16,0,0
+check_baseline/smooth/final_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/final_budgets/species,[3],torch.float64,17,8,8.0,fixture-audit-4/aten-avx2,1.6190564200691768e-16,2.0238205250864707e-16,0,0
+check_baseline/smooth/gradients/entropy_content,"[64, 7]",torch.float64,17,8,0.4375,macos/native,1.8344374072231867e-15,2.0295595017893762e-15,0,0
+check_baseline/smooth/gradients/ps,"[64, 1]",torch.float64,17,2,24.0,macos/native,1.6821169063716424e-14,1.7318065209857534e-14,0,0
+check_baseline/smooth/gradients/u_e,"[186, 6]",torch.float64,17,8,216.0,macos/native,2.3598176458802593e-15,6.322350630140943e-15,0,0
+check_baseline/smooth/gradients/water_content,"[64, 7, 3]",torch.float64,17,2,448.0,macos/native,1.7709969768300081e-15,2.207131362375251e-15,0,0
+check_baseline/smooth/initial/entropy_content,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial/ps,"[64, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial/u_e,"[186, 6]",torch.float64,17,8,4.440892098500626e-15,macos/native,4.612134085625774e-16,7.036663749195453e-16,0,0
+check_baseline/smooth/initial/water_content,"[64, 7, 3]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial_budgets/energy/boundary,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial_budgets/energy/geopotential_interface,"[64, 7]",torch.float64,17,11,1.8189894035458565e-12,fixture-audit-1/aten-avx2,8.360940867464621e-18,1.3150464285770071e-16,0,0
+check_baseline/smooth/initial_budgets/energy/internal,[],torch.float64,17,10,33554432.0,fixture-audit-1/aten-avx2,1.1229052021767187e-16,1.1229052021767187e-16,0,0
+check_baseline/smooth/initial_budgets/energy/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial_budgets/energy/potential,[],torch.float64,17,8,67108864.0,fixture-audit-4/aten-avx2,2.0994709527227866e-16,2.0994709527227866e-16,0,0
+check_baseline/smooth/initial_budgets/energy/total,[],torch.float64,17,2,100663296.0,macos/native,1.2977052006410734e-15,1.2977052006410734e-15,0,0
+check_baseline/smooth/initial_budgets/mass,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/initial_budgets/species,[3],torch.float64,17,16,1.0,macos/native,2.0238205250864704e-17,2.0238205250864707e-16,0,0
+check_baseline/smooth/limiter/amounts,"[448, 4]",torch.float64,17,8,224.0,macos/native,1.7060467235809775e-15,2.029863719231248e-15,0,0
+check_baseline/smooth/limiter/beta,[1686],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/limiter/entropy_source,"[64, 7]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/limiter/heat,[1686],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/limiter/integrated_flux,"[1686, 4]",torch.float64,17,8,0.0166015625,macos/native,1.7072893375397524e-15,4489.0,0,0
+check_baseline/smooth/limiter/limiter_force,"[186, 6]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_baseline/smooth/rhs/entropy_content,"[64, 7]",torch.float64,17,8,3.291139062666648e-14,macos/native,2.9915183352901405e-13,3.7590460117213525e-11,0,0
+check_baseline/smooth/rhs/ps,"[64, 1]",torch.float64,17,8,5.138508433859268e-16,macos/native,3.4384132270362205e-13,3.29358981033547e-11,0,0
+check_baseline/smooth/rhs/u_e,"[186, 6]",torch.float64,17,2,2.097931203759451e-17,macos/native,3.3109831859562156e-14,0.42146049561360954,0,0
+check_baseline/smooth/rhs/water_content,"[64, 7, 3]",torch.float64,17,8,9.590927591980841e-19,macos/native,3.8506394666412567e-13,4.091689492270536e-11,0,0
+check_dry_helpers/canonical/cfl_terms/horizontal,"[90, 4]",torch.float64,17,8,1.2705494208814505e-21,fixture-audit-4/aten-avx2,2.274864381097411e-16,3.726805184433958e-16,0,0
+check_dry_helpers/canonical/cfl_terms/horizontal_max,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/cfl_terms/vertical,"[32, 4]",torch.float64,17,8,7.623296525288703e-21,macos/native,1.2162156518800418e-15,7.772771311736615e-14,0,0
+check_dry_helpers/canonical/cfl_terms/vertical_interface,"[32, 5]",torch.float64,17,8,8.470329472543003e-21,macos/native,1.205364742862167e-15,5.0,0,0
+check_dry_helpers/canonical/cfl_terms/vertical_interface_max,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/cfl_terms/vertical_max,[],torch.float64,17,8,7.623296525288703e-21,macos/native,1.2162156518800418e-15,1.2162156518800418e-15,0,0
+check_dry_helpers/canonical/divergence,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/canonical/energy_terms/internal,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/energy_terms/kinetic,[1],torch.float64,17,8,32768.0,fixture-audit-4/aten-avx2,1.8905130321875087e-16,1.8905130321875087e-16,0,0
+check_dry_helpers/canonical/energy_terms/potential,[1],torch.float64,17,9,67108864.0,fixture-audit-4/aten-avx2,2.305493272115687e-16,2.305493272115687e-16,0,0
+check_dry_helpers/canonical/energy_terms/total,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_balance_terms/bernoulli_norm,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_balance_terms/cancellation_ratio,[],torch.float64,17,8,4.440892098500626e-16,macos/native,6.468931795823092e-16,6.468931795823092e-16,0,0
+check_dry_helpers/canonical/force_balance_terms/pgf_norm,[],torch.float64,17,12,3.026798367500305e-09,macos/native,1.5498546617513228e-15,1.5498546617513228e-15,0,0
+check_dry_helpers/canonical/force_balance_terms/rotation_norm,[],torch.float64,17,16,4.656612873077393e-10,macos/native,1.43798323688024e-16,1.43798323688024e-16,0,0
+check_dry_helpers/canonical/force_balance_terms/total_norm,[],torch.float64,17,7,9.313225746154785e-10,fixture-audit-1/aten-default,2.5122153301967863e-16,2.5122153301967863e-16,0,0
+check_dry_helpers/canonical/force_balance_terms/vertical_norm,[],torch.float64,17,9,2.9103830456733704e-11,fixture-audit-4/aten-avx2,1.901842647991351e-16,1.901842647991351e-16,0,0
+check_dry_helpers/canonical/force_terms/bernoulli,"[90, 4]",torch.float64,17,8,1.3552527156068805e-20,macos/native,6.501697547617669e-16,8.570675140015317e-14,0,0
+check_dry_helpers/canonical/force_terms/diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_terms/divergence_damping,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_terms/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_terms/dps_dt,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/force_terms/hydro,"[90, 4]",torch.float64,17,6,4.1823098803628334e-17,macos/native,7.310923393194526e-14,9.957064185887308e-13,0,0
+check_dry_helpers/canonical/force_terms/hyperdiffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_terms/layer_div,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/canonical/force_terms/metric,"[90, 4]",torch.float64,17,8,1044.0,macos/native,2.2822141143349927e-15,7.907942299502388e-14,0,0
+check_dry_helpers/canonical/force_terms/minus_grad_ke,"[90, 4]",torch.float64,17,8,1.3552527156068805e-20,macos/native,6.501697547617669e-16,8.570675140015317e-14,0,0
+check_dry_helpers/canonical/force_terms/momentum_diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/force_terms/mu,"[32, 5]",torch.float64,17,8,2.220446049250313e-16,macos/native,1.2482109551768386e-15,7.0,0,0
+check_dry_helpers/canonical/force_terms/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/canonical/force_terms/pgf,"[90, 4]",torch.float64,17,6,4.1823098803628334e-17,macos/native,7.310923393194526e-14,9.957064185887308e-13,0,0
+check_dry_helpers/canonical/force_terms/rotation,"[90, 4]",torch.float64,17,8,5.421010862427522e-19,fixture-audit-4/aten-avx2,3.999021604213313e-16,4.824491671928473e-14,0,0
+check_dry_helpers/canonical/force_terms/total,"[90, 4]",torch.float64,17,6,4.176888869500406e-17,macos/native,3.1364466489292796e-14,1.1361694514347535e-12,0,0
+check_dry_helpers/canonical/force_terms/uvert,"[90, 4]",torch.float64,17,8,1.4399560103323106e-19,fixture-audit-4/aten-avx2,1.5181929712880682e-15,3.9304922495366383e-14,0,0
+check_dry_helpers/canonical/force_terms/vertical,"[90, 4]",torch.float64,17,8,1.4399560103323106e-19,fixture-audit-4/aten-avx2,1.5181929712880682e-15,3.9304922495366383e-14,0,0
+check_dry_helpers/canonical/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/canonical/pressure_fields/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/pressure_fields/p_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/pressure_fields/p_interface,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/pressure_fields/ps,"[32, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/primitives/dm,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/primitives/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/primitives/dp_e,"[90, 4]",torch.float64,17,8,1.0913936421275139e-11,fixture-audit-4/aten-avx2,3.89224932497394e-16,3.905571514745662e-16,0,0
+check_dry_helpers/canonical/primitives/dps_dt,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/primitives/layer_div,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/canonical/primitives/mass_flux,"[90, 4]",torch.float64,17,8,1.1641532182693481e-10,fixture-audit-4/aten-avx2,1.7459788299199147e-16,4.091912497217091e-16,0,0
+check_dry_helpers/canonical/primitives/mu,"[32, 5]",torch.float64,17,8,2.220446049250313e-16,macos/native,1.2482109551768386e-15,7.0,0,0
+check_dry_helpers/canonical/primitives/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/canonical/primitives/theta,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/rhs/mtheta_i,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.0434781334940425e-15,7.995843096395195e-14,0,0
+check_dry_helpers/canonical/rhs/ps,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/rhs/u_e,"[90, 4]",torch.float64,17,6,4.176888869500406e-17,macos/native,3.1364466489292796e-14,1.1361694514347394e-12,0,0
+check_dry_helpers/canonical/rotation_work_terms/rotation,"[90, 4]",torch.float64,17,8,5.421010862427522e-19,fixture-audit-4/aten-avx2,3.999021604213313e-16,4.824491671928473e-14,0,0
+check_dry_helpers/canonical/rotation_work_terms/rotation_rms,[],torch.float64,17,8,5.421010862427522e-20,fixture-audit-4/aten-avx2,1.6416613682975628e-16,1.6416613682975628e-16,0,0
+check_dry_helpers/canonical/rotation_work_terms/work,[],torch.float64,17,8,9.1552734375e-05,macos/native,2.0,2.0,0,0
+check_dry_helpers/canonical/rotation_work_terms/work_abs_scale,[],torch.float64,17,9,0.001953125,fixture-audit-4/aten-avx2,3.324551290992219e-16,3.324551290992219e-16,0,0
+check_dry_helpers/canonical/rotation_work_terms/work_relative,[],torch.float64,17,8,1.5583834176526028e-17,macos/native,2.0,2.0,0,0
+check_dry_helpers/canonical/scalar_energy_gradients/0,"[32, 5]",torch.float64,17,6,2.5,fixture-audit-1/aten-default,1.4658428425686073e-15,1.5764028311146575e-15,0,0
+check_dry_helpers/canonical/scalar_energy_gradients/1,"[32, 1]",torch.float64,17,6,192.0,fixture-audit-4/aten-avx2,1.762958818685624e-15,1.859869256893658e-15,0,0
+check_dry_helpers/canonical/scalar_pressure_energy_gradient_terms/internal,"[32, 1]",torch.float64,17,8,448.0,macos/native,1.2262748978744725e-15,1.2907720999024436e-15,0,0
+check_dry_helpers/canonical/scalar_pressure_energy_gradient_terms/kinetic_mass,"[32, 1]",torch.float64,17,8,0.078125,macos/native,6.88555097656019e-16,1.2655613383824667e-15,0,0
+check_dry_helpers/canonical/scalar_pressure_energy_gradient_terms/potential,"[32, 1]",torch.float64,17,6,160.0,macos/native,1.1819531151382239e-15,1.2461305778450686e-15,0,0
+check_dry_helpers/canonical/scalar_pressure_energy_gradient_terms/theta_mass_coupling,"[32, 1]",torch.float64,17,8,448.0,macos/native,1.1433162090786589e-15,1.2033137975354997e-15,0,0
+check_dry_helpers/canonical/scalar_pressure_energy_gradient_terms/total,"[32, 1]",torch.float64,17,6,192.0,fixture-audit-4/aten-avx2,1.762958818685624e-15,1.859869256893658e-15,0,0
+check_dry_helpers/canonical/step/mtheta_i,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/step/ps,"[32, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/step/u_e,"[90, 4]",torch.float64,17,8,1.7763568394002505e-15,macos/native,7.379383252482979e-17,2.1108868100922886e-16,0,0
+check_dry_helpers/canonical/tendency_terms/mtheta_i/advective,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.0434523792892428e-15,1.1810305251990046e-13,0,0
+check_dry_helpers/canonical/tendency_terms/mtheta_i/coord_work,"[32, 5]",torch.float64,17,6,1.6653345369377348e-16,macos/native,1.5113593377329495e-15,2.2425948566478495e-12,0,0
+check_dry_helpers/canonical/tendency_terms/mtheta_i/horizontal,"[32, 5]",torch.float64,17,8,4.263256414560601e-14,macos/native,8.018896381907487e-16,1.4581468175114924e-13,0,0
+check_dry_helpers/canonical/tendency_terms/mtheta_i/total,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.0434781334940425e-15,7.995843096395195e-14,0,0
+check_dry_helpers/canonical/tendency_terms/mtheta_i/vertical,"[32, 5]",torch.float64,17,8,4.618527782440651e-14,macos/native,1.58758354793241e-15,7.777862111280734e-14,0,0
+check_dry_helpers/canonical/tendency_terms/ps/mass_flux,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/tendency_terms/ps/total,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/bernoulli,"[90, 4]",torch.float64,17,8,1.3552527156068805e-20,macos/native,6.501697547617669e-16,8.570675140015317e-14,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/momentum_diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/pgf,"[90, 4]",torch.float64,17,6,4.1823098803628334e-17,macos/native,7.310923393194526e-14,9.957064185887308e-13,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/rotation,"[90, 4]",torch.float64,17,8,5.421010862427522e-19,fixture-audit-4/aten-avx2,3.999021604213313e-16,4.824491671928473e-14,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/total,"[90, 4]",torch.float64,17,6,4.176888869500406e-17,macos/native,3.1364466489292796e-14,1.1361694514347535e-12,0,0
+check_dry_helpers/canonical/tendency_terms/u_e/vertical,"[90, 4]",torch.float64,17,8,1.4399560103323106e-19,fixture-audit-4/aten-avx2,1.5181929712880682e-15,3.9304922495366383e-14,0,0
+check_dry_helpers/canonical/thermo_fields/exner_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/thermo_fields/exner_interface,"[32, 5]",torch.float64,17,13,1.1368683772161603e-13,fixture-audit-1/aten-default,1.12844450597408e-16,1.2437675339350984e-16,0,0
+check_dry_helpers/canonical/thermo_fields/geopotential,"[32, 4]",torch.float64,17,13,3.2741809263825417e-11,fixture-audit-1/aten-default,2.501409491653188e-16,2.6020415469262012e-15,0,0
+check_dry_helpers/canonical/thermo_fields/geopotential_interface,"[32, 5]",torch.float64,17,12,3.637978807091713e-11,fixture-audit-1/aten-default,2.0708684401009874e-16,1.3703581760238497e-15,0,0
+check_dry_helpers/canonical/thermo_fields/temperature,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/thermo_fields/theta,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/thermo_fields/theta_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/total_energy,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/total_mass,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/canonical/tracer_inventory,[2],torch.float64,17,16,8.0,macos/native,1.6183923512303494e-16,1.6183923512303494e-16,0,0
+check_dry_helpers/canonical/tracer_rhs/mtheta_i,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.0434781334940425e-15,7.995843096395195e-14,0,0
+check_dry_helpers/canonical/tracer_rhs/ps,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/canonical/tracer_rhs/tracer_m,"[32, 4, 2]",torch.float64,17,8,1.0842021724855044e-18,macos/native,9.258200010666876e-16,1.1003055341944529e-13,0,0
+check_dry_helpers/canonical/tracer_rhs/u_e,"[90, 4]",torch.float64,17,6,4.176888869500406e-17,macos/native,3.1364466489292796e-14,1.1361694514347394e-12,0,0
+check_dry_helpers/canonical/tracer_terms/total,"[32, 4, 2]",torch.float64,17,8,1.0842021724855044e-18,macos/native,9.258200010666876e-16,1.1003055341944529e-13,0,0
+check_dry_helpers/canonical/tracer_terms/transport,"[32, 4, 2]",torch.float64,17,8,1.0842021724855044e-18,macos/native,9.258200010666876e-16,1.1003055341944529e-13,0,0
+check_dry_helpers/canonical/vorticity,"[60, 4]",torch.float64,17,8,6.776263578034403e-21,macos/native,2.748363950373656e-16,1.7764619106744226e-15,0,0
+check_dry_helpers/canonical/wind_fields/cell_wind_vector,"[32, 4, 3]",torch.float64,17,8,5.329070518200751e-15,fixture-audit-1/aten-default,3.8676813352429636e-16,3.415692201891226e-14,0,0
+check_dry_helpers/canonical/wind_fields/u_e,"[90, 4]",torch.float64,17,16,1.7763568394002505e-15,macos/native,7.379339411299398e-17,2.1108835675860751e-16,0,0
+check_dry_helpers/diagonal/cfl_terms/horizontal,"[90, 4]",torch.float64,17,8,1.2705494208814505e-21,fixture-audit-4/aten-avx2,2.274864381097411e-16,3.726805184433958e-16,0,0
+check_dry_helpers/diagonal/cfl_terms/horizontal_max,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/cfl_terms/vertical,"[32, 4]",torch.float64,17,8,7.623296525288703e-21,macos/native,1.2162156518800418e-15,7.772771311736615e-14,0,0
+check_dry_helpers/diagonal/cfl_terms/vertical_interface,"[32, 5]",torch.float64,17,8,8.470329472543003e-21,macos/native,1.205364742862167e-15,5.0,0,0
+check_dry_helpers/diagonal/cfl_terms/vertical_interface_max,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/cfl_terms/vertical_max,[],torch.float64,17,8,7.623296525288703e-21,macos/native,1.2162156518800418e-15,1.2162156518800418e-15,0,0
+check_dry_helpers/diagonal/divergence,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/diagonal/energy_terms/internal,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/energy_terms/kinetic,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/energy_terms/potential,[1],torch.float64,17,9,67108864.0,fixture-audit-4/aten-avx2,2.305493272115687e-16,2.305493272115687e-16,0,0
+check_dry_helpers/diagonal/energy_terms/total,[1],torch.float64,17,9,134217728.0,fixture-audit-4/aten-avx2,1.1717845411963482e-16,1.1717845411963482e-16,0,0
+check_dry_helpers/diagonal/force_balance_terms/bernoulli_norm,[],torch.float64,17,9,1.4551915228366852e-11,fixture-audit-4/aten-avx2,1.5735774809496688e-16,1.5735774809496688e-16,0,0
+check_dry_helpers/diagonal/force_balance_terms/cancellation_ratio,[],torch.float64,17,6,8.881784197001252e-16,fixture-audit-4/aten-default,1.2847093979696645e-15,1.2847093979696645e-15,0,0
+check_dry_helpers/diagonal/force_balance_terms/pgf_norm,[],torch.float64,17,6,1.5133991837501526e-08,fixture-audit-4/aten-default,7.80346930845736e-15,7.80346930845736e-15,0,0
+check_dry_helpers/diagonal/force_balance_terms/rotation_norm,[],torch.float64,17,9,4.656612873077393e-10,fixture-audit-4/aten-avx2,1.4376195257719846e-16,1.4376195257719846e-16,0,0
+check_dry_helpers/diagonal/force_balance_terms/total_norm,[],torch.float64,17,4,6.05359673500061e-09,fixture-audit-4/aten-default,1.6312756883344507e-15,1.6312756883344507e-15,0,0
+check_dry_helpers/diagonal/force_balance_terms/vertical_norm,[],torch.float64,17,8,2.9103830456733704e-11,fixture-audit-4/aten-avx2,3.0081833519543736e-16,3.0081833519543736e-16,0,0
+check_dry_helpers/diagonal/force_terms/bernoulli,"[90, 4]",torch.float64,17,8,2.879912020664621e-20,macos/native,9.577917321461367e-16,3.4385060479766304e-13,0,0
+check_dry_helpers/diagonal/force_terms/diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/force_terms/divergence_damping,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/force_terms/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/force_terms/dps_dt,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/diagonal/force_terms/hydro,"[90, 4]",torch.float64,17,6,3.651050815844936e-17,macos/native,6.703720049803096e-14,2.326581831438713e-11,0,0
+check_dry_helpers/diagonal/force_terms/hyperdiffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/force_terms/layer_div,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/diagonal/force_terms/metric,"[90, 4]",torch.float64,17,8,1044.0,macos/native,2.2822141143349927e-15,7.907942299502388e-14,0,0
+check_dry_helpers/diagonal/force_terms/minus_grad_ke,"[90, 4]",torch.float64,17,8,2.879912020664621e-20,macos/native,9.577917321461367e-16,3.4385060479766304e-13,0,0
+check_dry_helpers/diagonal/force_terms/momentum_diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/force_terms/mu,"[32, 5]",torch.float64,17,8,2.220446049250313e-16,macos/native,1.2482109551768386e-15,7.0,0,0
+check_dry_helpers/diagonal/force_terms/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/diagonal/force_terms/pgf,"[90, 4]",torch.float64,17,6,3.651050815844936e-17,macos/native,6.703720049803096e-14,2.326581831438713e-11,0,0
+check_dry_helpers/diagonal/force_terms/rotation,"[90, 4]",torch.float64,17,8,6.505213034913027e-19,fixture-audit-4/aten-avx2,4.805763215696205e-16,5.5675441869259876e-14,0,0
+check_dry_helpers/diagonal/force_terms/total,"[90, 4]",torch.float64,17,6,3.642919299551295e-17,macos/native,2.8274600169024718e-14,4.0238078447292055e-12,0,0
+check_dry_helpers/diagonal/force_terms/uvert,"[90, 4]",torch.float64,17,8,7.284483346386983e-20,fixture-audit-4/aten-avx2,1.5360540650679277e-15,2.335653023220172e-13,0,0
+check_dry_helpers/diagonal/force_terms/vertical,"[90, 4]",torch.float64,17,8,7.284483346386983e-20,fixture-audit-4/aten-avx2,1.5360540650679277e-15,2.335653023220172e-13,0,0
+check_dry_helpers/diagonal/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/diagonal/pressure_fields/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/pressure_fields/p_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/pressure_fields/p_interface,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/pressure_fields/ps,"[32, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/primitives/dm,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/primitives/dp,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/primitives/dp_e,"[90, 4]",torch.float64,17,8,1.0913936421275139e-11,fixture-audit-4/aten-avx2,3.89224932497394e-16,3.905571514745662e-16,0,0
+check_dry_helpers/diagonal/primitives/dps_dt,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/diagonal/primitives/layer_div,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,7.8909546017992465e-16,1.3939262119063842e-13,0,0
+check_dry_helpers/diagonal/primitives/mass_flux,"[90, 4]",torch.float64,17,8,1.1641532182693481e-10,fixture-audit-4/aten-avx2,1.7459788299199147e-16,4.091912497217091e-16,0,0
+check_dry_helpers/diagonal/primitives/mu,"[32, 5]",torch.float64,17,8,2.220446049250313e-16,macos/native,1.2482109551768386e-15,7.0,0,0
+check_dry_helpers/diagonal/primitives/omega,"[32, 4]",torch.float64,17,8,1.942890293094024e-16,macos/native,1.1962695793886885e-15,7.774062995716432e-14,0,0
+check_dry_helpers/diagonal/primitives/theta,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/rhs/mtheta_i,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.04919449741697e-15,1.1140067014778114e-12,0,0
+check_dry_helpers/diagonal/rhs/ps,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/diagonal/rhs/u_e,"[90, 4]",torch.float64,17,6,3.6374982886888674e-17,macos/native,2.8232524871154152e-14,4.023937976608662e-12,0,0
+check_dry_helpers/diagonal/rotation_work_terms/rotation,"[90, 4]",torch.float64,17,8,6.505213034913027e-19,fixture-audit-4/aten-avx2,4.805763215696205e-16,5.5675441869259876e-14,0,0
+check_dry_helpers/diagonal/rotation_work_terms/rotation_rms,[],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/rotation_work_terms/work,[],torch.float64,17,8,0.21875,macos/native,2.8,2.8,0,0
+check_dry_helpers/diagonal/rotation_work_terms/work_abs_scale,[],torch.float64,17,9,2.0,fixture-audit-4/aten-avx2,1.413729807827935e-16,1.413729807827935e-16,0,0
+check_dry_helpers/diagonal/rotation_work_terms/work_relative,[],torch.float64,17,8,1.5462669773118038e-17,macos/native,2.8,2.8,0,0
+check_dry_helpers/diagonal/scalar_energy_gradients/0,"[32, 5]",torch.float64,17,6,2.5,fixture-audit-1/aten-default,1.4658428425686073e-15,1.5764028311146575e-15,0,0
+check_dry_helpers/diagonal/scalar_energy_gradients/1,"[32, 1]",torch.float64,17,6,192.0,fixture-audit-4/aten-avx2,1.7625742165111337e-15,1.859420273240799e-15,0,0
+check_dry_helpers/diagonal/scalar_pressure_energy_gradient_terms/internal,"[32, 1]",torch.float64,17,8,448.0,macos/native,1.2262748978744725e-15,1.2907720999024436e-15,0,0
+check_dry_helpers/diagonal/scalar_pressure_energy_gradient_terms/kinetic_mass,"[32, 1]",torch.float64,17,8,0.15625,macos/native,9.06753104704449e-16,1.8030524050620872e-15,0,0
+check_dry_helpers/diagonal/scalar_pressure_energy_gradient_terms/potential,"[32, 1]",torch.float64,17,6,160.0,macos/native,1.1819531151382239e-15,1.2461305778450686e-15,0,0
+check_dry_helpers/diagonal/scalar_pressure_energy_gradient_terms/theta_mass_coupling,"[32, 1]",torch.float64,17,8,448.0,macos/native,1.1433162090786589e-15,1.2033137975354997e-15,0,0
+check_dry_helpers/diagonal/scalar_pressure_energy_gradient_terms/total,"[32, 1]",torch.float64,17,6,192.0,fixture-audit-4/aten-avx2,1.7625742165111337e-15,1.859420273240799e-15,0,0
+check_dry_helpers/diagonal/step/mtheta_i,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/step/ps,"[32, 1]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/step/u_e,"[90, 4]",torch.float64,17,8,1.7763568394002505e-15,macos/native,7.37937777934526e-17,1.765196750186557e-15,0,0
+check_dry_helpers/diagonal/tendency_terms/mtheta_i/advective,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.04919449741697e-15,1.1140067014778114e-12,0,0
+check_dry_helpers/diagonal/tendency_terms/mtheta_i/coord_work,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/tendency_terms/mtheta_i/horizontal,"[32, 5]",torch.float64,17,8,4.973799150320701e-14,macos/native,9.428203706199172e-16,1.2096513937621626e-13,0,0
+check_dry_helpers/diagonal/tendency_terms/mtheta_i/total,"[32, 5]",torch.float64,17,8,3.552713678800501e-14,macos/native,1.04919449741697e-15,1.1140067014778114e-12,0,0
+check_dry_helpers/diagonal/tendency_terms/mtheta_i/vertical,"[32, 5]",torch.float64,17,8,4.618527782440651e-14,macos/native,1.5976196886301529e-15,7.766982909436387e-14,0,0
+check_dry_helpers/diagonal/tendency_terms/ps/mass_flux,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/diagonal/tendency_terms/ps/total,"[32, 1]",torch.float64,17,8,1.6653345369377348e-16,macos/native,4.151480456157977e-16,1.1539920447796346e-14,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/bernoulli,"[90, 4]",torch.float64,17,8,2.879912020664621e-20,macos/native,9.577917321461367e-16,3.4385060479766304e-13,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/momentum_diffusion,"[90, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/pgf,"[90, 4]",torch.float64,17,6,3.651050815844936e-17,macos/native,6.703720049803096e-14,2.326581831438713e-11,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/rotation,"[90, 4]",torch.float64,17,8,6.505213034913027e-19,fixture-audit-4/aten-avx2,4.805763215696205e-16,5.5675441869259876e-14,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/total,"[90, 4]",torch.float64,17,6,3.642919299551295e-17,macos/native,2.8274600169024718e-14,4.0238078447292055e-12,0,0
+check_dry_helpers/diagonal/tendency_terms/u_e/vertical,"[90, 4]",torch.float64,17,8,7.284483346386983e-20,fixture-audit-4/aten-avx2,1.5360540650679277e-15,2.335653023220172e-13,0,0
+check_dry_helpers/diagonal/thermo_fields/exner_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/thermo_fields/exner_interface,"[32, 5]",torch.float64,17,13,1.1368683772161603e-13,fixture-audit-1/aten-default,1.12844450597408e-16,1.2437675339350984e-16,0,0
+check_dry_helpers/diagonal/thermo_fields/geopotential,"[32, 4]",torch.float64,17,13,3.2741809263825417e-11,fixture-audit-1/aten-default,2.501409491653188e-16,2.6020415469262012e-15,0,0
+check_dry_helpers/diagonal/thermo_fields/geopotential_interface,"[32, 5]",torch.float64,17,12,3.637978807091713e-11,fixture-audit-1/aten-default,2.0708684401009874e-16,1.3703581760238497e-15,0,0
+check_dry_helpers/diagonal/thermo_fields/temperature,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/thermo_fields/theta,"[32, 5]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/thermo_fields/theta_full,"[32, 4]",torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/total_energy,[1],torch.float64,17,9,134217728.0,fixture-audit-4/aten-avx2,1.1717845411963482e-16,1.1717845411963482e-16,0,0
+check_dry_helpers/diagonal/total_mass,[1],torch.float64,17,17,0.0,fixture-audit-1/aten-avx2,0,0,0,0
+check_dry_helpers/diagonal/vorticity,"[60, 4]",torch.float64,17,8,6.776263578034403e-21,macos/native,2.748363950373656e-16,1.7764619106744226e-15,0,0
+check_dry_helpers/diagonal/wind_fields/cell_wind_vector,"[32, 4, 3]",torch.float64,17,8,5.329070518200751e-15,fixture-audit-1/aten-default,3.8676813352429636e-16,3.415692201891226e-14,0,0
+check_dry_helpers/diagonal/wind_fields/u_e,"[90, 4]",torch.float64,17,16,1.7763568394002505e-15,macos/native,7.379339411299398e-17,2.1108835675860751e-16,0,0

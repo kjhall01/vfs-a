@@ -1,5 +1,9 @@
 # PR: Add installed-wheel CI and contributor setup
 
+Historical setup report. Subsequent hosted runs and the CPU/dependency
+investigation are documented in [CI_911AADA_INVESTIGATION.md](CI_911AADA_INVESTIGATION.md).
+The "not run yet" status below describes the initial preparation, not current CI.
+
 The repository now has a GitHub Actions workflow that builds and installs a
 wheel with the small `test` extra (pytest only), then runs the suite, both
 baseline comparison tools and the MoistAtmosphere example outside the checkout.

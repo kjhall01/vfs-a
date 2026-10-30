@@ -1,0 +1,100 @@
+{
+  "moist energy-rate residual": {
+    "max_scaled": 90.17216494845361,
+    "path": "check_baseline/cloud_reverse/energy_rate",
+    "environment": "macos/native",
+    "max_abs": 2.669281005859375,
+    "reference_max_abs": 0.02960205078125
+  },
+  "ordinary states and geopotential": {
+    "max_scaled": 1.2909087629717135e-13,
+    "path": "check_baseline/dry/final/u_e",
+    "environment": "macos/native",
+    "max_abs": 4.295230837669806e-12,
+    "reference_max_abs": 33.27292339221593
+  },
+  "energy totals and components": {
+    "max_scaled": 1.232384059652399e-14,
+    "path": "check_baseline/dry/final_energy",
+    "environment": "fixture-audit-4/aten-avx2",
+    "max_abs": 15837691904.0,
+    "reference_max_abs": 1.2851263191822776e+24
+  },
+  "mass and species inventories": {
+    "max_scaled": 2.0238205250864707e-16,
+    "path": "check_baseline/smooth/initial_budgets/species[1]",
+    "environment": "macos/native",
+    "max_abs": 1.0,
+    "reference_max_abs": 4941149610869143.0
+  },
+  "energy gradients": {
+    "max_scaled": 1.6821169063716424e-14,
+    "path": "check_baseline/smooth/gradients/ps",
+    "environment": "macos/native",
+    "max_abs": 24.0,
+    "reference_max_abs": 1426773603492782.8
+  },
+  "ledger amounts, fluxes, beta": {
+    "max_scaled": 1.7652514002677477e-15,
+    "path": "check_baseline/smooth/limiter/amounts[2]",
+    "environment": "macos/native",
+    "max_abs": 0.234375,
+    "reference_max_abs": 132771456781991.94
+  },
+  "limiter heat and entropy source": {
+    "max_scaled": 6.0308676308661015e-12,
+    "path": "check_baseline/cloud/limiter/heat",
+    "environment": "macos/native",
+    "max_abs": 0.00026269257068634033,
+    "reference_max_abs": 43558006.370737515
+  },
+  "limiter force": {
+    "max_scaled": 1.6325835475749929e-10,
+    "path": "check_baseline/cloud_reverse/limiter/limiter_force",
+    "environment": "macos/native",
+    "max_abs": 2.6603381084605116e-23,
+    "reference_max_abs": 1.6295264719604242e-13
+  },
+  "other tendencies": {
+    "max_scaled": 4.2716063873711927e-13,
+    "path": "check_baseline/smooth/rhs/water_content[1]",
+    "environment": "macos/native",
+    "max_abs": 1.0639445192840808e-19,
+    "reference_max_abs": 2.490736324464688e-07
+  },
+  "JW thermal contents": {
+    "max_scaled": 3.430477953876782e-12,
+    "path": "check_baseline/dry/initial/mtheta_i",
+    "environment": "fixture-audit-4/aten-avx2",
+    "max_abs": 1.960713416337967e-05,
+    "reference_max_abs": 5715569.208431045
+  },
+  "JW differentiated tendencies": {
+    "max_scaled": 6.235560692543893e-11,
+    "path": "check_baseline/dry/rhs/u_e",
+    "environment": "macos/native",
+    "max_abs": 4.773221748410883e-14,
+    "reference_max_abs": 0.0007654839690869199
+  },
+  "other dry helper fields": {
+    "max_scaled": 7.310923393194526e-14,
+    "path": "check_dry_helpers/canonical/force_terms/hydro",
+    "environment": "macos/native",
+    "max_abs": 4.1823098803628334e-17,
+    "reference_max_abs": 0.0005720631520029322
+  },
+  "rotation work residual": {
+    "max_scaled": 2.8,
+    "path": "check_dry_helpers/diagonal/rotation_work_terms/work",
+    "environment": "macos/native",
+    "max_abs": 0.21875,
+    "reference_max_abs": 0.078125
+  },
+  "normalized rotation residual": {
+    "max_scaled": 2.8,
+    "path": "check_dry_helpers/diagonal/rotation_work_terms/work_relative",
+    "environment": "macos/native",
+    "max_abs": 1.5462669773118038e-17,
+    "reference_max_abs": 5.522382061827871e-18
+  }
+}
