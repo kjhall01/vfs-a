@@ -1,4 +1,7 @@
 > Historical design checkpoint. Superseded by the accepted explicit-stepper
+
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
 > [module API](MOIST_MODULE_API.md) and [results](MOIST_MODULE_RESULTS.md).
 > The string-selection sketch below was not implemented.
 

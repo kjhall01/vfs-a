@@ -57,8 +57,8 @@ configurations have `transport=None`. Each of its three Euler maps uses the full
 dt budget and installs water directly from `info['amounts'] / area`. Keep the
 three stage ledgers separate from the final convex combination. Detailed results
 remain available through `model.transport.step_with_info`; no common IMEX/bounded
-ledger is invented. The old `release_as_heat` constructor keyword still applies
-when the stepper is omitted. With an explicit stepper, configure heat on
+ledger is invented. The `release_as_heat` constructor keyword must be True
+when the stepper is omitted; the non-heat bounded configuration was removed. With an explicit stepper, configure heat on
 BoundedSSPRK3; a conflicting nondefault facade keyword raises.
 
 Tendencies remain separate: `model.dynamics.tendency(state)` is centered;
@@ -100,7 +100,7 @@ configuration, then load with the usual `load_state_dict` (default `assign=False
 Move the model and initialize or explicitly convert a compatible state afterward.
 Do not load state_dict as a substitute for reconstructing the chosen configuration.
 
-See [validation results](MOIST_MODULE_RESULTS.md) and the
+See [current validation results](READABILITY_RESULTS.md) and the
 [bounded gradient fix and remaining limits](BOUNDED_GRADIENT_LIMITATION.md). Module ownership,
 forward numerical equivalence, diagnostic gradients and timestep backpropagation
 are distinct claims. Device movement alone does not establish accelerator or

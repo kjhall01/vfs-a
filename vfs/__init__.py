@@ -1,10 +1,8 @@
-"""Stable, lightweight root API for VFS.
+"""Public atmospheric models, tensor states, geometry and explicit steppers.
 
-The root namespace is intentionally small. It is for beginner-friendly dry-core
-usage plus a few documented provisional integration points. Optional or
-experimental systems such as ETOPO/ERA5 ingest, SCM adapters, IMEX, split-explicit steppers, and ESMF/xESMF regridders stay
-behind explicit owner-module imports. That keeps ``import vfs`` reliable on
-machines without the heavier geoscience workflow stack installed.
+Optional ETOPO/ERA5 ingestion and ESMF/xESMF regridding remain behind their
+owner-module imports. Model configuration uses constructed component instances;
+there is no recipe registry or alternate legacy model package.
 """
 
 from __future__ import annotations

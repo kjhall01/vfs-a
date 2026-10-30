@@ -1,5 +1,8 @@
 # First implementation pass — 29 October 2026
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 ## Scope
 
 A separate working package extracted from checkpoint 54. Original archive SHA256:

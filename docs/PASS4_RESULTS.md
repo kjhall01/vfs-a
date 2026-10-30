@@ -1,5 +1,8 @@
 # Pass 4 — physical-field workflow
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 Added a small MoistAtmosphere facade using composition around the existing
 MoistConservativeDynamics and BoundedGibbs. It holds mesh/column, constructs the
 existing MoistState from physical fields, projects edge-sampled east/north wind,
@@ -117,6 +120,15 @@ owners are separated without new methods. Installed-wheel portable: 519 passed,
 solver diagnostics exactly equal. Frozen exact failures remain separate. The
 100 removed canonical-core fixture paths are retired explicitly, with fixture
 bytes and retained tolerances unchanged. No IMEX backward qualification.
+
+## Current guide reconciliation
+
+Start with [retained paths](CURRENT_PATHS.md), [ownership examples](STATE_OWNERSHIP.md)
+and [current regression evidence](READABILITY_RESULTS.md). Earlier reports and
+readability/ownership measurements are preserved under [history](HISTORY.md).
+The final guide slice changes no executable expressions; both usage snippets ran
+against the installed wheel. PR #10 final-head hosted CPU checks passed; its push
+artifact records 519 portable passes, 1 skip and separate exact failures.
 
 ## Standalone retained dry forcing
 

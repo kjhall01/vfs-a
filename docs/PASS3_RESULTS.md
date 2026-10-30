@@ -1,5 +1,8 @@
 # Pass 3 — focused dry-kernel cleanup
 
+> Historical report. For current APIs and supported configurations, read
+> [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
+
 ## Change
 
 DryHydrostaticDynamics now directly inherits torch.nn.Module. The six former
