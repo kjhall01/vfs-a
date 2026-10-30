@@ -6,7 +6,7 @@ from vfs.core.state import State
 from vfs.core.integrators import ssprk3
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
-from vfs.imex import DryPELinearOperator, DryPEIMEXARK2, IMEXSolverConfig
+from vfs.imex import DryPELinearOperator, DryPEIMEXARK, IMEXSolverConfig
 from vfs.integrators.imex.conservative_wave import thermal_coefficients
 
 
@@ -58,7 +58,7 @@ def test_analytic_step_uses_no_autodiff_and_conserves_mass(monkeypatch):
     monkeypatch.setattr(torch.func,'jvp',forbidden)
     monkeypatch.setattr(torch.autograd.functional,'jvp',forbidden)
     monkeypatch.setattr(torch.autograd,'grad',forbidden)
-    stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-11,max_iterations=80))
+    stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-11,max_iterations=80))
     out,info=stepper.step_with_info(s,1800.)
     assert info.converged
     assert info.linear_operator=='frozen_analytic_conservative_gravity_wave'
@@ -69,32 +69,52 @@ def test_schur_and_full_solve_agree():
     d,s,z=setup()
     results=[]
     for pre in ['none','hydrostatic_schur']:
-        stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=80))
+        stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-11,max_iterations=80))
         results.append(stepper.step(s,600.))
     for name in ['u_e','ps','mtheta_i']:
         torch.testing.assert_close(getattr(results[0],name),getattr(results[1],name),rtol=1e-10,atol=1e-8)
 
 
-def test_time_refinement_recovers_explicit_solution():
-    d,s,z=setup()
+def test_ark4_time_refinement_against_independent_dop853():
+    # ARK2's old 60-second interval puts ARK4 at roundoff; retain a meaningful
+    # independent time-refinement check at the existing moist test's scales.
+    import numpy as np
+    from scipy.integrate import solve_ivp
+
+    d, s, _ = setup()
+    keys = ('u_e', 'mtheta_i', 'ps')
+    shapes = [getattr(s, k).shape for k in keys]
+    sizes = [int(np.prod(shape)) for shape in shapes]
+    def pack(state):
+        return np.concatenate([getattr(state, k).numpy().ravel() for k in keys])
+    def unpack(values):
+        parts = np.split(values, np.cumsum(sizes)[:-1])
+        return State(*(torch.from_numpy(x.reshape(shape).copy()) for x, shape in zip(parts, shapes)),
+                     mesh=s.mesh, column=s.column)
     with torch.no_grad():
-        ref=s
-        for _ in range(64):ref=ssprk3(d,ref,60/64)
-        errors=[]
-        for dt in [30.,15.,7.5]:
-            stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner='hydrostatic_schur',rtol=1e-12,max_iterations=80))
-            out=s
-            for _ in range(round(60/dt)):out=stepper.step(out,dt)
-            errors.append(float((out.u_e-ref.u_e).square().mean().sqrt()))
-        assert errors[0]/errors[1]>3.5
-        assert errors[1]/errors[2]>3.5
+        reference = solve_ivp(lambda t, y: pack(d.tendency(unpack(y))), [0, 3600], pack(s),
+                              method='DOP853', rtol=2e-12, atol=1e-11)
+        assert reference.success
+        reference = unpack(reference.y[:, -1])
+        errors = []
+        for dt in (600, 300, 150):
+            stepper = DryPEIMEXARK(d, IMEXSolverConfig(
+                implicit_operator='gravity_wave', preconditioner='hydrostatic_schur',
+                rtol=1e-12, max_iterations=100,
+            ))
+            out = s
+            for _ in range(3600 // dt):
+                out = stepper.step(out, dt)
+            errors.append(float((out.u_e-reference.u_e).square().mean().sqrt()))
+        print('dry ARK4 wind RMS errors', errors)
+        assert min(errors[0]/errors[1], errors[1]/errors[2]) > 2**(4-.4)
 
 
 def test_multilevel_matches_direct_schur():
     d,s,z=setup()
     outputs=[]
     for pre in ['hydrostatic_schur','multilevel_hydrostatic_schur']:
-        stepper=DryPEIMEXARK2(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-10,max_iterations=80))
+        stepper=DryPEIMEXARK(d,IMEXSolverConfig(implicit_operator='gravity_wave',preconditioner=pre,rtol=1e-10,max_iterations=80))
         outputs.append(stepper.step(s,1800.))
     for name in ['u_e','ps','mtheta_i']:
         torch.testing.assert_close(getattr(outputs[0],name),getattr(outputs[1],name),rtol=1e-9,atol=1e-7)
@@ -106,7 +126,7 @@ def test_coarse_system_restricts_tensor_tracers(batch_shape):
     from types import SimpleNamespace
     from vfs.atmosphere import DryHydrostaticDynamics
     from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy
-    from vfs.integrators.imex.ark2 import (
+    from vfs.integrators.imex.dry_ark import (
         _HydrostaticSchurSystem, _MultilevelHydrostaticSchurPreconditioner,
     )
 

@@ -6,18 +6,17 @@ plain collaborators, not modules or alternate owners. MoistState remains a tenso
 dataclass referencing the same geometry. Default numerical behavior is unchanged.
 
 ```python
-from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX
-from vfs.integrators.imex import ARK3_TABLEAU, IMEXSolverConfig
+from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredIMEX
+from vfs.integrators.imex import ARK4_TABLEAU, IMEXSolverConfig
 
 model = MoistAtmosphere(mesh, column)  # bounded SSPRK3, release_as_heat=True
 # Alternatively, construct ONE of these choices with a fresh stepper:
 model = MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3(release_as_heat=True))
-model = MoistAtmosphere(mesh, column, stepper=CenteredSSPRK3())
-model = MoistAtmosphere(mesh, column, stepper=CenteredIMEX(method=ARK3_TABLEAU))
+model = MoistAtmosphere(mesh, column, stepper=CenteredIMEX(method=ARK4_TABLEAU))
 ```
 
 Existing tableau objects avoid new ARK configuration classes. CenteredIMEX defaults
-to ARK4; ARK2_TABLEAU and ARK4_TABLEAU are also supported. Custom tableaus, strings,
+to ARK4, the only retained implicit method. Custom tableaus, strings,
 arbitrary callable steppers and subclasses are rejected. Solver configuration is
 an existing IMEXSolverConfig object. Its usual moist defaults apply when omitted;
 not every dry solver configuration is supported by the moist solver.
@@ -25,7 +24,6 @@ not every dry solver configuration is supported by the moist solver.
 | Stepper | Delegation | Transport guarantee |
 | --- | --- | --- |
 | BoundedSSPRK3 | BoundedGibbs.step | Three bounded Euler species ledgers |
-| CenteredSSPRK3 | MoistConservativeDynamics.step | Centered; no bounded ledger |
 | CenteredIMEX | MoistPEIMEXARK.step | Centered only; rejection, not repair |
 
 There is no bounded IMEX option or independent transport selector. Selecting

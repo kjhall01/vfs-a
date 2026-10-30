@@ -22,14 +22,16 @@ release. No public package name/version availability or license was established
 in this pass. The local build version is `1.0.0+extraction4`, derived from the
 pre-existing metadata, not a claim of a published release.
 
+Start with [current retained timestep paths](docs/CURRENT_PATHS.md).
+
 ## Physical-field workflow
 
 Start with [the physical-fields guide](docs/PHYSICAL_FIELDS_API.md) and
 examples/moist_atmosphere.py. MoistAtmosphere owns geometry, creates the existing
 MoistState from interface temperature, pressure, edge wind and water fractions,
 and exposes bounded stepping and differentiable conservation diagnostics.
-The [module API](docs/MOIST_MODULE_API.md) also supports explicit centered SSPRK3
-and experimental centered IMEX choices, with geometry/dynamics owned once.
+The [module API](docs/MOIST_MODULE_API.md) also supports explicitly selected
+centered ARK4 IMEX, with geometry/dynamics owned once.
 Vapor must be strictly positive; no floor is added.
 See [State ownership and short dry/moist examples](docs/STATE_OWNERSHIP.md)
 for tensor payloads, shared geometry, and explicit state conversion.

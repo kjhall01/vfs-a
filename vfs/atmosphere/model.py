@@ -2,7 +2,7 @@
 
 import math
 import torch
-from .steppers import BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX
+from .steppers import BoundedSSPRK3, CenteredIMEX
 from .moist_conservative import MoistConservativeDynamics, MoistState
 from .moist_cp import interface_pressure_mass
 from .moist_budgets import inventories
@@ -34,8 +34,8 @@ class MoistAtmosphere(torch.nn.Module):
             stepper = BoundedSSPRK3(release_as_heat=release_as_heat)
         elif release_as_heat is not True:
             raise ValueError("configure release_as_heat on the explicit stepper")
-        if type(stepper) not in (BoundedSSPRK3, CenteredSSPRK3, CenteredIMEX):
-            raise TypeError("stepper must be BoundedSSPRK3, CenteredSSPRK3 or CenteredIMEX")
+        if type(stepper) not in (BoundedSSPRK3, CenteredIMEX):
+            raise TypeError("stepper must be BoundedSSPRK3 or CenteredIMEX")
         stepper._bind(self.dynamics)
         self.stepper = stepper
         self.transport = stepper.transport if isinstance(stepper, BoundedSSPRK3) else None
