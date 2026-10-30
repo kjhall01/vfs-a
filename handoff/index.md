@@ -1,4 +1,28 @@
-# Current handoff — implementation freeze for verification
+# Current handoff — scientific verification infrastructure
+
+PR #12 is merged. The frozen scientific source baseline is
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; no release or tag was created.
+Read the [C1–C9 claim-to-evidence tracker](../verification/README.md) and
+[initial results](../verification/RESULTS.md). Bounded moist SSPRK3 is primary;
+dry controls and centered dry/moist ARK4 evidence remain distinct.
+
+The first driver measures shared geometry identities and one analytic gradient
+on a resolution sequence. It verifies installed runtime source against the
+baseline, archives mesh/inputs and executed drivers, and records CPU/backend,
+configuration, artifact hashes and completion/failure in run manifests. No
+scientific pass threshold is imposed. C2–C9 campaign drivers remain pending;
+existing unit/regression evidence is not relabeled as completed verification.
+The mountain-wave reference/boundary design and transport harness specifications
+remain concrete setup gaps. Numerical defects require separate reproductions
+and proposed fixes; keep the core frozen.
+
+Local installed-wheel validation: 539 passed, one CUDA skip, both portable tools
+and all six example commands passed. Exact fixtures were not rerun in this
+increment. GPU, IMEX backward and long-rollout differentiation remain unqualified.
+
+---
+
+# Previous handoff — implementation freeze for verification
 
 Final bounded cleanup follows merged PRs #9–#11. Read the concise
 [README](../README.md), [cleanup results](../docs/FINAL_CLEANUP_RESULTS.md), and

@@ -1,5 +1,11 @@
 # Handoff to scientific verification
 
+Verification has begun against merged PR #12, commit
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`. See the current
+[claim-to-evidence tracker and run contract](../verification/README.md).
+The readiness inventory below remains useful; it is not a list of completed
+scientific experiments.
+
 Freeze the retained implementation after this cleanup is reviewed. Conda packaging
 is deferred. Treat any numerical correction or missing benchmark capability as a
 separate, explicit change; do not restart stylistic restructuring or quietly tune

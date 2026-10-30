@@ -70,6 +70,11 @@ jobs:
       - name: Held-Suarez pinned archive comparison
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_held_suarez_archive.py --archive-repo "$GITHUB_WORKSPACE" --report held-suarez.json
+      - name: Verification infrastructure measurement (no scientific threshold)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: >-
+          python -I tools/run_verification.py --repo "$GITHUB_WORKSPACE"
+          --output verification-c1 --cells 16 64 256
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -114,4 +119,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/*-exact.json
             ${{ runner.temp }}/vfs-check/environment.json
             ${{ runner.temp }}/vfs-check/held-suarez.json
+            ${{ runner.temp }}/vfs-check/verification-c1/
           if-no-files-found: warn
