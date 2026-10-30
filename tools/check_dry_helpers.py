@@ -68,15 +68,42 @@ def compare(a,b,path='dry'):
     return 0
 
 
+def check(actual, expected, mode="exact"):
+    """Select a named policy without altering the historical exact comparator."""
+    import importlib.util
+    path = Path(__file__).with_name("fixture_regression.py")
+    spec = importlib.util.spec_from_file_location("fixture_regression", path)
+    policy = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(policy)
+    return policy.compare_selected(actual, expected, "dry_helpers_pass2.pt", mode, compare)
+
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--capture',action='store_true');p.add_argument('--report',type=Path);a=p.parse_args()
-    fixture=Path(__file__).resolve().parents[1]/'tests/fixtures/dry_helpers_pass2.pt'
-    actual=capture()
-    if a.capture:torch.save(actual,fixture);result={'mode':'capture_pass2'}
-    else:result={'mode':'exact_comparison','tensor_comparisons':compare(actual,torch.load(fixture,weights_only=True))}
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--capture', action='store_true')
+    parser.add_argument('--report', type=Path)
+    parser.add_argument('--mode', choices=('exact', 'portable'), default='exact')
+    args = parser.parse_args()
+    if args.capture and args.mode != 'exact':
+        parser.error('capture cannot select portable comparison')
+    fixture = Path(__file__).resolve().parents[1] / 'tests/fixtures/dry_helpers_pass2.pt'
+    actual = capture()
+    if args.capture:
+        torch.save(actual, fixture)
+        result = {'mode': 'capture_pass2'}
+    else:
+        result = {'mode': args.mode + '_comparison', 'status': 'pass'}
+        try:
+            result.update(check(actual, torch.load(fixture, weights_only=True), args.mode))
+        except AssertionError as exc:
+            result.update(status='fail', error=str(exc))
     import vfs
-    result.update(source=vfs.__file__,torch=str(torch.__version__))
-    print(json.dumps(result,indent=2))
-    if a.report:a.report.write_text(json.dumps(result,indent=2)+'\n')
+    result.update(source=vfs.__file__, torch=str(torch.__version__))
+    print(json.dumps(result, indent=2))
+    if args.report:
+        args.report.write_text(json.dumps(result, indent=2) + '\n')
+    if result.get('status') == 'fail':
+        raise SystemExit(1)
+
 
 if __name__=='__main__':main()

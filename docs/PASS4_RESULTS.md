@@ -53,3 +53,12 @@ Xarray/DataArray adapters, output/restarts and the friendly dry facade remain
 future work. Legacy optional modules still ship. This snapshot is suitable for
 moving development to GitHub; public release metadata/license remain undecided.
 Original checkpoint 54 and passes 1–3 are unchanged.
+
+## Subsequent CI regression policy
+
+The [portable policy](PORTABLE_REGRESSION.md) adds a separate installed-wheel
+regression mode without changing pass-4 numerical code or fixtures. The
+[CI investigation](CI_911AADA_INVESTIGATION.md) retains the CPU/backend evidence;
+[validation results](PORTABLE_REGRESSION_RESULTS.md) distinguish portable and
+exact outcomes. Historical exact results above describe their original environment,
+not a cross-platform bitwise guarantee.

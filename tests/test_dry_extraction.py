@@ -35,9 +35,9 @@ def test_every_extracted_function_has_identical_syntax():
         assert getattr(DryHydrostaticDynamics,function) is owner
 
 
-def test_expanded_dry_baseline():
+def test_expanded_dry_baseline(fixture_mode):
     path=ROOT/'tools/check_dry_helpers.py'
     spec=importlib.util.spec_from_file_location('dry_helpers',path)
     mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
-    count=mod.compare(mod.capture(),torch.load(ROOT/'tests/fixtures/dry_helpers_pass2.pt',weights_only=True))
-    assert count>100
+    result=mod.check(mod.capture(),torch.load(ROOT/'tests/fixtures/dry_helpers_pass2.pt',weights_only=True),fixture_mode)
+    assert result['tensor_comparisons']==193

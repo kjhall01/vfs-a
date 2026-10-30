@@ -16,7 +16,7 @@ python -m pip install build
 # Linux CPU baseline build:
 python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
 python -m pip install --prefer-binary -e '.[test]'
-python -m pytest tests -q
+python -m pytest tests --fixture-mode=portable -q
 ```
 
 The `test` extra adds only pytest to the existing runtime requirements; the
@@ -46,9 +46,9 @@ cp -R tests tools examples "$check_dir/"
 cd "$check_dir"
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
 python -I -c 'import vfs, torch; print(vfs.__file__, torch.__version__)'
-python -I -m pytest tests -q
-python -I tools/check_baseline.py
-python -I tools/check_dry_helpers.py
+python -I -m pytest tests --fixture-mode=portable -q
+python -I tools/check_baseline.py --mode portable
+python -I tools/check_dry_helpers.py --mode portable
 python -I examples/moist_atmosphere.py
 ```
 
@@ -56,6 +56,22 @@ Apply the same macOS version substitution here. Confirm the printed package
 path is in the new environment's `site-packages`. CI copies only tests, tools
 and examples outside the checkout and asserts the installed import path.
 The checks run separately so a failing comparison does not hide smoke results.
+
+Portable mode is the required CI gate, including both fixture tests inside
+pytest and both standalone tools. The [policy](docs/PORTABLE_REGRESSION.md)
+explains the explicit quantity mapping, regression budgets and independent
+invariants. Exact mode remains the default unless selected explicitly:
+
+```bash
+python -I -m pytest tests --fixture-mode=exact -q
+python -I tools/check_baseline.py --mode exact
+python -I tools/check_dry_helpers.py --mode exact
+python -I tools/record_environment.py --report environment.json
+```
+
+CI runs exact checks separately as informational steps, retaining their failing
+exit status in reports and the job summary. A portable pass is not an exact pass.
+See [validation results](docs/PORTABLE_REGRESSION_RESULTS.md) for observed outcomes.
 
 Fixtures record CPU float64 with PyTorch `2.15.0+cpu`. Exact comparisons cover
 142 checkpoint-54 and 193 dry-helper tensors; the suite also checks 99 helper

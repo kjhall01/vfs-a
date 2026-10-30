@@ -15,12 +15,12 @@ def load(path):
     return module
 
 
-def test_checkpoint54_exact_equivalence_without_runtime_autograd():
+def test_checkpoint54_fixture_equivalence_without_runtime_autograd(fixture_mode):
     checker = load(ROOT / "tools/check_baseline.py")
     with patch("torch.autograd.grad", side_effect=AssertionError("runtime autodiff")):
         actual = checker.capture(checker.imports())
     expected = torch.load(ROOT / "tests/fixtures/checkpoint54.pt", weights_only=True)
-    assert checker.compare(actual, expected) > 100
+    assert checker.check(actual, expected, fixture_mode)["tensor_comparisons"] == 142
 
 
 def test_inventories_preserve_autograd():
