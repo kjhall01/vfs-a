@@ -626,7 +626,7 @@ class State:
         Dynamics-specific enrichment belongs in diagnostics products.
         """
 
-        from vfs.core.io import _save_native_state_netcdf
+        from vfs.atmosphere.io import _save_native_state_netcdf
 
         return _save_native_state_netcdf(path, self, metadata=metadata)
 
@@ -840,9 +840,14 @@ class State:
         variables and delegates the remapping.
         """
 
-        if not hasattr(regridder, "state_to_latlon"):
-            raise TypeError("State.to_latlon expects a regridder with state_to_latlon(state, fields=...)")
-        return regridder.state_to_latlon(self, fields=fields)
+        if hasattr(regridder, "state_to_latlon"):
+            return regridder.state_to_latlon(self, fields=fields)
+        from vfs.geometry.remap import MeshToLatLonKNN
+        if isinstance(regridder, MeshToLatLonKNN):
+            from .regrid import state_to_latlon
+            return state_to_latlon(regridder, self, fields=fields)
+        raise TypeError("State.to_latlon expects a regridder with state_to_latlon(state, fields=...) or a shared field remapper")
+
 
 
 def _combine_tracer(left: torch.Tensor | None, right: torch.Tensor | None, op) -> torch.Tensor | None:
