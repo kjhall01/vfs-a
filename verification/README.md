@@ -1,5 +1,9 @@
 # Scientific verification — increments 1a and 1b
 
+> Atmospheric experiments are paused during the [structural ownership stack](../docs/PACKAGE_OWNERSHIP.md).
+> Its merged-main structural baseline is distinct from the scientific baseline below.
+> Frozen-source checks are retained; moved files require separately reviewed provenance mappings.
+
 Baseline: **`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`**, the merge commit of
 [PR #12](https://github.com/kjhall01/vfs-a/pull/12), merged
 2026-10-30 at 19:24:30 UTC (confirmed through the GitHub pull-request API).

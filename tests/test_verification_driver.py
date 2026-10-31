@@ -90,3 +90,41 @@ def test_proposed_numerical_revision_requires_explicit_exact_pin(tmp_path, monke
     path.write_bytes(new+b' unapproved')
     with pytest.raises(ValueError,match='differs'):
         driver.verify_package(tmp_path,package,driver.NUMERICAL_COMMIT)
+
+def test_structural_mapping_rejects_unknown_missing_changed_extra_and_tampered(tmp_path, monkeypatch):
+    structural = driver.structural
+    old = b'old owner\n'
+    new = b'new owner\n'
+    name = 'vfs/atmosphere/state.py'
+    row = {'structural_commit': structural.COMMIT, 'before_structure': 'pinned-old',
+           'runtime': {name: {'sha256': driver.sha256(new),
+                             'old_sha256': {'vfs/core/state.py': driver.sha256(old)}}}}
+    mapping = tmp_path/'mapping.json'
+    mapping.write_text(json.dumps(row))
+    monkeypatch.setattr(structural, 'MAP', mapping)
+    monkeypatch.setattr(structural, 'MAP_SHA256', driver.sha256(mapping.read_bytes()))
+    def git(repo, *args):
+        if args[0] == 'ls-tree': return (name+'\n').encode()
+        return old if args[1].startswith('pinned-old:') else new
+    monkeypatch.setattr(driver, 'git', git)
+    package = tmp_path/'vfs'
+    target = package/'atmosphere/state.py'
+    target.parent.mkdir(parents=True)
+    with pytest.raises(ValueError, match='Unknown structural'):
+        driver.verify_package(tmp_path, package, structural_revision='HEAD')
+    with pytest.raises(ValueError, match='differs'):
+        driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)
+    target.write_bytes(new)
+    assert driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)[name] == driver.sha256(new)
+    target.write_bytes(new+b'changed numerical expression')
+    with pytest.raises(ValueError, match='differs'):
+        driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)
+    target.write_bytes(new)
+    extra = package/'unexpected.py'
+    extra.write_text('')
+    with pytest.raises(ValueError, match='unexpected'):
+        driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)
+    extra.unlink()
+    mapping.write_bytes(mapping.read_bytes()+b' ')
+    with pytest.raises(ValueError, match='mapping hash'):
+        driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)

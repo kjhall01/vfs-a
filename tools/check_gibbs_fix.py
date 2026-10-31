@@ -143,10 +143,11 @@ def main():
     parser.add_argument('--repo',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--numerical-revision',choices=[common.NUMERICAL_COMMIT],required=True)
+    parser.add_argument("--structural-revision", choices=[common.STRUCTURAL_COMMIT])
     args=parser.parse_args()
     config=dict(dtype='float64',device='cpu',cells=16,levels=3,dt_s=10.,
                 scope='actual face and production Euler/SSPRK3; no baseline adoption')
-    with common.recorded_run(args.repo,args.output,'GIBBS-FIX-REVIEW',config,__file__,args.numerical_revision):
+    with common.recorded_run(args.repo,args.output,'GIBBS-FIX-REVIEW',config,__file__,args.numerical_revision, structural_revision=args.structural_revision):
         for name in ('investigate_condensate_means.py','run_energy_verification.py'):
             shutil.copyfile(Path(__file__).with_name(name),args.output/name)
         common.write_json(args.output/'faces.json',face_checks())

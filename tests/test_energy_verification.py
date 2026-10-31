@@ -93,7 +93,7 @@ def test_component_audit_detects_tendency_decomposition_error(case, monkeypatch)
 
 def test_failed_run_retains_manifest_and_refuses_overwrite(tmp_path, monkeypatch):
     common = driver.common
-    monkeypatch.setattr(common, "verify_package", lambda *args: {})
+    monkeypatch.setattr(common, "verify_package", lambda *args, **kwargs: {})
     monkeypatch.setattr(common, "git", lambda *args: b"test-only")
     output = tmp_path / "run"
     with pytest.raises(RuntimeError, match="deliberate"):
