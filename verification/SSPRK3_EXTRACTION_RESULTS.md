@@ -49,5 +49,10 @@ not cross-backend bitwise fixture reproducibility. No GPU or long-rollout
 qualification is claimed. Existing active-limiter derivative probes still emit
 the documented scalar-conversion warning for the discrete donor subcycle count.
 
-GitHub Actions results are recorded in the PR, separately from local checks.
+GitHub Actions push run 41135325544 and PR run 41135332667 both passed.
+Downloaded push artifacts: Linux Intel Xeon Platinum 8573C, Python 3.12.15,
+PyTorch 2.15.0+cpu; portable pytest 551 passed/one CUDA skip, both portable tools,
+examples and verification steps completed. Exact fixture pytest had two
+informational failures, retained separately. These are distinct from the exact
+same-environment pre/post extraction result.
 C5 reference construction and return experiments belong in the dependent PR.

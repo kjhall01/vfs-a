@@ -52,10 +52,12 @@ jobs:
           baseline_wheels=("$RUNNER_TEMP"/baseline-wheel/*.whl)
           python -m pip install --no-deps --force-reinstall "${baseline_wheels[0]}"
           python -I tools/capture_readability.py --save structural-before.pt
+          python -I tools/capture_atmospheric_integration.py --save atmospheric-before.pt
           python -I tools/capture_io_ownership.py --save output-before.pt
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I tools/capture_readability.py --compare structural-before.pt | tee structural-comparison.log
+          python -I tools/capture_atmospheric_integration.py --compare atmospheric-before.pt | tee atmospheric-integration.log
           python -I tools/capture_io_ownership.py --compare output-before.pt | tee output-comparison.log
           python -I tools/check_structural_moves.py --repo "$GITHUB_WORKSPACE" --report structural-ast.json
       - name: Required portable pytest suite
@@ -132,6 +134,7 @@ jobs:
             ${{ runner.temp }}/vfs-check/environment.json
             ${{ runner.temp }}/vfs-check/held-suarez.json
             ${{ runner.temp }}/vfs-check/structural-comparison.log
+            ${{ runner.temp }}/vfs-check/atmospheric-integration.log
             ${{ runner.temp }}/vfs-check/output-comparison.log
             ${{ runner.temp }}/vfs-check/structural-ast.json
           if-no-files-found: warn

@@ -26,6 +26,12 @@ INTERFACE_COMMIT = "ae132773e621671f70bfa6a698eebb1a82cffa94"
 INTERFACE_PATH = "vfs/atmosphere/bounded_moist.py"
 
 
+_spec = importlib.util.spec_from_file_location('structural_sources', Path(__file__).with_name('structural_sources.py'))
+structural = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(structural)
+STRUCTURAL_COMMIT = structural.COMMIT
+
+
 def git(repo, *args):
     return subprocess.check_output(["git", "-C", str(repo), *args])
 
@@ -34,8 +40,10 @@ def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def verify_package(repo, package):
+def verify_package(repo, package, structural_revision=None):
     """Compare every tracked runtime file, not just a version string or HEAD."""
+    if structural_revision is not None:
+        return structural.verify(repo, package, structural_revision, git)
     paths = git(repo, "ls-tree", "-r", "--name-only", BASELINE, "vfs").decode().splitlines()
     if not paths:
         raise ValueError("Baseline runtime tree is unavailable")
@@ -102,6 +110,7 @@ def write_json(path, value):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--structural-revision", choices=[STRUCTURAL_COMMIT])
     parser.add_argument("--repo", type=Path, required=True, help="repository containing the pinned commit")
     parser.add_argument("--output", type=Path, required=True, help="new directory; never overwrite a run")
     parser.add_argument("--cells", type=int, nargs="+", default=[16, 64, 256])
@@ -114,7 +123,7 @@ def main():
                      "seed": args.seed, "dtype": "float64", "device": "cpu",
                      "threads": 1, "radius_m": 6371220.0,
                      "mesh": "Fibonacci", "stepper": None}
-    with recorded_run(args.repo, args.output, "C1-GEO-001", configuration, __file__):
+    with recorded_run(args.repo, args.output, "C1-GEO-001", configuration, __file__, structural_revision=args.structural_revision):
         rows = []
         for cells in args.cells:
             mesh = VoronoiMesh(n_cells=cells, lloyd_iters=args.lloyd_iters, radius=6371220.0, verbose=False)
@@ -125,12 +134,12 @@ def main():
 
 
 @contextmanager
-def recorded_run(repo, output, experiment_id, configuration, driver):
+def recorded_run(repo, output, experiment_id, configuration, driver, structural_revision=None):
     """Share baseline checks and the run/artifact lifecycle between experiments."""
     package = Path(vfs.__file__).resolve().parent
     if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
         raise ValueError("Install a baseline wheel and run outside the checkout")
-    hashes = verify_package(repo, package)
+    hashes = verify_package(repo, package, structural_revision=structural_revision)
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
     environment_path = Path(__file__).with_name("record_environment.py")
@@ -146,6 +155,8 @@ def recorded_run(repo, output, experiment_id, configuration, driver):
         "driver_sha256": sha256(Path(driver).read_bytes()),
         "environment_driver_sha256": sha256(environment_path.read_bytes()),
         "runtime_sha256": hashes,
+        "structural_commit": structural_revision,
+        "structural_mapping_sha256": structural.MAP_SHA256 if structural_revision else None,
         "interface_change_commit": (
             INTERFACE_COMMIT if hashes.get(INTERFACE_PATH) == sha256(
                 git(repo, "show", f"{INTERFACE_COMMIT}:{INTERFACE_PATH}")
@@ -161,6 +172,9 @@ def recorded_run(repo, output, experiment_id, configuration, driver):
     try:
         for source in {Path(driver), Path(__file__), environment_path}:
             shutil.copyfile(source, output / source.name)
+        if structural_revision:
+            for source in (structural.MAP, Path(structural.__file__)):
+                shutil.copyfile(source, output / source.name)
         yield manifest
         manifest["status"] = "completed"
     except Exception as error:
