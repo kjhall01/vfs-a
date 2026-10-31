@@ -4,9 +4,9 @@ Atmospheric campaigns are paused. Structural baseline is merged main
 `3f806a947e2ff8a5947953137a96af02861d083f`; #18/#19 remain separate and unmerged.
 Read [ownership map and dependency rules](../docs/PACKAGE_OWNERSHIP.md) and
 [migration validation](../docs/STRUCTURAL_RESULTS.md). Slice 1 relocates dry
-model/state and the pressure column with old import aliases retained. Next
-slices separate atmospheric IMEX from reusable integration and component field
-interpretation from shared remapping/I/O. No fixtures or numerical changes.
+model/state and the pressure column with old import aliases retained. Slice 2 now separates atmospheric IMEX from shared RK/GMRES and moves coarse-state
+restriction beside its Schur caller. Next: component field interpretation and
+initialization/I/O ownership. No fixtures or numerical changes.
 
 ---
 

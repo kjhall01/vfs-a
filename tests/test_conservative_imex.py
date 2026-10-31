@@ -123,7 +123,8 @@ def test_multilevel_matches_direct_schur():
 @pytest.mark.parametrize('batch_shape', [(), (2,), (2, 3)])
 def test_coarse_system_restricts_tensor_tracers(batch_shape):
     """Exercise real coarse transfers, independently of the unbatched modal fit."""
-    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy, restrict_state
+    from vfs.geometry.mesh.multilevel import VoronoiMeshHierarchy
+    from vfs.atmosphere.imex.transfer import restrict_state
 
 
     _, state, _ = setup()

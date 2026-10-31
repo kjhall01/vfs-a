@@ -20,3 +20,21 @@ portable tools pass; informational exact outcomes are recorded separately.
 No GPU, full-rollout or new scientific claim is made. CI runs the same structural
 baseline capture; C1/C2–C4 measurement jobs are paused during this stack rather
 than relaxing their frozen-source guard to accept moved files.
+
+## Slice 2: atmospheric IMEX and shared integration
+
+Atmospheric ARK4 waves, configuration, scaling, stage systems and Schur solvers
+move together to `atmosphere.imex`. Shared `integrators` owns unchanged ARK4
+coefficients, explicit sequences and GMRES arithmetic; only generic typing
+replaces dry-state annotations there. Coarse-state assembly moves to
+`atmosphere.imex.transfer.restrict_state`; mesh weights remain shared. This
+formerly non-exported geometry helper now requires the owner import. Tests
+which patch private implementation globals target the owner module. Public
+`vfs.imex` and `vfs.integrators.imex` imports retain identical class objects.
+
+Same installed-wheel environment: 552 tests passed, one CUDA skip; the added
+shared-import check passes separately (two ownership checks total). All 298
+capture tensors and complete solver records match the same pre-edit baseline
+exactly, including multilevel Schur. Both portable tools and six examples pass.
+Historical moist and dry exact fixture tools fail separately on this environment,
+as they did before these moves; no tolerance or fixture changes.
