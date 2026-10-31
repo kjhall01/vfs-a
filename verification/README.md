@@ -13,6 +13,15 @@ and plots may develop here. For a numerical defect, retain a minimal reproductio
 and propose a separate core fix with explicit baseline consequences. Fixtures
 and regression tolerances remain unchanged.
 
+## Proposed numerical revision under review
+
+The separately authorized [paired Gibbs fix](GIBBS_FIX_RESULTS.md) records its
+numerical commit independently of the unchanged historical baseline. All 22 C5
+cases were repeated: constant-composition drift is near roundoff, while Case 4
+nonmonotonic convergence persists. C2–C4 and branch-local derivative evidence are
+recorded. Historical moist fixture gates fail explicitly; no new reference or
+baseline is adopted. C5 readiness remains limited to these development probes.
+
 ## Configuration labels
 
 * **M-B** (primary): `MoistAtmosphere(..., stepper=BoundedSSPRK3())`;

@@ -1,5 +1,8 @@
 # Pass 4 — physical-field workflow
 
+> Current numerical-fix evidence: [paired Gibbs revision](../verification/GIBBS_FIX_RESULTS.md).
+> Historical fixtures below remain unchanged; the proposed revision fails their moist gates.
+>
 > Historical report. For current APIs and supported configurations, read
 > [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
 
