@@ -9,7 +9,9 @@ snapshot/regrid test. Field values and all model equations remain unchanged.
 This touches the ocean-owned output adapter introduced by PR #22. It does not
 change shared remapping or atmospheric output. The energy experiment source
 hashes retain the exact pre-correction files used to generate those measurements
-(numerical commit `25c57ce`); that driver never calls the output adapter.
+(local numerical commit `25c57ce`, published with identical tree as
+`2d1ca581fd701468ba0a1cb7f5550c967c09d4ea`); that driver never calls the output
+adapter. See [publication provenance](PR_DRAFTS.md).
 
 The adapter's density field still uses the legacy linear-EOS state helper.
 For the selected dynamics' authoritative density, use `model.physical_fields`.

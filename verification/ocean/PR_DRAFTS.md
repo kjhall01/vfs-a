@@ -1,15 +1,30 @@
-# Prepared publication: two dependent draft PRs
+# Published ocean drafts
 
-Status: implementation and local validation complete; not published. Automatic
-approval review rejected the synthetic solver-fixture upload to GitHub twice,
-including after checking that every one of its 1,416 entries is float64 data
-generated from seeded fields (no text/object payloads or observational data).
-Explicit approval is needed for publishing these branches and their synthetic
-verification fixtures/results to `https://github.com/kjhall01/vfs-a`.
+Published with explicit user approval: [reference extraction #23](https://github.com/kjhall01/vfs-a/pull/23)
+and dependent [constant-density energy #24](https://github.com/kjhall01/vfs-a/pull/24).
+Both are drafts and remain unmerged. Synthetic fixtures, verification meshes,
+and results are included; no other agent's branch was changed.
 
-No PR or remote branch has been created, no merge attempted, and no other
-agent's branch changed. One small synthetic-input Git blob was accepted before
-the larger fixture was rejected; it is unattached to any branch.
+At publication, #20–#22 were marked merged, but main (`aee9638`) contained only
+the first ownership stage. #23 therefore targets the unchanged
+`structure/io-ownership` head `941b794`; #24 targets `ocean/extract-reference`.
+Retarget #23 after the complete ownership stack reaches main, with the atmosphere
+owner coordinating that integration. No shared runtime change is part of either
+ocean draft.
+
+The GitHub publication API supplies new commit metadata, so published commit IDs
+differ from the local bundle. Every uploaded implementation tree was checked for
+exact Git tree identity, including all binary fixtures and verification meshes:
+
+| Change | Local commit | Published commit | Identical tree |
+| --- | --- | --- | --- |
+| Reference extraction | `d981099` | `812c1a5493e9409ca0d166a6a2ea907f69bb4cdb` | `9b8082d517789be395073c4283ce595394f0de11` |
+| Numerical energy pairing | `25c57ce` | `2d1ca581fd701468ba0a1cb7f5550c967c09d4ea` | `11bef7aa25b58951b3416fe15e63ed6f81251ed2` |
+| Output metadata | `b5b752a` | `4124907f3f9b197a55c8ad11316377ef27473a55` | `d26b740b1d261bc088e4f6a945aaf74e1858fad2` |
+| Original publication record | `68e1202` | `3ecff974ed1e8ad7dc1dd6fcb003b0e548762c8b` | `ad3a9c72ceb59631570b10c3555bdadb611a0159` |
+
+This follow-up changes documentation only. Hosted checks are recorded on the PRs;
+they are distinct from the local installed-wheel results below.
 
 ## Draft 1
 
@@ -34,7 +49,7 @@ comparisons pass with existing fixture bytes and tolerances unchanged.
 Read `verification/ocean/README.md`, `RESULTS.md`, the capture/source manifests,
 and `examples/ocean_reference.py`. The only existing scope test change permits
 four restored ocean modules; removed root shells remain prohibited. Leave this
-PR and the structural dependency stack unmerged for review.
+ocean PR unmerged for review.
 
 ## Draft 2
 
@@ -61,8 +76,8 @@ limitations are in `verification/ocean/CONSTANT_DENSITY.md` and `energy_results`
 
 Numerical commit: `25c57ce`. A separate metadata commit, `b5b752a`, corrects the
 ocean lat/lon temperature label from K to degC without changing values; its
-focused output test passes. See `OUTPUT_METADATA.md`. The final documentation
-commit only prepares this publication record. Hosted CI has not run.
+focused output test passes. See `OUTPUT_METADATA.md` and the published commit
+mapping above. The publication records change documentation only.
 
 Leave this PR unmerged for numerical review; do not promote the default or
 merge it into the extraction. No active-EOS energy, long-run, GPU, compiled,
