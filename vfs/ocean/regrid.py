@@ -1,4 +1,4 @@
-"""Ocean output fields; recovered ocean temperatures are in degrees Celsius."""
+"""Explicit ocean output boundary; temperatures use the ocean's degC convention."""
 from typing import Any, Iterable
 from vfs.field import Field
 from vfs.geometry.remap import _cell_field, _squeeze_last_singleton, _local_east_north_from_xyz
@@ -13,8 +13,14 @@ def _normalise_field_request(fields: Iterable[str] | str) -> set[str]:
     return {str(field) for field in fields}
 
 
-def state_to_latlon(remapper, state, *, fields: Iterable[str] | str = "default") -> dict[str, Any]:
-    """Return common state fields on the lat/lon grid."""
+def state_to_latlon(remapper, state, *, fields: Iterable[str] | str = "default",
+                    density_provider=None) -> dict[str, Any]:
+    """Remap physical fields, using an explicit density provider when supplied.
+
+    Prefer Ocean.to_latlon for model output: it supplies the selected dynamics'
+    density. State-only calls retain the legacy linear EOS, explicitly labelled
+    in output metadata; a state alone cannot identify the selected equations.
+    """
 
     requested = _normalise_field_request(fields)
     base = state.h
@@ -41,7 +47,11 @@ def state_to_latlon(remapper, state, *, fields: Iterable[str] | str = "default")
     if "salinity" in requested:
         out["salinity"] = remapper(_cell_field(state.salinity(), vertical_location="full", name="salinity"))
     if "density" in requested:
-        out["density"] = remapper(_cell_field(state.density(), vertical_location="full", name="density", units="kg m-3"))
+        density = state.density() if density_provider is None else density_provider(state)
+        out['attrs']['density_convention'] = (
+            'legacy_state_linear_eos' if density_provider is None else 'explicit_provider'
+        )
+        out["density"] = remapper(_cell_field(density, vertical_location="full", name="density", units="kg m-3"))
     if "tracers" in requested:
         q = state.tracers()
         if q is not None:

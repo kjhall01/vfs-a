@@ -242,6 +242,11 @@ class OceanState:
         T0: float = OCEAN_T0,
         S0: float = OCEAN_S0,
     ) -> torch.Tensor:
+        """Legacy linear-EOS diagnostic; model.physical_fields owns selected EOS.
+
+        This convenience is retained for the old output contract. It does not
+        describe constant-density dynamics or a selected pressure-dependent EOS.
+        """
         return linear_seawater_density(
             self.temperature(),
             self.salinity(),

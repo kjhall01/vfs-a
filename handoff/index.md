@@ -1,9 +1,40 @@
-# Review follow-up: reference output units
+# Review follow-up: selected-density output
 
-The #23 extraction now labels ocean lat/lon temperature as degC at its own
-branch head. The values, archived equations and fixtures are unchanged. The
-structural reconciliation is proposed in #25; do not assume merged #21/#22
-already delivered the complete tree to main.
+Use Ocean.to_latlon(state, remapper, fields="all") for model output. It supplies
+the selected dynamics density, while legacy state-only output explicitly labels
+its linear-EOS convention. See verification/ocean/OUTPUT_METADATA.md. #23 also
+receives the Celsius label correction independently. #25 proposes integration
+of the structural stack into main. Numerical kernels and fixtures are unchanged;
+Gibbs reference policy and nn.Module migration remain separate tasks.
+
+# Published ocean drafts
+
+[Reference extraction #23](https://github.com/kjhall01/vfs-a/pull/23) targets
+`structure/io-ownership`; [energy candidate #24](https://github.com/kjhall01/vfs-a/pull/24)
+targets the extraction branch. Both remain drafts and unmerged. At publication,
+#20–#22 were marked merged, but main contained only the first ownership stage;
+coordinate completion of that stack before retargeting #23. No other agent's
+branch or shared runtime was modified. See the [publication and exact tree
+provenance](../verification/ocean/PR_DRAFTS.md). This status supersedes the older
+structural-stack status in the handoff snapshots below.
+
+# Current ocean handoff — explicit constant-density numerical candidate
+
+The dependent `ocean/constant-density-energy` branch adds an ocean-owned H,
+analytic derivatives, paired Bernoulli/continuity and metric-skew rotation.
+Read the [derivation, usage and measured limitations](../verification/ocean/CONSTANT_DENSITY.md).
+The archived reference remains the default and its 1,416-array comparison is
+unchanged. Temperature/salinity are passive in the new candidate; no active
+stratification or remapping closure is claimed.
+
+Final installed-wheel CPU float64: 575 passed, one CUDA skip. Maximum measured
+normalized semidiscrete H rate is 9.2721e-17; wave slopes 1.9434/1.8986;
+SSPRK3 temporal orders 2.9942–3.0002. Shared and atmospheric runtime is unchanged.
+Do not merge this numerical change with the extraction or promote its default
+without reviewing the distinct evidence. Full structural integration into main
+remained pending at publication.
+
+---
 
 # Current ocean handoff — extracted reference, dependent on structural stack
 
