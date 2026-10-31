@@ -122,6 +122,7 @@ def test_snapshot_restart_and_explicit_regrid(tmp_path):
     output=state_to_latlon(remapper,state,fields='all')
     assert output['h'].shape[:2]==(remapper.nlat,remapper.nlon)
     assert torch.isfinite(output['temperature'].values).all()
+    assert output['temperature'].units == 'degC'
 
 
 def test_capture_detects_changed_equation_output():

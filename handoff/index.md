@@ -1,3 +1,10 @@
+# Review follow-up: reference output units
+
+The #23 extraction now labels ocean lat/lon temperature as degC at its own
+branch head. The values, archived equations and fixtures are unchanged. The
+structural reconciliation is proposed in #25; do not assume merged #21/#22
+already delivered the complete tree to main.
+
 # Current ocean handoff — extracted reference, dependent on structural stack
 
 The ocean branch restores the archived layered solver on PR #22's pinned head,
