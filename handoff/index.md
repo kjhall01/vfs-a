@@ -1,4 +1,60 @@
-# Current handoff — approved SSPRK3 extraction (#16)
+# Current handoff — constant-composition face investigation
+
+Separate investigation branch follows #17; no production or fixture changes.
+Read the [derivation and bounded probes](../verification/CONSTANT_COMPOSITION_DERIVATION.md)
+and the separate, **unimplemented** [numerical-fix proposal](../verification/CONSTANT_COMPOSITION_FIX_PROPOSAL.md).
+
+Candidate condensate weights are total-density logarithmic mean times arithmetic
+endpoint condensate fraction. Recompute the entire existing entropy/fraction/
+specific-volume tuple. Algebra proves constant-q preservation and the discrete
+Gibbs identity; 114 small CPU float64 faces and production toy CP ledgers support
+it numerically. Exact zeros and one-sided clouds need no floor or composition
+switch. Five focused tests include finite one-sided composition derivatives. Local
+installed-wheel suite: 568 passed, one CUDA skip; both portable tools passed.
+The coupled candidate is not an internal mean of condensate partial densities;
+that limitation and the density-only logarithmic-mean incompatibility are explicit.
+
+Do not activate this candidate, update the baseline, or change frozen fixtures.
+Full model work/energy/ledger/gradient checks and small C5 reruns are required in
+a separately authorized numerical-fix PR. This does not explain all Case 4 errors.
+Numerical baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`, with only the
+already approved #16 interface extraction recorded separately. No large runs,
+GPU qualification or broad transport redesign were attempted.
+
+---
+
+# Historical handoff — C5 horizontal transport evidence, dependent on #16
+
+PRs #13/#14 merged; #16 extraction is ready for review and remains unmerged.
+Its required Linux CI passed; downloaded artifacts show 551 portable tests passed,
+one CUDA skip, and two separately recorded informational exact-fixture failures.
+This dependent branch adds no runtime changes. Numerical baseline remains
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; approved interface commit remains
+`ae132773e621671f70bfa6a698eebb1a82cffa94`.
+
+Read [C5 methods](../verification/INCREMENT_1C.md) and
+[results](../verification/INCREMENT_1C_RESULTS.md). The installed production
+transport is exercised with prescribed edge wind at t, t+dt, t+dt/2; wind is
+replaced before each Euler and at the final time, carrier/entropy/species evolve.
+Independent cell-average references and every-stage incidence audits accompany
+16/64/256-cell runs with 120/240 positive steps. Local suite: 563 passed, one
+CUDA skip. All 22 development runs completed; smooth/empty-cloud limiting,
+inventories, bounds, quadrature uncertainty and dt sensitivity are recorded.
+
+**Negative result:** constant composition drifts in full-period probes, with
+maximum stage error 5.897e-6 kg/kg. Frozen Gibbs gas logarithmic means versus
+condensate arithmetic means already provide a minimal counterexample. Both CP
+interfaces must enter error norms. Do not hide the bottom-interface error or
+change the core; a separate derivation/fix proposal is required. Deformational
+return errors are nonmonotonic across these coarse grids. C5 is not qualified.
+
+Keep both PRs unmerged. Next queued work remains terrain-rest construction;
+vertical/combined transport and larger campaigns remain pending. Do not claim
+coupled energy closure, IMEX backward, GPU or atmospheric rollout qualification.
+
+---
+
+# Historical handoff — approved SSPRK3 extraction (#16)
 
 PRs #13 and #14 are merged. Numerical baseline remains
 `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`. The sole runtime change is the

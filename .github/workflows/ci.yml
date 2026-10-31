@@ -80,6 +80,12 @@ jobs:
         run: >-
           python -I tools/run_energy_verification.py --repo "$GITHUB_WORKSPACE"
           --output verification-energy --cells 16 --levels 3 --dt 1
+      - name: Small prescribed transport measurements (no scientific threshold)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/run_transport_verification.py --repo "$GITHUB_WORKSPACE" --output verification-transport --cells 16 --steps 120 --flows rotation_tilted NL2010_case4
+          python -I tools/run_transport_verification.py --repo "$GITHUB_WORKSPACE" --output verification-constant --cells 16 --steps 120 --flows NL2010_case4 --profile constant
+          python -I tools/run_transport_verification.py --repo "$GITHUB_WORKSPACE" --output verification-empty --cells 16 --steps 120 --flows NL2010_case4 --profile empty_condensate
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -126,4 +132,7 @@ jobs:
             ${{ runner.temp }}/vfs-check/held-suarez.json
             ${{ runner.temp }}/vfs-check/verification-c1/
             ${{ runner.temp }}/vfs-check/verification-energy/
+            ${{ runner.temp }}/vfs-check/verification-transport/
+            ${{ runner.temp }}/vfs-check/verification-constant/
+            ${{ runner.temp }}/vfs-check/verification-empty/
           if-no-files-found: warn

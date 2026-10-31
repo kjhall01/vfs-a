@@ -1,0 +1,1531 @@
+{
+  "baseline_commit": "8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648",
+  "interface_change_commit": "ae132773e621671f70bfa6a698eebb1a82cffa94",
+  "driver_commit": "a7893c52b5a4f36ba7ec0111460a80410d2f9b8a",
+  "driver_sha256": "c1cf6c3f56101898b0c73925cebea778d678f7fc4a42a94ffc18eeb0f7a74f71",
+  "runtime_sha256": {
+    "vfs/__init__.py": "cad30d3df7cc8a1402a6bfa2701fa2d3fb582fdcba771f70886bcc9778a00a13",
+    "vfs/atmosphere/__init__.py": "5b5d43b305567a94aa93a76d7e8812b07b90bf282a4d3658c35fc3c75a1c6cee",
+    "vfs/atmosphere/bounded_moist.py": "d240914e55db06843eda264a3ca29a505ef241f5bb63ac21e9f91fb7dc2a1de7",
+    "vfs/atmosphere/bounded_transport.py": "ab099f8eeca91121c79d1fe53ef3f587af41ad361f9c2982daab590f78174632",
+    "vfs/atmosphere/conservative.py": "73a4e99e8477080800198afbeee75d3a1f4e6e4884cffeb2a9715384f94021e2",
+    "vfs/atmosphere/constants.py": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc",
+    "vfs/atmosphere/dry_energy.py": "3cfc91d873cd2c5df9ad8aabaa0eb3617570f8ac0d78a92d9c64155e729fba97",
+    "vfs/atmosphere/gibbs_means.py": "26d2bfa3394fb5238f6f0b1114d03440aa5a3d5877495ec4e97914ed3123bd81",
+    "vfs/atmosphere/held_suarez.py": "6ff83dacec7fe760d729c6120e983c3e8911d046cf702b1b195cb3c65d6be323",
+    "vfs/atmosphere/mixture_thermodynamics.py": "a30736eefdfe4c9e8649db06b7dbd6104de274d4cf072191570a76bbb5d7f35a",
+    "vfs/atmosphere/model.py": "4e30640593e98c0719b294baf9169f5f4fa36e1ad53d9a763f871933977cb6c6",
+    "vfs/atmosphere/moist_budgets.py": "2c234564347b49153f8e8ffafaf1a276dca2375ae27fe81536ffe1c4763c731d",
+    "vfs/atmosphere/moist_conservative.py": "4a387a36315f7738aba3bff6b71b4621fac8451550e8aa0e484fc755351b2e27",
+    "vfs/atmosphere/moist_cp.py": "78b67bfad735d222b049feb3dc821536115b7795237d16cfcba465bbf533e70b",
+    "vfs/atmosphere/scalar_transport.py": "c60e664fe51baa05d00d39151b8261aa12afff6f61fd748a70762735d565c01b",
+    "vfs/atmosphere/steppers.py": "d72c8a223c77041825e620e31ec94f883172a54e8c48f14efdd7fcb0cb6a5df4",
+    "vfs/boundary.py": "99ad2c88620381859e2dca563d36394bd54dd9f8dca44b32e3137062146a5267",
+    "vfs/core/__init__.py": "f8c816137228c5f137b26419bb6d1518bb32551ab8ca3507b47a82b2118b61f7",
+    "vfs/core/config.py": "c4b1d86fa3c87d9209daa27ea4e206d3183cf710a564299154ae9fc24db6a468",
+    "vfs/core/diagnostic_contracts.py": "968b6a7baad79439c971459a81f51f73022332cdd0f6fe66f6605a74b8e74e83",
+    "vfs/core/integrators.py": "dac76cb319b01c0986d67b937ff7bf279928bc0fe35a056137f7f79820a4d0fe",
+    "vfs/core/io.py": "11142ac4878ab311a7cf100cc2f93fcc7fe6b94cb790f9fd42cf193b9118e749",
+    "vfs/core/state.py": "c7e9e120320385b8aebfffbc427e4fdcf56709f86d047d6063c16a867c36581a",
+    "vfs/data/__init__.py": "48549284725b48dc2dcaa1cc4c330d5bea7e92fe33d5ad4eb001e7d3d0483db1",
+    "vfs/data/topography.py": "3ff66004f7a2eceeaa7be72452210179b4d5b0bd734a380e9d305a89d1c7ad70",
+    "vfs/earth.py": "24710d093f07bf8963da4fb49fc68eeae9e2c93431aefae88c463812ec772673",
+    "vfs/era5.py": "30944744f181cd84720ba14be1c158b142c0961b5e2279ad6ea186aacc5d4a15",
+    "vfs/field.py": "3564866a47d6547a146af1e953fb54df2ea257ffddc6304502d26c28a8144853",
+    "vfs/geometry/__init__.py": "b163722e08870c4cd3a177df3f0277d65a7625b3d31aff9a450ed9d705d33b25",
+    "vfs/geometry/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1",
+    "vfs/geometry/geodesic.py": "a8a7628d5c4bddcb18a0d6f4ee25abb3cdb6e5c767f362e8a6fef973e969f26f",
+    "vfs/geometry/mesh/__init__.py": "cb17cea1b8e6d60ef10098db185989f10d2611f5c45fecf8bafb81dee545f19f",
+    "vfs/geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+    "vfs/geometry/mesh/io.py": "eb96e59acf536b19f2b1ded85ff3ecd4039029982cfa9ca3ed1e3ffd1ebd8c43",
+    "vfs/geometry/mesh/multilevel.py": "909d772cd603db1ad3726e555f14003078af7e73c33ad2a090fa97d27ecb16f9",
+    "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f",
+    "vfs/imex.py": "e79b6450767451667a913983f5d603d6dfaf1bf548d7c62fc4838feb4fb73c5f",
+    "vfs/initial_conditions/__init__.py": "74717b68183d9b6a88303774b0ead452f635223a06186b1c974ef21614267de7",
+    "vfs/initial_conditions/analytic_climate.py": "f7de1d59c5135fb9d92da13576d9aef9f2c6525e948f80383c30f6230fa970d5",
+    "vfs/initial_conditions/equilibrium.py": "0ee706ecbc9778100f995c5d1de4d2780c3d62335f908e842b81a95c8e0ead45",
+    "vfs/initial_conditions/held_suarez.py": "5133e1573b2e36969778a74e789d1e264cd7953a72c98e6185d856a93f1949d7",
+    "vfs/initial_conditions/jablonski_williamson.py": "e5cfcdb9af407c69062d998492510cb2fbe942188c21c9a3644d47c387b0ea2c",
+    "vfs/integrators/__init__.py": "c3fdf083115236b994b6501c9bec14e27e997438ee5bba5761acbf30b4413c71",
+    "vfs/integrators/imex/__init__.py": "c9ea73c555e7c7be9d11fa8a4859ffc55e4bfda7d33462e82dc8e2cc8ed00db9",
+    "vfs/integrators/imex/conservative_wave.py": "c0aaebe5642c1c85eadca3138772ac7d93fb5b11947d0a17f0fc8aa033e433c7",
+    "vfs/integrators/imex/dry_ark.py": "60659fecd347d24f6461362eb8ac925c8205ac8fb9c51a1cce59411998061b46",
+    "vfs/integrators/imex/moist_ark.py": "2e2ebf4207ac4bc1ba3352fa3c3d70a2b00d3f5cd72bdfbc1b10c46b6b83613a",
+    "vfs/integrators/imex/moist_wave.py": "a73983978a89dd0c63172f1262081deb058bceb76dde906a46a89b3318cbc013",
+    "vfs/integrators/imex/solvers.py": "fd6150bb9789ced54342f9880e9e5dafc3c6efee8fddf471403a015c96cb5d3d",
+    "vfs/integrators/imex/tableau.py": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1",
+    "vfs/model.py": "b6bd1066422f2862b1ccff0414b3f52f7643b9e30d4e0657ae12bcf19f1090cf",
+    "vfs/moisture.py": "034b0911dceeb4212c96fbf27219129bff62995949d07870259a9eddcc0cca8d"
+  },
+  "configuration": {
+    "scope": "offline face means and toy CP ledger only",
+    "dtype": "float64",
+    "device": "cpu",
+    "seed": 31,
+    "candidate": "L(total_density_i,total_density_j)*arithmetic_condensate_fraction",
+    "independent_reference": "60-digit Decimal endpoint chemical potentials"
+  },
+  "manifest_sha256": "083ba7306725eb00e6303e702d015541569774cd10f5587f2dfbf783e1b7770c",
+  "artifacts_sha256": {
+    "faces.json": "315950082fde3fa457e3d6843aea02e585e68cd12b0f024b4c6a160facf9d502",
+    "investigate_condensate_means.py": "c1cf6c3f56101898b0c73925cebea778d678f7fc4a42a94ffc18eeb0f7a74f71",
+    "record_environment.py": "f0861098d19c188bc5fdc52238a76881fa970957b1038fb18425e0f1e8acfd73",
+    "run_verification.py": "21aeb9a1590b70fddb6263a5bfe4f97bdad85a499cb4953948963f84b65e7610"
+  },
+  "environment": {
+    "platform": "macOS-14.6.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "torch": "2.15.0",
+    "cpu": "",
+    "cpu_query_error": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+  },
+  "cases": 114,
+  "aggregates": {
+    "production": {
+      "maximum_absolute_residual_J_per_kg": 2.1145064538626518e-10,
+      "maximum_relative_residual": 1.407339335254424e-14
+    },
+    "candidate": {
+      "maximum_absolute_residual_J_per_kg": 1.834450333503908e-10,
+      "maximum_relative_residual": 1.5036986470991033e-14,
+      "maximum_constant_fraction_error": 1.1102230246251565e-16,
+      "maximum_constant_ledger_fraction_error": 1.1102230246251565e-16,
+      "maximum_symmetry_difference": 0.0,
+      "minimum_fraction": 0.0
+    },
+    "unpaired_species_only": {
+      "maximum_absolute_residual_J_per_kg": 62401.535790625494,
+      "maximum_relative_residual": 0.09290497333641892
+    }
+  },
+  "named_cases": [
+    {
+      "case": "equal",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 0.0,
+        "work_scale_J_per_kg": 0.0,
+        "relative_to_work": null,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 116.7306148015297,
+        "fractions": [
+          0.9889000000000001,
+          0.01,
+          0.001,
+          0.00010000000000000002
+        ],
+        "specific_volume": 0.80760204,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.00010000000000000002,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 1.3552527156068805e-20
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 0.0,
+        "work_scale_J_per_kg": 0.0,
+        "relative_to_work": null,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 116.7306148015297,
+        "fractions": [
+          0.9889000000000001,
+          0.01,
+          0.001,
+          0.00010000000000000002
+        ],
+        "specific_volume": 0.80760204,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.00010000000000000002,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 1.3552527156068805e-20
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 0.0,
+        "work_scale_J_per_kg": 0.0,
+        "relative_to_work": null
+      }
+    },
+    {
+      "case": "constant_pressure_jump",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.0,
+        90000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": -6.839843123780634e-13,
+        "work_scale_J_per_kg": 17017.856162369222,
+        "relative_to_work": 4.0192154984276196e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          -6.191168115424759e-05,
+          -6.191168115424761e-06
+        ],
+        "entropy": 132.19176582590617,
+        "fractions": [
+          0.9888989939054129,
+          0.009999989826124126,
+          0.00100092388042078,
+          0.000100092388042078
+        ],
+        "specific_volume": 0.850892808118461,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.000100092388042078,
+        "constant_trace_error": 1.0060945870860039e-06,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.0048899076119579225,
+          "limited_faces": 0,
+          "constant_fraction_error": 2.0574531522932205e-08,
+          "constant_flux_error": 1.50914188035145e-06
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 3.8868394958579736e-14,
+        "work_scale_J_per_kg": 17017.873476142493,
+        "relative_to_work": 2.2839748463913357e-18,
+        "condensate_density_interval_excess_kg_m3": [
+          -6.082470780161757e-05,
+          -6.082470780161749e-06
+        ],
+        "entropy": 132.1919125897889,
+        "fractions": [
+          0.9889,
+          0.010000000000000021,
+          0.001,
+          0.0001
+        ],
+        "specific_volume": 0.8508936738071247,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 2.0816681711721685e-17,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 3.122502256758253e-17
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -0.008656886636387851,
+        "work_scale_J_per_kg": 17017.864819255858,
+        "relative_to_work": 5.086940534744706e-07
+      }
+    },
+    {
+      "case": "constant_temperature_jump",
+      "inputs": [
+        240.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        310.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 7.175289818042616e-11,
+        "work_scale_J_per_kg": 13411.080483174552,
+        "relative_to_work": 5.3502697467550705e-15,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.00016310066540635134,
+          -1.6310066540635128e-05
+        ],
+        "entropy": 95.67145416459078,
+        "fractions": [
+          0.9888940688157242,
+          0.009999940022405932,
+          0.0010054465107908524,
+          0.00010054465107908524
+        ],
+        "specific_volume": 0.7845824493504252,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.00010054465107908524,
+        "constant_trace_error": 5.9311842758313915e-06,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 6.938893903907228e-18,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            -5.551115123125783e-17,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.004889455348920915,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.2129211202083212e-07,
+          "constant_flux_error": 8.896776413802598e-06
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 5.753588280221003e-11,
+        "work_scale_J_per_kg": 13411.148020050336,
+        "relative_to_work": 4.290153439227649e-15,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.0001561510980858335,
+          -1.5615109808583347e-05
+        ],
+        "entropy": 95.67259732575783,
+        "fractions": [
+          0.9889,
+          0.009999999999999983,
+          0.001,
+          0.0001
+        ],
+        "specific_volume": 0.784587155115414,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 1.734723475976807e-17,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 2.42861286636753e-17
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -0.08002128163598275,
+        "work_scale_J_per_kg": 13411.067998768642,
+        "relative_to_work": 5.96680902992439e-06
+      }
+    },
+    {
+      "case": "constant_both_jumps",
+      "inputs": [
+        240.0,
+        30000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        310.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 6.003576802254378e-11,
+        "work_scale_J_per_kg": 203279.16264751763,
+        "relative_to_work": 2.9533655708059324e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.000342511397353338,
+          -3.4251139735333806e-05
+        ],
+        "entropy": 288.9852893958723,
+        "fractions": [
+          0.9888197278725324,
+          0.009999188268505743,
+          0.0010737125990561952,
+          0.00010737125990561951
+        ],
+        "specific_volume": 1.3838407745954207,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": -1.1102230246251565e-16,
+        "minimum_fraction": 0.00010737125990561951,
+        "constant_trace_error": 8.02721274676399e-05,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 7.105427357601002e-15,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.004882628740094381,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.6415567989369606e-06,
+          "constant_flux_error": 0.00012040819120118229
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 6.580016069886326e-11,
+        "work_scale_J_per_kg": 203295.4901957488,
+        "relative_to_work": 3.2366758670104156e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.0002891860628493048,
+          -2.891860628493048e-05
+        ],
+        "entropy": 289.0164551686493,
+        "fractions": [
+          0.9889,
+          0.010000000000000004,
+          0.001,
+          0.0001
+        ],
+        "specific_volume": 1.383953114428377,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 3.469446951953614e-18,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 6.938893903907228e-18
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 5.6821842126189495,
+        "work_scale_J_per_kg": 203285.44480334746,
+        "relative_to_work": 2.795175138149085e-05
+      }
+    },
+    {
+      "case": "constant_equal_density",
+      "inputs": [
+        240.0,
+        60000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        300.0,
+        75000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": -7.183546295618853e-12,
+        "work_scale_J_per_kg": 44700.139916827444,
+        "relative_to_work": 1.6070523065442564e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 191.65297401113386,
+        "fractions": [
+          0.9889000000000001,
+          0.010000000000000002,
+          0.0010000000000000002,
+          0.00010000000000000002
+        ],
+        "specific_volume": 1.1537172000000002,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.00010000000000000002,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 3.469446951953614e-18
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": -7.183546295618853e-12,
+        "work_scale_J_per_kg": 44700.139916827444,
+        "relative_to_work": 1.6070523065442564e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 191.65297401113386,
+        "fractions": [
+          0.9889000000000001,
+          0.010000000000000002,
+          0.0010000000000000002,
+          0.00010000000000000002
+        ],
+        "specific_volume": 1.1537172000000002,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.00010000000000000002,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 3.469446951953614e-18
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -7.183546295618853e-12,
+        "work_scale_J_per_kg": 44700.139916827444,
+        "relative_to_work": 1.6070523065442564e-16
+      }
+    },
+    {
+      "case": "anticorrelated_cloud_density",
+      "inputs": [
+        280.0,
+        1000.0,
+        [
+          0.59,
+          0.01,
+          0.4,
+          0.0
+        ],
+        280.0,
+        100000.0,
+        [
+          0.99,
+          0.01,
+          0.0,
+          0.0
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 4.346770767417845e-13,
+        "work_scale_J_per_kg": 734072.099266951,
+        "relative_to_work": 5.92144936683816e-19,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.004106388308291209,
+          0.0
+        ],
+        "entropy": 1166.195692988484,
+        "fractions": [
+          0.9737725913942257,
+          0.011003241505407874,
+          0.015224167100366623,
+          0.0
+        ],
+        "specific_volume": 3.7074348447825805,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.0,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 7.105427357601002e-15,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 0,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": -4.480063773179417e-11,
+        "work_scale_J_per_kg": 609269.0276857,
+        "relative_to_work": 7.353178267073378e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          0.05114493007861455,
+          0.0
+        ],
+        "entropy": 985.5525375948072,
+        "fractions": [
+          0.8082169047675384,
+          0.009132528344402934,
+          0.1826505668880587,
+          0.0
+        ],
+        "specific_volume": 3.0771163014429295,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            5.684341886080802e-14,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 0,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -62401.535790625494,
+        "work_scale_J_per_kg": 671670.5634763255,
+        "relative_to_work": 0.09290497333641892
+      }
+    },
+    {
+      "case": "varying_composition",
+      "inputs": [
+        240.0,
+        30000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        310.0,
+        100000.0,
+        [
+          0.977,
+          0.02,
+          0.002,
+          0.001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 5.7178333401502015e-11,
+        "work_scale_J_per_kg": 205757.03727393606,
+        "relative_to_work": 2.778924801749417e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.000897081028169512,
+          -0.0005352168677007029
+        ],
+        "entropy": 333.98461316875273,
+        "fractions": [
+          0.9821450232353365,
+          0.015206294327204056,
+          0.0018459615027586684,
+          0.0008027209347008071
+        ],
+        "specific_volume": 1.3874581897086358,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0008027209347008071,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.004187279065299193,
+          "limited_faces": 0,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 5.708860201152519e-11,
+        "work_scale_J_per_kg": 205879.42007621244,
+        "relative_to_work": 2.772914455966125e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.0006478741998194035,
+          -0.00035312234475504367
+        ],
+        "entropy": 334.4854362439597,
+        "fractions": [
+          0.9827331030988923,
+          0.015215399413806922,
+          0.0015010957224152184,
+          0.0005504017648855801
+        ],
+        "specific_volume": 1.3882889593033392,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0005504017648855801,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            -5.684341886080802e-14,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0044395982351144204,
+          "limited_faces": 0,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 23.09625636480591,
+        "work_scale_J_per_kg": 205786.20858931873,
+        "relative_to_work": 0.00011223422853811553
+      }
+    },
+    {
+      "case": "zero_condensates",
+      "inputs": [
+        240.0,
+        30000.0,
+        [
+          0.99,
+          0.01,
+          0.0,
+          0.0
+        ],
+        310.0,
+        100000.0,
+        [
+          0.99,
+          0.01,
+          0.0,
+          0.0
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 5.446350589153676e-11,
+        "work_scale_J_per_kg": 203505.90374870514,
+        "relative_to_work": 2.6762617146866585e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 289.3420453869704,
+        "fractions": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "specific_volume": 1.3854679189167738,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 0.0,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 2.220446049250313e-16
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 5.446350589153676e-11,
+        "work_scale_J_per_kg": 203505.90374870514,
+        "relative_to_work": 2.6762617146866585e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          0.0,
+          0.0
+        ],
+        "entropy": 289.3420453869704,
+        "fractions": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "specific_volume": 1.3854679189167738,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 0.0,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 2.220446049250313e-16
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 5.446350589153676e-11,
+        "work_scale_J_per_kg": 203505.90374870514,
+        "relative_to_work": 2.6762617146866585e-16
+      }
+    },
+    {
+      "case": "one_sided_cloud",
+      "inputs": [
+        240.0,
+        30000.0,
+        [
+          0.99,
+          0.01,
+          0.0,
+          0.0
+        ],
+        310.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 5.7885292912381304e-11,
+        "work_scale_J_per_kg": 203338.12858416626,
+        "relative_to_work": 2.8467505487256053e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.000559202281393205,
+          -5.59202281393205e-05
+        ],
+        "entropy": 289.07095589211644,
+        "fractions": [
+          0.9891506481251483,
+          0.009997841780875866,
+          0.0007741000854326534,
+          7.741000854326533e-05
+        ],
+        "specific_volume": 1.3842935037819386,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 7.741000854326533e-05,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            5.684341886080802e-14,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 3,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 6.78741929546988e-11,
+        "work_scale_J_per_kg": 203398.8307862782,
+        "relative_to_work": 3.3370001534579996e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.000361117124134492,
+          -3.61117124134492e-05
+        ],
+        "entropy": 289.186815209007,
+        "fractions": [
+          0.9894490944642422,
+          0.010000858327732502,
+          0.000500042916386625,
+          5.00042916386625e-05
+        ],
+        "specific_volume": 1.3847111725457595,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 5.00042916386625e-05,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            5.684341886080802e-14,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 3,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 21.126661285188835,
+        "work_scale_J_per_kg": 203361.4838206284,
+        "relative_to_work": 0.00010388723020836755
+      }
+    },
+    {
+      "case": "opposite_cloud_species",
+      "inputs": [
+        240.0,
+        30000.0,
+        [
+          0.989,
+          0.01,
+          0.001,
+          0.0
+        ],
+        310.0,
+        100000.0,
+        [
+          0.989,
+          0.01,
+          0.0,
+          0.001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 4.775102899348302e-11,
+        "work_scale_J_per_kg": 203298.17408127667,
+        "relative_to_work": 2.348817406219921e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -0.00021666932447704686,
+          -0.000559146643811734
+        ],
+        "entropy": 288.18589490111526,
+        "fractions": [
+          0.9889270174207226,
+          0.009999262056832381,
+          0.0002998678936557996,
+          0.0007738526287891604
+        ],
+        "specific_volume": 1.3839886858906345,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0002998678936557996,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.3877787807814457e-17,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 3,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 5.1049909126791905e-11,
+        "work_scale_J_per_kg": 203313.6508738405,
+        "relative_to_work": 2.510894320542659e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -7.209067927153878e-05,
+          -0.000361247969682555
+        ],
+        "entropy": 288.54284399484277,
+        "fractions": [
+          0.9890000000000001,
+          0.01,
+          0.0005,
+          0.0005
+        ],
+        "specific_volume": 1.3840908239273226,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0005,
+        "constant_trace_error": null,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.3877787807814457e-17,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "minimum_amount": 0.0,
+          "limited_faces": 3,
+          "constant_fraction_error": null,
+          "constant_flux_error": null
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -17.836773992705645,
+        "work_scale_J_per_kg": 203281.5147747114,
+        "relative_to_work": 8.774420051165701e-05
+      }
+    },
+    {
+      "case": "near_equal_0.001",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.28,
+        99900.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 1.9930884019177195e-14,
+        "work_scale_J_per_kg": 227.48171703661092,
+        "relative_to_work": 8.761532257983404e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.2369966264583893e-06,
+          -1.2369966264583893e-07
+        ],
+        "entropy": 117.3826805841901,
+        "fractions": [
+          0.988899999637403,
+          0.00999999999633333,
+          0.0010000003329668663,
+          0.00010000003329668665
+        ],
+        "specific_volume": 0.8084099112136252,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.00010000003329668665,
+        "constant_trace_error": 3.6259695246343426e-10,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.004889999966703314,
+          "limited_faces": 0,
+          "constant_fraction_error": 7.41517958147142e-12,
+          "constant_flux_error": 5.438953731840002e-10
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 9.78303920713166e-15,
+        "work_scale_J_per_kg": 227.48171710027657,
+        "relative_to_work": 4.300582627842212e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.236584294139493e-06,
+          -1.236584294139493e-07
+        ],
+        "entropy": 117.38268063092124,
+        "fractions": [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        "specific_volume": 0.8084099115100424,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 0.0,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 0.0,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 0.0
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -4.272643327609738e-08,
+        "work_scale_J_per_kg": 227.48171705755013,
+        "relative_to_work": 1.8782359228143206e-10
+      }
+    },
+    {
+      "case": "near_equal_1e-06",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.00028,
+        99999.9,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 5.708619355234867e-17,
+        "work_scale_J_per_kg": 0.2269555715180724,
+        "relative_to_work": 2.515302584136072e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.2382323848984106e-09,
+          -1.2382323847357803e-10
+        ],
+        "entropy": 116.7312668922549,
+        "fractions": [
+          0.9888999999999996,
+          0.009999999999999995,
+          0.0010000000000003329,
+          0.0001000000000000333
+        ],
+        "specific_volume": 0.8076028476023088,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": -1.1102230246251565e-16,
+        "minimum_fraction": 0.0001000000000000333,
+        "constant_trace_error": 4.440892098500626e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.004889999999999966,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 4.991666802123262e-16
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 5.067744149973629e-17,
+        "work_scale_J_per_kg": 0.22695557151807247,
+        "relative_to_work": 2.2329234378676994e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.2382319720342233e-09,
+          -1.238231971925803e-10
+        ],
+        "entropy": 116.7312668922549,
+        "fractions": [
+          0.9888999999999999,
+          0.009999999999999998,
+          0.0009999999999999998,
+          9.999999999999998e-05
+        ],
+        "specific_volume": 0.8076028476023092,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": -1.1102230246251565e-16,
+        "minimum_fraction": 9.999999999999998e-05,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 1.734723475976807e-18
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 1.7370750759042884e-17,
+        "work_scale_J_per_kg": 0.22695557151807244,
+        "relative_to_work": 7.653811115035638e-17
+      }
+    },
+    {
+      "case": "near_equal_1e-09",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.00000028,
+        99999.99990000001,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": -2.5256727549940573e-20,
+        "work_scale_J_per_kg": 0.0002269550283483672,
+        "relative_to_work": 1.11285163998096e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.238233474087913e-12,
+          -1.2382334198778044e-13
+        ],
+        "entropy": 116.73061545362049,
+        "fractions": [
+          0.9888999999999999,
+          0.009999999999999998,
+          0.0009999999999999998,
+          0.0001
+        ],
+        "specific_volume": 0.8076020408076019,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": -1.1102230246251565e-16,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 1.734723475976807e-18
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": -2.52656034512599e-20,
+        "work_scale_J_per_kg": 0.0002269550283483672,
+        "relative_to_work": 1.1132427263289437e-16,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.238233474087913e-12,
+          -1.2382334198778044e-13
+        ],
+        "entropy": 116.73061545362049,
+        "fractions": [
+          0.9888999999999999,
+          0.009999999999999998,
+          0.0009999999999999998,
+          9.999999999999998e-05
+        ],
+        "specific_volume": 0.8076020408076019,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": -1.1102230246251565e-16,
+        "minimum_fraction": 9.999999999999998e-05,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 1.734723475976807e-18
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": -2.52656034512599e-20,
+        "work_scale_J_per_kg": 0.0002269550283483672,
+        "relative_to_work": 1.1132427263289437e-16
+      }
+    },
+    {
+      "case": "near_equal_1e-12",
+      "inputs": [
+        280.0,
+        100000.0,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        280.00000000028,
+        99999.9999999,
+        [
+          0.9889,
+          0.01,
+          0.001,
+          0.0001
+        ]
+      ],
+      "production": {
+        "residual_J_per_kg": 1.3913871265574408e-23,
+        "work_scale_J_per_kg": 2.2695877094853126e-07,
+        "relative_to_work": 6.13057217723907e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.238158880978446e-15,
+          -1.238158880978446e-16
+        ],
+        "entropy": 116.73061480218203,
+        "fractions": [
+          0.9889000000000001,
+          0.01,
+          0.001,
+          0.0001
+        ],
+        "specific_volume": 0.8076020400008077,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.0001,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 0.0
+        }
+      },
+      "candidate": {
+        "residual_J_per_kg": 1.3916452241723046e-23,
+        "work_scale_J_per_kg": 2.2695877094853126e-07,
+        "relative_to_work": 6.131709377682063e-17,
+        "condensate_density_interval_excess_kg_m3": [
+          -1.238158880978446e-15,
+          -1.238158880978446e-16
+        ],
+        "entropy": 116.73061480218203,
+        "fractions": [
+          0.9889000000000001,
+          0.01,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "specific_volume": 0.8076020400008077,
+        "symmetry_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "fraction_sum_error": 2.220446049250313e-16,
+        "minimum_fraction": 0.00010000000000000003,
+        "constant_trace_error": 1.1102230246251565e-16,
+        "cp_ledger": {
+          "maximum_ledger_incidence_error": 1.4210854715202004e-14,
+          "species_inventory_change": [
+            0.0,
+            0.0,
+            0.0,
+            6.938893903907228e-18
+          ],
+          "minimum_amount": 0.00489,
+          "limited_faces": 0,
+          "constant_fraction_error": 1.1102230246251565e-16,
+          "constant_flux_error": 4.336808689942018e-19
+        }
+      },
+      "unpaired_species_only": {
+        "residual_J_per_kg": 1.3916452241723046e-23,
+        "work_scale_J_per_kg": 2.2695877094853126e-07,
+        "relative_to_work": 6.131709377682063e-17
+      }
+    }
+  ]
+}
