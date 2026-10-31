@@ -1,8 +1,5 @@
-"""Time-integration implementations grouped by numerical method.
+"""Shared explicit sequences, ARK coefficients and linear-solver algorithms."""
+from .explicit import ssprk3, forward_euler, rk4
+from .tableau import ARK4_TABLEAU
 
-The low-level explicit Runge--Kutta helpers remain in ``vfs.core`` because
-they depend only on the generic state protocol.  Domain-aware IMEX methods
-live in :mod:`vfs.integrators.imex` instead.
-"""
-
-__all__: list[str] = []
+__all__ = ["ssprk3", "forward_euler", "rk4", "ARK4_TABLEAU"]
