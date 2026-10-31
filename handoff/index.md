@@ -1,3 +1,12 @@
+# Review follow-up: selected-density output
+
+Use Ocean.to_latlon(state, remapper, fields="all") for model output. It supplies
+the selected dynamics density, while legacy state-only output explicitly labels
+its linear-EOS convention. See verification/ocean/OUTPUT_METADATA.md. #23 also
+receives the Celsius label correction independently. #25 proposes integration
+of the structural stack into main. Numerical kernels and fixtures are unchanged;
+Gibbs reference policy and nn.Module migration remain separate tasks.
+
 # Published ocean drafts
 
 [Reference extraction #23](https://github.com/kjhall01/vfs-a/pull/23) targets

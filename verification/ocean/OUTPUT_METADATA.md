@@ -1,19 +1,33 @@
-# Separate output metadata correction
+# Ocean output follows the selected equations
 
-The parent structural stack retained an ocean output label of K. The recovered
-ocean temperature and EOS convention is degrees Celsius; no numerical conversion
-was performed by that output path. This separate commit changes only the ocean
-lat/lon temperature Field's units label to `degC` and checks it in the existing
-snapshot/regrid test. Field values and all model equations remain unchanged.
+Ocean temperature is stored in degrees Celsius and labelled `degC`. The same
+metadata correction is also applied to parent #23 so it stands alone correctly.
+No temperature values, numerical kernels or fixtures change.
 
-This touches the ocean-owned output adapter introduced by PR #22. It does not
-change shared remapping or atmospheric output. The energy experiment source
-hashes retain the exact pre-correction files used to generate those measurements
-(local numerical commit `25c57ce`, published with identical tree as
-`2d1ca581fd701468ba0a1cb7f5550c967c09d4ea`); that driver never calls the output
-adapter. See [publication provenance](PR_DRAFTS.md).
+Use the model-owned output path for selected dynamics:
 
-The adapter's density field still uses the legacy linear-EOS state helper.
-For the selected dynamics' authoritative density, use `model.physical_fields`.
-A general model-aware output contract is deferred instead of silently replacing
-the inherited state-output behavior in this metadata correction.
+```python
+output = model.to_latlon(state, remapper, fields="all")
+```
+
+This validates model/state ownership and passes `model.dynamics.density` to the
+ocean adapter. ConstantDensityDynamics therefore outputs rho0 even when passive
+temperature and salinity vary. The archived linear and JMD95 options use their
+selected EOS and coefficients. Output tensors retain their autograd connections.
+The interpolation remains nonconservative.
+
+The lower-level `state_to_latlon` accepts an explicit `density_provider(state)`.
+For compatibility, omission retains `state.density()` and labels its metadata
+`density_convention=legacy_state_linear_eos`. A state alone does not identify
+which dynamics created it. Model output uses `selected_dynamics` metadata and
+records the provider class and EOS name where available. Density is evaluated
+only when requested.
+
+The regression suite covers constant, linear (nondefault alpha), and JMD95
+models with spatially varying temperature and salinity, matching native model
+physical fields after remapping. It checks gradients for active EOS choices,
+Celsius and density units, rejected unrelated columns, and lazy density calls.
+
+Historical energy experiment source hashes retain the files that actually
+produced those measurements; no campaign is rerun or requalified by this output
+fix. Ocean remains a plain facade: an nn.Module ownership migration is separate.

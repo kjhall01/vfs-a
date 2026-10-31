@@ -101,6 +101,23 @@ class Ocean:
                 'salinity':state.salinity(), 'tracer':state.tracers(),
                 'eta':state.eta(), 'density':self.dynamics.density(state)}
 
+    def to_latlon(self, state, remapper, *, fields='default'):
+        """Remap model output with the selected dynamics' density convention.
+
+        Field remapping remains differentiable and nonconservative. No EOS is
+        inferred from the state, and no density calculation enters time stepping.
+        """
+        from .regrid import state_to_latlon
+        self.check_state(state)
+        output = state_to_latlon(remapper, state, fields=fields,
+                                 density_provider=self.dynamics.density)
+        if 'density' in output:
+            output['attrs']['density_convention'] = 'selected_dynamics'
+            output['attrs']['density_provider'] = type(self.dynamics).__name__
+            if hasattr(self.dynamics, 'eos'):
+                output['attrs']['density_eos'] = self.dynamics.eos
+        return output
+
     def tendency_terms(self, state):
         """Expose equation terms and each source without changing the fast RHS."""
         self.check_state(state)
