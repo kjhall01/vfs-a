@@ -1,4 +1,29 @@
-# Current handoff — C5 horizontal transport evidence, dependent on #16
+# Current handoff — constant-composition face investigation
+
+Separate investigation branch follows #17; no production or fixture changes.
+Read the [derivation and bounded probes](../verification/CONSTANT_COMPOSITION_DERIVATION.md)
+and the separate, **unimplemented** [numerical-fix proposal](../verification/CONSTANT_COMPOSITION_FIX_PROPOSAL.md).
+
+Candidate condensate weights are total-density logarithmic mean times arithmetic
+endpoint condensate fraction. Recompute the entire existing entropy/fraction/
+specific-volume tuple. Algebra proves constant-q preservation and the discrete
+Gibbs identity; 114 small CPU float64 faces and production toy CP ledgers support
+it numerically. Exact zeros and one-sided clouds need no floor or composition
+switch. Five focused tests include finite one-sided composition derivatives. Local
+installed-wheel suite: 568 passed, one CUDA skip; both portable tools passed.
+The coupled candidate is not an internal mean of condensate partial densities;
+that limitation and the density-only logarithmic-mean incompatibility are explicit.
+
+Do not activate this candidate, update the baseline, or change frozen fixtures.
+Full model work/energy/ledger/gradient checks and small C5 reruns are required in
+a separately authorized numerical-fix PR. This does not explain all Case 4 errors.
+Numerical baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`, with only the
+already approved #16 interface extraction recorded separately. No large runs,
+GPU qualification or broad transport redesign were attempted.
+
+---
+
+# Historical handoff — C5 horizontal transport evidence, dependent on #16
 
 PRs #13/#14 merged; #16 extraction is ready for review and remains unmerged.
 Its required Linux CI passed; downloaded artifacts show 551 portable tests passed,
