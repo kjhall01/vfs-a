@@ -19,6 +19,30 @@ from .bounded_transport import graph, divergence, bounded_transfer, limited_trac
 from .gibbs_means import gibbs_face, composition_entropy_derivatives
 
 
+def bounded_ssprk3_with_info(euler_with_info, s, time, dt):
+    """Apply the existing bounded SSPRK3 sequence using timed Euler maps.
+
+    The callback receives (state, evaluation_time, full_positive_dt) and must
+    retain the authoritative Euler species ledger. Evaluation times are
+    t, t+dt, t+dt/2: the second convex combination returns to the half-time
+    stage, so RHS times are nonmonotonic even though every Euler budget is
+    positive. These are evaluation times, not three consecutive time intervals.
+
+    This function combines prognostic tensors exactly as the atmospheric step
+    does. A prescribed-velocity caller must replace wind before EVERY Euler
+    evaluation and at the final output time; intermediate combined winds are
+    not prescribed velocities. Physical validation remains the caller's job.
+    """
+    stage1, info1 = euler_with_info(s, time, dt)
+    stage1_euler, info2 = euler_with_info(stage1, time + dt, dt)
+    # Second RK state: 3/4 initial + 1/4 twice-Euler state.
+    stage2 = s.combine(stage1_euler, a=0.75, b=0.25)
+    stage2_euler, info3 = euler_with_info(stage2, time + dt / 2, dt)
+    # Final RK state: 1/3 initial + 2/3 Euler-from-second-stage state.
+    updated = s.combine(stage2_euler, a=1 / 3, b=2 / 3)
+    return updated, [info1, info2, info3]
+
+
 class BoundedGibbs:
     """Bounded moist explicit operator extracted from checkpoint 54.
 
@@ -188,15 +212,12 @@ class BoundedGibbs:
         Each Euler map returns its own ledger; info1/2/3 are stage diagnostics,
         not a single ledger for the final convex combination.
         """
-        stage1, info1 = self.euler_with_info(s, dt)
-        stage1_euler, info2 = self.euler_with_info(stage1, dt)
-        # Second RK state: 3/4 initial + 1/4 twice-Euler state.
-        stage2 = s.combine(stage1_euler, a=0.75, b=0.25)
-        stage2_euler, info3 = self.euler_with_info(stage2, dt)
-        # Final RK state: 1/3 initial + 2/3 Euler-from-second-stage state.
-        updated = s.combine(stage2_euler, a=1 / 3, b=2 / 3)
+        def euler_at_time(state, time, budget):
+            return self.euler_with_info(state, budget)
+
+        updated, info = bounded_ssprk3_with_info(euler_at_time, s, 0.0, dt)
         self.base.transport_state(updated)
-        return updated, [info1, info2, info3]
+        return updated, info
 
     def step(self, s, dt):
         return self.step_with_info(s, dt)[0]

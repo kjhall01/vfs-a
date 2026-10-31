@@ -1,4 +1,24 @@
-# Current handoff — verification increments 1a and 1b
+# Current handoff — approved SSPRK3 extraction (#16)
+
+PRs #13 and #14 are merged. Numerical baseline remains
+`8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`. The sole runtime change is the
+approved stage-sequence extraction at
+`ae132773e621671f70bfa6a698eebb1a82cffa94` in `bounded_moist.py`.
+Read [extraction evidence](../verification/SSPRK3_EXTRACTION_RESULTS.md).
+The atmospheric wrapper still validates and returns the same state and ledgers.
+The manifest verifier accepts only the original blob or this exact approved
+blob, rejecting all other runtime modifications. Keep #16 unmerged for review.
+
+Next: dependent C5 prescribed horizontal transport harness using actual timed
+production Euler maps, not copied RK formulas or invented candidate fluxes.
+Replace prescribed wind at all RHS times and final output; evolve carrier,
+entropy and species. Record discrete divergence and reference quadrature error.
+Keep terrain-rest construction queued afterward. No coupled energy, GPU,
+IMEX backward or long-rollout qualification follows from this work.
+
+---
+
+# Historical handoff — verification increments 1a and 1b
 
 Baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648` (merged PR #12).
 PR #13 is increment 1a: geometry/provenance and the full C1–C12 tracker.
