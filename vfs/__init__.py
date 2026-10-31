@@ -26,9 +26,9 @@ from vfs.atmosphere.state import State
 from vfs.atmosphere.column import CharneyPhillipsColumn
 from vfs.atmosphere.column import make_hybrid_coefficients
 from .geometry.mesh import VoronoiMesh
-from .core.integrators import ssprk3
-from .core.integrators import forward_euler
-from .core.integrators import rk4
+from vfs.integrators.explicit import ssprk3
+from vfs.integrators.explicit import forward_euler
+from vfs.integrators.explicit import rk4
 from .atmosphere import BoundedGibbs
 from .atmosphere import MoistState
 from .atmosphere import MoistConservativeDynamics

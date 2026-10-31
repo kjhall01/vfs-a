@@ -209,7 +209,7 @@ def test_imex_stage_rejection(model):
 
 
 def test_imex_solver_failure_propagates(model, monkeypatch):
-    from vfs.integrators.imex import moist_ark
+    from vfs.atmosphere.imex import moist_ark
 
     original = moist_ark._gmres
 
