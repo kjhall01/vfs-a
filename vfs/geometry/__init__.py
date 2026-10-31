@@ -1,8 +1,8 @@
 """Core exports with optional compatibility names loaded only on request."""
 
 from .mesh import VoronoiMesh
-from .column import CharneyPhillipsColumn
-from .column import make_hybrid_coefficients
+from vfs.atmosphere.column import CharneyPhillipsColumn
+from vfs.atmosphere.column import make_hybrid_coefficients
 
 # Historical imports remain available explicitly, but are not eagerly loaded.
 _COMPAT_EXPORTS = {

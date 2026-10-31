@@ -5,8 +5,8 @@ no registry, process framework, hidden operator split or dycore replacement.
 """
 import torch
 from torch import nn
-from ..core.state import State, interface_mass
-from ..initial_conditions.equilibrium import (
+from vfs.atmosphere.state import State, interface_mass
+from vfs.atmosphere.initial_conditions.equilibrium import (
     HeldSuarezConstants, held_suarez_equilibrium_temperature,
 )
 

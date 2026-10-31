@@ -6,8 +6,8 @@ There is no strategy selection and this class owns no state or geometry.
 """
 from __future__ import annotations
 import torch
-from ..core.state import interface_mass
-from ..core.state import State
+from vfs.atmosphere.state import interface_mass
+from vfs.atmosphere.state import State
 
 
 class DryEnergy:

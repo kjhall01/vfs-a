@@ -7,7 +7,7 @@ mass. This borrowed tensor view owns no geometry, caches or conversions.
 from dataclasses import dataclass
 from typing import Any
 import torch
-from ..core.state import interface_mass
+from vfs.atmosphere.state import interface_mass
 
 
 @dataclass(frozen=True)
