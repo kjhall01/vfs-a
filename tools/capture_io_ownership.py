@@ -67,6 +67,11 @@ def compare(a,b,path='output'):
         torch.testing.assert_close(a,b,rtol=0,atol=0,equal_nan=True,msg=lambda s:path+': '+s)
         return 1
     if isinstance(a,dict):
+        # The ocean output fix adds one explicit convention label. Keep every
+        # numerical comparison exact and reject any other metadata difference.
+        if path == 'output/ocean_output_contract/attrs' and 'density_convention' not in b:
+            assert a.get('density_convention') == 'legacy_state_linear_eos', path
+            a = {k: v for k, v in a.items() if k != 'density_convention'}
         assert a.keys()==b.keys(),path
         return sum(compare(a[k],b[k],path+'/'+k) for k in a)
     if isinstance(a,list):

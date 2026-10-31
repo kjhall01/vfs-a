@@ -1,0 +1,440 @@
+{
+  "python": "3.12.14",
+  "numpy": "2.5.4",
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "threads": 1,
+  "input_sha256": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+  "cases": {
+    "global": {
+      "reference": {
+        "energy_J": 2.4366847487884657e+18,
+        "rate_W": 197435251945.42627,
+        "cancellation_normalized_rate": 0.0015003247101036856,
+        "free_surface_kinetic_work_W": -775336831616.946,
+        "free_surface_potential_rate_W": 758663313865.7324,
+        "free_surface_exchange_relative": 0.02150486997559681,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": 197435237888.0,
+            "error_normalized_by_local_work": 1.0682339544139847e-10
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": 197435461120.0,
+            "error_normalized_by_local_work": 1.5895326624850878e-09
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": 197434444800.0,
+            "error_normalized_by_local_work": 6.133556270964626e-09
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 5.617697174418151e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 2.1448542678429405e-10
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 8.614604614214079e-13
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 1.0522358568771094e-11
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 2.6563350242433787e-10
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "energy_J": 3.7886621980451953e+18,
+        "rate_W": 0.0,
+        "cancellation_normalized_rate": 0.0,
+        "free_surface_kinetic_work_W": -758663313865.7329,
+        "free_surface_potential_rate_W": 758663313865.7324,
+        "free_surface_exchange_relative": 6.436073038934571e-16,
+        "gradient_max_relative": {
+          "u_e": 0.0,
+          "h": 1.2832472269739237e-16
+        },
+        "rotation_work_W": -0.00390625,
+        "rotation_relative": 2.2165041252405037e-17,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": -14336.0,
+            "error_normalized_by_local_work": 7.562927916521496e-11
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": 207360.0,
+            "error_normalized_by_local_work": 1.093923502211145e-09
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": -768000.0,
+            "error_normalized_by_local_work": 4.051568526707944e-09
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 5.887826457947572e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 1.5943061207806383e-10
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 1.2915163268332375e-12
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 9.900465717924708e-12
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 2.453244480482719e-10
+            }
+          ]
+        }
+      }
+    },
+    "coast": {
+      "reference": {
+        "energy_J": 1.3012853775472466e+18,
+        "rate_W": 346879560421.3721,
+        "cancellation_normalized_rate": 0.0048455546677489605,
+        "free_surface_kinetic_work_W": -1103196082480.8809,
+        "free_surface_potential_rate_W": 1034943198391.9735,
+        "free_surface_exchange_relative": 0.06186831622481783,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": 346879550848.0,
+            "error_normalized_by_local_work": 1.3373027129373105e-10
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": 346879528960.0,
+            "error_normalized_by_local_work": 4.3948337026229937e-10
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": 346878310400.0,
+            "error_normalized_by_local_work": 1.7461527242664463e-08
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 4.248165362688647e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 2.2885268086285038e-10
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 1.687316615063073e-15
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 4.069325585070685e-12
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 1.384485465574628e-10
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "energy_J": 2.02221240215234e+18,
+        "rate_W": -0.0037841796875,
+        "cancellation_normalized_rate": 3.814954834402333e-17,
+        "free_surface_kinetic_work_W": -1034943198391.9734,
+        "free_surface_potential_rate_W": 1034943198391.9735,
+        "free_surface_exchange_relative": 1.17948804040323e-16,
+        "gradient_max_relative": {
+          "u_e": 0.0,
+          "h": 1.2846109192900016e-16
+        },
+        "rotation_work_W": -0.001953125,
+        "rotation_relative": 2.1854760348202137e-17,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": -9600.0,
+            "error_normalized_by_local_work": 9.678068960299023e-11
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": -30720.0,
+            "error_normalized_by_local_work": 3.096982906585751e-10
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": -1254400.0,
+            "error_normalized_by_local_work": 1.2646015054848825e-08
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 4.392457197715801e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 2.4556435349237275e-10
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 2.7112660326418367e-13
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 3.6337492391047557e-12
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 1.3245397139044434e-10
+            }
+          ]
+        }
+      }
+    },
+    "aligned": {
+      "reference": {
+        "energy_J": 9065787300463270.0,
+        "rate_W": -10870690479.829102,
+        "cancellation_normalized_rate": 0.034217933667748085,
+        "free_surface_kinetic_work_W": 150293780868.3142,
+        "free_surface_potential_rate_W": -160922990673.70258,
+        "free_surface_exchange_relative": 0.06605153036796843,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": -10870699095.0,
+            "error_normalized_by_local_work": 2.7118180476764207e-08
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": -10870665600.0,
+            "error_normalized_by_local_work": 7.83148359749415e-08
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": -10870113900.0,
+            "error_normalized_by_local_work": 1.8149141844271295e-06
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 5.130968481916615e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 2.195297055458127e-15
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 6.067002771447914e-14
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 1.670241871530419e-11
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 4.264005299800155e-11
+            }
+          ]
+        }
+      },
+      "candidate": {
+        "energy_J": 9102163236650000.0,
+        "rate_W": 3.0517578125e-05,
+        "cancellation_normalized_rate": 9.272093168365725e-17,
+        "free_surface_kinetic_work_W": 160922990673.70258,
+        "free_surface_potential_rate_W": -160922990673.70258,
+        "free_surface_exchange_relative": 0.0,
+        "gradient_max_relative": {
+          "u_e": 0.0,
+          "h": 0.0
+        },
+        "rotation_work_W": -4.76837158203125e-07,
+        "rotation_relative": 8.733196674139014e-18,
+        "directional_finite_difference": [
+          {
+            "increment_s": 1.0,
+            "rate_W": -8615.0,
+            "error_normalized_by_local_work": 2.6174777893988777e-08
+          },
+          {
+            "increment_s": 0.1,
+            "rate_W": 24870.0,
+            "error_normalized_by_local_work": 7.556201080890778e-08
+          },
+          {
+            "increment_s": 0.01,
+            "rate_W": 576500.0,
+            "error_normalized_by_local_work": 1.7515681255521905e-06
+          }
+        ],
+        "nonzero_direction_gradient": {
+          "AD_J": 5.130975744949374e+18,
+          "rows": [
+            {
+              "epsilon": 0.01,
+              "relative_error": 3.9914435417394615e-16
+            },
+            {
+              "epsilon": 0.001,
+              "relative_error": 6.047036965735284e-14
+            },
+            {
+              "epsilon": 0.0001,
+              "relative_error": 1.6703392933471296e-11
+            },
+            {
+              "epsilon": 1e-05,
+              "relative_error": 4.262841745360036e-11
+            }
+          ]
+        }
+      }
+    }
+  },
+  "external_waves": {
+    "rows": [
+      {
+        "cells": 32,
+        "degree": 1,
+        "steps": 96,
+        "dt_s": 297.74255084964716,
+        "endpoint_projection_error_over_initial_amplitude": 0.02988554872460525
+      },
+      {
+        "cells": 32,
+        "degree": 2,
+        "steps": 56,
+        "dt_s": 294.68870036957077,
+        "endpoint_projection_error_over_initial_amplitude": 0.0798194026004926
+      },
+      {
+        "cells": 64,
+        "degree": 1,
+        "steps": 96,
+        "dt_s": 297.74255084964716,
+        "endpoint_projection_error_over_initial_amplitude": 0.014420453603300257
+      },
+      {
+        "cells": 64,
+        "degree": 2,
+        "steps": 56,
+        "dt_s": 294.68870036957077,
+        "endpoint_projection_error_over_initial_amplitude": 0.04288667581000764
+      },
+      {
+        "cells": 128,
+        "degree": 1,
+        "steps": 96,
+        "dt_s": 297.74255084964716,
+        "endpoint_projection_error_over_initial_amplitude": 0.007587878446231322
+      },
+      {
+        "cells": 128,
+        "degree": 2,
+        "steps": 56,
+        "dt_s": 294.68870036957077,
+        "endpoint_projection_error_over_initial_amplitude": 0.023006810199446767
+      },
+      {
+        "cells": 256,
+        "degree": 1,
+        "steps": 96,
+        "dt_s": 297.74255084964716,
+        "endpoint_projection_error_over_initial_amplitude": 0.003920737742771213
+      },
+      {
+        "cells": 256,
+        "degree": 2,
+        "steps": 56,
+        "dt_s": 294.68870036957077,
+        "endpoint_projection_error_over_initial_amplitude": 0.01095773298184513
+      }
+    ],
+    "mesh_sha256": {
+      "wave_mesh_32.npz": "692f6cedacba5f9acc013d750d9856411aba3cf8c9647cbb431d7d7c9981ed95",
+      "wave_mesh_64.npz": "10c6de741eff117c9ff17132ea444a3acf7d9db2c869e91f98aac675e7372485",
+      "wave_mesh_128.npz": "42c2d44ac5b0ae1a32eb319e1b5caebc04034ced63f38716339f6be85fce3318",
+      "wave_mesh_256.npz": "c47ccf009b7bd427447c629e28abc66b46d1945bad11dd2799841903ac6e9e34"
+    },
+    "fitted_horizontal_orders": {
+      "1": 1.9434202047303029,
+      "2": 1.8985677809544528
+    },
+    "limitation": "single endpoint projection, 0.2 period, no independent time extrapolation; damping and phase mixed"
+  },
+  "time_refinement": {
+    "radius_m": 100000.0,
+    "end_time_s": 400.0,
+    "reference_dt_s": 0.625,
+    "reference_refinement_dt_s": 0.3125,
+    "reference_refinement_rms": 2.886933814513383e-15,
+    "mesh_sha256": "399d56500fcc4f5b74da00e38130c72324c9ce33d95db9149e141a3cf4250872",
+    "rows": [
+      {
+        "dt_s": 40.0,
+        "nondimensional_rms_error": 1.1586413993137911e-10,
+        "relative_energy_change": -7.405352220574143e-06
+      },
+      {
+        "dt_s": 20.0,
+        "nondimensional_rms_error": 1.4541466538757744e-11,
+        "relative_energy_change": -9.26361720982856e-07
+      },
+      {
+        "dt_s": 10.0,
+        "nondimensional_rms_error": 1.8211136460069776e-12,
+        "relative_energy_change": -1.1581747350303585e-07
+      },
+      {
+        "dt_s": 5.0,
+        "nondimensional_rms_error": 2.2760904545850246e-13,
+        "relative_energy_change": -1.448010593392067e-08
+      }
+    ],
+    "pairwise_orders": [
+      2.994189439189663,
+      2.997279914397235,
+      3.000191157699922
+    ],
+    "limitation": "same spatial operator and fine-step reference; not an analytic solution or spatial accuracy result"
+  },
+  "source_sha256": {
+    "ocean/__init__.py": "ccefaf5fdbd086680d62d34afda3eb6fdc3a045dfea1ac67b61d6c3db5d56a6e",
+    "ocean/column.py": "996857a903d612984aaaa46288da6299ed6c7db7204d1d006a345317006577b7",
+    "ocean/conservative.py": "a6baf1a6ea1a20fdd986048f152a06e3d3661b9bbe4f52860a3289bd2de53ff7",
+    "ocean/constants.py": "66040cd703194abb47c52b43b253a42d382b8a6b811383fa828a076131c2bd30",
+    "ocean/diagnostics.py": "25851b4e8ddba9476504d79e365f2612e39e5e98bbcdddecc200b8308490afbf",
+    "ocean/domain.py": "9c10f94c592eb66f75239b0e6ecd0271006f8825c29539474f105195bd84afa2",
+    "ocean/dynamics.py": "1a656e72a4b89997f2e3325b623c22ac8132a3ca0b85b42cb791e946e8d0434f",
+    "ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7",
+    "ocean/eos.py": "a1fa25bc46491791866aa3ae6a25143dbde5008fe48e566657c5bff87d38cce6",
+    "ocean/helpers.py": "f0c8a5e57dfb91b162a1e821711f548cd9f6f0b45a6bd7528c8add623d077002",
+    "ocean/initial_conditions.py": "2af37b5e6a45c606afeb4aff4cde412a4ac074a96556945d517812298068cd2a",
+    "ocean/io.py": "9fdd86bc89d7682425c584c79f59d9b32fc04b0cbe881a073530308bd0ce3299",
+    "ocean/mixed_layer.py": "3186a4836cef062b37ec360d6a84274ad022fea3be4cedb35dea7fa2041eae26",
+    "ocean/model.py": "6f7a5a646afc1d9ec0006326576774bbe2fda1ab7f144b8234b12f19eb896d14",
+    "ocean/physics.py": "f8c64d659d2e88af42a6992818ad801666dbe95397ce8b2b3e985ef96077fe6b",
+    "ocean/regrid.py": "a17a1e5c968ce097d2e775d23f691115b4db28bd983b585a68da4af8d25a0fda",
+    "ocean/state.py": "21e60cab5662677bff7b441a60337c1214252218a25a10fe5cbeace80af0d1b3",
+    "geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+    "integrators/explicit.py": "c208055171a3bff3bcaa4b08b67eed4e893e3993429c9084882d9121f711a22d"
+  },
+  "verification_script_sha256": "b6f4e70a0b2189593a631b4cabb11a4be263351bf33f693d1622e46d96c249d0"
+}
