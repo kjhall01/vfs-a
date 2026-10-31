@@ -1,4 +1,4 @@
-"""Existing ocean output-field contract; no ocean dynamics/state implementation."""
+"""Explicit ocean output boundary; temperatures use the ocean's degC convention."""
 from typing import Any, Iterable
 from vfs.field import Field
 from vfs.geometry.remap import _cell_field, _squeeze_last_singleton, _local_east_north_from_xyz
@@ -36,7 +36,7 @@ def state_to_latlon(remapper, state, *, fields: Iterable[str] | str = "default")
         )
     if "temperature" in requested:
         out["temperature"] = remapper(
-            _cell_field(state.temperature(), vertical_location="full", name="temperature", units="K")
+            _cell_field(state.temperature(), vertical_location="full", name="temperature", units="degC")
         )
     if "salinity" in requested:
         out["salinity"] = remapper(_cell_field(state.salinity(), vertical_location="full", name="salinity"))
