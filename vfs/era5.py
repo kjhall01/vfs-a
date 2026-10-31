@@ -11,14 +11,14 @@ from vfs.boundary import (
     SURFACE_GEOPOTENTIAL_ALIASES as _SURFACE_GEOPOTENTIAL_ALIASES,
     SURFACE_TEMPERATURE_ALIASES as _SURFACE_TEMPERATURE_ALIASES,
 )
-from vfs.geometry.column import CharneyPhillipsColumn
+from vfs.atmosphere.column import CharneyPhillipsColumn
 from vfs.moisture import (
     VAPOR_QUANTITY_ATTR,
     VAPOR_QUANTITY_DRY_MIXING_RATIO,
     VAPOR_TRACER_INDEX_ATTR,
 )
 from vfs.geometry.regrid import LatLonGrid
-from vfs.core.state import State, StateSpec, TracerSpec
+from vfs.atmosphere.state import State, StateSpec, TracerSpec
 from vfs.data.topography import GRAVITY, earth_surface_pressure_from_phi_s
 
 

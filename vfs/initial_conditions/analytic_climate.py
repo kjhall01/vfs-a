@@ -23,8 +23,8 @@ from typing import Any
 
 import torch
 
-from vfs.core.state import State
-from vfs.geometry.column import CharneyPhillipsColumn
+from vfs.atmosphere.state import State
+from vfs.atmosphere.column import CharneyPhillipsColumn
 
 
 @dataclass(frozen=True)

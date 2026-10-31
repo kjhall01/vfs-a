@@ -7,7 +7,7 @@ Cache a, a', a'' once per step; apply the exact derivative of the matched PGF.
 Advection, rotation and kinetic forces remain in the nonlinear ARK residual.
 """
 import torch
-from ...core.state import interface_mass
+from vfs.atmosphere.state import interface_mass
 
 
 def thermal_coefficients(state, gravity):

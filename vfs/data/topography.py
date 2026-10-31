@@ -10,7 +10,7 @@ from urllib.request import urlretrieve
 
 import torch
 
-from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
+from vfs.atmosphere.column import CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.geometry.regrid import LatLonGrid, LatLonToMeshBilinear
 
 

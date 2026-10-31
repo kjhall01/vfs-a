@@ -7,8 +7,8 @@ from typing import Any
 import torch
 
 import vfs.data.topography as topography
-from vfs.geometry.column import CharneyPhillipsColumn
-from vfs.core.state import State
+from vfs.atmosphere.column import CharneyPhillipsColumn
+from vfs.atmosphere.state import State
 
 
 def prescribed_earth_temperature_interfaces(

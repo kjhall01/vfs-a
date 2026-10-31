@@ -296,7 +296,7 @@ def restrict_state(anchor, hierarchy):
     Restrict contents, pressure and terrain with the existing area-adjoint
     weights; zero coarse wind. Preserve batch axes and leave input untouched.
     """
-    from ...core.state import State
+    from vfs.atmosphere.state import State
     initial = anchor
     for transfer, mesh in zip(hierarchy.transfers, hierarchy.meshes[1:]):
         mtheta = transfer.restrict(anchor.mtheta_i)

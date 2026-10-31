@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Callable
 import math
 import torch
-from ...core.state import State
+from vfs.atmosphere.state import State
 from ...geometry.mesh.multilevel import VoronoiMeshHierarchy
 
 @dataclass(frozen=True)

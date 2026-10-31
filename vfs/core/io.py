@@ -17,7 +17,7 @@ import numpy as np
 import torch
 
 from vfs.moisture import CLOUD_LIQUID_TRACER_INDEX_ATTR, VAPOR_TRACER_INDEX_ATTR
-from vfs.core.state import State
+from vfs.atmosphere.state import State
 
 
 SNAPSHOT_IO_VERSION = "state_netcdf_v1"

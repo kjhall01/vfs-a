@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Callable
 import math
 import torch
-from ...core.state import State, interface_mass
+from vfs.atmosphere.state import State, interface_mass
 from ...geometry.mesh.multilevel import VoronoiMeshHierarchy
 from .tableau import ARK4_TABLEAU
 from .solvers import (

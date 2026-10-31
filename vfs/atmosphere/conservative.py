@@ -6,8 +6,8 @@ uses centered scalar transport, without positivity or monotonicity guarantees.
 See docs/CURRENT_PATHS.md for explicit and ARK4 entry paths.
 """
 import torch
-from ..core.state import interface_mass
-from ..core.state import State
+from vfs.atmosphere.state import interface_mass
+from vfs.atmosphere.state import State
 from .constants import GRAVITY, OMEGA
 from .dry_energy import DryEnergy
 from .scalar_transport import ScalarTransportState
