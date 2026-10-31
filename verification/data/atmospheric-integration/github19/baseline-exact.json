@@ -1,0 +1,14 @@
+{
+  "mode": "exact_comparison",
+  "status": "fail",
+  "torch": "2.15.0+cpu",
+  "source": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/vfs/__init__.py",
+  "error": "baseline/smooth/initial/u_e: Tensor-likes are not equal!\n\nMismatched elements: 126 / 1116 (11.3%)\nGreatest absolute difference: 4.440892098500626e-15 at index (117, 0)\nGreatest relative difference: 7.879428487369385e-16 at index (19, 0)",
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "reference_version": "corrected-gibbs-v1",
+  "fixture_sha256": "48503c853dce8a1ddfc650a8191d49ee421ca010cbc24add6b8c177a284d3fab"
+}

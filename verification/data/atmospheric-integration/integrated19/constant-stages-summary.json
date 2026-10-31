@@ -1,0 +1,22 @@
+{
+  "stages": 360,
+  "all_exact_ledgers": true,
+  "max_constant_composition_error": 5.464378949326942e-16,
+  "total_limited_face_visits": 0,
+  "max_donor_substeps": 0,
+  "max_carrier_outflow_fraction": 0.16738884948811458,
+  "max_discrete_velocity_divergence_per_s": 1.1147340034393853e-06,
+  "minimum_fraction": [
+    0.9888999999999994,
+    0.009999999999999454,
+    0.0009999999999999961,
+    9.999999999999964e-05
+  ],
+  "max_abs_carrier_stage_change_kg": 2048.0,
+  "max_abs_species_stage_change_kg": [
+    2048.0,
+    16.0,
+    2.0,
+    0.125
+  ]
+}

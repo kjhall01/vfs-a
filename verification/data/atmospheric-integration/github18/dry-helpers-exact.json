@@ -1,0 +1,7 @@
+{
+  "mode": "exact_comparison",
+  "status": "fail",
+  "error": "dry/diagonal/primitives/dp_e: Tensor-likes are not equal!\n\nMismatched elements: 63 / 360 (17.5%)\nGreatest absolute difference: 1.0913936421275139e-11 at index (39, 3)\nGreatest relative difference: 3.905571514745662e-16 at index (39, 3)",
+  "source": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0+cpu"
+}

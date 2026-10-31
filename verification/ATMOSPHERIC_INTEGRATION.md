@@ -53,7 +53,7 @@ The runtime tree is byte-for-byte main; this integration adds no numerical fix.
 
 ## Corrected regression policy and integration
 
-Integrated investigation commit: `6e2dcfd` (original #18 remains its ancestor).
+Integrated investigation commit: `6e2dcfde006307912cd029418bb87840a6d45938` (original #18 remains its ancestor).
 Integrated corrected runtime: **d972f55683bf40b4edf35d1f5193949ff420cb0d**
 (original #19 remains its ancestor). The sole runtime delta between them is
 `vfs/atmosphere/gibbs_means.py`, byte-identical to the original numerical commit.
@@ -120,7 +120,7 @@ Historical reproduction commands and original reports remain available unchanged
 
 ## Local corrected results and limits
 
-macOS ARM64 CPU float64, Python 3.12.13, PyTorch 2.15.0/Accelerate:
+macOS Apple M3 ARM64 CPU float64, Python 3.12.13, PyTorch 2.15.0/Accelerate:
 **585 passed, one CUDA skip** in the installed-wheel portable suite. The 235
 quantity corruption tests now compare against stored versioned references,
 not a copy of the current result. Independent shape, finiteness, positivity,
@@ -153,4 +153,25 @@ transport convergence or coupled energy conservation.
 Merge order: **#18, then #19**, both left open for review. Historical scientific
 baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; `d972f556...` is the
 proposed corrected runtime, not an automatically adopted scientific baseline.
-GitHub Actions results will be reported separately from these local checks.
+GitHub Actions #18 PR run [41238035183](https://github.com/kjhall01/vfs-a/actions/runs/41238035183)
+completed successfully at `6e2dcfde006307912cd029418bb87840a6d45938`.
+The corrected branch Actions status is recorded in the PR description after
+the final run; local results above are not substituted for hosted checks.
+
+## Completed Linux checks
+
+At reference-policy commit `60311cdac1a618435082bba193caf85202d3925a`,
+[GitHub Actions run 41238152703](https://github.com/kjhall01/vfs-a/actions/runs/41238152703)
+completed the required installed-wheel portable suite (**585 passed, one CUDA
+skip**), both comparison tools, exact same-environment integration captures,
+examples, Held–Suarez archive check, and small face/C2–C4 drivers successfully.
+The runner was AMD EPYC 7763, Linux x86_64, PyTorch 2.15.0+cpu; full backend
+details and reports are archived alongside the macOS results.
+
+Informational Linux **exact** comparisons fail for both corrected moist and
+historical dry fixtures (first corrected mismatch is initial wind, maximum
+4.440892098500626e-15 m/s). Portable passes do not erase those exact failures.
+Historical moist **portable** comparison separately fails at cloud momentum
+tendency, as expected from the changed operator. These are distinct outcomes.
+No tolerances were changed. The final documentation-only commit is checked
+again by CI, with its status reported on the PR.
