@@ -87,7 +87,9 @@ Keep the original numerical baseline identifier and its original hashes. Before
 using an extracted wheel, separately record the approved extraction commit,
 explicit changed-file hashes and equivalence evidence. Do not silently repin the
 baseline, disable source checking, or claim that a changed wheel is byte-identical.
-The current proposal changes neither the runtime nor the verifier.
+At proposal time neither runtime nor verifier had changed. The approved
+implementation and its pinned source exception are now recorded in
+[extraction evidence](SSPRK3_EXTRACTION_RESULTS.md).
 
 ## Benchmark specification to implement after the boundary is approved
 
