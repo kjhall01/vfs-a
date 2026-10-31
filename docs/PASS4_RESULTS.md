@@ -144,3 +144,9 @@ configuration, intrinsic bounded heat release and redundant tensor wrappers,
 with exact same-environment comparisons and unchanged fixtures. The committed
 Held–Suarez archive tool and five supported scenario types are runnable. Freeze
 implementation for [verification](VERIFICATION_HANDOFF.md); Conda is deferred.
+
+## Subsequent structural ownership migration
+
+See [package owners](PACKAGE_OWNERSHIP.md) and [migration checks](STRUCTURAL_RESULTS.md).
+The structural baseline is merged main; #18/#19 numerical evidence is separate.
+Historical fixtures and tolerances remain unchanged.

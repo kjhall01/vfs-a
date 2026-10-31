@@ -40,9 +40,9 @@ essential ingredient of bounded stepping and ARK4.
 
 ### Dry explicit
 
-1. [DryAtmosphere.forward](../vfs/model.py) checks geometry, dtype/device and dt;
+1. [DryAtmosphere.forward](../vfs/atmosphere/dry_model.py) checks geometry, dtype/device and dt;
    [DrySSPRK3.advance](../vfs/atmosphere/steppers.py) delegates to the existing
-   [ssprk3](../vfs/core/integrators.py) formula. Each of three stages evaluates
+   [ssprk3](../vfs/integrators/explicit.py) formula. Each of three stages evaluates
    `DryHydrostaticConservativeDynamics.tendency` and updates tensor contents.
 2. [conservative._assemble](../vfs/atmosphere/conservative.py) builds pressure
    masses and continuity primitives. Pressure increases downward: p=A+B ps,
@@ -95,13 +95,15 @@ heat under the default configuration.
 
 ### Dry ARK4
 
-[dry_ark](../vfs/integrators/imex/dry_ark.py) `_step` freezes
-[conservative_wave](../vfs/integrators/imex/conservative_wave.py), then loops over
-the six [ARK4 stages](../vfs/integrators/imex/tableau.py). At anchor y0, solve with
+[dry_ark](../vfs/atmosphere/imex/dry_ark.py) `_step` freezes
+[conservative_wave](../vfs/atmosphere/imex/conservative_wave.py), then loops over
+the six [ARK4 stages](../vfs/integrators/tableau.py). At anchor y0, solve with
 L(y-y0) implicitly and F(y)-L(y-y0) explicitly. Schur eliminates wind and solves
 the thermodynamic block; multilevel adds the existing geometric preconditioner
-using [mesh transfers](../vfs/geometry/mesh/multilevel.py). [solvers.py](../vfs/integrators/imex/solvers.py) owns the physically scaled
-inner product, GMRES residual checks, Schur factorization and multilevel cycles.
+using [mesh transfers](../vfs/geometry/mesh/multilevel.py). [solvers.py](../vfs/atmosphere/imex/solvers.py) owns the physically scaled
+inner product, full-stage residual checks, Schur factorization and multilevel cycles.
+It delegates linear iteration to shared [GMRES](../vfs/integrators/krylov.py);
+[coarse-state assembly](../vfs/atmosphere/imex/transfer.py) stays atmospheric.
 Full residual checks and IMEXConvergenceError remain authoritative for solver
 acceptance; preconditioning changes the solve, not the equation. The final
 weighted sum uses all six explicit and implicit stage tendencies. Stage records
@@ -110,8 +112,8 @@ expose residuals, convergence, iterations and preconditioner applications throug
 
 ### Moist ARK4
 
-[moist_ark](../vfs/integrators/imex/moist_ark.py) `step_with_info` freezes
-[moist_wave](../vfs/integrators/imex/moist_wave.py). Its analytic wave differentiates
+[moist_ark](../vfs/atmosphere/imex/moist_ark.py) `step_with_info` freezes
+[moist_wave](../vfs/atmosphere/imex/moist_wave.py). Its analytic wave differentiates
 mixture enthalpy/pressure transport at fixed entropy/water contents. Advection,
 rotation and kinetic forces remain explicit. Each actual stage and final state
 is validated; the validator sees outer dt, not an Euler limiter budget. No

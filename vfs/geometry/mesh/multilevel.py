@@ -288,5 +288,3 @@ class VoronoiMeshHierarchy:
 
 
 __all__ = ["CellTransfer", "VoronoiMeshHierarchy"]
-
-
