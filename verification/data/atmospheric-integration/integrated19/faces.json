@@ -1,0 +1,2090 @@
+[
+  {
+    "residual_J_per_kg": 0.0,
+    "work_scale_J_per_kg": 0.0,
+    "relative_to_work": null,
+    "case": "equal",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 0.0,
+      "work_scale_J_per_kg": 0.0,
+      "relative_to_work": null
+    }
+  },
+  {
+    "residual_J_per_kg": 3.8868394958579736e-14,
+    "work_scale_J_per_kg": 17017.873476142493,
+    "relative_to_work": 2.2839748463913357e-18,
+    "case": "constant_pressure_jump",
+    "logmean_roundoff_condition": 84.36110149093089,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 2.0816681711721685e-17,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 3.8868394958579736e-14,
+      "work_scale_J_per_kg": 17017.873476142493,
+      "relative_to_work": 2.2839748463913357e-18
+    }
+  },
+  {
+    "residual_J_per_kg": 5.753588280221003e-11,
+    "work_scale_J_per_kg": 13411.148020050336,
+    "relative_to_work": 4.290153439227649e-15,
+    "case": "constant_temperature_jump",
+    "logmean_roundoff_condition": 34.11278690324777,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.734723475976807e-17,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.00000000005754,
+      "work_scale_J_per_kg": 13481.148020050336,
+      "relative_to_work": 0.005192436126058957
+    }
+  },
+  {
+    "residual_J_per_kg": 6.580016069886326e-11,
+    "work_scale_J_per_kg": 203295.4901957488,
+    "relative_to_work": 3.2366758670104156e-16,
+    "case": "constant_both_jumps",
+    "logmean_roundoff_condition": 10.479072010453923,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 3.469446951953614e-18,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.0000000000658,
+      "work_scale_J_per_kg": 203365.4901957488,
+      "relative_to_work": 0.0003442078591244145
+    }
+  },
+  {
+    "residual_J_per_kg": -7.183546295618853e-12,
+    "work_scale_J_per_kg": 44700.139916827444,
+    "relative_to_work": 1.6070523065442564e-16,
+    "case": "constant_equal_density",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 59.999999999992816,
+      "work_scale_J_per_kg": 44760.139916827444,
+      "relative_to_work": 0.0013404783834787789
+    }
+  },
+  {
+    "residual_J_per_kg": -4.480063773179417e-11,
+    "work_scale_J_per_kg": 609269.0276857,
+    "relative_to_work": 7.353178267073378e-17,
+    "case": "anticorrelated_cloud_density",
+    "logmean_roundoff_condition": 3.1435757155352944,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -4.480063773179417e-11,
+      "work_scale_J_per_kg": 609269.0276857,
+      "relative_to_work": 7.353178267073378e-17
+    }
+  },
+  {
+    "residual_J_per_kg": 5.708860201152519e-11,
+    "work_scale_J_per_kg": 205879.42007621244,
+    "relative_to_work": 2.772914455966125e-16,
+    "case": "varying_composition",
+    "logmean_roundoff_condition": 5.647754927256125,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.00000000005709,
+      "work_scale_J_per_kg": 205949.42007621244,
+      "relative_to_work": 0.00033988927948499825
+    }
+  },
+  {
+    "residual_J_per_kg": 5.446350589153676e-11,
+    "work_scale_J_per_kg": 203505.90374870514,
+    "relative_to_work": 2.6762617146866585e-16,
+    "case": "zero_condensates",
+    "logmean_roundoff_condition": 10.481379826725318,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.00000000005447,
+      "work_scale_J_per_kg": 203575.90374870514,
+      "relative_to_work": 0.0003438520901101475
+    }
+  },
+  {
+    "residual_J_per_kg": 6.78741929546988e-11,
+    "work_scale_J_per_kg": 203398.8307862782,
+    "relative_to_work": 3.3370001534579996e-16,
+    "case": "one_sided_cloud",
+    "logmean_roundoff_condition": 10.46814663901717,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.00000000006787,
+      "work_scale_J_per_kg": 203468.8307862782,
+      "relative_to_work": 0.00034403303803124145
+    }
+  },
+  {
+    "residual_J_per_kg": 5.1049909126791905e-11,
+    "work_scale_J_per_kg": 203313.6508738405,
+    "relative_to_work": 2.510894320542659e-16,
+    "case": "opposite_cloud_species",
+    "logmean_roundoff_condition": 10.479281916288084,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 70.00000000005105,
+      "work_scale_J_per_kg": 203383.6508738405,
+      "relative_to_work": 0.00034417712387055274
+    }
+  },
+  {
+    "residual_J_per_kg": 9.78303920713166e-15,
+    "work_scale_J_per_kg": 227.48171710027657,
+    "relative_to_work": 4.300582627842212e-17,
+    "case": "near_equal_0.001",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 0.0,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 0.2799999999999825,
+      "work_scale_J_per_kg": 227.76171710027654,
+      "relative_to_work": 0.001229354974860446
+    }
+  },
+  {
+    "residual_J_per_kg": 5.067744149973629e-17,
+    "work_scale_J_per_kg": 0.22695557151807247,
+    "relative_to_work": 2.2329234378676994e-16,
+    "case": "near_equal_1e-06",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 0.00027999999997523967,
+      "work_scale_J_per_kg": 0.22723557151804766,
+      "relative_to_work": 0.0012322014467396065
+    }
+  },
+  {
+    "residual_J_per_kg": -2.52656034512599e-20,
+    "work_scale_J_per_kg": 0.0002269550283483672,
+    "relative_to_work": 1.1132427263289437e-16,
+    "case": "near_equal_1e-09",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 2.799999947455692e-07,
+      "work_scale_J_per_kg": 0.0002272350283431128,
+      "relative_to_work": 0.0012322043691379487
+    }
+  },
+  {
+    "residual_J_per_kg": 1.3916452241723046e-23,
+    "work_scale_J_per_kg": 2.2695877094853126e-07,
+    "relative_to_work": 6.131709377682063e-17,
+    "case": "near_equal_1e-12",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 2.800106813083542e-10,
+      "work_scale_J_per_kg": 2.272387816298396e-07,
+      "relative_to_work": 0.0012322310448067678
+    }
+  },
+  {
+    "residual_J_per_kg": -8.921718876301542e-11,
+    "work_scale_J_per_kg": 98543.12872150358,
+    "relative_to_work": 9.053618443063186e-16,
+    "case": "varying_0",
+    "logmean_roundoff_condition": 5.147956087394397,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 31.09844328616225,
+      "work_scale_J_per_kg": 98574.22716478983,
+      "relative_to_work": 0.00031548249659795906
+    }
+  },
+  {
+    "residual_J_per_kg": -3.151324901292141e-11,
+    "work_scale_J_per_kg": 60655.565477555545,
+    "relative_to_work": 5.195442292032097e-16,
+    "case": "varying_1",
+    "logmean_roundoff_condition": 4.1598406307135365,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -85.198405807488,
+      "work_scale_J_per_kg": 60740.763883363,
+      "relative_to_work": 0.0014026561465557068
+    }
+  },
+  {
+    "residual_J_per_kg": 1.8902372562911548e-11,
+    "work_scale_J_per_kg": 149390.909278298,
+    "relative_to_work": 1.2652960380406153e-16,
+    "case": "varying_2",
+    "logmean_roundoff_condition": 59.80725738115001,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 1.7822088370601554,
+      "work_scale_J_per_kg": 149392.69148713505,
+      "relative_to_work": 1.1929692271550181e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -2.2600832245062657e-12,
+    "work_scale_J_per_kg": 45067.63451866831,
+    "relative_to_work": 5.014869869795527e-17,
+    "case": "varying_3",
+    "logmean_roundoff_condition": 3.93902620529729,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -62.275954821239324,
+      "work_scale_J_per_kg": 45129.91047348955,
+      "relative_to_work": 0.0013799263984319622
+    }
+  },
+  {
+    "residual_J_per_kg": 8.022120564683624e-11,
+    "work_scale_J_per_kg": 107388.76117250335,
+    "relative_to_work": 7.470167713171898e-16,
+    "case": "varying_4",
+    "logmean_roundoff_condition": 56.92314099263216,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -110.72586696201476,
+      "work_scale_J_per_kg": 107499.48703946544,
+      "relative_to_work": 0.0010300129797025436
+    }
+  },
+  {
+    "residual_J_per_kg": 5.1287895547955074e-11,
+    "work_scale_J_per_kg": 5517.452667895351,
+    "relative_to_work": 9.29557508420258e-15,
+    "case": "varying_5",
+    "logmean_roundoff_condition": 5.454405484230081,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -5.963562215027124,
+      "work_scale_J_per_kg": 5523.416230110429,
+      "relative_to_work": 0.001079687274429415
+    }
+  },
+  {
+    "residual_J_per_kg": -5.925888635308486e-11,
+    "work_scale_J_per_kg": 515971.65194133617,
+    "relative_to_work": 1.1484911260167904e-16,
+    "case": "varying_6",
+    "logmean_roundoff_condition": 3.5749751674755195,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -57.97694851446923,
+      "work_scale_J_per_kg": 516029.6288898506,
+      "relative_to_work": 0.00011235197606617417
+    }
+  },
+  {
+    "residual_J_per_kg": -3.404178402746784e-11,
+    "work_scale_J_per_kg": 74474.76823983705,
+    "relative_to_work": 4.570915067213148e-16,
+    "case": "varying_7",
+    "logmean_roundoff_condition": 40.10246624921748,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 60.162476081309656,
+      "work_scale_J_per_kg": 74414.60576375571,
+      "relative_to_work": 0.0008084767158789723
+    }
+  },
+  {
+    "residual_J_per_kg": -1.0648482214630941e-10,
+    "work_scale_J_per_kg": 94333.80307837317,
+    "relative_to_work": 1.1288087479929234e-15,
+    "case": "varying_8",
+    "logmean_roundoff_condition": 17.73925583954512,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 59.698985305068746,
+      "work_scale_J_per_kg": 94393.50206367834,
+      "relative_to_work": 0.0006324480393236761
+    }
+  },
+  {
+    "residual_J_per_kg": -1.0968629616878151e-11,
+    "work_scale_J_per_kg": 300725.2888556859,
+    "relative_to_work": 3.647391830136989e-17,
+    "case": "varying_9",
+    "logmean_roundoff_condition": 26.97330316896199,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 39.070949191805624,
+      "work_scale_J_per_kg": 300764.3598048777,
+      "relative_to_work": 0.00012990551545785905
+    }
+  },
+  {
+    "residual_J_per_kg": -4.0796041708287106e-11,
+    "work_scale_J_per_kg": 21329.367277612593,
+    "relative_to_work": 1.9126700373858175e-15,
+    "case": "varying_10",
+    "logmean_roundoff_condition": 14.51792142229646,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 92.07907799526807,
+      "work_scale_J_per_kg": 21237.288199617284,
+      "relative_to_work": 0.004335726724136437
+    }
+  },
+  {
+    "residual_J_per_kg": 5.721813784335394e-11,
+    "work_scale_J_per_kg": 262715.4152196389,
+    "relative_to_work": 2.177951293627656e-16,
+    "case": "varying_11",
+    "logmean_roundoff_condition": 8.052310433590781,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -43.176560981779765,
+      "work_scale_J_per_kg": 262758.59178062074,
+      "relative_to_work": 0.00016432026328497078
+    }
+  },
+  {
+    "residual_J_per_kg": 5.339842559265679e-11,
+    "work_scale_J_per_kg": 249383.50819947122,
+    "relative_to_work": 2.1412171950819485e-16,
+    "case": "varying_12",
+    "logmean_roundoff_condition": 4.793506863843908,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 18.588151407244503,
+      "work_scale_J_per_kg": 249402.09635087842,
+      "relative_to_work": 7.453085470898864e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -5.5787316342393744e-11,
+    "work_scale_J_per_kg": 412320.4008291153,
+    "relative_to_work": 1.3530088792650984e-16,
+    "case": "varying_13",
+    "logmean_roundoff_condition": 9.629120762577513,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 40.76083194202747,
+      "work_scale_J_per_kg": 412361.1616610574,
+      "relative_to_work": 9.884740788350739e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -1.2539911015099719e-10,
+    "work_scale_J_per_kg": 67352.88318674671,
+    "relative_to_work": 1.8618224524005596e-15,
+    "case": "varying_14",
+    "logmean_roundoff_condition": 2.7707250365255502,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 41.50717440122287,
+      "work_scale_J_per_kg": 67394.39036114806,
+      "relative_to_work": 0.0006158847075965417
+    }
+  },
+  {
+    "residual_J_per_kg": -1.8655117922631366e-12,
+    "work_scale_J_per_kg": 414194.9569486027,
+    "relative_to_work": 4.5039461755074615e-18,
+    "case": "varying_15",
+    "logmean_roundoff_condition": 4.1218587080912314,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -37.44266133153922,
+      "work_scale_J_per_kg": 414232.3996099342,
+      "relative_to_work": 9.039047010035297e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 1.834450333503908e-10,
+    "work_scale_J_per_kg": 48552.60373229066,
+    "relative_to_work": 3.778273856575643e-15,
+    "case": "varying_16",
+    "logmean_roundoff_condition": 425.09576225338867,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 40.76280836177007,
+      "work_scale_J_per_kg": 48593.36654065225,
+      "relative_to_work": 0.0008388554089511108
+    }
+  },
+  {
+    "residual_J_per_kg": -3.3057986962462543e-12,
+    "work_scale_J_per_kg": 465032.2690032019,
+    "relative_to_work": 7.108751191250112e-18,
+    "case": "varying_17",
+    "logmean_roundoff_condition": 10.275341077463375,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -126.30469345281521,
+      "work_scale_J_per_kg": 465158.57369665476,
+      "relative_to_work": 0.00027153039972812085
+    }
+  },
+  {
+    "residual_J_per_kg": 2.2663296206786763e-12,
+    "work_scale_J_per_kg": 87185.34481820509,
+    "relative_to_work": 2.5994387306769544e-17,
+    "case": "varying_18",
+    "logmean_roundoff_condition": 18.28316748537624,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 3.2655063665498782,
+      "work_scale_J_per_kg": 87188.61032457164,
+      "relative_to_work": 3.745335949722768e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -5.833731359750269e-12,
+    "work_scale_J_per_kg": 82924.87204800664,
+    "relative_to_work": 7.034959736052437e-17,
+    "case": "varying_19",
+    "logmean_roundoff_condition": 9.403318722925308,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -80.92571668246511,
+      "work_scale_J_per_kg": 83005.7977646891,
+      "relative_to_work": 0.000974940532610496
+    }
+  },
+  {
+    "residual_J_per_kg": 9.785437240065388e-11,
+    "work_scale_J_per_kg": 269855.6067345195,
+    "relative_to_work": 3.626175256640925e-16,
+    "case": "varying_20",
+    "logmean_roundoff_condition": 3.9907280368575164,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 68.66361077652434,
+      "work_scale_J_per_kg": 269924.2703452959,
+      "relative_to_work": 0.00025438101838225815
+    }
+  },
+  {
+    "residual_J_per_kg": -1.0919124648587347e-10,
+    "work_scale_J_per_kg": 102867.40742745457,
+    "relative_to_work": 1.061475633697473e-15,
+    "case": "varying_21",
+    "logmean_roundoff_condition": 6.102524640712501,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 7.335594596597138,
+      "work_scale_J_per_kg": 102874.74302205128,
+      "relative_to_work": 7.130607942344749e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -1.0561342185042493e-10,
+    "work_scale_J_per_kg": 209064.15956895248,
+    "relative_to_work": 5.051722976725336e-16,
+    "case": "varying_22",
+    "logmean_roundoff_condition": 30.319857950352464,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 24.63581243309079,
+      "work_scale_J_per_kg": 209088.7953813857,
+      "relative_to_work": 0.00011782464186162707
+    }
+  },
+  {
+    "residual_J_per_kg": 1.6974582857840155e-11,
+    "work_scale_J_per_kg": 167468.96894262708,
+    "relative_to_work": 1.0135957105973137e-16,
+    "case": "varying_23",
+    "logmean_roundoff_condition": 5.006535608772609,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -1.6603070071331205,
+      "work_scale_J_per_kg": 167470.62924963422,
+      "relative_to_work": 9.914019040665587e-06
+    }
+  },
+  {
+    "residual_J_per_kg": 7.005989643065293e-11,
+    "work_scale_J_per_kg": 17374.891393674836,
+    "relative_to_work": 4.032249459479072e-15,
+    "case": "varying_24",
+    "logmean_roundoff_condition": 126.9703745283553,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -18.810807973150872,
+      "work_scale_J_per_kg": 17393.702201648055,
+      "relative_to_work": 0.0010814723487314016
+    }
+  },
+  {
+    "residual_J_per_kg": -7.642829078148624e-12,
+    "work_scale_J_per_kg": 259416.8948290707,
+    "relative_to_work": 2.9461570277388716e-17,
+    "case": "varying_25",
+    "logmean_roundoff_condition": 7.220210869865337,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -59.6058524949116,
+      "work_scale_J_per_kg": 259476.5006815656,
+      "relative_to_work": 0.00022971580215682425
+    }
+  },
+  {
+    "residual_J_per_kg": -7.884141615808072e-11,
+    "work_scale_J_per_kg": 265883.2932077766,
+    "relative_to_work": 2.965264015158314e-16,
+    "case": "varying_26",
+    "logmean_roundoff_condition": 19.411108103351477,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 86.23596054823128,
+      "work_scale_J_per_kg": 265969.52916832495,
+      "relative_to_work": 0.0003242324818857534
+    }
+  },
+  {
+    "residual_J_per_kg": 6.588351441483618e-11,
+    "work_scale_J_per_kg": 78765.23520214864,
+    "relative_to_work": 8.364542332127631e-16,
+    "case": "varying_27",
+    "logmean_roundoff_condition": 11.585183269975419,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -36.678214188684336,
+      "work_scale_J_per_kg": 78801.9134163374,
+      "relative_to_work": 0.0004654482689386083
+    }
+  },
+  {
+    "residual_J_per_kg": 1.7980974018194843e-10,
+    "work_scale_J_per_kg": 613316.9557204704,
+    "relative_to_work": 2.931758832115181e-16,
+    "case": "varying_28",
+    "logmean_roundoff_condition": 3.8593585317344297,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -49.54566496828387,
+      "work_scale_J_per_kg": 613366.5013854388,
+      "relative_to_work": 8.077660722646708e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 5.848994948578667e-11,
+    "work_scale_J_per_kg": 29501.245605751395,
+    "relative_to_work": 1.9826264377929793e-15,
+    "case": "varying_29",
+    "logmean_roundoff_condition": 5.551611642263336,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -37.585750126185985,
+      "work_scale_J_per_kg": 29538.831355877643,
+      "relative_to_work": 0.0012724183185638172
+    }
+  },
+  {
+    "residual_J_per_kg": -5.819619341886704e-12,
+    "work_scale_J_per_kg": 126952.32272206145,
+    "relative_to_work": 4.584098358426794e-17,
+    "case": "varying_30",
+    "logmean_roundoff_condition": 20.9897609867528,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 31.50408522501926,
+      "work_scale_J_per_kg": 126983.82680728647,
+      "relative_to_work": 0.000248095257617575
+    }
+  },
+  {
+    "residual_J_per_kg": 1.6722627674214405e-11,
+    "work_scale_J_per_kg": 18937.90427743232,
+    "relative_to_work": 8.830241947173748e-16,
+    "case": "varying_31",
+    "logmean_roundoff_condition": 333.7728185643981,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 19.777953634283573,
+      "work_scale_J_per_kg": 18918.126323798057,
+      "relative_to_work": 0.0010454499190759657
+    }
+  },
+  {
+    "residual_J_per_kg": -5.105741733517617e-11,
+    "work_scale_J_per_kg": 24728.704815563742,
+    "relative_to_work": 2.064702446649841e-15,
+    "case": "varying_32",
+    "logmean_roundoff_condition": 6.920215155437852,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -29.7157694024399,
+      "work_scale_J_per_kg": 24758.420584966134,
+      "relative_to_work": 0.0012002287989438221
+    }
+  },
+  {
+    "residual_J_per_kg": 8.613308378977903e-11,
+    "work_scale_J_per_kg": 85204.33904597121,
+    "relative_to_work": 1.0109002047807297e-15,
+    "case": "varying_33",
+    "logmean_roundoff_condition": 129.98823158109036,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -88.86755562841516,
+      "work_scale_J_per_kg": 85293.20660159971,
+      "relative_to_work": 0.0010419066086178592
+    }
+  },
+  {
+    "residual_J_per_kg": -3.57094667307468e-11,
+    "work_scale_J_per_kg": 61559.91327539067,
+    "relative_to_work": 5.800766250432991e-16,
+    "case": "varying_34",
+    "logmean_roundoff_condition": 40.5276343589876,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -95.1138441161125,
+      "work_scale_J_per_kg": 61655.02711950675,
+      "relative_to_work": 0.0015426778408799025
+    }
+  },
+  {
+    "residual_J_per_kg": -1.2920930415224501e-11,
+    "work_scale_J_per_kg": 456381.48183856707,
+    "relative_to_work": 2.8311688640765095e-17,
+    "case": "varying_35",
+    "logmean_roundoff_condition": 7.484800964979031,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 91.91586078155062,
+      "work_scale_J_per_kg": 456473.3976993486,
+      "relative_to_work": 0.00020136082681885008
+    }
+  },
+  {
+    "residual_J_per_kg": -7.366215444542979e-11,
+    "work_scale_J_per_kg": 128982.55654280356,
+    "relative_to_work": 5.711016777759759e-16,
+    "case": "varying_36",
+    "logmean_roundoff_condition": 8.059399285883778,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 53.20774836123386,
+      "work_scale_J_per_kg": 129035.76429116486,
+      "relative_to_work": 0.00041234884493862
+    }
+  },
+  {
+    "residual_J_per_kg": -3.716519485721767e-11,
+    "work_scale_J_per_kg": 93482.68227670708,
+    "relative_to_work": 3.9756235007473734e-16,
+    "case": "varying_37",
+    "logmean_roundoff_condition": 7.617806571002575,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 59.07902724864176,
+      "work_scale_J_per_kg": 93541.76130395576,
+      "relative_to_work": 0.0006315791623451437
+    }
+  },
+  {
+    "residual_J_per_kg": -9.094930762287333e-11,
+    "work_scale_J_per_kg": 111021.57761856505,
+    "relative_to_work": 8.192038842696536e-16,
+    "case": "varying_38",
+    "logmean_roundoff_condition": 5.2576365731547625,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -35.65172785012908,
+      "work_scale_J_per_kg": 111057.22934641509,
+      "relative_to_work": 0.0003210212253623083
+    }
+  },
+  {
+    "residual_J_per_kg": -7.762911994380188e-12,
+    "work_scale_J_per_kg": 10330.230936749893,
+    "relative_to_work": 7.514751646803516e-16,
+    "case": "varying_39",
+    "logmean_roundoff_condition": 126.38864188683768,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -28.487690021313146,
+      "work_scale_J_per_kg": 10301.743246728589,
+      "relative_to_work": 0.0027653271236748856
+    }
+  },
+  {
+    "residual_J_per_kg": -4.429436576722493e-11,
+    "work_scale_J_per_kg": 206448.48505039152,
+    "relative_to_work": 2.1455408479463156e-16,
+    "case": "varying_40",
+    "logmean_roundoff_condition": 8.677918855209283,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -11.883654651750831,
+      "work_scale_J_per_kg": 206460.36870504325,
+      "relative_to_work": 5.755901108908824e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 8.818699722513773e-11,
+    "work_scale_J_per_kg": 86139.17411891965,
+    "relative_to_work": 1.02377342396377e-15,
+    "case": "varying_41",
+    "logmean_roundoff_condition": 4.314078582381406,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -64.25964048371307,
+      "work_scale_J_per_kg": 86203.43375940346,
+      "relative_to_work": 0.0007454417728076099
+    }
+  },
+  {
+    "residual_J_per_kg": -4.283708601339359e-12,
+    "work_scale_J_per_kg": 22221.307729292177,
+    "relative_to_work": 1.9277482016472704e-16,
+    "case": "varying_42",
+    "logmean_roundoff_condition": 18.143815493522407,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 21.128362976282382,
+      "work_scale_J_per_kg": 22242.43609226846,
+      "relative_to_work": 0.0009499122707888397
+    }
+  },
+  {
+    "residual_J_per_kg": 8.819196058020238e-11,
+    "work_scale_J_per_kg": 275435.0288440864,
+    "relative_to_work": 3.201915201211557e-16,
+    "case": "varying_43",
+    "logmean_roundoff_condition": 6.589535379525868,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 9.409134205294464,
+      "work_scale_J_per_kg": 275444.4379782916,
+      "relative_to_work": 3.415982647664143e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 3.5527108187258294e-11,
+    "work_scale_J_per_kg": 52112.10090691565,
+    "relative_to_work": 6.817439245199111e-16,
+    "case": "varying_44",
+    "logmean_roundoff_condition": 205.1127858504521,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -88.17308860787958,
+      "work_scale_J_per_kg": 52023.92781830773,
+      "relative_to_work": 0.0016948564305990482
+    }
+  },
+  {
+    "residual_J_per_kg": 7.177468825749159e-11,
+    "work_scale_J_per_kg": 34766.24357484853,
+    "relative_to_work": 2.0644936259209966e-15,
+    "case": "varying_45",
+    "logmean_roundoff_condition": 15.950856914464415,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 59.681235215779715,
+      "work_scale_J_per_kg": 34825.924810064236,
+      "relative_to_work": 0.0017137013745154766
+    }
+  },
+  {
+    "residual_J_per_kg": -1.2490373376632525e-10,
+    "work_scale_J_per_kg": 91143.81991552928,
+    "relative_to_work": 1.3704026656122612e-15,
+    "case": "varying_46",
+    "logmean_roundoff_condition": 17.221118002941655,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 22.045145395790524,
+      "work_scale_J_per_kg": 91165.8650609252,
+      "relative_to_work": 0.0002418135930708054
+    }
+  },
+  {
+    "residual_J_per_kg": 3.0394914365646777e-12,
+    "work_scale_J_per_kg": 91999.54503042526,
+    "relative_to_work": 3.3038113781535384e-17,
+    "case": "varying_47",
+    "logmean_roundoff_condition": 328.72142119966884,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 81.21857825900958,
+      "work_scale_J_per_kg": 92080.76360868427,
+      "relative_to_work": 0.0008820363241573915
+    }
+  },
+  {
+    "residual_J_per_kg": -1.413121326273888e-11,
+    "work_scale_J_per_kg": 189091.8443965882,
+    "relative_to_work": 7.473200818275933e-17,
+    "case": "varying_48",
+    "logmean_roundoff_condition": 6.180891020759365,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 13.41147637852398,
+      "work_scale_J_per_kg": 189105.25587296672,
+      "relative_to_work": 7.092069607802582e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -7.109273519260957e-11,
+    "work_scale_J_per_kg": 119071.11381498197,
+    "relative_to_work": 5.97061141991807e-16,
+    "case": "varying_49",
+    "logmean_roundoff_condition": 8.187529220113676,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 56.350374801375345,
+      "work_scale_J_per_kg": 119127.46418978342,
+      "relative_to_work": 0.0004730258902481368
+    }
+  },
+  {
+    "residual_J_per_kg": -2.5395616092293876e-11,
+    "work_scale_J_per_kg": 320994.77020381094,
+    "relative_to_work": 7.911535778657484e-17,
+    "case": "varying_50",
+    "logmean_roundoff_condition": 10.341363474259351,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 19.282596739711423,
+      "work_scale_J_per_kg": 321014.05280055065,
+      "relative_to_work": 6.0067765169432934e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 5.273926655770349e-11,
+    "work_scale_J_per_kg": 11433.305673085913,
+    "relative_to_work": 4.612774998384948e-15,
+    "case": "varying_51",
+    "logmean_roundoff_condition": 6.625805421367966,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -45.59622980535151,
+      "work_scale_J_per_kg": 11387.709443280508,
+      "relative_to_work": 0.004003986054654411
+    }
+  },
+  {
+    "residual_J_per_kg": 6.729507294658427e-12,
+    "work_scale_J_per_kg": 19103.622311688214,
+    "relative_to_work": 3.5226341815505304e-16,
+    "case": "varying_52",
+    "logmean_roundoff_condition": 14.639746486506684,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 30.297119934947794,
+      "work_scale_J_per_kg": 19073.325191753273,
+      "relative_to_work": 0.0015884550612101631
+    }
+  },
+  {
+    "residual_J_per_kg": -5.451426447569773e-11,
+    "work_scale_J_per_kg": 115677.01312886861,
+    "relative_to_work": 4.712627254212275e-16,
+    "case": "varying_53",
+    "logmean_roundoff_condition": 13.253553826475175,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -40.76834246676168,
+      "work_scale_J_per_kg": 115636.24478640189,
+      "relative_to_work": 0.0003525567830576576
+    }
+  },
+  {
+    "residual_J_per_kg": -5.778962831529249e-11,
+    "work_scale_J_per_kg": 448613.2959679607,
+    "relative_to_work": 1.28818358338224e-16,
+    "case": "varying_54",
+    "logmean_roundoff_condition": 7.86140291533703,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -36.816124372295384,
+      "work_scale_J_per_kg": 448650.1120923329,
+      "relative_to_work": 8.205976858135403e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 2.903504173887431e-11,
+    "work_scale_J_per_kg": 371732.3129496777,
+    "relative_to_work": 7.810739267857205e-17,
+    "case": "varying_55",
+    "logmean_roundoff_condition": 4.781956773301765,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 68.25004875394892,
+      "work_scale_J_per_kg": 371800.5629984316,
+      "relative_to_work": 0.00018356628673054704
+    }
+  },
+  {
+    "residual_J_per_kg": -8.093706252974531e-11,
+    "work_scale_J_per_kg": 250099.11416768623,
+    "relative_to_work": 3.236199488314809e-16,
+    "case": "varying_56",
+    "logmean_roundoff_condition": 23.727182615159457,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 17.19444819159549,
+      "work_scale_J_per_kg": 250116.3086158779,
+      "relative_to_work": 6.87458098464194e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 1.0020757252512061e-10,
+    "work_scale_J_per_kg": 49339.47679768923,
+    "relative_to_work": 2.030981660709741e-15,
+    "case": "varying_57",
+    "logmean_roundoff_condition": 9.098113254911437,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -57.13111516934624,
+      "work_scale_J_per_kg": 49282.345682519786,
+      "relative_to_work": 0.001159261280649845
+    }
+  },
+  {
+    "residual_J_per_kg": -3.458280763216667e-11,
+    "work_scale_J_per_kg": 25497.578680548657,
+    "relative_to_work": 1.3563173219482551e-15,
+    "case": "varying_58",
+    "logmean_roundoff_condition": 6.734322785022407,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 120.7190407668098,
+      "work_scale_J_per_kg": 25376.85963978181,
+      "relative_to_work": 0.004757051994627643
+    }
+  },
+  {
+    "residual_J_per_kg": -2.1773528291689388e-11,
+    "work_scale_J_per_kg": 72505.65135699994,
+    "relative_to_work": 3.0030111976350514e-16,
+    "case": "varying_59",
+    "logmean_roundoff_condition": 15.913109999501128,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -42.802651748587806,
+      "work_scale_J_per_kg": 72548.45400874851,
+      "relative_to_work": 0.0005899870966709546
+    }
+  },
+  {
+    "residual_J_per_kg": -8.513461440076116e-11,
+    "work_scale_J_per_kg": 38529.352157192385,
+    "relative_to_work": 2.2096040975054087e-15,
+    "case": "varying_60",
+    "logmean_roundoff_condition": 11.906037379041644,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -5.389401159667654,
+      "work_scale_J_per_kg": 38534.74155835197,
+      "relative_to_work": 0.00013985824068669697
+    }
+  },
+  {
+    "residual_J_per_kg": 5.444905441470311e-11,
+    "work_scale_J_per_kg": 64855.81846235306,
+    "relative_to_work": 8.39540008986383e-16,
+    "case": "varying_61",
+    "logmean_roundoff_condition": 7.0732323906623185,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -27.57191545479575,
+      "work_scale_J_per_kg": 64828.24654689821,
+      "relative_to_work": 0.0004253071295835467
+    }
+  },
+  {
+    "residual_J_per_kg": -2.0242688859013692e-11,
+    "work_scale_J_per_kg": 48514.094854814306,
+    "relative_to_work": 4.1725376758224534e-16,
+    "case": "varying_62",
+    "logmean_roundoff_condition": 41.015505092444734,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 37.63195521423551,
+      "work_scale_J_per_kg": 48551.72681002856,
+      "relative_to_work": 0.000775089943998912
+    }
+  },
+  {
+    "residual_J_per_kg": 8.168535624574643e-11,
+    "work_scale_J_per_kg": 57477.50819751774,
+    "relative_to_work": 1.4211707989330363e-15,
+    "case": "varying_63",
+    "logmean_roundoff_condition": 33.78885492519159,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -63.406510103382544,
+      "work_scale_J_per_kg": 57540.9147076212,
+      "relative_to_work": 0.0011019378198203105
+    }
+  },
+  {
+    "residual_J_per_kg": -1.4547223466298178e-11,
+    "work_scale_J_per_kg": 185276.09288197604,
+    "relative_to_work": 7.851646286369499e-17,
+    "case": "varying_64",
+    "logmean_roundoff_condition": 5.264948030847547,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 34.090290859051215,
+      "work_scale_J_per_kg": 185310.18317283512,
+      "relative_to_work": 0.0001839633973447421
+    }
+  },
+  {
+    "residual_J_per_kg": -6.621108220286757e-11,
+    "work_scale_J_per_kg": 16516.827205554895,
+    "relative_to_work": 4.008704660941155e-15,
+    "case": "varying_65",
+    "logmean_roundoff_condition": 37.42129208600348,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -17.4985918339648,
+      "work_scale_J_per_kg": 16499.328613720994,
+      "relative_to_work": 0.0010605638716361346
+    }
+  },
+  {
+    "residual_J_per_kg": 7.677993765683002e-11,
+    "work_scale_J_per_kg": 27332.02419351034,
+    "relative_to_work": 2.809156654963758e-15,
+    "case": "varying_66",
+    "logmean_roundoff_condition": 23.786696714697964,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -51.369091433127565,
+      "work_scale_J_per_kg": 27383.393284943548,
+      "relative_to_work": 0.001875921325695318
+    }
+  },
+  {
+    "residual_J_per_kg": 3.9252320415647926e-11,
+    "work_scale_J_per_kg": 113107.54176781549,
+    "relative_to_work": 3.4703539483002967e-16,
+    "case": "varying_67",
+    "logmean_roundoff_condition": 5.9938425996875475,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -12.008794661873052,
+      "work_scale_J_per_kg": 113119.55056247741,
+      "relative_to_work": 0.00010616020486432571
+    }
+  },
+  {
+    "residual_J_per_kg": 1.778408649398302e-10,
+    "work_scale_J_per_kg": 166153.0613131131,
+    "relative_to_work": 1.070343594841696e-15,
+    "case": "varying_68",
+    "logmean_roundoff_condition": 3.6704618069192176,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -23.229462550564584,
+      "work_scale_J_per_kg": 166176.29077566386,
+      "relative_to_work": 0.00013978806749227602
+    }
+  },
+  {
+    "residual_J_per_kg": 1.7377618178025722e-10,
+    "work_scale_J_per_kg": 71857.68514958044,
+    "relative_to_work": 2.4183381557382643e-15,
+    "case": "varying_69",
+    "logmean_roundoff_condition": 11.131720950477222,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -1.890729420529334,
+      "work_scale_J_per_kg": 71859.57587900115,
+      "relative_to_work": 2.6311446976990078e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 5.0935969584561715e-11,
+    "work_scale_J_per_kg": 9794.576728425984,
+    "relative_to_work": 5.200425806735936e-15,
+    "case": "varying_70",
+    "logmean_roundoff_condition": 18.867481385528023,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -16.756084693009708,
+      "work_scale_J_per_kg": 9811.332813119045,
+      "relative_to_work": 0.001707829610122349
+    }
+  },
+  {
+    "residual_J_per_kg": 1.190535498732791e-10,
+    "work_scale_J_per_kg": 379800.49474727735,
+    "relative_to_work": 3.134633880677233e-16,
+    "case": "varying_71",
+    "logmean_roundoff_condition": 3.310002361460989,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -3.3427443552364244,
+      "work_scale_J_per_kg": 379803.8374916327,
+      "relative_to_work": 8.801239021999263e-06
+    }
+  },
+  {
+    "residual_J_per_kg": 5.221633567787109e-11,
+    "work_scale_J_per_kg": 117322.47239315294,
+    "relative_to_work": 4.450667856955126e-16,
+    "case": "varying_72",
+    "logmean_roundoff_condition": 7.377185048069038,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 58.42679541365863,
+      "work_scale_J_per_kg": 117380.89918856655,
+      "relative_to_work": 0.000497753857889595
+    }
+  },
+  {
+    "residual_J_per_kg": -2.2724039373941716e-11,
+    "work_scale_J_per_kg": 179105.10374798515,
+    "relative_to_work": 1.2687544295731633e-16,
+    "case": "varying_73",
+    "logmean_roundoff_condition": 10.686571174967625,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -19.34209115026114,
+      "work_scale_J_per_kg": 179124.4458391354,
+      "relative_to_work": 0.00010798130349908527
+    }
+  },
+  {
+    "residual_J_per_kg": 1.0933306851001825e-10,
+    "work_scale_J_per_kg": 330165.80137464823,
+    "relative_to_work": 3.311459516849082e-16,
+    "case": "varying_74",
+    "logmean_roundoff_condition": 4.36258822663862,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -56.16405555704589,
+      "work_scale_J_per_kg": 330221.9654302054,
+      "relative_to_work": 0.00017007970830734014
+    }
+  },
+  {
+    "residual_J_per_kg": 4.784059443738267e-11,
+    "work_scale_J_per_kg": 76898.29304917021,
+    "relative_to_work": 6.221281713859695e-16,
+    "case": "varying_75",
+    "logmean_roundoff_condition": 34.755772816954945,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -12.992680094838185,
+      "work_scale_J_per_kg": 76885.30036907532,
+      "relative_to_work": 0.00016898783034557902
+    }
+  },
+  {
+    "residual_J_per_kg": -3.127342826410795e-12,
+    "work_scale_J_per_kg": 93277.55223532773,
+    "relative_to_work": 3.352728230390196e-17,
+    "case": "varying_76",
+    "logmean_roundoff_condition": 40.74791790956515,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 48.4653502735116,
+      "work_scale_J_per_kg": 93326.01758560125,
+      "relative_to_work": 0.0005193123153364797
+    }
+  },
+  {
+    "residual_J_per_kg": 6.846826640131317e-11,
+    "work_scale_J_per_kg": 145092.34986803334,
+    "relative_to_work": 4.718943932163721e-16,
+    "case": "varying_77",
+    "logmean_roundoff_condition": 12.19727577988444,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -91.18278408689193,
+      "work_scale_J_per_kg": 145183.53265212028,
+      "relative_to_work": 0.0006280518349514088
+    }
+  },
+  {
+    "residual_J_per_kg": -4.971977759243242e-11,
+    "work_scale_J_per_kg": 20814.057094866283,
+    "relative_to_work": 2.38875954677263e-15,
+    "case": "varying_78",
+    "logmean_roundoff_condition": 87.06806617008337,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 3.3728982516640156,
+      "work_scale_J_per_kg": 20810.68419661457,
+      "relative_to_work": 0.00016207531764922514
+    }
+  },
+  {
+    "residual_J_per_kg": -1.0053085139542813e-10,
+    "work_scale_J_per_kg": 143229.85228408745,
+    "relative_to_work": 7.018847662848348e-16,
+    "case": "varying_79",
+    "logmean_roundoff_condition": 26.604283865337383,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 100.13148277429036,
+      "work_scale_J_per_kg": 143329.98376686184,
+      "relative_to_work": 0.0006986080661054324
+    }
+  },
+  {
+    "residual_J_per_kg": -7.934927123787732e-11,
+    "work_scale_J_per_kg": 241873.64236645462,
+    "relative_to_work": 3.280608439246882e-16,
+    "case": "varying_80",
+    "logmean_roundoff_condition": 6.855421323423285,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 121.15629467977928,
+      "work_scale_J_per_kg": 241994.79866113447,
+      "relative_to_work": 0.0005006566064646479
+    }
+  },
+  {
+    "residual_J_per_kg": 4.5255778697143283e-11,
+    "work_scale_J_per_kg": 36831.99572448399,
+    "relative_to_work": 1.2287082957891312e-15,
+    "case": "varying_81",
+    "logmean_roundoff_condition": 21.392335708398896,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 68.94395084513134,
+      "work_scale_J_per_kg": 36900.93967532907,
+      "relative_to_work": 0.0018683521734603771
+    }
+  },
+  {
+    "residual_J_per_kg": -8.485653266424166e-11,
+    "work_scale_J_per_kg": 5643.187405132318,
+    "relative_to_work": 1.5036986470991033e-14,
+    "case": "varying_82",
+    "logmean_roundoff_condition": 5.0867065374977765,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 14.158251700119944,
+      "work_scale_J_per_kg": 5629.029153432114,
+      "relative_to_work": 0.0025152208869778938
+    }
+  },
+  {
+    "residual_J_per_kg": 2.7193544828942904e-11,
+    "work_scale_J_per_kg": 431133.5097855087,
+    "relative_to_work": 6.30745330894642e-17,
+    "case": "varying_83",
+    "logmean_roundoff_condition": 4.700628267634149,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -24.055265699642383,
+      "work_scale_J_per_kg": 431157.5650512083,
+      "relative_to_work": 5.579228488495929e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 1.1376787410407015e-10,
+    "work_scale_J_per_kg": 10160.750186073064,
+    "relative_to_work": 1.1196798663548215e-14,
+    "case": "varying_84",
+    "logmean_roundoff_condition": 21.690322516152417,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 18.739253434788903,
+      "work_scale_J_per_kg": 10142.010932638388,
+      "relative_to_work": 0.001847686179718403
+    }
+  },
+  {
+    "residual_J_per_kg": 9.924812799436954e-12,
+    "work_scale_J_per_kg": 151417.7885778739,
+    "relative_to_work": 6.554588395888928e-17,
+    "case": "varying_85",
+    "logmean_roundoff_condition": 16.648693474936998,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -13.511193189029592,
+      "work_scale_J_per_kg": 151431.29977106294,
+      "relative_to_work": 8.922325311514925e-05
+    }
+  },
+  {
+    "residual_J_per_kg": -7.105637979943171e-11,
+    "work_scale_J_per_kg": 91724.759119418,
+    "relative_to_work": 7.746695710252257e-16,
+    "case": "varying_86",
+    "logmean_roundoff_condition": 7.210762494333252,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 17.036289508903277,
+      "work_scale_J_per_kg": 91741.79540892698,
+      "relative_to_work": 0.0001856982352805094
+    }
+  },
+  {
+    "residual_J_per_kg": -7.0074071656873764e-12,
+    "work_scale_J_per_kg": 126212.83929116189,
+    "relative_to_work": 5.552055721939593e-17,
+    "case": "varying_87",
+    "logmean_roundoff_condition": 13.74152251677323,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -26.628601674833718,
+      "work_scale_J_per_kg": 126239.46789283672,
+      "relative_to_work": 0.00021093721416378628
+    }
+  },
+  {
+    "residual_J_per_kg": 1.4227812451484838e-10,
+    "work_scale_J_per_kg": 420856.44709231966,
+    "relative_to_work": 3.3806806453326837e-16,
+    "case": "varying_88",
+    "logmean_roundoff_condition": 4.038739543240274,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -129.2971356487367,
+      "work_scale_J_per_kg": 420985.74422796856,
+      "relative_to_work": 0.000307129486975504
+    }
+  },
+  {
+    "residual_J_per_kg": -1.3054473886694051e-12,
+    "work_scale_J_per_kg": 67937.88386467395,
+    "relative_to_work": 1.9215308373009337e-17,
+    "case": "varying_89",
+    "logmean_roundoff_condition": 6.168277088287567,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -85.93785417253184,
+      "work_scale_J_per_kg": 67851.94601050142,
+      "relative_to_work": 0.0012665495866431196
+    }
+  },
+  {
+    "residual_J_per_kg": -2.0683879183541613e-11,
+    "work_scale_J_per_kg": 243272.85260622134,
+    "relative_to_work": 8.502337585945935e-17,
+    "case": "varying_90",
+    "logmean_roundoff_condition": 6.673137867240823,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -38.15945121958554,
+      "work_scale_J_per_kg": 243311.0120574409,
+      "relative_to_work": 0.00015683404913287218
+    }
+  },
+  {
+    "residual_J_per_kg": 1.4110902079942123e-10,
+    "work_scale_J_per_kg": 77927.2459388836,
+    "relative_to_work": 1.8107790041764024e-15,
+    "case": "varying_91",
+    "logmean_roundoff_condition": 445.1791458783007,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -29.478073419084186,
+      "work_scale_J_per_kg": 77956.72401230282,
+      "relative_to_work": 0.0003781338145306372
+    }
+  },
+  {
+    "residual_J_per_kg": 1.4008253588269225e-11,
+    "work_scale_J_per_kg": 95458.61324448197,
+    "relative_to_work": 1.4674687921971232e-16,
+    "case": "varying_92",
+    "logmean_roundoff_condition": 21.923308169209715,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 42.938140639971145,
+      "work_scale_J_per_kg": 95501.55138512191,
+      "relative_to_work": 0.0004496067343117573
+    }
+  },
+  {
+    "residual_J_per_kg": 4.516266073954345e-11,
+    "work_scale_J_per_kg": 81293.84264211463,
+    "relative_to_work": 5.555483573136785e-16,
+    "case": "varying_93",
+    "logmean_roundoff_condition": 5.576143711358965,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -63.31796630509817,
+      "work_scale_J_per_kg": 81230.52467580949,
+      "relative_to_work": 0.0007794848864734011
+    }
+  },
+  {
+    "residual_J_per_kg": -6.835257747650597e-11,
+    "work_scale_J_per_kg": 29429.561480748853,
+    "relative_to_work": 2.3225822620978682e-15,
+    "case": "varying_94",
+    "logmean_roundoff_condition": 26.689013410266636,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 5.554946265348265,
+      "work_scale_J_per_kg": 29424.006534483437,
+      "relative_to_work": 0.00018878959460664037
+    }
+  },
+  {
+    "residual_J_per_kg": 1.7736381378725218e-11,
+    "work_scale_J_per_kg": 137768.27330056092,
+    "relative_to_work": 1.2874068139063339e-16,
+    "case": "varying_95",
+    "logmean_roundoff_condition": 7.721802988743455,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 28.5874431254432,
+      "work_scale_J_per_kg": 137796.86074368635,
+      "relative_to_work": 0.0002074607721188818
+    }
+  },
+  {
+    "residual_J_per_kg": -1.322709693788448e-10,
+    "work_scale_J_per_kg": 45445.98188319932,
+    "relative_to_work": 2.910509662191793e-15,
+    "case": "varying_96",
+    "logmean_roundoff_condition": 69.68626213735052,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 69.12681918163344,
+      "work_scale_J_per_kg": 45515.10870238108,
+      "relative_to_work": 0.0015187664305856558
+    }
+  },
+  {
+    "residual_J_per_kg": 1.0382033281786381e-11,
+    "work_scale_J_per_kg": 592042.466882922,
+    "relative_to_work": 1.753596044629592e-17,
+    "case": "varying_97",
+    "logmean_roundoff_condition": 3.0246454764347814,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 46.71303780129163,
+      "work_scale_J_per_kg": 592089.1799207232,
+      "relative_to_work": 7.889527352542769e-05
+    }
+  },
+  {
+    "residual_J_per_kg": 9.84869397888903e-11,
+    "work_scale_J_per_kg": 190396.09209867203,
+    "relative_to_work": 5.172739561159156e-16,
+    "case": "varying_98",
+    "logmean_roundoff_condition": 6.9492035224900235,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 88.14908633526264,
+      "work_scale_J_per_kg": 190484.2411850072,
+      "relative_to_work": 0.0004627631440106803
+    }
+  },
+  {
+    "residual_J_per_kg": 4.257071568782557e-11,
+    "work_scale_J_per_kg": 65992.9495430928,
+    "relative_to_work": 6.450797544672146e-16,
+    "case": "varying_99",
+    "logmean_roundoff_condition": 38.03370163301039,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": null,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": -75.76048394198273,
+      "work_scale_J_per_kg": 66068.71002703482,
+      "relative_to_work": 0.0011466923436371334
+    }
+  },
+  {
+    "residual_J_per_kg": 4.0851250453350353e-14,
+    "work_scale_J_per_kg": 227.48148909187827,
+    "relative_to_work": 1.7958054792252043e-16,
+    "case": "near_series_boundary_0.000999999",
+    "logmean_roundoff_condition": 1.0,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.1102230246251565e-16,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 0.27999972000007567,
+      "work_scale_J_per_kg": 227.7614888118783,
+      "relative_to_work": 0.001229354977703645
+    }
+  },
+  {
+    "residual_J_per_kg": 8.746903587098596e-13,
+    "work_scale_J_per_kg": 227.48194510869925,
+    "relative_to_work": 3.845097940814162e-15,
+    "case": "near_series_boundary_0.001000001",
+    "logmean_roundoff_condition": 4392.478464135898,
+    "candidate_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "constant_fraction_error": 1.7954387976359953e-15,
+    "corrupted_entropy_residual": {
+      "residual_J_per_kg": 0.28000028000084215,
+      "work_scale_J_per_kg": 227.76194538869922,
+      "relative_to_work": 0.0012293549720213042
+    }
+  }
+]

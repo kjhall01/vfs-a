@@ -19,7 +19,7 @@ def test_checkpoint54_fixture_equivalence_without_runtime_autograd(fixture_mode)
     checker = load(ROOT / "tools/check_baseline.py")
     with patch("torch.autograd.grad", side_effect=AssertionError("runtime autodiff")):
         actual = checker.capture(checker.imports())
-    expected = torch.load(ROOT / "tests/fixtures/checkpoint54.pt", weights_only=True)
+    expected = checker.reference_policy().load_reference("corrected-gibbs-v1")
     assert checker.check(actual, expected, fixture_mode)["tensor_comparisons"] == 142
 
 

@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/structural-baseline"
-          git -C "$GITHUB_WORKSPACE" archive 3f806a947e2ff8a5947953137a96af02861d083f | tar -x -C "$RUNNER_TEMP/structural-baseline"
+          git -C "$GITHUB_WORKSPACE" archive 24594d55e32d487987fed22c5af0f39b0c9a0426 | tar -x -C "$RUNNER_TEMP/structural-baseline"
           python -m build --wheel --outdir "$RUNNER_TEMP/baseline-wheel" "$RUNNER_TEMP/structural-baseline"
           baseline_wheels=("$RUNNER_TEMP"/baseline-wheel/*.whl)
           python -m pip install --no-deps --force-reinstall "${baseline_wheels[0]}"
@@ -65,11 +65,11 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I -m pytest tests --fixture-mode=portable -q --junitxml=pytest-portable.xml
-      - name: Required checkpoint-54 portable comparison
+      - name: Required corrected Gibbs v1 portable comparison
         id: portable_baseline
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I tools/check_baseline.py --mode portable --report baseline-portable.json
+        run: python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode portable --report baseline-portable.json
       - name: Required dry helpers portable comparison
         id: portable_dry
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
@@ -88,7 +88,16 @@ jobs:
       - name: Held-Suarez pinned archive comparison
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_held_suarez_archive.py --archive-repo "$GITHUB_WORKSPACE" --report held-suarez.json
-      # Scientific measurements are paused during the structural ownership stack.
+      - name: Paired Gibbs face, stage and energy checks
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/check_gibbs_fix.py --repo "$GITHUB_WORKSPACE" --output gibbs-checks --numerical-revision a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7 --structural-revision 6c5bf938503b357ba01c50ab99ae7e2cc770e90a
+          python -I tools/run_energy_verification.py --repo "$GITHUB_WORKSPACE" --output energy-checks --cells 16 --levels 3 --dt 1 --directions 2 --numerical-revision a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7 --structural-revision 6c5bf938503b357ba01c50ab99ae7e2cc770e90a
+      - name: Historical operator comparison (expected disagreement, evidence only)
+        continue-on-error: true
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/check_baseline.py --reference-version historical-v1 --mode portable --report historical-operator-portable.json
+
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -98,12 +107,12 @@ jobs:
           python -I -m pytest --fixture-mode=exact -q --junitxml=pytest-exact.xml
           tests/test_extraction.py::test_checkpoint54_fixture_equivalence_without_runtime_autograd
           tests/test_dry_extraction.py::test_expanded_dry_baseline
-      - name: Checkpoint-54 exact comparison (informational)
+      - name: Corrected Gibbs v1 exact comparison (informational)
         id: exact_baseline
         continue-on-error: true
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
-        run: python -I tools/check_baseline.py --mode exact --report baseline-exact.json
+        run: python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode exact --report baseline-exact.json
       - name: Dry helpers exact comparison (informational)
         id: exact_dry
         continue-on-error: true
@@ -117,7 +126,7 @@ jobs:
           | Check | Portable (required) | Exact (informational) |
           | --- | --- | --- |
           | pytest | ${{ steps.portable_tests.outcome }} | ${{ steps.exact_tests.outcome }} |
-          | checkpoint-54 | ${{ steps.portable_baseline.outcome }} | ${{ steps.exact_baseline.outcome }} |
+          | corrected Gibbs v1 | ${{ steps.portable_baseline.outcome }} | ${{ steps.exact_baseline.outcome }} |
           | dry helpers | ${{ steps.portable_dry.outcome }} | ${{ steps.exact_dry.outcome }} |
 
           Exact failure remains an exact failure; portable success is a separate result.
@@ -128,6 +137,8 @@ jobs:
         with:
           name: cpu-checks
           path: |
+            ${{ runner.temp }}/vfs-check/gibbs-checks/
+            ${{ runner.temp }}/vfs-check/energy-checks/
             ${{ runner.temp }}/vfs-check/*.xml
             ${{ runner.temp }}/vfs-check/*-portable.json
             ${{ runner.temp }}/vfs-check/*-exact.json

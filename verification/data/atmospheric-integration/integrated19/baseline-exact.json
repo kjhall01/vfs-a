@@ -1,0 +1,14 @@
+{
+  "mode": "exact_comparison",
+  "status": "pass",
+  "torch": "2.15.0",
+  "source": "/tmp/vfs-atmos-reference-env/lib/python3.12/site-packages/vfs/__init__.py",
+  "tensor_comparisons": 142,
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "reference_version": "corrected-gibbs-v1",
+  "fixture_sha256": "48503c853dce8a1ddfc650a8191d49ee421ca010cbc24add6b8c177a284d3fab"
+}

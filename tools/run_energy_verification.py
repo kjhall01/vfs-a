@@ -302,6 +302,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--structural-revision", choices=[common.STRUCTURAL_COMMIT])
     parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--numerical-revision", choices=[common.NUMERICAL_COMMIT])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cells", type=int, default=16)
     parser.add_argument("--levels", type=int, default=3)
@@ -321,7 +322,7 @@ def main():
         phi_full_mode="direct_u_gl2_adjoint", p_top_Pa=5000.,
         cadence="initial C2/C3, every actual moist Euler stage, final state",
         differentiation="scalar diagnostic only; no timestep backward qualification")
-    with common.recorded_run(args.repo, args.output, "C2-DER-001+C3-WORK-001+C4-LEDGER-001", configuration, __file__, structural_revision=args.structural_revision):
+    with common.recorded_run(args.repo, args.output, "C2-DER-001+C3-WORK-001+C4-LEDGER-001", configuration, __file__, args.numerical_revision, structural_revision=args.structural_revision):
         results = {}
         for kind in ("smooth", "sharp", "reversed", "dry"):
             model, state = make_case(kind, args.cells, args.levels, args.seed)

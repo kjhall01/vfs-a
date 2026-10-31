@@ -1,0 +1,18 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "tensor_comparisons": 93,
+  "maximum_budget_fraction": {
+    "dry_helper": 0.09933649012180386,
+    "energy": 0.0011527466360578434,
+    "rotation_work": 0.00027202216339206026,
+    "rotation_relative": 0.00011658092716802585,
+    "gradient": 0.008812871082555669,
+    "inventory": 0.0
+  },
+  "invariants": {
+    "diagonal_mass_delta": 0.0
+  },
+  "source": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0+cpu"
+}

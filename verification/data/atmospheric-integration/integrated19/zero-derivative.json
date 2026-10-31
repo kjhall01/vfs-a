@@ -1,0 +1,81 @@
+{
+  "objective": 0.9513373344473928,
+  "ad": 6.724739401731055e-05,
+  "gradient_finite": true,
+  "base_substeps": [
+    0,
+    0,
+    0
+  ],
+  "base_limited_faces": [
+    0,
+    0,
+    0
+  ],
+  "one_sided": [
+    {
+      "h": 0.01,
+      "fd": 6.724739401997581e-05,
+      "absolute_error": 2.6652670955668034e-15,
+      "same_limiter_masks": true,
+      "substeps": [
+        0,
+        0,
+        0
+      ],
+      "limited_faces": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "h": 0.001,
+      "fd": 6.724739409769143e-05,
+      "absolute_error": 8.038087881932776e-14,
+      "same_limiter_masks": true,
+      "substeps": [
+        0,
+        0,
+        0
+      ],
+      "limited_faces": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "h": 0.0001,
+      "fd": 6.724739431973603e-05,
+      "absolute_error": 3.0242548374435907e-13,
+      "same_limiter_masks": true,
+      "substeps": [
+        0,
+        0,
+        0
+      ],
+      "limited_faces": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "h": 1e-05,
+      "fd": 6.724739654018208e-05,
+      "absolute_error": 2.522871532994672e-12,
+      "same_limiter_masks": true,
+      "substeps": [
+        0,
+        0,
+        0
+      ],
+      "limited_faces": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

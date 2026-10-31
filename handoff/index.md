@@ -4,6 +4,38 @@ Main is 6c5bf938503b357ba01c50ab99ae7e2cc770e90a (#25). Ocean #23/#24 are not an
 This isolated stack preserves the original #18/#19 commits and artifacts; no ocean changes or expanded campaigns.
 Investigation and numerical correction remain separate. See verification/ATMOSPHERIC_INTEGRATION.md.
 
+Current regression uses **corrected-gibbs-v1**, pinned to integrated runtime
+`d972f55683bf40b4edf35d1f5193949ff420cb0d`. Historical scientific baseline and
+fixtures remain unchanged. Local installed-wheel suite: 585 passed, one CUDA
+skip; both original-to-integrated captures match exactly (419 tensors each).
+See the integration report for commands, quantities, provenance and CI status.
+
+## Historical numerical-fix handoff (superseded reference policy)
+
+# Current handoff — proposed paired Gibbs numerical fix
+
+The separately authorized fix is implemented at
+`a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7`, dependent on open #18.
+Read [results, pairing audit and reproduction commands](../verification/GIBBS_FIX_RESULTS.md).
+Only `gibbs_means.py` changes at runtime: total-density logarithmic mean times
+average condensate fraction, with entropy/composition/specific-volume traces
+recomputed together. No limiter, ledger, defaults, fixture or tolerance edits.
+
+All 22 old/new C5 cases completed; constant-composition drift falls from up to
+5.897e-6 to 5.465e-16. Deformational nonmonotonic convergence remains unresolved.
+C2 sweeps and unaffected dry/centered/ARK4 captures are exact; C3/C4, zero-cloud
+one-sided derivatives and existing smooth/active-limiter gradients are recorded.
+The candidate is not an internal partial-density mean; the limiter and energy
+pairing audit and changed limiter activity are explicit in the results.
+
+Installed-wheel macOS and hosted Linux each report 570 passed, two historical
+moist-reference failures and one CUDA skip. Required CI remains red; no failures
+are reinterpreted as passes. Six examples and dry portable comparisons complete.
+Keep the fix unmerged for review and decide reference policy separately.
+Baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; manifests require an
+explicit pinned numerical-revision opt-in. No GPU, rollout or IMEX backward
+qualification. Historical evidence below remains intact.
+
 ---
 
 # Historical handoff — constant-composition face investigation

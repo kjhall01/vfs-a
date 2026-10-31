@@ -34,7 +34,9 @@ def samples():
     result = {}
     for name, tool in TOOLS.items():
         actual = tool.capture(tool.imports()) if name == 'checkpoint54.pt' else tool.capture()
-        reference = policy.retained_reference(torch.load(ROOT / 'tests/fixtures' / name, weights_only=True), name)
+        reference = (tool.reference_policy().load_reference('corrected-gibbs-v1')
+                     if name == 'checkpoint54.pt' else torch.load(ROOT / 'tests/fixtures' / name, weights_only=True))
+        reference = policy.retained_reference(reference, name)
         result[name] = actual, reference
     return result
 
@@ -298,7 +300,8 @@ def test_exact_comparator_and_default_still_reject_one_ulp(samples, name):
 def test_cli_records_mode_and_preserves_failure_exit_code(tmp_path, tool, mode):
     report = tmp_path / 'result.json'
     proc = subprocess.run([sys.executable, '-I', str(ROOT / 'tools' / (tool + '.py')),
-                           '--mode', mode, '--report', str(report)], cwd=tmp_path,
+                           '--mode', mode, '--report', str(report)] +
+                          (['--reference-version', 'corrected-gibbs-v1'] if tool == 'check_baseline' else []), cwd=tmp_path,
                           capture_output=True, text=True)
     data = json.loads(report.read_text())
     assert data['mode'] == mode + '_comparison'

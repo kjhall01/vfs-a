@@ -1,0 +1,14 @@
+{
+  "mode": "portable_comparison",
+  "status": "fail",
+  "torch": "2.15.0+cpu",
+  "source": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/vfs/__init__.py",
+  "error": "cloud/rhs/u_e: tendency tolerance: error=5.826177214285355e-15, bound=1.3179057831217245e-15",
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "reference_version": "historical-v1",
+  "fixture_sha256": "00219b583824ef19c15ba8ffae4a2394942c072a260f73337ab22a3b418d7716"
+}

@@ -1,5 +1,8 @@
 # Pass 4 — physical-field workflow
 
+> Current numerical-fix evidence: [paired Gibbs revision](../verification/GIBBS_FIX_RESULTS.md).
+> Historical fixtures below remain unchanged; the proposed revision fails their moist gates.
+>
 > Historical report. For current APIs and supported configurations, read
 > [retained timestep paths](CURRENT_PATHS.md) and [readability results](READABILITY_RESULTS.md).
 
@@ -156,3 +159,7 @@ Historical fixtures and tolerances remain unchanged.
 See [the separate integration record](../verification/ATMOSPHERIC_INTEGRATION.md)
 for #18/#19 integration onto reconciled main. Historical fixture files, hashes,
 tolerances and original evidence remain unchanged.
+
+The separately authorized `corrected-gibbs-v1` regression reference and integration
+results are recorded in [the atmospheric stack report](../verification/ATMOSPHERIC_INTEGRATION.md).
+Checkpoint-54 files, tolerances and historical reproduction commands are unchanged.

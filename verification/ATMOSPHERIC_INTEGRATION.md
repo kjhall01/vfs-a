@@ -50,3 +50,128 @@ example commands pass. The small 16-cell/120-step constant-composition C5
 case and face investigation complete with the explicit structural source map.
 These are local checks; GitHub Actions results are reported separately.
 The runtime tree is byte-for-byte main; this integration adds no numerical fix.
+
+## Corrected regression policy and integration
+
+Integrated investigation commit: `6e2dcfde006307912cd029418bb87840a6d45938` (original #18 remains its ancestor).
+Integrated corrected runtime: **d972f55683bf40b4edf35d1f5193949ff420cb0d**
+(original #19 remains its ancestor). The sole runtime delta between them is
+`vfs/atmosphere/gibbs_means.py`, byte-identical to the original numerical commit.
+The source verifier admits that one exact pinned change only when both numerical
+and structural revisions are selected; all other files retain strict mapping.
+
+`tests/fixtures/corrected-gibbs-v1/` is a separately identified regression version,
+not a regeneration of checkpoint-54. Its provenance records the exact runtime
+commit, all runtime hashes, CPU/backend/software environment, configuration,
+initial tensors and geometry, archived capture scripts, and artifact hashes.
+`tools/regression_references.py` pins its provenance hash and verifies the fixture
+and historical hash. The old fixture, dry fixture, quantity mapping and tolerance
+constants are unchanged. Unknown versions and corrupted fixtures are rejected.
+
+Current pytest and CI explicitly use this corrected reference; the standalone
+baseline tool retains its historical default so historical commands keep their
+meaning. Current commands, outside the source directory with the wheel installed:
+
+```sh
+python -I -m pytest tests --fixture-mode=portable -q
+python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode portable
+python -I tools/check_dry_helpers.py --mode portable
+# Historical evidence: intentional disagreement, still exits nonzero.
+python -I tools/check_baseline.py --reference-version historical-v1 --mode portable
+# Exact is a distinct mode, never silently converted to portable success.
+python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode exact
+```
+
+The quantity-by-quantity comparison is
+[`quantity_comparison.json`](../tests/fixtures/corrected-gibbs-v1/quantity_comparison.json):
+**49 of 142 tensors change** between old and corrected operators in this same
+environment; **93 are exact**. Changes comprise 7 RHS, 6 Euler, 9 final-state,
+12 limiter/ledger, 12 final-budget and 3 energy-rate tensors. Initial states,
+initial energy gradients/budgets, all dry outputs, and CFL values are unchanged.
+The change in candidate flux requires matched momentum/entropy work, then
+propagates through Euler and SSPRK3. Final budget diagnostics evaluate that changed
+state. Energy-rate differences reflect cancellation, independently checked below.
+No unexplained output was admitted. Per-species errors remain separate in the
+comparison. Scalar and discrete records are also listed, rather than omitted.
+The original corrected 142-tensor capture agrees exactly with the integrated
+capture; this isolates integration from those intentional operator differences.
+
+To reproduce reference creation, build/install wheels from original #18
+`93b54b3630ba7d17afac87e38e84b8b0080b0d50`, original #19
+`24594d55e32d487987fed22c5af0f39b0c9a0426`, and integrated runtime `d972f556...`
+in that order in the **same** environment. Copy tests/tools/examples outside all
+checkouts. For each original wheel, save `check_baseline.capture(check_baseline.imports())`
+with `torch.save` as `old.pt` and `original-corrected.pt` respectively (load the tool
+by `importlib.util.spec_from_file_location`). Install the integrated wheel and run:
+
+```sh
+python -I tools/build_corrected_reference.py --repo /path/to/repo \
+  --old-capture old.pt --original-corrected-capture original-corrected.pt \
+  --output /new/nonexistent/reference-directory
+```
+
+The tool refuses to overwrite an existing directory, requires exact runtime
+source hashes, checks old versus historical using unchanged portable tolerances,
+requires exact integrated versus original-corrected results, and rejects changes
+outside the explicitly justified output groups. Both same-environment input
+captures are archived in the version directory. Fixture-file serialization hashes
+are provenance identifiers, not claims of cross-platform bitwise reproducibility.
+Historical reproduction commands and original reports remain available unchanged.
+
+## Local corrected results and limits
+
+macOS Apple M3 ARM64 CPU float64, Python 3.12.13, PyTorch 2.15.0/Accelerate:
+**585 passed, one CUDA skip** in the installed-wheel portable suite. The 235
+quantity corruption tests now compare against stored versioned references,
+not a copy of the current result. Independent shape, finiteness, positivity,
+conservation, limiter, exact-ledger and energy checks remain unchanged. Additional
+version/hash-corruption checks guard reference selection. Both portable tools
+pass; corrected moist exact passes locally. Historical moist portable fails as
+expected and retains its failure report. All six supported example commands pass.
+
+Both old and corrected branches match their own original **419** tensors exactly,
+including states, tendencies, energy terms, ledgers, limiter diagnostics,
+diagnostic/RHS gradients, smooth/active full-step gradients, and dry/moist ARK4
+stage and solver records. This does not qualify IMEX backward or long rollouts.
+
+The repeated 116-face checks give maximum absolute Gibbs residual
+**1.834450333503908e-10 J/kg**, cancellation-normalized **1.5036986470991033e-14**.
+Actual Euler/SSPRK3 tests include zero condensates, one-sided support, unequal
+pressure/temperature, nearly equal states and active limiting. C2–C4 and the
+zero-cloud one-sided derivative probe are archived under
+[data/atmospheric-integration](data/atmospheric-integration). These retain measured
+residuals rather than imposing new scientific acceptance thresholds.
+
+One inexpensive paired C5 case (16 cells, 120 steps, NL2010 Case 4, constant
+composition) confirms the integrated harness/source manifests: final drift is
+**5.422871183259799e-6** old versus **5.360295540768334e-16** corrected. Full
+inventories, errors and bounds are archived. This is not a new 22-case campaign;
+the original 22 paired results remain unchanged. Nonmonotonic deformational
+errors remain unresolved; constant-composition correction does not establish
+transport convergence or coupled energy conservation.
+
+Merge order: **#18, then #19**, both left open for review. Historical scientific
+baseline remains `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`; `d972f556...` is the
+proposed corrected runtime, not an automatically adopted scientific baseline.
+GitHub Actions #18 PR run [41238035183](https://github.com/kjhall01/vfs-a/actions/runs/41238035183)
+completed successfully at `6e2dcfde006307912cd029418bb87840a6d45938`.
+The corrected branch Actions status is recorded in the PR description after
+the final run; local results above are not substituted for hosted checks.
+
+## Completed Linux checks
+
+At reference-policy commit `60311cdac1a618435082bba193caf85202d3925a`,
+[GitHub Actions run 41238152703](https://github.com/kjhall01/vfs-a/actions/runs/41238152703)
+completed the required installed-wheel portable suite (**585 passed, one CUDA
+skip**), both comparison tools, exact same-environment integration captures,
+examples, Held–Suarez archive check, and small face/C2–C4 drivers successfully.
+The runner was AMD EPYC 7763, Linux x86_64, PyTorch 2.15.0+cpu; full backend
+details and reports are archived alongside the macOS results.
+
+Informational Linux **exact** comparisons fail for both corrected moist and
+historical dry fixtures (first corrected mismatch is initial wind, maximum
+4.440892098500626e-15 m/s). Portable passes do not erase those exact failures.
+Historical moist **portable** comparison separately fails at cloud momentum
+tendency, as expected from the changed operator. These are distinct outcomes.
+No tolerances were changed. The final documentation-only commit is checked
+again by CI, with its status reported on the PR.

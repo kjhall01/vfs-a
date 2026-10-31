@@ -54,8 +54,12 @@ def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
     rhoi/rhoj and di/dj/dstar are mixture/partial densities, kg/m³.
     eta here is mean mu/T, J/(kg K), not the composition derivative below.
 
-    Gas densities use logarithmic means; condensates use arithmetic means.
-    The latter is free in this identity because their gas constants are zero.
+    Gas partial densities use logarithmic means. Condensate weights use the
+    total-density logarithmic mean times arithmetic endpoint fractions, so
+    constant composition gives dstar_a=q_a*logmean(rhoi,rhoj) for every species.
+    This is finite at zero condensate, but is not an internal mean of its two
+    partial densities. Condensate weights are free in the Gibbs identity because
+    their gas constants vanish; s, q and alpha must all use the same new weights.
     """
     Ri = t.gas_constant(qi)
     Rj = t.gas_constant(qj)
@@ -64,7 +68,10 @@ def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
     di = rhoi[..., None] * qi
     dj = rhoj[..., None] * qj
     dstar = torch.cat(
-        [logmean(di[..., :2], dj[..., :2]), 0.5 * (di[..., 2:] + dj[..., 2:])], -1
+        [
+            logmean(di[..., :2], dj[..., :2]),
+            logmean(rhoi, rhoj)[..., None] * (0.5 * (qi[..., 2:] + qj[..., 2:])),
+        ], -1
     )
     density = dstar.sum(-1)
     q = dstar / density[..., None]

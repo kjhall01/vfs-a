@@ -24,6 +24,9 @@ BASELINE = "8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648"
 # User-approved stage-sequence extraction; not a new numerical baseline.
 INTERFACE_COMMIT = "ae132773e621671f70bfa6a698eebb1a82cffa94"
 INTERFACE_PATH = "vfs/atmosphere/bounded_moist.py"
+# Proposed numerical revision, NOT a replacement verification baseline.
+NUMERICAL_COMMIT = "a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7"
+NUMERICAL_PATH = "vfs/atmosphere/gibbs_means.py"
 
 
 _spec = importlib.util.spec_from_file_location('structural_sources', Path(__file__).with_name('structural_sources.py'))
@@ -40,16 +43,20 @@ def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def verify_package(repo, package, structural_revision=None):
+def verify_package(repo, package, numerical_revision=None, structural_revision=None):
     """Compare every tracked runtime file, not just a version string or HEAD."""
+    if numerical_revision not in (None, NUMERICAL_COMMIT):
+        raise ValueError("Unknown proposed numerical revision")
     if structural_revision is not None:
-        return structural.verify(repo, package, structural_revision, git)
+        return structural.verify(repo, package, structural_revision, git, numerical_revision)
     paths = git(repo, "ls-tree", "-r", "--name-only", BASELINE, "vfs").decode().splitlines()
     if not paths:
         raise ValueError("Baseline runtime tree is unavailable")
     hashes = {}
     for name in paths:
         expected = git(repo, "show", f"{BASELINE}:{name}")
+        if numerical_revision is not None and name == NUMERICAL_PATH:
+            expected = git(repo, "show", f"{numerical_revision}:{name}")
         installed = package / Path(name).relative_to("vfs")
         actual = installed.read_bytes() if installed.is_file() else None
         if actual != expected and name == INTERFACE_PATH:
@@ -116,6 +123,7 @@ def main():
     parser.add_argument("--cells", type=int, nargs="+", default=[16, 64, 256])
     parser.add_argument("--lloyd-iters", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20261030)
+    parser.add_argument("--numerical-revision", choices=[NUMERICAL_COMMIT])
     args = parser.parse_args()
     if any(n < 4 for n in args.cells) or len(set(args.cells)) != len(args.cells) or args.lloyd_iters < 0:
         parser.error("Use distinct cell counts >= 4 and nonnegative Lloyd iterations")
@@ -123,7 +131,7 @@ def main():
                      "seed": args.seed, "dtype": "float64", "device": "cpu",
                      "threads": 1, "radius_m": 6371220.0,
                      "mesh": "Fibonacci", "stepper": None}
-    with recorded_run(args.repo, args.output, "C1-GEO-001", configuration, __file__, structural_revision=args.structural_revision):
+    with recorded_run(args.repo, args.output, "C1-GEO-001", configuration, __file__, args.numerical_revision, structural_revision=args.structural_revision):
         rows = []
         for cells in args.cells:
             mesh = VoronoiMesh(n_cells=cells, lloyd_iters=args.lloyd_iters, radius=6371220.0, verbose=False)
@@ -134,12 +142,12 @@ def main():
 
 
 @contextmanager
-def recorded_run(repo, output, experiment_id, configuration, driver, structural_revision=None):
+def recorded_run(repo, output, experiment_id, configuration, driver, numerical_revision=None, structural_revision=None):
     """Share baseline checks and the run/artifact lifecycle between experiments."""
     package = Path(vfs.__file__).resolve().parent
     if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
         raise ValueError("Install a baseline wheel and run outside the checkout")
-    hashes = verify_package(repo, package, structural_revision=structural_revision)
+    hashes = verify_package(repo, package, numerical_revision, structural_revision=structural_revision)
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
     environment_path = Path(__file__).with_name("record_environment.py")
@@ -155,6 +163,9 @@ def recorded_run(repo, output, experiment_id, configuration, driver, structural_
         "driver_sha256": sha256(Path(driver).read_bytes()),
         "environment_driver_sha256": sha256(environment_path.read_bytes()),
         "runtime_sha256": hashes,
+        "numerical_change_commit": numerical_revision,
+        "numerical_change_path": NUMERICAL_PATH if numerical_revision else None,
+
         "structural_commit": structural_revision,
         "structural_mapping_sha256": structural.MAP_SHA256 if structural_revision else None,
         "interface_change_commit": (

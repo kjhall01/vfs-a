@@ -198,17 +198,30 @@ def check(actual, expected, mode="exact"):
     return policy.compare_selected(actual, expected, "checkpoint54.pt", mode, compare)
 
 
+def reference_policy():
+    import importlib.util
+    path = Path(__file__).with_name('regression_references.py')
+    spec = importlib.util.spec_from_file_location('regression_references', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--reference", type=Path)
     parser.add_argument(
         "--fixture",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "tests/fixtures/checkpoint54.pt",
+        default=None,
     )
     parser.add_argument("--report", type=Path)
     parser.add_argument("--mode", choices=("exact", "portable"), default="exact")
+    parser.add_argument("--reference-version", choices=reference_policy().VERSIONS, default="historical-v1")
     args = parser.parse_args()
+    if args.reference and args.reference_version != "historical-v1":
+        parser.error("Archived capture only writes historical references")
+    args.fixture = args.fixture or reference_policy().reference_path(args.reference_version)
     if args.reference and args.mode != "exact":
         parser.error("reference capture cannot select portable comparison")
     api = imports(args.reference)
@@ -237,6 +250,7 @@ def main():
         k: actual[k]["limiter"]["limited_faces"]
         for k in ("smooth", "cloud", "cloud_reverse")
     }
+    summary["reference_version"] = args.reference_version
     summary["fixture_sha256"] = hashlib.sha256(args.fixture.read_bytes()).hexdigest()
     print(json.dumps(summary, indent=2))
     if args.report:

@@ -1,0 +1,9 @@
+/tmp/vfs-atmos-reference-env/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:137: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  steps = max(1, math.ceil(float((out / torch.minimum(m0, m1)).max()) / safety))
+dry none 29 [0.0, 6.463664880148643e-13, 1.1563823175528047e-13, 5.383211047895367e-13, 1.858227636897093e-13, 3.4310509443720966e-13]
+dry hydrostatic_schur 13 [0.0, 2.6886419506109185e-14, 1.6764683685260098e-12, 2.681047421296544e-14, 3.879069750348468e-12, 2.6870261174136536e-14]
+dry multilevel_hydrostatic_schur 23 [0.0, 6.965277729859006e-14, 6.791514052402238e-14, 6.84157623093791e-14, 5.99612324816566e-13, 9.558240729692963e-14]
+moist none 30 [0.0, 6.50057266145625e-13, 6.526939858406932e-13, 6.516748113082997e-13, 6.50851537063722e-13, 6.50437827959822e-13]
+moist hydrostatic_schur 20 [0.0, 1.1360968844843684e-17, 5.3223013949081064e-18, 1.022390226951297e-17, 3.99579611075994e-18, 3.205171824044334e-18]
+Exactly equal atmospheric integration tensors: 419
