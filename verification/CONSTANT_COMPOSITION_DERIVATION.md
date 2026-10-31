@@ -30,7 +30,11 @@ particular mesh without satisfying this stronger local condition. A discretely
 divergent velocity does NOT itself destroy constant composition if carrier and
 species use consistent fluxes. When the actual pressure-derived target mass is
 M'=M+BG+r, the composition error numerator is `B(J_a-q_a G)-q_a*r`;
-carrier/target consistency must be checked as well, including rounding.
+this formula applies to each advected water species (and to ledger dry, if
+divided by the target). VFS physical dry is complementary to water, so it is
+ledger dry plus r and its error numerator is instead
+`B(J_d-q_d*G)+(1-q_d)*r`. Thus carrier/target consistency and the distinction
+between ledger dry and physical dry must be checked, including rounding.
 
 `BoundedGibbs.evaluate` constructs horizontal high species traces via
 arithmetic endpoint fractions plus `gibbs_face` minus arithmetic fractions;
