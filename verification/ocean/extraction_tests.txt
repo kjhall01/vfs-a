@@ -1,0 +1,16 @@
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+..........................s............................................. [ 38%]
+........................................................................ [ 50%]
+........................................................................ [ 63%]
+........................................................................ [ 76%]
+........................................................................ [ 88%]
+...............................................................          [100%]
+=============================== warnings summary ===============================
+tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[u_e]
+  /workspace/scratch/6655f56cada4/ocean-venv/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:137: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+    steps = max(1, math.ceil(float((out / torch.minimum(m0, m1)).max()) / safety))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+566 passed, 1 skipped, 1 warning in 59.74s

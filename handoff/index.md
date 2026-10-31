@@ -1,3 +1,23 @@
+# Current handoff — ocean integration onto corrected atmospheric main
+
+This branch integrates the reviewed ocean #23/#24 history onto main
+`4ec610ed25c818e60863a8f8b772107b33f9251c` (including #18/#19 and #25).
+Ocean runtime is byte-identical to #24 head `8936334`; all non-ocean runtime
+is byte-identical to starting main. The archived ocean remains the default;
+constant-density energy pairing is explicit and T/S remain passive there.
+
+Read [integration evidence](../verification/ocean/INTEGRATION.md). Atmospheric
+regression remains `corrected-gibbs-v1`; historical fixtures and tolerances are
+unchanged. Scientific drivers now require an explicit pinned `--ocean-revision`
+in addition to the existing structural/numerical pins for this combined package.
+Unknown or modified files are still rejected. No shared numerical code changes.
+
+Williamson rotating-balance verification belongs to a separate dependent change.
+Keep these drafts unmerged for review. Earlier handoffs below are historical
+snapshots; their merge-status statements describe their original dates.
+
+---
+
 # Current handoff — atmospheric integration and versioned references
 
 Main is 6c5bf938503b357ba01c50ab99ae7e2cc770e90a (#25). Ocean #23/#24 are not ancestors of main.
@@ -540,6 +560,65 @@ conservation diagnostics and explicit I/O. No column-physics integration now.
 ---
 
 # Historical handoff — structural ownership stack, unmerged
+
+---
+
+# Review follow-up: selected-density output
+
+Use Ocean.to_latlon(state, remapper, fields="all") for model output. It supplies
+the selected dynamics density, while legacy state-only output explicitly labels
+its linear-EOS convention. See verification/ocean/OUTPUT_METADATA.md. #23 also
+receives the Celsius label correction independently. #25 proposes integration
+of the structural stack into main. Numerical kernels and fixtures are unchanged;
+Gibbs reference policy and nn.Module migration remain separate tasks.
+
+# Published ocean drafts
+
+[Reference extraction #23](https://github.com/kjhall01/vfs-a/pull/23) targets
+`structure/io-ownership`; [energy candidate #24](https://github.com/kjhall01/vfs-a/pull/24)
+targets the extraction branch. Both remain drafts and unmerged. At publication,
+#20–#22 were marked merged, but main contained only the first ownership stage;
+coordinate completion of that stack before retargeting #23. No other agent's
+branch or shared runtime was modified. See the [publication and exact tree
+provenance](../verification/ocean/PR_DRAFTS.md). This status supersedes the older
+structural-stack status in the handoff snapshots below.
+
+# Current ocean handoff — explicit constant-density numerical candidate
+
+The dependent `ocean/constant-density-energy` branch adds an ocean-owned H,
+analytic derivatives, paired Bernoulli/continuity and metric-skew rotation.
+Read the [derivation, usage and measured limitations](../verification/ocean/CONSTANT_DENSITY.md).
+The archived reference remains the default and its 1,416-array comparison is
+unchanged. Temperature/salinity are passive in the new candidate; no active
+stratification or remapping closure is claimed.
+
+Final installed-wheel CPU float64: 575 passed, one CUDA skip. Maximum measured
+normalized semidiscrete H rate is 9.2721e-17; wave slopes 1.9434/1.8986;
+SSPRK3 temporal orders 2.9942–3.0002. Shared and atmospheric runtime is unchanged.
+Do not merge this numerical change with the extraction or promote its default
+without reviewing the distinct evidence. Full structural integration into main
+remained pending at publication.
+
+---
+
+# Current ocean handoff — extracted reference, dependent on structural stack
+
+The ocean branch restores the archived layered solver on PR #22's pinned head,
+without changes to shared runtime or atmospheric equations. Read the
+[ocean boundary and coordination record](../verification/ocean/README.md) and
+[results](../verification/ocean/RESULTS.md). New ordinary imports are
+`from vfs.ocean import Ocean, OceanState, OceanColumn, OceanDomain`.
+
+All 1,416 donor capture arrays match exactly. Installed-wheel portable suite:
+566 passed, one CUDA skip. Atmospheric 298-tensor/solver and 74-output captures
+are exact; existing fixtures/tolerances remain unchanged. This is extraction,
+not Hamiltonian closure. Numerical corrections belong to a separate dependent
+change. Leave the structural stack and ocean changes unmerged for review.
+Atmospheric ownership and #18/#19 baseline policy below remain in force.
+
+---
+
+# Current handoff — structural ownership stack, unmerged
 
 Atmospheric campaigns are paused. Structural baseline is merged main
 `3f806a947e2ff8a5947953137a96af02861d083f`; #18/#19 remain separate and unmerged.

@@ -183,7 +183,7 @@ def snapshot(model, state, reference_q):
         constant_composition_error=float((q-q.new_tensor([.01,.001,.0001])).abs().max()))
 
 
-def run_case(repo, output, cells, flow, kind, steps, order=12, numerical_revision=None, structural_revision=None):
+def run_case(repo, output, cells, flow, kind, steps, order=12, numerical_revision=None, structural_revision=None, ocean_revision=None):
     dt = reference.PERIOD/steps
     configuration = dict(cells=cells, layers=1, flow=flow, profile=kind, steps=steps, dt_s=dt,
         period_s=reference.PERIOD, radius_m=6371220., p_top_Pa=5000., temperature_K=280.,
@@ -192,7 +192,7 @@ def run_case(repo, output, cells, flow, kind, steps, order=12, numerical_revisio
         cadence='metrics every Euler stage; raw stages at first, half, final step; fields at 0,T/2,T',
         guarantees='transport only; not coupled dynamical energy closure')
     started = clock.perf_counter()
-    with common.recorded_run(repo, output, 'C5-H-001', configuration, __file__, numerical_revision, structural_revision=structural_revision):
+    with common.recorded_run(repo, output, 'C5-H-001', configuration, __file__, numerical_revision, structural_revision=structural_revision, ocean_revision=ocean_revision):
         for source in ('transport_references.py', 'run_energy_verification.py'):
             shutil.copyfile(Path(__file__).with_name(source), output/source)
         model, state, initial_quad = make_case(cells, flow, kind, order)
@@ -234,6 +234,7 @@ def run_case(repo, output, cells, flow, kind, steps, order=12, numerical_revisio
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--structural-revision", choices=[common.STRUCTURAL_COMMIT])
+    parser.add_argument("--ocean-revision", choices=[common.OCEAN_COMMIT])
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--numerical-revision', choices=[common.NUMERICAL_COMMIT])
     parser.add_argument('--output', type=Path, required=True)
@@ -252,7 +253,7 @@ def main():
             for steps in args.steps:
                 name = f'{flow}-{args.profile}-{cells}-{steps}'
                 try:
-                    run_case(args.repo,args.output/name,cells,flow,args.profile,steps,args.quadrature_order,args.numerical_revision, structural_revision=args.structural_revision)
+                    run_case(args.repo,args.output/name,cells,flow,args.profile,steps,args.quadrature_order,args.numerical_revision, structural_revision=args.structural_revision, ocean_revision=args.ocean_revision)
                     print(name,'completed',flush=True)
                 except Exception as error:
                     failures.append(dict(case=name,error=f'{type(error).__name__}: {error}'))
