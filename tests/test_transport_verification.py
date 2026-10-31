@@ -113,7 +113,7 @@ def test_report_includes_bottom_interface_errors():
     assert after['per_interface_area_error'][0] == before['per_interface_area_error'][0]
 
 
-def test_constant_composition_face_mismatch_is_exposed_not_hidden():
+def test_constant_composition_face_is_preserved_after_paired_fix():
     from vfs.atmosphere.gibbs_means import gibbs_face
     from vfs.atmosphere.mixture_thermodynamics import MixtureThermodynamics
     thermo = MixtureThermodynamics()
@@ -121,10 +121,6 @@ def test_constant_composition_face_mismatch_is_exposed_not_hidden():
     temperature = torch.tensor([280.])
     _,face,_ = gibbs_face(thermo,temperature,torch.tensor([1e5]),q,
                         temperature,torch.tensor([9e4]),q)
-    # Independent analytic mean for constant q, equal T: gas density is
-    # proportional to logmean(p), condensate density to arithmetic_mean(p).
-    logp = (1e5-9e4)/np.log(1e5/9e4)
-    weights = q * q.new_tensor([logp,logp,95000.,95000.])
-    expected = weights/weights.sum(-1,keepdim=True)
-    torch.testing.assert_close(face,expected,rtol=2e-14,atol=0)
-    assert abs(float(face[0,2]-q[0,2])) > 9e-7
+    # Deliberate numerical change: #17's historical counterexample remains in
+    # its committed report. Current production must preserve the endpoint q.
+    torch.testing.assert_close(face,q,rtol=2e-14,atol=0)

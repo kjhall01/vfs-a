@@ -1,4 +1,4 @@
-"""Small offline candidate tests, not activation or scientific qualification."""
+"""Face candidate checks, now also checking the authorized production pairing."""
 import importlib.util
 from pathlib import Path
 
@@ -27,8 +27,12 @@ def test_face_and_cp_ledger_probes():
         if result['constant_trace_error'] is not None:
             assert result['constant_trace_error'] <= 8*eps
             assert result['cp_ledger']['constant_fraction_error'] <= 8*eps
-    controls=[r['unpaired_species_only']['residual_J_per_kg'] for r in rows]
-    assert max(map(abs,controls))>1  # Detect a species-only change.
+    # Production now implements the candidate. #18's old/new unpaired negative
+    # control is historical evidence, not a property to require of the fixed API.
+    for row in rows:
+        for key in ('entropy', 'fractions', 'specific_volume'):
+            torch.testing.assert_close(torch.tensor(row['production'][key]),
+                                       torch.tensor(row['candidate'][key]), rtol=2e-14, atol=1e-12)
     equal=rows[0]['candidate']
     thermo=MixtureThermodynamics()
     q=torch.tensor([.9889,.01,.001,.0001]);T=torch.tensor(280.);p=torch.tensor(1e5)
@@ -48,7 +52,7 @@ def test_boundary_derivatives_are_finite_and_match_one_sided_differences(water_l
     water=torch.tensor([water_left,water_right],requires_grad=True)
     def value(w):
         q=torch.cat((1-w.sum(-1,keepdim=True),w),-1)
-        s,f,a=probe.candidate(thermo,torch.tensor(240.),torch.tensor(3e4),q[0],
+        s,f,a=probe.gibbs_face(thermo,torch.tensor(240.),torch.tensor(3e4),q[0],
                              torch.tensor(310.),torch.tensor(1e5),q[1])
         return s/1000+(f*f.new_tensor([1.,2.,3.,4.])).sum()+a
     objective=value(water)

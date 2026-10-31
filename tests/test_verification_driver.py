@@ -70,3 +70,23 @@ def test_only_pinned_interface_blob_is_allowed(tmp_path, monkeypatch):
     path.write_bytes(extracted + b' unapproved change')
     with pytest.raises(ValueError, match='differs'):
         driver.verify_package(tmp_path, package)
+
+
+def test_proposed_numerical_revision_requires_explicit_exact_pin(tmp_path, monkeypatch):
+    original,new=b'frozen',b'paired revision'
+    def git(repo,*args):
+        if args[0]=='ls-tree':return (driver.NUMERICAL_PATH+'\n').encode()
+        return new if args[1].startswith(driver.NUMERICAL_COMMIT) else original
+    monkeypatch.setattr(driver,'git',git)
+    package=tmp_path/'vfs'
+    path=package/Path(driver.NUMERICAL_PATH).relative_to('vfs')
+    path.parent.mkdir(parents=True)
+    path.write_bytes(new)
+    with pytest.raises(ValueError,match='differs'):
+        driver.verify_package(tmp_path,package)
+    assert driver.verify_package(tmp_path,package,driver.NUMERICAL_COMMIT)[driver.NUMERICAL_PATH]==driver.sha256(new)
+    with pytest.raises(ValueError,match='Unknown'):
+        driver.verify_package(tmp_path,package,'HEAD')
+    path.write_bytes(new+b' unapproved')
+    with pytest.raises(ValueError,match='differs'):
+        driver.verify_package(tmp_path,package,driver.NUMERICAL_COMMIT)
