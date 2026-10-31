@@ -1,12 +1,27 @@
-# Current handoff — structural ownership stack
+# Current handoff — structural ownership stack, unmerged
 
 Atmospheric campaigns are paused. Structural baseline is merged main
 `3f806a947e2ff8a5947953137a96af02861d083f`; #18/#19 remain separate and unmerged.
-Read [ownership map and dependency rules](../docs/PACKAGE_OWNERSHIP.md) and
-[migration validation](../docs/STRUCTURAL_RESULTS.md). Slice 1 relocates dry
-model/state and the pressure column with old import aliases retained. Next
-slices separate atmospheric IMEX from reusable integration and component field
-interpretation from shared remapping/I/O. No fixtures or numerical changes.
+PR #20 owns dry state/model and pressure column in atmosphere. Dependent #21
+separates atmospheric ARK4 systems from shared RK/GMRES. The final dependent
+slice separates initialization/output interpretation from shared remapping/I/O.
+Read [package map and migration notes](../docs/PACKAGE_OWNERSHIP.md) and
+[validation](../docs/STRUCTURAL_RESULTS.md).
+
+Final local wheel: 559 passes, one CUDA skip; portable fixtures and six examples
+pass. 298 dynamics tensors and all solver records, plus 74 output/initialization
+tensors, match the unchanged baseline exactly. The source audit preserves 457
+relocated executable definitions. Historical moist/dry exact fixture failures
+remain separately reported. #20/#21 hosted CI passed; final-slice status is
+reported in its PR. No new GPU, IMEX-backward, rollout or scientific claims.
+
+Ocean archive was inventoried but no ocean physics/state restored. Only its
+existing output adapter is separated. Shared implementation modules have no
+component state imports. Old imports are thin compatibility surfaces; new code
+uses owner paths. Gibbs means, bounded ledgers, fixtures, tolerances and supported
+ARK4 settings are unchanged. Follow the explicit #19 rebase notes in the package
+map; scientific source guards require reviewed structural mapping, not bypasses.
+Leave the entire structural stack unmerged for review.
 
 ---
 

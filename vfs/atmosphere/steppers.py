@@ -12,7 +12,7 @@ from .bounded_moist import BoundedGibbs
 
 def _default_ark():
     # Import the experimental solver stack only when explicitly selected.
-    from ..integrators.imex.tableau import ARK4_TABLEAU
+    from vfs.integrators.tableau import ARK4_TABLEAU
 
     return ARK4_TABLEAU
 
@@ -70,8 +70,8 @@ class CenteredIMEX:
     _implementation: object = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
-        from ..integrators.imex.tableau import ARK4_TABLEAU
-        from ..integrators.imex.solvers import IMEXSolverConfig
+        from vfs.integrators.tableau import ARK4_TABLEAU
+        from vfs.atmosphere.imex.solvers import IMEXSolverConfig
 
         if self.solver_config is not None and not isinstance(
             self.solver_config, IMEXSolverConfig
@@ -85,7 +85,7 @@ class CenteredIMEX:
     _bound_config: object = field(default=None, init=False, repr=False)
 
     def _bind(self, dynamics):
-        from ..integrators.imex.moist_ark import MoistPEIMEXARK
+        from vfs.atmosphere.imex.moist_ark import MoistPEIMEXARK
 
         if self._dynamics is not None:
             raise ValueError("stepper is already bound; construct a fresh stepper")
@@ -133,7 +133,7 @@ class DrySSPRK3:
             raise ValueError("dry stepper no longer matches model dynamics")
 
     def advance(self, state, dt):
-        from ..core.integrators import ssprk3
+        from vfs.integrators.explicit import ssprk3
         self._check_binding(self._dynamics)
         return ssprk3(self._dynamics, state, dt)
 
@@ -147,7 +147,7 @@ class DryIMEX:
     _bound_config: object = field(default=None, init=False, repr=False)
 
     def _bind(self, dynamics):
-        from ..integrators.imex import DryPEIMEXARK, IMEXSolverConfig
+        from vfs.atmosphere.imex import DryPEIMEXARK, IMEXSolverConfig
         if self._dynamics is not None:
             raise ValueError("stepper is already bound; construct a fresh stepper")
         config = self.solver_config
@@ -167,7 +167,7 @@ class DryIMEX:
         _check(self, dynamics)
         if self.solver.dynamics is not dynamics or self.solver.solver_config is not self._bound_config:
             raise ValueError("dry IMEX collaborator binding changed")
-        from ..integrators.imex.tableau import ARK4_TABLEAU
+        from vfs.integrators.tableau import ARK4_TABLEAU
         if self.solver.tableau is not ARK4_TABLEAU:
             raise ValueError("dry IMEX requires the retained ARK4 tableau")
 
