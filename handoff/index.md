@@ -1,3 +1,20 @@
+# Current ocean handoff — explicit constant-density numerical candidate
+
+The dependent `ocean/constant-density-energy` branch adds an ocean-owned H,
+analytic derivatives, paired Bernoulli/continuity and metric-skew rotation.
+Read the [derivation, usage and measured limitations](../verification/ocean/CONSTANT_DENSITY.md).
+The archived reference remains the default and its 1,416-array comparison is
+unchanged. Temperature/salinity are passive in the new candidate; no active
+stratification or remapping closure is claimed.
+
+Final installed-wheel CPU float64: 575 passed, one CUDA skip. Maximum measured
+normalized semidiscrete H rate is 9.2721e-17; wave slopes 1.9434/1.8986;
+SSPRK3 temporal orders 2.9942–3.0002. Shared and atmospheric runtime is unchanged.
+Do not merge this numerical change with the extraction or promote its default
+without reviewing the distinct evidence. The structural stack remains pending.
+
+---
+
 # Current ocean handoff — extracted reference, dependent on structural stack
 
 The ocean branch restores the archived layered solver on PR #22's pinned head,

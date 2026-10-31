@@ -94,6 +94,13 @@ class Ocean:
             out = out + source.tendency(state)
         return out
 
+    def physical_fields(self, state):
+        """Recover fields with the selected dynamics' density convention."""
+        self.check_state(state)
+        return {'u_e':state.u_e, 'h':state.h, 'temperature':state.temperature(),
+                'salinity':state.salinity(), 'tracer':state.tracers(),
+                'eta':state.eta(), 'density':self.dynamics.density(state)}
+
     def tendency_terms(self, state):
         """Expose equation terms and each source without changing the fast RHS."""
         self.check_state(state)
@@ -122,4 +129,5 @@ class Ocean:
                 'temperature_content': owner.total_heat_content(*args),
                 'salinity_content': owner.total_salt_content(*args),
                 'tracer_content': owner.total_tracer_content(*args),
-                'reference_mechanical_energy': self.dynamics.total_energy(state)}
+                getattr(self.dynamics, 'energy_label', 'reference_mechanical_energy'):
+                    self.dynamics.total_energy(state)}
