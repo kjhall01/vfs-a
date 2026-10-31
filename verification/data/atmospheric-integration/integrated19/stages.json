@@ -1,0 +1,3494 @@
+[
+  {
+    "case": "constant-reverseFalse-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262646e+18,
+          4.941103499102687e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262646e+18,
+          4.941103499102687e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_ledger_kg": [
+          4.886257250262646e+18,
+          4.941103499102687e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 40.95111083984375,
+        "species_incidence_max_error_kg": [
+          30.0899658203125,
+          0.25475502014160156,
+          0.03775569796562195,
+          0.002865523099899292
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505653387043424e+16,
+        "minimum_species_kg": [
+          1.5333540634447242e+16,
+          155056533870434.22,
+          15505653387043.424,
+          1550565338704.3423
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999998,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000004,
+          0.0010000000000000002,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333540634447086e+16,
+          155056533870279.16,
+          15505653387043.424,
+          1550565338704.3423
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.4964124437454723e+17,
+          1513209064359866.8,
+          151320906435986.7,
+          15132090643598.668
+        ],
+        "carrier_incidence_normalized": 2.7062427660759027e-16,
+        "species_incidence_normalized": [
+          2.0108069767849753e-16,
+          1.683541462589445e-16,
+          2.4950747953385903e-16,
+          1.893672967860191e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 1024.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          1.0,
+          0.0625
+        ],
+        "constant_fraction_error": 1.1102230246251565e-16,
+        "high_flux_constant_error_Pa_m2": 0.03436279296875,
+        "high_flux_scale_Pa_m2": 20123863202348.81
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262646e+18,
+          4.941103499102687e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262646e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.7
+        ],
+        "species_ledger_kg": [
+          4.886257250262646e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.7
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -8.0,
+          0.0,
+          0.0625
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 31.8536376953125,
+        "species_incidence_max_error_kg": [
+          23.2650146484375,
+          0.43518495559692383,
+          0.02839316427707672,
+          0.0018961131572723389
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505588930817374e+16,
+        "minimum_species_kg": [
+          1.5333476893685302e+16,
+          155055889308173.7,
+          15505588930817.371,
+          1550558893081.737
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999996,
+          9.999999999999995e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333476893685146e+16,
+          155055889308018.62,
+          15505588930817.371,
+          1550558893081.737
+        ],
+        "carrier_amount_scale_kg": 1.5132074972158858e+17,
+        "species_amount_scales_kg": [
+          1.4964108939967894e+17,
+          1513207497215886.0,
+          151320749721588.6,
+          15132074972158.861
+        ],
+        "carrier_incidence_normalized": 2.1050409645682594e-16,
+        "species_incidence_normalized": [
+          1.5547210155827304e-16,
+          2.8759106493829176e-16,
+          1.8763563046916317e-16,
+          1.2530424021563147e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.0364227294921875,
+        "high_flux_scale_Pa_m2": 20139224591794.418
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262646e+18,
+          4.9411034991026856e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_ledger_kg": [
+          4.886257250262646e+18,
+          4.9411034991026856e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 28.1297607421875,
+        "species_incidence_max_error_kg": [
+          29.37841796875,
+          0.42520713806152344,
+          0.03342175483703613,
+          0.003603614866733551
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505621307614692e+16,
+        "minimum_species_kg": [
+          1.5333508911100168e+16,
+          155056213076146.88,
+          15505621307614.69,
+          1550562130761.469
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999995,
+          0.0009999999999999996,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000004,
+          0.0010000000000000005,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333508911100012e+16,
+          155056213075991.8,
+          15505621307614.69,
+          1550562130761.469
+        ],
+        "carrier_amount_scale_kg": 1.5132082642993408e+17,
+        "species_amount_scales_kg": [
+          1.4964116525656182e+17,
+          1513208264299341.2,
+          151320826429934.12,
+          15132082642993.41
+        ],
+        "carrier_incidence_normalized": 1.858948394999177e-16,
+        "species_incidence_normalized": [
+          1.9632577652265873e-16,
+          2.809971027077403e-16,
+          2.2086685372757572e-16,
+          2.381440117499047e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 1024.0,
+        "production_water_minus_independent_kg": [
+          8.0,
+          1.0,
+          0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.029449462890625,
+        "high_flux_scale_Pa_m2": 20131542314824.78
+      }
+    ],
+    "final_constant_fraction_error": 2.220446049250313e-16,
+    "final_minimum_fraction": [
+      0.9888999999999999,
+      0.009999999999999997,
+      0.0009999999999999996,
+      9.999999999999994e-05
+    ]
+  },
+  {
+    "case": "constant-reverseFalse-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188493e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_final_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869139.0,
+          494114961086914.0
+        ],
+        "species_ledger_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869139.0,
+          494114961086914.0
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 44.697662353515625,
+        "species_incidence_max_error_kg": [
+          23.10791015625,
+          0.41237831115722656,
+          0.04310481250286102,
+          0.0028553158044815063
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168292358574218e+16,
+        "minimum_species_kg": [
+          1.5988824313394044e+16,
+          161682923585742.22,
+          16168292358574.225,
+          1616829235857.4226
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999998,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000006
+        ],
+        "minimum_floor_margin_kg": [
+          1.5988824313393882e+16,
+          161682923585580.53,
+          16168292358574.225,
+          1616829235857.4226
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4120748114124942e+17,
+          1427924776430877.0,
+          142792477643087.72,
+          14279247764308.77
+        ],
+        "carrier_incidence_normalized": 3.1302532942413266e-16,
+        "species_incidence_normalized": [
+          1.6364508430778696e-16,
+          2.8879554298929763e-16,
+          3.0187033108706364e-16,
+          1.9996262069339663e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18973064563522.402
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869139.0,
+          494114961086914.0
+        ],
+        "species_final_kg": [
+          4.886302850188493e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_ledger_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_global_change_kg": [
+          1024.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 36.655662536621094,
+        "species_incidence_max_error_kg": [
+          35.67549133300781,
+          0.4449176788330078,
+          0.03824186325073242,
+          0.003493878059089184
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.6168161769401824e+16,
+        "minimum_species_kg": [
+          1.5988695173761464e+16,
+          161681617694018.25,
+          16168161769401.828,
+          1616816176940.1829
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999995,
+          0.0009999999999999996,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.5988695173761302e+16,
+          161681617693856.56,
+          16168161769401.828,
+          1616816176940.1829
+        ],
+        "carrier_amount_scale_kg": 1.4279257675670694e+17,
+        "species_amount_scales_kg": [
+          1.412075791547075e+17,
+          1427925767567069.5,
+          142792576756706.97,
+          14279257675670.697
+        ],
+        "carrier_incidence_normalized": 2.567056591399411e-16,
+        "species_incidence_normalized": [
+          2.526457258637769e-16,
+          3.1158319916802685e-16,
+          2.6781408473277796e-16,
+          2.446820512975354e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -1.0,
+          -0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18977566821695.797
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869139.0,
+          494114961086913.94
+        ],
+        "species_final_kg": [
+          4.886302850188491e+18,
+          4.9411496108691384e+16,
+          4941149610869139.0,
+          494114961086913.94
+        ],
+        "species_ledger_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869139.0,
+          494114961086913.94
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 35.2138671875,
+        "species_incidence_max_error_kg": [
+          30.4765625,
+          0.3330345153808594,
+          0.034933239221572876,
+          0.002665489912033081
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168226982660442e+16,
+        "minimum_species_kg": [
+          1.5988759663152912e+16,
+          161682269826604.47,
+          16168226982660.441,
+          1616822698266.0447
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999995,
+          0.0009999999999999996,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000007
+        ],
+        "minimum_floor_margin_kg": [
+          1.598875966315275e+16,
+          161682269826442.78,
+          16168226982660.441,
+          1616822698266.0447
+        ],
+        "carrier_amount_scale_kg": 1.4279252674792507e+17,
+        "species_amount_scales_kg": [
+          1.412075297010231e+17,
+          1427925267479251.0,
+          142792526747925.1,
+          14279252674792.51
+        ],
+        "carrier_incidence_normalized": 2.4660861453669665e-16,
+        "species_incidence_normalized": [
+          2.1582816840240487e-16,
+          2.332296535159524e-16,
+          2.4464332985185785e-16,
+          1.8666872649004462e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          8.0,
+          1.0,
+          0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18975314373676.95
+      }
+    ],
+    "final_constant_fraction_error": 2.220446049250313e-16,
+    "final_minimum_fraction": [
+      0.9888999999999999,
+      0.009999999999999993,
+      0.0009999999999999996,
+      9.999999999999996e-05
+    ]
+  },
+  {
+    "case": "constant-reverseTrue-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262646e+18,
+          4.941103499102687e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_ledger_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_global_change_kg": [
+          1024.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 53.1357421875,
+        "species_incidence_max_error_kg": [
+          40.35595703125,
+          0.2855415344238281,
+          0.03442394733428955,
+          0.0036531388759613037
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.5505721292120634e+16,
+        "minimum_species_kg": [
+          1.5333607785778094e+16,
+          155057212921206.34,
+          15505721292120.635,
+          1550572129212.0635
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999996,
+          9.999999999999995e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000004,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333607785777938e+16,
+          155057212921051.28,
+          15505721292120.635,
+          1550572129212.0635
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.4964124437454723e+17,
+          1513209064359866.8,
+          151320906435986.7,
+          15132090643598.668
+        ],
+        "carrier_incidence_normalized": 3.511460738571377e-16,
+        "species_incidence_normalized": [
+          2.6968471961005843e-16,
+          1.8869932856542914e-16,
+          2.274896981855704e-16,
+          2.414166662097476e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          1.0,
+          0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.04107666015625,
+        "high_flux_scale_Pa_m2": 23328616231583.832
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262646e+18,
+          4.9411034991026856e+16,
+          4941103499102686.0,
+          494110349910268.7
+        ],
+        "species_ledger_kg": [
+          4.886257250262646e+18,
+          4.9411034991026856e+16,
+          4941103499102686.0,
+          494110349910268.7
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          -8.0,
+          0.0,
+          0.0625
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 50.10546875,
+        "species_incidence_max_error_kg": [
+          34.78857421875,
+          0.4069976806640625,
+          0.04157280921936035,
+          0.002728790044784546
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000732421875,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505724627135124e+16,
+        "minimum_species_kg": [
+          1.5333611083773924e+16,
+          155057246271351.25,
+          15505724627135.125,
+          1550572462713.5127
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999996,
+          9.999999999999995e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000002,
+          0.0010000000000000005,
+          0.00010000000000000006
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333611083773768e+16,
+          155057246271196.2,
+          15505724627135.125,
+          1550572462713.5127
+        ],
+        "carrier_amount_scale_kg": 1.5132008489363866e+17,
+        "species_amount_scales_kg": [
+          1.4964043195131926e+17,
+          1513200848936386.8,
+          151320084893638.66,
+          15132008489363.867
+        ],
+        "carrier_incidence_normalized": 3.3112239386607946e-16,
+        "species_incidence_normalized": [
+          2.3248111332682704e-16,
+          2.689647451295953e-16,
+          2.7473424462179923e-16,
+          1.8033230993113598e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          8.0,
+          1.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.029296875,
+        "high_flux_scale_Pa_m2": 23294308748281.086
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.6
+        ],
+        "species_final_kg": [
+          4.886257250262647e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.75
+        ],
+        "species_ledger_kg": [
+          4.886257250262646e+18,
+          4.941103499102686e+16,
+          4941103499102686.0,
+          494110349910268.75
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.125
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 46.783935546875,
+        "species_incidence_max_error_kg": [
+          33.1024169921875,
+          0.3698139190673828,
+          0.033365726470947266,
+          0.0028387904167175293
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505723079820884e+16,
+        "minimum_species_kg": [
+          1.5333609553634872e+16,
+          155057230798208.84,
+          15505723079820.889,
+          1550572307982.0886
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999995,
+          0.0009999999999999996,
+          9.999999999999995e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000004,
+          0.0010000000000000007,
+          0.00010000000000000006
+        ],
+        "minimum_floor_margin_kg": [
+          1.5333609553634716e+16,
+          155057230798053.78,
+          15505723079820.889,
+          1550572307982.0886
+        ],
+        "carrier_amount_scale_kg": 1.5132049487370128e+17,
+        "species_amount_scales_kg": [
+          1.496408373806032e+17,
+          1513204948737013.0,
+          151320494873701.3,
+          15132049487370.13
+        ],
+        "carrier_incidence_normalized": 3.091711772811933e-16,
+        "species_incidence_normalized": [
+          2.2121245491291479e-16,
+          2.443911641817228e-16,
+          2.2049707476040016e-16,
+          1.8760118509306408e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          -0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.021484375,
+        "high_flux_scale_Pa_m2": 23311465227341.883
+      }
+    ],
+    "final_constant_fraction_error": 2.220446049250313e-16,
+    "final_minimum_fraction": [
+      0.9888999999999999,
+      0.009999999999999995,
+      0.0009999999999999996,
+      9.999999999999996e-05
+    ]
+  },
+  {
+    "case": "constant-reverseTrue-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188493e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_final_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_ledger_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 47.2119140625,
+        "species_incidence_max_error_kg": [
+          23.47802734375,
+          0.34247398376464844,
+          0.036154985427856445,
+          0.002726927399635315
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.616817813665669e+16,
+        "minimum_species_kg": [
+          1.59887113593398e+16,
+          161681781366566.88,
+          16168178136656.693,
+          1616817813665.6692
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999996,
+          9.999999999999995e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000004,
+          0.0010000000000000005,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5988711359339638e+16,
+          161681781366405.2,
+          16168178136656.693,
+          1616817813665.6692
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4120748114124942e+17,
+          1427924776430877.0,
+          142792477643087.72,
+          14279247764308.77
+        ],
+        "carrier_incidence_normalized": 3.306330616414333e-16,
+        "species_incidence_normalized": [
+          1.6626617197615047e-16,
+          2.3984035393003557e-16,
+          2.531995103987653e-16,
+          1.9097136240266926e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -1.0,
+          -0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 23393780543994.37
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_final_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_ledger_kg": [
+          4.886302850188493e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 39.228515625,
+        "species_incidence_max_error_kg": [
+          40.169189453125,
+          0.2723979949951172,
+          0.049817800521850586,
+          0.004002600908279419
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.6167933970378178e+16,
+        "minimum_species_kg": [
+          1.598846990330698e+16,
+          161679339703781.78,
+          16167933970378.186,
+          1616793397037.8186
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999997,
+          0.0009999999999999996,
+          9.999999999999996e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5988469903306818e+16,
+          161679339703620.1,
+          16167933970378.186,
+          1616793397037.8186
+        ],
+        "carrier_amount_scale_kg": 1.4279327736607923e+17,
+        "species_amount_scales_kg": [
+          1.4120827198731576e+17,
+          1427932773660792.2,
+          142793277366079.25,
+          14279327736607.922
+        ],
+        "carrier_incidence_normalized": 2.747224263536569e-16,
+        "species_incidence_normalized": [
+          2.8446767946238487e-16,
+          1.9076387909829275e-16,
+          3.4888057365706825e-16,
+          2.803073773576853e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -1.0,
+          -0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.0009765625,
+        "high_flux_scale_Pa_m2": 23398926569434.312
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.886302850188493e+18,
+          4.94114961086914e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_final_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_ledger_kg": [
+          4.886302850188492e+18,
+          4.941149610869139e+16,
+          4941149610869140.0,
+          494114961086914.0
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 30.415771484375,
+        "species_incidence_max_error_kg": [
+          34.603515625,
+          0.3372058868408203,
+          0.0371403694152832,
+          0.0032474249601364136
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.616805613342386e+16,
+        "minimum_species_kg": [
+          1.5988590710342856e+16,
+          161680561334238.62,
+          16168056133423.863,
+          1616805613342.387
+        ],
+        "minimum_fraction": [
+          0.9888999999999999,
+          0.009999999999999993,
+          0.0009999999999999996,
+          9.999999999999998e-05
+        ],
+        "maximum_fraction": [
+          0.9889000000000001,
+          0.010000000000000005,
+          0.0010000000000000005,
+          0.00010000000000000006
+        ],
+        "minimum_floor_margin_kg": [
+          1.5988590710342694e+16,
+          161680561334076.94,
+          16168056133423.863,
+          1616805613342.387
+        ],
+        "carrier_amount_scale_kg": 1.427928778791465e+17,
+        "species_amount_scales_kg": [
+          1.4120787693468797e+17,
+          1427928778791464.8,
+          142792877879146.5,
+          14279287787914.648
+        ],
+        "carrier_incidence_normalized": 2.1300622227193676e-16,
+        "species_incidence_normalized": [
+          2.45053720629232e-16,
+          2.3615035416977615e-16,
+          2.600995929693157e-16,
+          2.2742205412267754e-16
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -1.0,
+          -0.0625
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 23396352491913.926
+      }
+    ],
+    "final_constant_fraction_error": 2.220446049250313e-16,
+    "final_minimum_fraction": [
+      0.9888999999999999,
+      0.009999999999999995,
+      0.0009999999999999996,
+      9.999999999999995e-05
+    ]
+  },
+  {
+    "case": "zero-reverseFalse-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 40.95111083984375,
+        "species_incidence_max_error_kg": [
+          30.33860969543457,
+          0.25618553161621094,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.5505653387043424e+16,
+        "minimum_species_kg": [
+          1.535059685317299e+16,
+          155056533870434.22,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000004,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350596853172834e+16,
+          155056533870279.16,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.498076973716268e+17,
+          1513209064359866.8,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.7062427660759027e-16,
+        "species_incidence_normalized": [
+          2.0251702834850878e-16,
+          1.6929949578684633e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 1024.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.03125,
+        "high_flux_scale_Pa_m2": 20123863202348.81
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 33.212554931640625,
+        "species_incidence_max_error_kg": [
+          27.639129638671875,
+          0.39336204528808594,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505588931474388e+16,
+        "minimum_species_kg": [
+          1.5350533042159644e+16,
+          155055889314743.88,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350533042159488e+16,
+          155055889314588.8,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.5132074972158858e+17,
+        "species_amount_scales_kg": [
+          1.498075422243727e+17,
+          1513207497215886.0,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.1948447250458124e-16,
+        "species_incidence_normalized": [
+          1.84497584222266e-16,
+          2.5995248240034716e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.0299072265625,
+        "high_flux_scale_Pa_m2": 20139248343877.008
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.9411034991026856e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          16.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 35.873779296875,
+        "species_incidence_max_error_kg": [
+          30.926513671875,
+          0.420196533203125,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505621308107426e+16,
+        "minimum_species_kg": [
+          1.5350565095026352e+16,
+          155056213081074.22,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.99,
+          0.009999999999999995,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000007,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350565095026196e+16,
+          155056213080919.16,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513208264285215e+17,
+        "species_amount_scales_kg": [
+          1.498076181642363e+17,
+          1513208264285215.5,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.370709977176901e-16,
+        "species_incidence_normalized": [
+          2.0644152848067986e-16,
+          2.7768585667988703e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.023895263671875,
+        "high_flux_scale_Pa_m2": 20131554189807.992
+      }
+    ],
+    "final_constant_fraction_error": 1.1102230246251565e-16,
+    "final_minimum_fraction": [
+      0.99,
+      0.009999999999999995,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "case": "zero-reverseFalse-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 44.697662353515625,
+        "species_incidence_max_error_kg": [
+          20.30224609375,
+          0.412384033203125,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168292358574218e+16,
+        "minimum_species_kg": [
+          1.6006609434988476e+16,
+          161682923585742.22,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006609434988314e+16,
+          161682923585580.53,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4136455286665682e+17,
+          1427924776430877.0,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 3.1302532942413266e-16,
+        "species_incidence_normalized": [
+          1.4361624383235766e-16,
+          2.887995502353325e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 1.1102230246251565e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18973064563522.402
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 36.654823303222656,
+        "species_incidence_max_error_kg": [
+          32.925994873046875,
+          0.4449119567871094,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168161769401824e+16,
+        "minimum_species_kg": [
+          1.6006480151707806e+16,
+          161681617694018.25,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999995,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006480151707644e+16,
+          161681617693856.56,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.4279257675670694e+17,
+        "species_amount_scales_kg": [
+          1.4136465098913987e+17,
+          1427925767567069.5,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.5669978184983613e-16,
+        "species_incidence_normalized": [
+          2.3291533380276493e-16,
+          3.1157919192477345e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18977566821695.797
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 37.176025390625,
+        "species_incidence_max_error_kg": [
+          29.0167236328125,
+          0.3471285104751587,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.616822698266048e+16,
+        "minimum_species_kg": [
+          1.6006544712833876e+16,
+          161682269826604.88,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999995,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006544712833714e+16,
+          161682269826443.2,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.4279252674792507e+17,
+        "species_amount_scales_kg": [
+          1.4136460148044582e+17,
+          1427925267479251.0,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.6034993733427447e-16,
+        "species_incidence_normalized": [
+          2.052615953989459e-16,
+          2.430999145270064e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 1.1102230246251565e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 18975314372910.6
+      }
+    ],
+    "final_constant_fraction_error": 1.1102230246251565e-16,
+    "final_minimum_fraction": [
+      0.9899999999999999,
+      0.009999999999999995,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "case": "zero-reverseTrue-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.941103499102687e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 53.1357421875,
+        "species_incidence_max_error_kg": [
+          29.184814453125,
+          0.2901420593261719,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505721292120634e+16,
+        "minimum_species_kg": [
+          1.5350664079199428e+16,
+          155057212921206.34,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000004,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350664079199272e+16,
+          155057212921051.28,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.498076973716268e+17,
+          1513209064359866.8,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 3.511460738571377e-16,
+        "species_incidence_normalized": [
+          1.9481518616981644e-16,
+          1.9173957264716145e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.0390625,
+        "high_flux_scale_Pa_m2": 23328616231583.832
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 33.214111328125,
+        "species_incidence_max_error_kg": [
+          31.04833984375,
+          0.5033779144287109,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505724627792144e+16,
+        "minimum_species_kg": [
+          1.5350667381514222e+16,
+          155057246277921.4,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.99,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350667381514066e+16,
+          155057246277766.34,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.5132008489363866e+17,
+        "species_amount_scales_kg": [
+          1.4980688404470227e+17,
+          1513200848936386.8,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.1949572227289498e-16,
+        "species_incidence_normalized": [
+          2.0725576158759964e-16,
+          3.3265770025342643e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.03515625,
+        "high_flux_scale_Pa_m2": 23294274413758.375
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.891692464111659e+18,
+          4.9411034991026856e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891692464111659e+18,
+          4.941103499102686e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 34.940673828125,
+        "species_incidence_max_error_kg": [
+          31.2381591796875,
+          0.3958930969238281,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.550572308031358e+16,
+        "minimum_species_kg": [
+          1.5350665849510444e+16,
+          155057230803135.78,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000004,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.5350665849510288e+16,
+          155057230802980.72,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513204948722887e+17,
+        "species_amount_scales_kg": [
+          1.4980728992356582e+17,
+          1513204948722887.2,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.3090509886062816e-16,
+        "species_incidence_normalized": [
+          2.0852229017443496e-16,
+          2.6162556318491653e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.0234375,
+        "high_flux_scale_Pa_m2": 23311448064663.617
+      }
+    ],
+    "final_constant_fraction_error": 1.1102230246251565e-16,
+    "final_minimum_fraction": [
+      0.9899999999999999,
+      0.009999999999999995,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "case": "zero-reverseTrue-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760447e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760447e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          -1024.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 47.2119140625,
+        "species_incidence_max_error_kg": [
+          31.507568359375,
+          0.3424644470214844,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.616817813665669e+16,
+        "minimum_species_kg": [
+          1.6006496355290124e+16,
+          161681781366566.88,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000004,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006496355289962e+16,
+          161681781366405.2,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4136455286665682e+17,
+          1427924776430877.0,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 3.306330616414333e-16,
+        "species_incidence_normalized": [
+          2.2288167521807786e-16,
+          2.398336751866441e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 1.1102230246251565e-16,
+        "high_flux_constant_error_Pa_m2": 9.1552734375e-05,
+        "high_flux_scale_Pa_m2": 23393780543994.37
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760447e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          1024.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 39.228271484375,
+        "species_incidence_max_error_kg": [
+          19.6923828125,
+          0.2724037170410156,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6167933970378178e+16,
+        "minimum_species_kg": [
+          1.6006254630674396e+16,
+          161679339703781.78,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999997,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006254630674234e+16,
+          161679339703620.1,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.4279327736607923e+17,
+        "species_amount_scales_kg": [
+          1.4136534459241843e+17,
+          1427932773660792.2,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.7472071660492427e-16,
+        "species_incidence_normalized": [
+          1.3930134623359539e-16,
+          1.9076788632188476e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 1.1102230246251565e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 23398926569434.312
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.891738114760448e+18,
+          4.94114961086914e+16,
+          0.0,
+          0.0
+        ],
+        "species_final_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_ledger_kg": [
+          4.891738114760448e+18,
+          4.941149610869139e+16,
+          0.0,
+          0.0
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -8.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 41.556640625,
+        "species_incidence_max_error_kg": [
+          21.016357421875,
+          0.2657203674316406,
+          0.0,
+          0.0
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168056133423984e+16,
+        "minimum_species_kg": [
+          1.6006375572089744e+16,
+          161680561334239.9,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9899999999999999,
+          0.009999999999999995,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9900000000000001,
+          0.010000000000000005,
+          0.0,
+          0.0
+        ],
+        "minimum_floor_margin_kg": [
+          1.6006375572089582e+16,
+          161680561334078.22,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.427928778791465e+17,
+        "species_amount_scales_kg": [
+          1.4136494910035502e+17,
+          1427928778791464.8,
+          0.0,
+          0.0
+        ],
+        "carrier_incidence_normalized": 2.910274044632092e-16,
+        "species_incidence_normalized": [
+          1.4866738576728436e-16,
+          1.8608796977713028e-16,
+          null,
+          null
+        ],
+        "limited_faces": 0,
+        "donor_substeps": 0,
+        "beta_min": 1.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": 2.220446049250313e-16,
+        "high_flux_constant_error_Pa_m2": 0.001953125,
+        "high_flux_scale_Pa_m2": 23396352492022.92
+      }
+    ],
+    "final_constant_fraction_error": 1.1102230246251565e-16,
+    "final_minimum_fraction": [
+      0.9899999999999999,
+      0.009999999999999997,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "case": "one_sided-reverseFalse-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.941103499102687e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.941103499102687e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_ledger_kg": [
+          4.888870868818831e+18,
+          4.941103499102687e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 40.95111083984375,
+        "species_incidence_max_error_kg": [
+          34.4111328125,
+          0.44326210021972656,
+          0.03772708773612976,
+          0.0023254752159118652
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000244140625,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505653387043424e+16,
+        "minimum_species_kg": [
+          1.5349046287834286e+16,
+          155056533870434.22,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999884419,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899000000000001,
+          0.01000000000010444,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.534904628783413e+16,
+          155056533870279.16,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.4965637646519085e+17,
+          1513209064359866.8,
+          151320906435986.7,
+          13672989394793.22
+        ],
+        "carrier_incidence_normalized": 2.7062427660759027e-16,
+        "species_incidence_normalized": [
+          2.2993429097559245e-16,
+          2.929285256477365e-16,
+          2.493184096282787e-16,
+          1.7007803844252406e-16
+        ],
+        "limited_faces": 40,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 1024.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          0.0,
+          0.03125
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 20123863202348.81
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.941103499102687e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.9411034991026856e+16,
+          2586094381019759.0,
+          235500911808292.7
+        ],
+        "species_ledger_kg": [
+          4.888870868818831e+18,
+          4.9411034991026856e+16,
+          2586094381019759.0,
+          235500911808292.7
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -16.0,
+          0.0,
+          -0.03125
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 36.39349365234375,
+        "species_incidence_max_error_kg": [
+          38.3138427734375,
+          0.3553767204284668,
+          0.04029172658920288,
+          0.0018458375707268715
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.5505588931417048e+16,
+        "minimum_species_kg": [
+          1.5348982483208982e+16,
+          155055889314170.44,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999768607,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.010000000000209081,
+          0.0010000000000000013,
+          0.0001000000000000001
+        ],
+        "minimum_floor_margin_kg": [
+          1.5348982483208826e+16,
+          155055889314015.38,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.5132074972158858e+17,
+        "species_amount_scales_kg": [
+          1.4965622299187222e+17,
+          1513207497208701.5,
+          151319063928391.84,
+          13672702740839.426
+        ],
+        "carrier_incidence_normalized": 2.405056393079156e-16,
+        "species_incidence_normalized": [
+          2.56012359576376e-16,
+          2.348499601568213e-16,
+          2.662699962793187e-16,
+          1.350016602945284e-16
+        ],
+        "limited_faces": 56,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          8.0,
+          0.0,
+          0.0625
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 20139226674349.484
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.9411034991026856e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.72
+        ],
+        "species_ledger_kg": [
+          4.88887086881883e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.72
+        ],
+        "species_global_change_kg": [
+          0.0,
+          8.0,
+          0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 33.003173828125,
+        "species_incidence_max_error_kg": [
+          36.69405746459961,
+          0.337485671043396,
+          0.03988957405090332,
+          0.001943349838256836
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.000732421875,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.550562130806451e+16,
+        "minimum_species_kg": [
+          1.5349014532852492e+16,
+          155056213080645.06,
+          4.386935620647705e-17,
+          6.36813235255312e-18
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999826457,
+          2.6749287150863203e-33,
+          3.702671216973211e-34
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.01000000000015681,
+          0.0010000000000000015,
+          0.00010000000000000009
+        ],
+        "minimum_floor_margin_kg": [
+          1.5349014532852336e+16,
+          155056213080490.0,
+          4.386935620647705e-17,
+          6.36813235255312e-18
+        ],
+        "carrier_amount_scale_kg": 1.5132082643769677e+17,
+        "species_amount_scales_kg": [
+          1.4965629810477626e+17,
+          1513208264373373.5,
+          151319984337115.28,
+          13672846005244.35
+        ],
+        "carrier_incidence_normalized": 2.1810067130259413e-16,
+        "species_incidence_normalized": [
+          2.4518886227500854e-16,
+          2.2302658463417154e-16,
+          2.636107466283905e-16,
+          1.4213206508077731e-16
+        ],
+        "limited_faces": 113,
+        "donor_substeps": 1,
+        "beta_min": 1.4105068165917721e-11,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -0.5,
+          -0.03125
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 20131543360094.99
+      }
+    ],
+    "final_constant_fraction_error": null,
+    "final_minimum_fraction": [
+      0.9889999999999999,
+      0.009999999999884301,
+      1.7832849024115447e-33,
+      2.4684531918351516e-34
+    ]
+  },
+  {
+    "case": "one_sided-reverseFalse-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_ledger_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.16
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 44.697662353515625,
+        "species_incidence_max_error_kg": [
+          27.346466064453125,
+          0.4156360626220703,
+          0.04310457408428192,
+          0.0018446817994117737
+        ],
+        "ledger_sum_minus_target_max_kg": 32.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168292358574218e+16,
+        "minimum_species_kg": [
+          1.5990698804266956e+16,
+          161682923585742.22,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999996276,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899000000000001,
+          0.010000000000003726,
+          0.0010000000000000005,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5990698804266794e+16,
+          161682923585580.53,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4126448294122037e+17,
+          1427924776430877.0,
+          142792477643087.72,
+          14270581163877.2
+        ],
+        "carrier_incidence_normalized": 3.1302532942413266e-16,
+        "species_incidence_normalized": [
+          1.9358345066701508e-16,
+          2.9107700173181384e-16,
+          3.0186866140121577e-16,
+          1.2926465840656687e-16
+        ],
+        "limited_faces": 40,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -0.5,
+          0.0
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 18973064563522.402
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_ledger_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          -0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 36.654823303222656,
+        "species_incidence_max_error_kg": [
+          41.6826171875,
+          0.2898426055908203,
+          0.04375919699668884,
+          0.0034386441111564636
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.6168161763109646e+16,
+        "minimum_species_kg": [
+          1.5990827316347614e+16,
+          161681617631096.5,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.009999999999992557,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.010000000000007454,
+          0.0010000000000000005,
+          0.00010000000000000005
+        ],
+        "minimum_floor_margin_kg": [
+          1.5990827316347452e+16,
+          161681617630934.8,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.4279257675670694e+17,
+        "species_amount_scales_kg": [
+          1.4126490802870469e+17,
+          1427925767567593.2,
+          142790740923207.8,
+          14270624106344.55
+        ],
+        "carrier_incidence_normalized": 2.5669978184983613e-16,
+        "species_incidence_normalized": [
+          2.9506703235194256e-16,
+          2.0298156400983928e-16,
+          3.064568242574099e-16,
+          2.409596164492682e-16
+        ],
+        "limited_faces": 56,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          8.0,
+          0.0,
+          0.0625
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 18977566821695.797
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.9411496108691384e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_ledger_kg": [
+          4.889011090862198e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_global_change_kg": [
+          0.0,
+          8.0,
+          -0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 37.469970703125,
+        "species_incidence_max_error_kg": [
+          26.867599487304688,
+          0.27869415283203125,
+          0.043367475271224976,
+          0.004995360970497131
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.6168226977941792e+16,
+        "minimum_species_kg": [
+          1.5990762980587564e+16,
+          161682269779417.94,
+          4.4576926467871845e-17,
+          6.191239787204423e-18
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.009999999999994416,
+          2.5878936415828537e-33,
+          3.7523215652903907e-34
+        ],
+        "maximum_fraction": [
+          0.9899000000000001,
+          0.01000000000000559,
+          0.0010000000000000005,
+          0.00010000000000000006
+        ],
+        "minimum_floor_margin_kg": [
+          1.5990762980587402e+16,
+          161682269779256.25,
+          4.4576926467871845e-17,
+          6.191239787204423e-18
+        ],
+        "carrier_amount_scale_kg": 1.4279252675891504e+17,
+        "species_amount_scales_kg": [
+          1.4126469562351245e+17,
+          1427925267589412.0,
+          142791608772580.2,
+          14270602649107.225
+        ],
+        "carrier_incidence_normalized": 2.624084856092486e-16,
+        "species_incidence_normalized": [
+          1.9019330603953658e-16,
+          1.9517418674334112e-16,
+          3.0371165115378047e-16,
+          3.500455512164123e-16
+        ],
+        "limited_faces": 112,
+        "donor_substeps": 1,
+        "beta_min": 1.4046774914497853e-11,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 18975314373842.008
+      }
+    ],
+    "final_constant_fraction_error": null,
+    "final_minimum_fraction": [
+      0.989,
+      0.009999999999996281,
+      1.7252625576633176e-33,
+      2.501552454440533e-34
+    ]
+  },
+  {
+    "case": "one_sided-reverseTrue-nearFalse",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.941103499102687e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.72
+        ],
+        "species_ledger_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.72
+        ],
+        "species_global_change_kg": [
+          0.0,
+          -8.0,
+          0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 53.1357421875,
+        "species_incidence_max_error_kg": [
+          40.4859619140625,
+          0.35701751708984375,
+          0.02484130859375,
+          0.0018851161003112793
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505721292120634e+16,
+        "minimum_species_kg": [
+          1.5349113507070216e+16,
+          155057212921206.34,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999861306,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.01000000000017017,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.534911350707006e+16,
+          155057212921051.28,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.513209064359867e+17,
+        "species_amount_scales_kg": [
+          1.4965637646519085e+17,
+          1513209064359866.8,
+          151320906435986.7,
+          13672989394793.22
+        ],
+        "carrier_incidence_normalized": 3.511460738571377e-16,
+        "species_incidence_normalized": [
+          2.7052614041794125e-16,
+          2.3593403284355354e-16,
+          1.6416309668524636e-16,
+          1.3787153971092422e-16
+        ],
+        "limited_faces": 48,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          -0.5,
+          0.03125
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23328616231583.832
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.72
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_ledger_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.0,
+          235500911808292.72
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          -0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 46.4534912109375,
+        "species_incidence_max_error_kg": [
+          45.636962890625,
+          0.4515056610107422,
+          0.04460573196411133,
+          0.0022128671407699585
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.5505724627734802e+16,
+        "minimum_species_kg": [
+          1.53491168089924e+16,
+          155057246277347.9,
+          5.622523113905746e-13,
+          2.637369089512489e-13
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.00999999999968403,
+          3.386785697597173e-29,
+          1.459631669319545e-29
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.010000000000366084,
+          0.0010000000000000005,
+          0.0001
+        ],
+        "minimum_floor_margin_kg": [
+          1.5349116808992244e+16,
+          155057246277192.84,
+          5.622523113905746e-13,
+          2.637369089512489e-13
+        ],
+        "carrier_amount_scale_kg": 1.5132008489363866e+17,
+        "species_amount_scales_kg": [
+          1.4965556406855472e+17,
+          1513200848927994.8,
+          151319964074059.47,
+          13672979719040.328
+        ],
+        "carrier_incidence_normalized": 3.069882708801623e-16,
+        "species_incidence_normalized": [
+          3.049466498266611e-16,
+          2.9837787979738765e-16,
+          2.9477757437399506e-16,
+          1.6184234791838585e-16
+        ],
+        "limited_faces": 78,
+        "donor_substeps": 1,
+        "beta_min": 2.1817704182686046e-07,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.03125
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23294558508329.645
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941103499102686e+18,
+        "carrier_final_kg": 4.941103499102686e+18,
+        "species_initial_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.5,
+          235500911808292.75
+        ],
+        "species_final_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.0,
+          235500911808292.75
+        ],
+        "species_ledger_kg": [
+          4.888870868818831e+18,
+          4.941103499102686e+16,
+          2586094381019759.0,
+          235500911808292.75
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          -0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 34.6763916015625,
+        "species_incidence_max_error_kg": [
+          32.7666015625,
+          0.25952720642089844,
+          0.04309415817260742,
+          0.00297507643699646
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 32.0,
+        "minimum_carrier_kg": 1.5505723080270562e+16,
+        "minimum_species_kg": [
+          1.5349115277158136e+16,
+          155057230802705.5,
+          1.6519784406836468e-13,
+          8.33234739818506e-14
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.00999999999977009,
+          9.915947801437814e-30,
+          4.6627118481719776e-30
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.010000000000269143,
+          0.0010000000000000002,
+          0.00010000000000000002
+        ],
+        "minimum_floor_margin_kg": [
+          1.534911527715798e+16,
+          155057230802550.44,
+          1.6519784406836468e-13,
+          8.33234739818506e-14
+        ],
+        "carrier_amount_scale_kg": 1.513204948818201e+17,
+        "species_amount_scales_kg": [
+          1.496559694727183e+17,
+          1513204948813421.2,
+          151320456444713.7,
+          13672984669346.184
+        ],
+        "carrier_incidence_normalized": 2.2915859235488516e-16,
+        "species_incidence_normalized": [
+          2.18946171528916e-16,
+          1.7150829874327766e-16,
+          2.8478739216830387e-16,
+          2.175879304294373e-16
+        ],
+        "limited_faces": 117,
+        "donor_substeps": 1,
+        "beta_min": 6.298029939637064e-08,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23311590093724.355
+      }
+    ],
+    "final_constant_fraction_error": null,
+    "final_minimum_fraction": [
+      0.989,
+      0.009999999999846725,
+      6.610630483646394e-30,
+      3.1084742795331792e-30
+    ]
+  },
+  {
+    "case": "one_sided-reverseTrue-nearTrue",
+    "stages": [
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_ledger_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          -0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 47.2119140625,
+        "species_incidence_max_error_kg": [
+          24.7476806640625,
+          0.266571044921875,
+          0.03676605224609375,
+          0.0026050209999084473
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 64.0,
+        "minimum_carrier_kg": 1.616817813665669e+16,
+        "minimum_species_kg": [
+          1.5990811913096278e+16,
+          161681781366671.3,
+          0.0,
+          0.0
+        ],
+        "minimum_fraction": [
+          0.9889999999999999,
+          0.009999999999993014,
+          0.0,
+          0.0
+        ],
+        "maximum_fraction": [
+          0.9899000000000001,
+          0.010000000000006459,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.5990811913096116e+16,
+          161681781366509.62,
+          0.0,
+          0.0
+        ],
+        "carrier_amount_scale_kg": 1.427924776430877e+17,
+        "species_amount_scales_kg": [
+          1.4126448294122037e+17,
+          1427924776430877.0,
+          142792477643087.72,
+          14270581163877.2
+        ],
+        "carrier_incidence_normalized": 3.306330616414333e-16,
+        "species_incidence_normalized": [
+          1.751868562344855e-16,
+          1.8668423527755712e-16,
+          2.5747891522683103e-16,
+          1.825448431282167e-16
+        ],
+        "limited_faces": 48,
+        "donor_substeps": 1,
+        "beta_min": 0.0,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0625
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23393780543994.37
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869139e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.0,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_ledger_kg": [
+          4.8890110908622e+18,
+          4.941149610869139e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.5,
+          0.0
+        ],
+        "carrier_global_change_kg": 0.0,
+        "carrier_incidence_max_error_kg": 37.411376953125,
+        "species_incidence_max_error_kg": [
+          32.634765625,
+          0.21221160888671875,
+          0.0558314323425293,
+          0.004104688763618469
+        ],
+        "ledger_sum_minus_target_max_kg": 48.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.6167933964086034e+16,
+        "minimum_species_kg": [
+          1.5991054167789318e+16,
+          161679339641098.44,
+          5.796415581346129e-13,
+          2.6663511674192195e-13
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.009999999999984934,
+          3.3823826989789166e-29,
+          1.509122922289452e-29
+        ],
+        "maximum_fraction": [
+          0.9899000000000001,
+          0.010000000000014756,
+          0.0010000000000000007,
+          0.00010000000000000002
+        ],
+        "minimum_floor_margin_kg": [
+          1.5991054167789156e+16,
+          161679339640936.75,
+          5.796415581346129e-13,
+          2.6663511674192195e-13
+        ],
+        "carrier_amount_scale_kg": 1.4279327736607923e+17,
+        "species_amount_scales_kg": [
+          1.412645582329396e+17,
+          1427932773660792.2,
+          142793277366079.25,
+          14270477850280.807
+        ],
+        "carrier_incidence_normalized": 2.6199676653693875e-16,
+        "species_incidence_normalized": [
+          2.3101877805179255e-16,
+          1.4861456561618912e-16,
+          3.9099482393274164e-16,
+          2.8763499069077773e-16
+        ],
+        "limited_faces": 75,
+        "donor_substeps": 1,
+        "beta_min": 2.240264508537822e-07,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": -1024.0,
+        "production_water_minus_independent_kg": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23398926569434.312
+      },
+      {
+        "dt_s": 10.0,
+        "exact_water_ledger": true,
+        "carrier_initial_kg": 4.941149610869139e+18,
+        "carrier_final_kg": 4.941149610869138e+18,
+        "species_initial_kg": [
+          4.889011090862199e+18,
+          4.94114961086914e+16,
+          2481009930180358.5,
+          246013968068878.12
+        ],
+        "species_final_kg": [
+          4.889011090862199e+18,
+          4.94114961086914e+16,
+          2481009930180358.5,
+          246013968068878.16
+        ],
+        "species_ledger_kg": [
+          4.889011090862199e+18,
+          4.94114961086914e+16,
+          2481009930180358.5,
+          246013968068878.16
+        ],
+        "species_global_change_kg": [
+          0.0,
+          0.0,
+          0.0,
+          0.03125
+        ],
+        "carrier_global_change_kg": -1024.0,
+        "carrier_incidence_max_error_kg": 35.920654296875,
+        "species_incidence_max_error_kg": [
+          30.88232421875,
+          0.3248786926269531,
+          0.0628504753112793,
+          0.0027795732021331787
+        ],
+        "ledger_sum_minus_target_max_kg": 64.0,
+        "species_flux_sum_minus_carrier_max_kg": 0.00048828125,
+        "physical_dry_minus_ledger_max_kg": 48.0,
+        "minimum_carrier_kg": 1.616805612870537e+16,
+        "minimum_species_kg": [
+          1.5990933119976756e+16,
+          161680561287227.03,
+          1.6809605185903771e-13,
+          8.404802592951887e-14
+        ],
+        "minimum_fraction": [
+          0.989,
+          0.009999999999988931,
+          9.703000044024818e-30,
+          4.862726701759059e-30
+        ],
+        "maximum_fraction": [
+          0.9899,
+          0.01000000000001074,
+          0.0010000000000000002,
+          0.00010000000000000003
+        ],
+        "minimum_floor_margin_kg": [
+          1.5990933119976594e+16,
+          161680561287065.34,
+          1.6809605185903771e-13,
+          8.404802592951887e-14
+        ],
+        "carrier_amount_scale_kg": 1.4279287789013648e+17,
+        "species_amount_scales_kg": [
+          1.4126452052008661e+17,
+          1427928778901365.0,
+          142792877890136.5,
+          14270529508016.004
+        ],
+        "carrier_incidence_normalized": 2.515577445291916e-16,
+        "species_incidence_normalized": [
+          2.1861345017879982e-16,
+          2.275174346418816e-16,
+          4.4015133135446616e-16,
+          1.9477715950006229e-16
+        ],
+        "limited_faces": 117,
+        "donor_substeps": 1,
+        "beta_min": 6.465047121515784e-08,
+        "beta_max": 1.0,
+        "production_mass_minus_independent_kg": 0.0,
+        "production_water_minus_independent_kg": [
+          -8.0,
+          -0.5,
+          -0.03125
+        ],
+        "constant_fraction_error": null,
+        "high_flux_constant_error_Pa_m2": null,
+        "high_flux_scale_Pa_m2": 23396352468894.902
+      }
+    ],
+    "final_constant_fraction_error": null,
+    "final_minimum_fraction": [
+      0.989,
+      0.00999999999999262,
+      6.46866883641228e-30,
+      3.2418159914988575e-30
+    ]
+  }
+]

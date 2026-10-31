@@ -1,0 +1,18 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "tensor_comparisons": 93,
+  "maximum_budget_fraction": {
+    "dry_helper": 0.1340744009960619,
+    "energy": 0.0,
+    "rotation_work": 0.0005440443267841205,
+    "rotation_relative": 0.0005440443267841205,
+    "gradient": 0.008812871082555669,
+    "inventory": 0.0
+  },
+  "invariants": {
+    "diagonal_mass_delta": -1024.0
+  },
+  "source": "/tmp/vfs-atmos-reference-env/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0"
+}

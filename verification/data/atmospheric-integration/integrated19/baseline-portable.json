@@ -1,0 +1,100 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "torch": "2.15.0",
+  "source": "/tmp/vfs-atmos-reference-env/lib/python3.12/site-packages/vfs/__init__.py",
+  "tensor_comparisons": 142,
+  "maximum_budget_fraction": {
+    "state": 0.0,
+    "tendency": 0.0,
+    "ledger": 0.0,
+    "limiter_force": 0.0,
+    "limiter_heat": 0.0,
+    "gradient": 0.0,
+    "inventory": 0.0,
+    "energy": 0.0,
+    "energy_rate": 0.0,
+    "cfl": 0.0,
+    "jw_thermal": 0.0,
+    "jw_tendency": 0.0
+  },
+  "invariants": {
+    "smooth": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -16.0,
+        0.0,
+        0.0
+      ],
+      "ledger_delta": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "energy_rate": -1.4342269897460938,
+      "energy_work_scale": 1.4692522894939334e+16,
+      "energy_drift": -2164260864.0
+    },
+    "cloud": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -8.0,
+        0.0,
+        0.0
+      ],
+      "ledger_delta": [
+        -8192.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "energy_rate": -1.476593017578125,
+      "energy_work_scale": 1.4760871173054534e+16,
+      "energy_drift": -2365587456.0
+    },
+    "cloud_reverse": {
+      "euler_mass_delta": 0.0,
+      "euler_species_delta": [
+        0.0,
+        0.25,
+        0.0
+      ],
+      "final_mass_delta": -1024.0,
+      "final_species_delta": [
+        -16.0,
+        -0.25,
+        0.0
+      ],
+      "ledger_delta": [
+        -8192.0,
+        0.0,
+        2.0,
+        0.0
+      ],
+      "energy_rate": 1.659332275390625,
+      "energy_work_scale": 1.4454612016683972e+16,
+      "energy_drift": -2147483648.0
+    },
+    "dry_mass_delta": 0.0
+  },
+  "limited_faces": {
+    "smooth": 0,
+    "cloud": 105,
+    "cloud_reverse": 119
+  },
+  "reference_version": "corrected-gibbs-v1",
+  "fixture_sha256": "48503c853dce8a1ddfc650a8191d49ee421ca010cbc24add6b8c177a284d3fab"
+}

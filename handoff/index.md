@@ -4,7 +4,13 @@ Main is 6c5bf938503b357ba01c50ab99ae7e2cc770e90a (#25). Ocean #23/#24 are not an
 This isolated stack preserves the original #18/#19 commits and artifacts; no ocean changes or expanded campaigns.
 Investigation and numerical correction remain separate. See verification/ATMOSPHERIC_INTEGRATION.md.
 
-## Preserved numerical-fix handoff
+Current regression uses **corrected-gibbs-v1**, pinned to integrated runtime
+`d972f55683bf40b4edf35d1f5193949ff420cb0d`. Historical scientific baseline and
+fixtures remain unchanged. Local installed-wheel suite: 585 passed, one CUDA
+skip; both original-to-integrated captures match exactly (419 tensors each).
+See the integration report for commands, quantities, provenance and CI status.
+
+## Historical numerical-fix handoff (superseded reference policy)
 
 # Current handoff — proposed paired Gibbs numerical fix
 

@@ -47,7 +47,7 @@ cd "$check_dir"
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
 python -I -c 'import vfs, torch; print(vfs.__file__, torch.__version__)'
 python -I -m pytest tests --fixture-mode=portable -q
-python -I tools/check_baseline.py --mode portable
+python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode portable
 python -I tools/check_dry_helpers.py --mode portable
 python -I examples/moist_atmosphere.py
 python -I examples/bounded_moist.py
@@ -69,7 +69,7 @@ invariants. Exact mode remains the default unless selected explicitly:
 
 ```bash
 python -I -m pytest tests --fixture-mode=exact -q
-python -I tools/check_baseline.py --mode exact
+python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode exact
 python -I tools/check_dry_helpers.py --mode exact
 python -I tools/record_environment.py --report environment.json
 ```
@@ -78,7 +78,13 @@ CI runs exact checks separately as informational steps, retaining their failing
 exit status in reports and the job summary. A portable pass is not an exact pass.
 See [validation results](docs/PORTABLE_REGRESSION_RESULTS.md) for observed outcomes.
 
-Fixtures record CPU float64 with PyTorch `2.15.0+cpu`. Exact comparisons cover
+Historical fixtures record CPU float64 with PyTorch `2.15.0+cpu`; the separately
+versioned corrected Gibbs reference records macOS CPU float64, PyTorch `2.15.0`.
+See [reference provenance and reproduction](verification/ATMOSPHERIC_INTEGRATION.md).
+The standalone baseline tool defaults to the historical reference to preserve
+old commands; select `--reference-version corrected-gibbs-v1` for current code.
+Historical disagreement is evidence of the changed operator, not a current-code
+regression. Exact comparisons cover
 142 checkpoint-54 and 93 retained conservative dry-helper tensors. The original
 dry fixture also archives 100 deliberately retired canonical-core tensors; see
 [the removal and validation record](docs/READABILITY_RESULTS.md). Do not regenerate fixtures (`--reference` / `--capture`) or loosen
