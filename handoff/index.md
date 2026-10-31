@@ -1,3 +1,20 @@
+# Current ocean handoff — extracted reference, dependent on structural stack
+
+The ocean branch restores the archived layered solver on PR #22's pinned head,
+without changes to shared runtime or atmospheric equations. Read the
+[ocean boundary and coordination record](../verification/ocean/README.md) and
+[results](../verification/ocean/RESULTS.md). New ordinary imports are
+`from vfs.ocean import Ocean, OceanState, OceanColumn, OceanDomain`.
+
+All 1,416 donor capture arrays match exactly. Installed-wheel portable suite:
+566 passed, one CUDA skip. Atmospheric 298-tensor/solver and 74-output captures
+are exact; existing fixtures/tolerances remain unchanged. This is extraction,
+not Hamiltonian closure. Numerical corrections belong to a separate dependent
+change. Leave the structural stack and ocean changes unmerged for review.
+Atmospheric ownership and #18/#19 baseline policy below remain in force.
+
+---
+
 # Current handoff — structural ownership stack, unmerged
 
 Atmospheric campaigns are paused. Structural baseline is merged main

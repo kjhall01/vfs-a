@@ -17,7 +17,7 @@ REMOVED = (
     'diagnostics', 'core.registry',
     'integrators.imex.ark2', 'integrators.imex.higher_order',
     'integrators.imex.legacy_pressure',
-    'ocean.state', 'ocean.column', 'ocean.dynamics', 'ocean.physics', 'ocean_model', 'ocean_diagnostics', 'land', 'ice', 'surface',
+    'ocean_model', 'ocean_diagnostics', 'land', 'ice', 'surface',
     'coupling', 'core.graph', 'geometry.mesh.kernels',
     'atmosphere.pgf_correction', 'transport.neural_reconstruction',
     'transport.shadow_replay', 'transport.reversible_advection',
