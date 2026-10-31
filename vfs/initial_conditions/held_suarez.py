@@ -10,7 +10,7 @@ import torch
 
 from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from .equilibrium import HeldSuarezConstants, held_suarez_equilibrium_temperature
-from vfs.core.state import State
+from vfs.atmosphere.state import State
 
 
 @dataclass(frozen=True)

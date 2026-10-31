@@ -12,7 +12,7 @@ I=L+1 denotes CP interfaces; vertical indices increase from top to bottom.
 
 from dataclasses import dataclass
 import torch
-from ..core.state import interface_mass
+from vfs.atmosphere.state import interface_mass
 from .scalar_transport import ScalarTransportState
 from .conservative import DryHydrostaticConservativeDynamics
 from .moist_cp import interface_pressure_mass, reconstruct_moist_cp

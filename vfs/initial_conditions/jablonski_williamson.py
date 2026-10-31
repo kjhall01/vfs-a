@@ -8,9 +8,9 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 
-from vfs.geometry.column import CharneyPhillipsColumn
+from vfs.atmosphere.column import CharneyPhillipsColumn
 from vfs.atmosphere import DryHydrostaticConservativeDynamics
-from vfs.core.state import State
+from vfs.atmosphere.state import State
 from vfs.geometry.mesh import VoronoiMesh
 
 

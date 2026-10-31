@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .state import State
+from vfs.atmosphere.state import State
 
 
 def _call_tendency(provider, state):

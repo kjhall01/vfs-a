@@ -42,6 +42,19 @@ jobs:
           python -I tools/record_environment.py --report environment.json --checkout "$GITHUB_WORKSPACE"
           python -I -c 'import torch; assert str(torch.__version__) == "2.15.0+cpu"'
           python -m pip freeze
+      - name: Same-environment structural baseline comparison
+        working-directory: ${{ runner.temp }}/vfs-check
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/structural-baseline"
+          git -C "$GITHUB_WORKSPACE" archive 3f806a947e2ff8a5947953137a96af02861d083f | tar -x -C "$RUNNER_TEMP/structural-baseline"
+          python -m build --wheel --outdir "$RUNNER_TEMP/baseline-wheel" "$RUNNER_TEMP/structural-baseline"
+          baseline_wheels=("$RUNNER_TEMP"/baseline-wheel/*.whl)
+          python -m pip install --no-deps --force-reinstall "${baseline_wheels[0]}"
+          python -I tools/capture_readability.py --save structural-before.pt
+          wheels=("$RUNNER_TEMP"/wheels/*.whl)
+          python -m pip install --no-deps --force-reinstall "${wheels[0]}"
+          python -I tools/capture_readability.py --compare structural-before.pt | tee structural-comparison.log
       - name: Required portable pytest suite
         id: portable_tests
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
@@ -70,16 +83,7 @@ jobs:
       - name: Held-Suarez pinned archive comparison
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_held_suarez_archive.py --archive-repo "$GITHUB_WORKSPACE" --report held-suarez.json
-      - name: Verification infrastructure measurement (no scientific threshold)
-        working-directory: ${{ runner.temp }}/vfs-check
-        run: >-
-          python -I tools/run_verification.py --repo "$GITHUB_WORKSPACE"
-          --output verification-c1 --cells 16 64 256
-      - name: Small energy derivative, work and actual-stage measurements
-        working-directory: ${{ runner.temp }}/vfs-check
-        run: >-
-          python -I tools/run_energy_verification.py --repo "$GITHUB_WORKSPACE"
-          --output verification-energy --cells 16 --levels 3 --dt 1
+      # Scientific measurements are paused during the structural ownership stack.
       - name: Exact fixture pytest (informational, failures retained)
         id: exact_tests
         continue-on-error: true
@@ -124,6 +128,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/*-exact.json
             ${{ runner.temp }}/vfs-check/environment.json
             ${{ runner.temp }}/vfs-check/held-suarez.json
-            ${{ runner.temp }}/vfs-check/verification-c1/
-            ${{ runner.temp }}/vfs-check/verification-energy/
+            ${{ runner.temp }}/vfs-check/structural-comparison.log
           if-no-files-found: warn

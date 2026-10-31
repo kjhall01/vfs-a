@@ -1,4 +1,16 @@
-# Current handoff — approved SSPRK3 extraction (#16)
+# Current handoff — structural ownership stack
+
+Atmospheric campaigns are paused. Structural baseline is merged main
+`3f806a947e2ff8a5947953137a96af02861d083f`; #18/#19 remain separate and unmerged.
+Read [ownership map and dependency rules](../docs/PACKAGE_OWNERSHIP.md) and
+[migration validation](../docs/STRUCTURAL_RESULTS.md). Slice 1 relocates dry
+model/state and the pressure column with old import aliases retained. Next
+slices separate atmospheric IMEX from reusable integration and component field
+interpretation from shared remapping/I/O. No fixtures or numerical changes.
+
+---
+
+# Historical handoff — approved SSPRK3 extraction (#16)
 
 PRs #13 and #14 are merged. Numerical baseline remains
 `8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648`. The sole runtime change is the

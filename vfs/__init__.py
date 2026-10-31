@@ -22,9 +22,9 @@ else:
         # Source-tree imports before editable installation still need a version.
         __version__ = "1.0.0+extraction4"
 
-from .core.state import State
-from .geometry.column import CharneyPhillipsColumn
-from .geometry.column import make_hybrid_coefficients
+from vfs.atmosphere.state import State
+from vfs.atmosphere.column import CharneyPhillipsColumn
+from vfs.atmosphere.column import make_hybrid_coefficients
 from .geometry.mesh import VoronoiMesh
 from .core.integrators import ssprk3
 from .core.integrators import forward_euler
@@ -37,8 +37,8 @@ from .atmosphere import DryHydrostaticConservativeDynamics
 from .atmosphere.model import MoistAtmosphere
 
 from .field import Field
-from .core.state import PrognosticFields, StateSpec, TracerSpec
-from .model import DryAtmosphere
+from vfs.atmosphere.state import PrognosticFields, StateSpec, TracerSpec
+from vfs.atmosphere.dry_model import DryAtmosphere
 from .atmosphere.steppers import BoundedSSPRK3, CenteredIMEX, DrySSPRK3, DryIMEX
 
 __all__ = [

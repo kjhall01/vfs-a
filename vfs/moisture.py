@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from vfs.core.state import State
+from vfs.atmosphere.state import State
 
 
 VAPOR_TRACER_INDEX_ATTR = "vapor_tracer_index"
