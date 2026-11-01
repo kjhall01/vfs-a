@@ -200,3 +200,19 @@ actual *carrier* outflow per cell/layer, derive the Euler/SSPRK3 restriction, an
 probe h/hT/hS/hq consistency. A Celsius temperature need not be positive. Do not
 run longer integrations before distinguishing h positivity, salinity and tracer
 bounds, and the existing minimum-thickness rejection policy.
+
+## Hosted CI distinction
+
+The initial PR run [41263050551](https://github.com/kjhall01/vfs-a/actions/runs/41263050551)
+passed. Push run [41263013697](https://github.com/kjhall01/vfs-a/actions/runs/41263013697)
+passed all 164 exact same-environment ocean integration tensors but failed the
+historical archive command: five forcing/source arrays differed by up to
+1.30104e-18. This predates any runtime change (there are none here), and the
+required portable pytest comparison passed.
+
+A separate CI-only commit makes that historical **exact** command explicitly
+informational, preserving its nonzero exit, report and step outcome. Exact
+same-environment equality remains required. The existing ocean archive pytest
+gate still uses its unchanged 512-epsilon per-array migration allowance, including
+all 1416 arrays. No fixture, tolerance, atmospheric check or atmospheric
+verification policy is changed. A green portable gate is not an exact match.
