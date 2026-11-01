@@ -1,0 +1,20 @@
+{
+  "base_commit": "8efd7ff6f16d538e2438601d8d3b537f938ecb24",
+  "installed_wheel_tests": {
+    "passed": 642,
+    "skipped": 1,
+    "skip_reason": "CUDA unavailable",
+    "seconds": 54.91
+  },
+  "new_tests": 9,
+  "legacy_ocean_exact_tensors": 164,
+  "corrected_gibbs_portable_tensors": 142,
+  "dry_helpers_portable_tensors": 93,
+  "inherited_runtime_python_files_unchanged": 97,
+  "new_ocean_runtime_python_files": 2,
+  "runtime_imports_atmosphere_added": false,
+  "default_changes": false,
+  "fixtures_or_tolerances_changed": false,
+  "uploaded_file_cap_bytes": 131072,
+  "scientific_results": "results.json"
+}
