@@ -1,0 +1,7 @@
+{
+  "torch": "2.15.0+cpu",
+  "input_sha256": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+  "arrays": 1416,
+  "exact": 1416,
+  "differences": []
+}

@@ -168,13 +168,14 @@ def measure():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--structural-revision", choices=[common.STRUCTURAL_COMMIT])
+    parser.add_argument("--ocean-revision", choices=[common.OCEAN_COMMIT])
     parser.add_argument('--repo',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
     configuration=dict(scope='offline face means and toy CP ledger only',dtype='float64',device='cpu',seed=31,
                        candidate='L(total_density_i,total_density_j)*arithmetic_condensate_fraction',
                        independent_reference='60-digit Decimal endpoint chemical potentials')
-    with common.recorded_run(args.repo,args.output,'C5-CONSTANT-COMPOSITION-INVESTIGATION',configuration,__file__,structural_revision=args.structural_revision):
+    with common.recorded_run(args.repo,args.output,'C5-CONSTANT-COMPOSITION-INVESTIGATION',configuration,__file__,structural_revision=args.structural_revision, ocean_revision=args.ocean_revision):
         common.write_json(args.output/'faces.json',measure())
 
 

@@ -1,0 +1,18 @@
+{
+  "mode": "portable_comparison",
+  "status": "pass",
+  "tensor_comparisons": 93,
+  "maximum_budget_fraction": {
+    "dry_helper": 0.0,
+    "energy": 0.0,
+    "rotation_work": 0.0,
+    "rotation_relative": 0.0,
+    "gradient": 0.0,
+    "inventory": 0.0
+  },
+  "invariants": {
+    "diagonal_mass_delta": -1024.0
+  },
+  "source": "/workspace/scratch/6655f56cada4/ocean-venv/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0+cpu"
+}

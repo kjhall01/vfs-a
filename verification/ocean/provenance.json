@@ -1,0 +1,8 @@
+{
+  "archive_sha256": "ced96143a44bf6eaac6ae86bff9ae9d80d06d45e5d4acf321befd1d0c20f1d3c",
+  "base_commit": "941b794eb221c3e31d0244b936c1c5c79ec14e1b",
+  "files": {
+    "tests/fixtures/ocean/inputs.npz": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+    "tests/fixtures/ocean/archive_capture.npz": "e0fc581d5ac16ee2508b88c035996b96e1399769893fc7efec6518874da747bd"
+  }
+}

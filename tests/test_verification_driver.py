@@ -128,3 +128,55 @@ def test_structural_mapping_rejects_unknown_missing_changed_extra_and_tampered(t
     mapping.write_bytes(mapping.read_bytes()+b' ')
     with pytest.raises(ValueError, match='mapping hash'):
         driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)
+
+
+@pytest.mark.parametrize('damage', ['none', 'missing', 'changed', 'extra', 'shared', 'unknown'])
+def test_ocean_revision_is_explicit_and_exact(tmp_path, monkeypatch, damage):
+    structural = driver.structural
+    atmosphere = 'vfs/atmosphere/state.py'
+    old_init = 'vfs/ocean/__init__.py'
+    addition = 'vfs/ocean/conservative.py'
+    base = {atmosphere: b'unchanged atmosphere', old_init: b'old ocean exports'}
+    ocean = {old_init: b'reviewed ocean exports', addition: b'reviewed ocean equations'}
+    mapping = tmp_path / 'mapping.json'
+    mapping.write_text(json.dumps({'structural_commit': structural.COMMIT,
+        'before_structure': 'old', 'runtime': {key: {
+            'sha256': driver.sha256(value), 'old_sha256': {key: driver.sha256(value)}}
+            for key, value in base.items()}}))
+    monkeypatch.setattr(structural, 'MAP', mapping)
+    monkeypatch.setattr(structural, 'MAP_SHA256', driver.sha256(mapping.read_bytes()))
+
+    def git(repo, *args):
+        source = ocean if structural.OCEAN_COMMIT in args[1:] else base
+        if args[0] == 'ls-tree':
+            return ('\n'.join(source) + '\n').encode()
+        commit, path = args[1].split(':', 1)
+        return (ocean if commit == structural.OCEAN_COMMIT else base)[path]
+
+    monkeypatch.setattr(driver, 'git', git)
+    package = tmp_path / 'vfs'
+    expected = base | ocean
+    for key, value in expected.items():
+        path = tmp_path / key
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(value)
+    with pytest.raises(ValueError, match='differs'):
+        driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT)
+    with pytest.raises(ValueError, match='requires'):
+        driver.verify_package(tmp_path, package, ocean_revision=structural.OCEAN_COMMIT)
+    if damage == 'missing':
+        (tmp_path / addition).unlink()
+    elif damage == 'changed':
+        (tmp_path / addition).write_bytes(b'unreviewed ocean change')
+    elif damage == 'extra':
+        (package / 'ocean/unreviewed.py').write_bytes(b'extra module')
+    elif damage == 'shared':
+        (tmp_path / atmosphere).write_bytes(b'unreviewed atmosphere change')
+    revision = 'HEAD' if damage == 'unknown' else structural.OCEAN_COMMIT
+    if damage == 'none':
+        assert driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT,
+            ocean_revision=revision) == {key: driver.sha256(value) for key, value in expected.items()}
+    else:
+        with pytest.raises(ValueError):
+            driver.verify_package(tmp_path, package, structural_revision=structural.COMMIT,
+                                  ocean_revision=revision)
