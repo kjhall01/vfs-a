@@ -1,3 +1,21 @@
+# Current ocean handoff — three bounded milestones, no runtime adoption
+
+Main baseline: `e959b7005832a5041e082b6e300838e15bfbaa9e` (merged #26/#27).
+Draft #28 diagnoses rotating reconstruction; draft #29 establishes actual-carrier
+admissibility limits. This dependent design derives linear-Boussinesq gravitational
+energy and matching active-content work **outside the numerical package**.
+Read [the derivation, independent probes and review gates](../verification/ocean/BOUSSINESQ_ENERGY_DESIGN.md).
+Local installed-wheel suite: 633 passed, one CUDA skip. No active timestep,
+new selectable model, default change, atmospheric numerical/policy change,
+fixture replacement or tolerance change. Original evidence is retained.
+
+Priorities: review joint rotation/kinetic consistency; introduce an explicit
+per-stage acceptance policy without clipping; validate proposed active pressure
+accuracy and rest before implementing a separately selected stratified candidate.
+No long-run, GPU/compile or long-backward qualification. Keep drafts unmerged.
+
+---
+
 # Current ocean handoff — transport admissibility after balance diagnosis
 
 Baseline remains `e959b7005832a5041e082b6e300838e15bfbaa9e`. Draft #28
