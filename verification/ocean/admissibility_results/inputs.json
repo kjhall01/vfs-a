@@ -1,0 +1,28 @@
+{
+  "fixture_sha256": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+  "configuration": {
+    "mesh": "archived ocean fixture",
+    "layers": 1,
+    "thin_layer_m": 0.1,
+    "other_thickness_m": 1000.0,
+    "initial_temperature_degC": [
+      -2.0,
+      10.0
+    ],
+    "initial_salinity": [
+      0.0,
+      35.0
+    ],
+    "initial_tracer": [
+      0.0,
+      1.0
+    ],
+    "dt_fractions_of_initial_carrier_bound": [
+      0.1,
+      0.5,
+      0.9,
+      1.1
+    ],
+    "scope": "transport admissibility, not equilibrium or stability qualification"
+  }
+}

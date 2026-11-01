@@ -1,3 +1,17 @@
+# Current ocean handoff — transport admissibility after balance diagnosis
+
+Baseline remains `e959b7005832a5041e082b6e300838e15bfbaa9e`. Draft #28
+records spatial reconstruction limitations without changing production. This
+dependent milestone demonstrates why positive h and conservation are insufficient
+for passive bounds, and derives the actual carrier-outflow restriction.
+Read [the stage results and next implementation boundary](../verification/ocean/TRANSPORT_ADMISSIBILITY.md).
+Local installed-wheel suite: 627 passed, one CUDA skip. Archived defaults,
+atmospheric runtime/policy, fixtures and tolerances are unchanged. Do not merge
+or promote a new ocean default. Next: explicit per-stage acceptance design,
+and a separate active Boussinesq energy/transport derivation before implementation.
+
+---
+
 # Current handoff — ocean rotating-flow investigation
 
 Starting main: `e959b7005832a5041e082b6e300838e15bfbaa9e`; GitHub and ancestry
