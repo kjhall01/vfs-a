@@ -1,3 +1,25 @@
+# Current handoff — Williamson rotating-balance measurements
+
+Recovered publication work on 31 October 2026: 615 installed-wheel tests pass,
+one CUDA skip; original artifact hashes and a new frozen-input replay are exact.
+See `verification/ocean/recovery_results.json` and the recovery section of the
+report below. The publication subset omits four artifacts over 128 KiB; read
+`verification/ocean/publication_omissions.json`. The full environment manifest and detailed replay report are also omitted;
+original artifact hashes, scientific JSON summaries and 64-cell frozen inputs
+are retained. Original local evidence remains unchanged.
+#26 and its dependent verification publication remain drafts for review.
+
+The separate verification branch leaves every runtime file unchanged. Read
+[the measured errors, balance terms and limitations](../verification/ocean/WILLIAMSON.md).
+Five-day thickness/normal-velocity RMS errors decrease over 64/256/1024 cells,
+but initial rotation and kinetic-gradient consistency is weak/nonmonotonic.
+Energy cancellation does not establish balanced-flow accuracy. Investigate this
+separately before promoting the candidate or extending its scientific claims.
+Integration remains draft #26, based on corrected atmospheric main. Keep both
+integration and verification unmerged for review.
+
+---
+
 # Current handoff — ocean integration onto corrected atmospheric main
 
 This branch integrates the reviewed ocean #23/#24 history onto main

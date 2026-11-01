@@ -107,6 +107,10 @@ jobs:
         run: |
           python -I tools/check_gibbs_fix.py --repo "$GITHUB_WORKSPACE" --output gibbs-checks --numerical-revision a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7 --structural-revision 6c5bf938503b357ba01c50ab99ae7e2cc770e90a --ocean-revision 8936334f027e5660987a15daa000685746ff5b47
           python -I tools/run_energy_verification.py --repo "$GITHUB_WORKSPACE" --output energy-checks --cells 16 --levels 3 --dt 1 --directions 2 --numerical-revision a7facc1bcdb88f7dc9c10f4fb6059f29b0a9bac7 --structural-revision 6c5bf938503b357ba01c50ab99ae7e2cc770e90a --ocean-revision 8936334f027e5660987a15daa000685746ff5b47
+      - name: Williamson driver execution (measurements, no accuracy gate)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/verify_ocean_williamson.py --repo "$GITHUB_WORKSPACE" --output williamson-smoke --cells 64 --dt 600 --days 1 --lloyd-iters 10
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -164,4 +168,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/structural-ast.json
             ${{ runner.temp }}/vfs-check/ocean-integration.log
             ${{ runner.temp }}/vfs-check/ocean-extraction.json
+            ${{ runner.temp }}/vfs-check/williamson-smoke/
           if-no-files-found: warn
