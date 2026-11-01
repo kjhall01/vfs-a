@@ -1,5 +1,11 @@
 # Ocean integration onto corrected atmospheric main
 
+> Status reconciled against main `e959b7005832a5041e082b6e300838e15bfbaa9e`:
+> #26 and #27 are merged and their heads are ancestors of main. Draft/unmerged
+> language below describes the original publication, not current status.
+> The reference solver remains default; the constant-density candidate remains
+> explicit. Current investigation: [rotating-flow diagnosis](ROTATING_BALANCE.md).
+
 Starting main: `4ec610ed25c818e60863a8f8b772107b33f9251c` (#18/#19/#25).
 Ocean history is merged from `0a9de626d6ba7bb1fc9ac27ab4a8ed0a9ffcbe5b`:
 #24 had merged into the ocean extraction branch, then #23 into the structural

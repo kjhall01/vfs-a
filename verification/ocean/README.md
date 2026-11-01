@@ -1,5 +1,11 @@
 # Ocean reference extraction
 
+> Status reconciled against main `e959b7005832a5041e082b6e300838e15bfbaa9e`:
+> #26 and #27 are merged and their heads are ancestors of main. Draft/unmerged
+> language below describes the original publication, not current status.
+> The reference solver remains default; the constant-density candidate remains
+> explicit. Current investigation: [rotating-flow diagnosis](ROTATING_BALANCE.md).
+
 This is the first implementation slice of the 31 October ocean audit. It
 restores the archived layered solver as an explicit, experimental reference.
 It does not correct its energy functional, rotation, pressure gradient,

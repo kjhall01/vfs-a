@@ -163,3 +163,7 @@ tolerances and original evidence remain unchanged.
 The separately authorized `corrected-gibbs-v1` regression reference and integration
 results are recorded in [the atmospheric stack report](../verification/ATMOSPHERIC_INTEGRATION.md).
 Checkpoint-54 files, tolerances and historical reproduction commands are unchanged.
+
+Ocean-only rotating-balance diagnosis after merged #26/#27: see
+[the report](../verification/ocean/ROTATING_BALANCE.md). Atmospheric runtime,
+fixtures and verification policy remain unchanged.
