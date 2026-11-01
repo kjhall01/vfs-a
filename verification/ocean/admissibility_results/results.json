@@ -1,0 +1,2078 @@
+[
+  {
+    "throughflow": false,
+    "method": "Euler",
+    "initial_bound_fraction": 0.1,
+    "initial": {
+      "dt_s": 86.24830900830727,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.1,
+      "minimum_euler_h_m": 0.09000000000000001,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.99999999999999
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.09000000000000001,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -2.0,
+      10.0
+    ],
+    "relative_energy_change": 9.213311877010685e-06,
+    "stages": [
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.1,
+        "minimum_euler_h_m": 0.09000000000000001,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.99999999999999
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.1,
+    "initial": {
+      "dt_s": 86.24830900830727,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.1,
+      "minimum_euler_h_m": 0.09000000000000001,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.99999999999999
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.09460640774723778,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -1.5609025683106819,
+      10.000000000000002
+    ],
+    "relative_energy_change": 2.4247026020627734e-12,
+    "stages": [
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.1,
+        "minimum_euler_h_m": 0.09000000000000001,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.99999999999999
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      },
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 978.8435849628092,
+        "maximum_carrier_outflow_fraction": 0.08811245262600789,
+        "minimum_euler_h_m": 0.08921275407295694,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 3.637978807091713e-12,
+        "incidence_local_scale_m3_s": 2601642907.392958,
+        "content_rates": {
+          "h": {
+            "rate": -1.1920928955078125e-07,
+            "absolute_local_rate_scale": 2737515924.117869
+          },
+          "temp_h": {
+            "rate": -9.5367431640625e-07,
+            "absolute_local_rate_scale": 30133560206.780315
+          },
+          "salt_h": {
+            "rate": -6.007362637006075e-06,
+            "absolute_local_rate_scale": 95813334610.24263
+          },
+          "tracer_h": {
+            "rate": -2.5338244537265187e-07,
+            "absolute_local_rate_scale": 2737523846.006933
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -1.0392125139251325,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 32.19770316561497
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.9199343761604277
+          }
+        }
+      },
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 936.1042657064083,
+        "maximum_carrier_outflow_fraction": 0.09213536586463698,
+        "minimum_euler_h_m": 0.09190961162085666,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 2163845514.835755,
+        "content_rates": {
+          "h": {
+            "rate": -1.1920928955078125e-07,
+            "absolute_local_rate_scale": 3094789851.0824184
+          },
+          "temp_h": {
+            "rate": 1.1920928955078125e-06,
+            "absolute_local_rate_scale": 17837499325.57563
+          },
+          "salt_h": {
+            "rate": 7.082204779462753e-06,
+            "absolute_local_rate_scale": 106329881605.088
+          },
+          "tracer_h": {
+            "rate": -1.314373027560753e-07,
+            "absolute_local_rate_scale": 3037996617.2882285
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -1.3220279696992372,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 33.02258157828944
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.9435023308082697
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "Euler",
+    "initial_bound_fraction": 0.5,
+    "initial": {
+      "dt_s": 431.24154504153637,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.5,
+      "minimum_euler_h_m": 0.05,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.99999999999999
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.05,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -2.0,
+      10.0
+    ],
+    "relative_energy_change": 0.00023032549458940586,
+    "stages": [
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.5,
+        "minimum_euler_h_m": 0.05,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.99999999999999
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.5,
+    "initial": {
+      "dt_s": 431.24154504153637,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.5,
+      "minimum_euler_h_m": 0.05,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.99999999999999
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.16515961364347737,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      4.111085678391408,
+      10.000000000000002
+    ],
+    "relative_energy_change": 1.5159228781749706e-09,
+    "stages": [
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.5,
+        "minimum_euler_h_m": 0.05,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.99999999999999
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      },
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 7224690.338579559,
+        "maximum_carrier_outflow_fraction": 5.968996937332022e-05,
+        "minimum_euler_h_m": 0.23031154975386642,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 6224459671.8390665,
+        "content_rates": {
+          "h": {
+            "rate": -1.1920928955078125e-06,
+            "absolute_local_rate_scale": 12449365770.348505
+          },
+          "temp_h": {
+            "rate": -7.62939453125e-06,
+            "absolute_local_rate_scale": 124493590686.24693
+          },
+          "salt_h": {
+            "rate": 6.842526545369765e-12,
+            "absolute_local_rate_scale": 195530.90600808352
+          },
+          "tracer_h": {
+            "rate": -4.1466829969749597e-13,
+            "absolute_local_rate_scale": 5586.59731451667
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 7.394829014234959,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 7.598415375148035
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.21709758214708677
+          }
+        }
+      },
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 2369.6577306822455,
+        "maximum_carrier_outflow_fraction": 0.1819847395924888,
+        "minimum_euler_h_m": 0.19773942046521606,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 9.5367431640625e-07,
+        "incidence_local_scale_m3_s": 3915180745.122924,
+        "content_rates": {
+          "h": {
+            "rate": -7.152557373046875e-07,
+            "absolute_local_rate_scale": 6164853112.361544
+          },
+          "temp_h": {
+            "rate": 1.9073486328125e-06,
+            "absolute_local_rate_scale": 61648531130.39872
+          },
+          "salt_h": {
+            "rate": -2.2328983693142845e-06,
+            "absolute_local_rate_scale": 38478601210.12582
+          },
+          "tracer_h": {
+            "rate": 1.1331384797141908e-07,
+            "absolute_local_rate_scale": 1099388606.003595
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 5.656322754542948,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 12.66905863258307
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.36197310378808784
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "Euler",
+    "initial_bound_fraction": 0.9,
+    "initial": {
+      "dt_s": 776.2347810747655,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.9,
+      "minimum_euler_h_m": 0.010000000000000009,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.999999999999936
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.010000000000000009,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -2.0,
+      10.0
+    ],
+    "relative_energy_change": 0.0007462309429117291,
+    "stages": [
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.9,
+        "minimum_euler_h_m": 0.010000000000000009,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.999999999999936
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.9,
+    "initial": {
+      "dt_s": 776.2347810747655,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.9,
+      "minimum_euler_h_m": 0.010000000000000009,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -2.0,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 34.999999999999936
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.3831152657650594,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      7.378945559524267,
+      10.0
+    ],
+    "relative_energy_change": 1.590610177314475e-08,
+    "stages": [
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.9,
+        "minimum_euler_h_m": 0.010000000000000009,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -2.0,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 34.999999999999936
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      },
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 4013877.4018351412,
+        "maximum_carrier_outflow_fraction": 0.0001933877653362984,
+        "minimum_euler_h_m": 0.6661857624955435,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 9.5367431640625e-07,
+        "incidence_local_scale_m3_s": 12584396967.55691,
+        "content_rates": {
+          "h": {
+            "rate": -4.76837158203125e-07,
+            "absolute_local_rate_scale": 25169597517.95033
+          },
+          "temp_h": {
+            "rate": -7.62939453125e-06,
+            "absolute_local_rate_scale": 251693006062.94806
+          },
+          "salt_h": {
+            "rate": 3.468869635980809e-10,
+            "absolute_local_rate_scale": 8660130.517690644
+          },
+          "tracer_h": {
+            "rate": 1.5929479957321746e-12,
+            "absolute_local_rate_scale": 247432.30050544694
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.819753896111212,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 0.5257178030089539
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.01502050865739871
+          }
+        }
+      },
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 30370.273106617966,
+        "maximum_carrier_outflow_fraction": 0.025559031963582068,
+        "minimum_euler_h_m": 0.524672898647589,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 5666627293.970884,
+        "content_rates": {
+          "h": {
+            "rate": -7.152557373046875e-07,
+            "absolute_local_rate_scale": 11098122502.058136
+          },
+          "temp_h": {
+            "rate": -7.62939453125e-06,
+            "absolute_local_rate_scale": 110981225049.7918
+          },
+          "salt_h": {
+            "rate": -2.1106860970121488e-07,
+            "absolute_local_rate_scale": 2659247652.6900177
+          },
+          "tracer_h": {
+            "rate": 6.103270000501482e-09,
+            "absolute_local_rate_scale": 75978504.36257194
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 8.272735345855875,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 5.037855241253704
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.14393872117867726
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "Euler",
+    "initial_bound_fraction": 1.1,
+    "initial": {
+      "dt_s": 948.7313990913801,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 1.1,
+      "minimum_euler_h_m": -0.010000000000000009,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {}
+    },
+    "status": "rejected",
+    "error": "ocean layer thickness below minimum: h_min=-1.000e-02",
+    "stages": [
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 1.1,
+        "minimum_euler_h_m": -0.010000000000000009,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {}
+      }
+    ]
+  },
+  {
+    "throughflow": false,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 1.1,
+    "initial": {
+      "dt_s": 948.7313990913801,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 1.1,
+      "minimum_euler_h_m": -0.010000000000000009,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 1726029109.1546109,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 6904116436.6184435
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {}
+    },
+    "status": "rejected",
+    "error": "ocean layer thickness below minimum: h_min=-1.000e-02",
+    "stages": [
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 1.1,
+        "minimum_euler_h_m": -0.010000000000000009,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 1726029109.1546109,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 6904116436.6184435
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {}
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "Euler",
+    "initial_bound_fraction": 0.1,
+    "initial": {
+      "dt_s": 86.24830900830727,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.1,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -0.7999999999999997,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 31.499999999999996
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.9
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.1,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -0.7999999999999997,
+      10.0
+    ],
+    "relative_energy_change": 9.21238791507038e-06,
+    "stages": [
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.1,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -0.7999999999999997,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 31.499999999999996
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.9
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.1,
+    "initial": {
+      "dt_s": 86.24830900830727,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.1,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": -0.7999999999999997,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 31.499999999999996
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.9
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.10460626172823621,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      -0.5024580884122951,
+      10.000000000000002
+    ],
+    "relative_energy_change": 2.424713552112261e-12,
+    "stages": [
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.1,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": -0.7999999999999997,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 31.499999999999996
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.9
+          }
+        }
+      },
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 1087.5930905817083,
+        "maximum_carrier_outflow_fraction": 0.07930200159894049,
+        "minimum_euler_h_m": 0.10921252345677505,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 4327659628.996274,
+        "content_rates": {
+          "h": {
+            "rate": -5.960464477539063e-08,
+            "absolute_local_rate_scale": 5917823037.581917
+          },
+          "temp_h": {
+            "rate": -1.430511474609375e-06,
+            "absolute_local_rate_scale": 61369252663.338974
+          },
+          "salt_h": {
+            "rate": 2.1646483203685563e-06,
+            "absolute_local_rate_scale": 86232864799.61798
+          },
+          "tracer_h": {
+            "rate": -6.076817445077598e-08,
+            "absolute_local_rate_scale": 2463796137.131942
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 0.8952397875258588,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 26.55555061971624
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.7587300177061784
+          }
+        }
+      },
+      {
+        "dt_s": 86.24830900830727,
+        "transport_bound_s": 984.2000756089191,
+        "maximum_carrier_outflow_fraction": 0.08763290223783607,
+        "minimum_euler_h_m": 0.10690939259235431,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 5.960464477539062e-07,
+        "incidence_local_scale_m3_s": 3889865891.834527,
+        "content_rates": {
+          "h": {
+            "rate": 2.682209014892578e-07,
+            "absolute_local_rate_scale": 4684948888.282721
+          },
+          "temp_h": {
+            "rate": -3.0994415283203125e-06,
+            "absolute_local_rate_scale": 50648282683.135475
+          },
+          "salt_h": {
+            "rate": -4.386140175116626e-06,
+            "absolute_local_rate_scale": 101343652621.68675
+          },
+          "tracer_h": {
+            "rate": -1.8662592533857936e-07,
+            "absolute_local_rate_scale": 2895532932.0481925
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 0.19792093127675836,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 28.589397283776115
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.8168399223936035
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "Euler",
+    "initial_bound_fraction": 0.5,
+    "initial": {
+      "dt_s": 431.24154504153637,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.5,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 4.000000000000002,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 17.499999999999996
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.5
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.1,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      4.000000000000002,
+      10.0
+    ],
+    "relative_energy_change": 0.00023030940706329458,
+    "stages": [
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.5,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 4.000000000000002,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 17.499999999999996
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.5
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.5,
+    "initial": {
+      "dt_s": 431.24154504153637,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.5,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 4.000000000000002,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 17.499999999999996
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.5
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.21515639755702906,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      5.385621559686546,
+      10.000000000000002
+    ],
+    "relative_energy_change": 1.514507212122592e-09,
+    "stages": [
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.5,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 4.000000000000002,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 17.499999999999996
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.5
+          }
+        }
+      },
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 4271960.958422019,
+        "maximum_carrier_outflow_fraction": 0.00010094697709990982,
+        "minimum_euler_h_m": 0.33031279560346016,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 1.9073486328125e-06,
+        "incidence_local_scale_m3_s": 7950531788.446964,
+        "content_rates": {
+          "h": {
+            "rate": 7.152557373046875e-07,
+            "absolute_local_rate_scale": 15901829437.003311
+          },
+          "temp_h": {
+            "rate": 3.814697265625e-06,
+            "absolute_local_rate_scale": 159018227360.21182
+          },
+          "salt_h": {
+            "rate": -4.433786671143025e-12,
+            "absolute_local_rate_scale": 195547.73184113266
+          },
+          "tracer_h": {
+            "rate": -5.822009541134321e-13,
+            "absolute_local_rate_scale": 5587.078052603791
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 8.183537013588166,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 5.298017043701179
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.15137191553431945
+          }
+        }
+      },
+      {
+        "dt_s": 431.24154504153637,
+        "transport_bound_s": 2816.2819733544825,
+        "maximum_carrier_outflow_fraction": 0.1531244204669901,
+        "minimum_euler_h_m": 0.2727345963355436,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 9.5367431640625e-07,
+        "incidence_local_scale_m3_s": 5641164996.001631,
+        "content_rates": {
+          "h": {
+            "rate": -2.384185791015625e-07,
+            "absolute_local_rate_scale": 9616848282.433847
+          },
+          "temp_h": {
+            "rate": 9.5367431640625e-06,
+            "absolute_local_rate_scale": 96168482832.89674
+          },
+          "salt_h": {
+            "rate": -1.6573437839895178e-06,
+            "absolute_local_rate_scale": 32376415318.88825
+          },
+          "tracer_h": {
+            "rate": 1.2251965220144712e-08,
+            "absolute_local_rate_scale": 925040437.6825212
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 6.739615819842685,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 9.509453858792163
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.2716986816797761
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "Euler",
+    "initial_bound_fraction": 0.9,
+    "initial": {
+      "dt_s": 776.2347810747655,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.9,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 8.800000000000002,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 3.4999999999999964
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.10000000000000009
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.1,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      8.800000000000002,
+      10.0
+    ],
+    "relative_energy_change": 0.0007462015366560683,
+    "stages": [
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.9,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 8.800000000000002,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 3.4999999999999964
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.10000000000000009
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 0.9,
+    "initial": {
+      "dt_s": 776.2347810747655,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 0.9,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 8.800000000000002,
+          "maximum": 10.0
+        },
+        "salinity": {
+          "minimum": 0.0,
+          "maximum": 3.4999999999999964
+        },
+        "tracer": {
+          "minimum": 0.0,
+          "maximum": 0.10000000000000009
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.47310625150803265,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      7.872279779380579,
+      10.000000000000002
+    ],
+    "relative_energy_change": 1.5877896379431547e-08,
+    "stages": [
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 0.9,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 8.800000000000002,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 3.4999999999999964
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.10000000000000009
+          }
+        }
+      },
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 2974721.2495583766,
+        "maximum_carrier_outflow_fraction": 0.0002609437039487328,
+        "minimum_euler_h_m": 0.8462125155116432,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 14310939148.76203,
+        "content_rates": {
+          "h": {
+            "rate": -9.5367431640625e-07,
+            "absolute_local_rate_scale": 28623256848.71665
+          },
+          "temp_h": {
+            "rate": -3.814697265625e-05,
+            "absolute_local_rate_scale": 286229599138.3334
+          },
+          "salt_h": {
+            "rate": 6.618279257963877e-10,
+            "absolute_local_rate_scale": 8660932.596613787
+          },
+          "tracer_h": {
+            "rate": 8.091305403468141e-12,
+            "absolute_local_rate_scale": 247455.21704610818
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.858100190072024,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 0.413874445623259
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.011824984160664563
+          }
+        }
+      },
+      {
+        "dt_s": 776.2347810747655,
+        "transport_bound_s": 35982.786634970376,
+        "maximum_carrier_outflow_fraction": 0.021572392070389867,
+        "minimum_euler_h_m": 0.659659377262049,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 9.5367431640625e-07,
+        "incidence_local_scale_m3_s": 7392573493.461967,
+        "content_rates": {
+          "h": {
+            "rate": 4.76837158203125e-07,
+            "absolute_local_rate_scale": 14549998981.999508
+          },
+          "temp_h": {
+            "rate": 7.62939453125e-06,
+            "absolute_local_rate_scale": 145499989855.28455
+          },
+          "salt_h": {
+            "rate": 1.993292926272261e-07,
+            "absolute_local_rate_scale": 2244464233.424066
+          },
+          "tracer_h": {
+            "rate": -5.693622462388248e-09,
+            "absolute_local_rate_scale": 64127549.52640191
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 8.62056594946096,
+            "maximum": 10.0
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 4.023349314072196
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.11495283754491989
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "Euler",
+    "initial_bound_fraction": 1.1,
+    "initial": {
+      "dt_s": 948.7313990913801,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 1.1,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 9.998782065778279,
+          "maximum": 11.200000000000005
+        },
+        "salinity": {
+          "minimum": -3.5000000000000098,
+          "maximum": 0.0035523081466836584
+        },
+        "tracer": {
+          "minimum": -0.10000000000000009,
+          "maximum": 0.00010149451847667595
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.1,
+    "minimum_final_salinity": -3.5000000000000098,
+    "minimum_final_tracer": -0.10000000000000009,
+    "final_temperature_range_degC": [
+      9.998782065778279,
+      11.200000000000005
+    ],
+    "relative_energy_change": 0.0011146954188956495,
+    "stages": [
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 1.1,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.998782065778279,
+            "maximum": 11.200000000000005
+          },
+          "salinity": {
+            "minimum": -3.5000000000000098,
+            "maximum": 0.0035523081466836584
+          },
+          "tracer": {
+            "minimum": -0.10000000000000009,
+            "maximum": 0.00010149451847667595
+          }
+        }
+      }
+    ]
+  },
+  {
+    "throughflow": true,
+    "method": "SSPRK3",
+    "initial_bound_fraction": 1.1,
+    "initial": {
+      "dt_s": 948.7313990913801,
+      "transport_bound_s": 862.4830900830727,
+      "maximum_carrier_outflow_fraction": 1.1,
+      "minimum_euler_h_m": 0.1,
+      "all_finite": true,
+      "incidence_residual_max_m3_s": 0.0,
+      "incidence_local_scale_m3_s": 3452058218.3092217,
+      "content_rates": {
+        "h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        },
+        "temp_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 41424698619.71067
+        },
+        "salt_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 120822037640.82277
+        },
+        "tracer_h": {
+          "rate": 0.0,
+          "absolute_local_rate_scale": 3452058218.3092217
+        }
+      },
+      "euler_concentrations": {
+        "temperature_degC": {
+          "minimum": 9.998782065778279,
+          "maximum": 11.200000000000005
+        },
+        "salinity": {
+          "minimum": -3.5000000000000098,
+          "maximum": 0.0035523081466836584
+        },
+        "tracer": {
+          "minimum": -0.10000000000000009,
+          "maximum": 0.00010149451847667595
+        }
+      }
+    },
+    "status": "completed",
+    "minimum_final_h_m": 0.6573558898993704,
+    "minimum_final_salinity": 0.0,
+    "minimum_final_tracer": 0.0,
+    "final_temperature_range_degC": [
+      8.509130874754034,
+      10.000000000000002
+    ],
+    "relative_energy_change": 3.539866551267805e-08,
+    "stages": [
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 862.4830900830727,
+        "maximum_carrier_outflow_fraction": 1.1,
+        "minimum_euler_h_m": 0.1,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 0.0,
+        "incidence_local_scale_m3_s": 3452058218.3092217,
+        "content_rates": {
+          "h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          },
+          "temp_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 41424698619.71067
+          },
+          "salt_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 120822037640.82277
+          },
+          "tracer_h": {
+            "rate": 0.0,
+            "absolute_local_rate_scale": 3452058218.3092217
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.998782065778279,
+            "maximum": 11.200000000000005
+          },
+          "salinity": {
+            "minimum": -3.5000000000000098,
+            "maximum": 0.0035523081466836584
+          },
+          "tracer": {
+            "minimum": -0.10000000000000009,
+            "maximum": 0.00010149451847667595
+          }
+        }
+      },
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 2582600.207111798,
+        "maximum_carrier_outflow_fraction": 0.0003673551161650281,
+        "minimum_euler_h_m": 1.2147118193971977,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 9.5367431640625e-07,
+        "incidence_local_scale_m3_s": 17491136805.43873,
+        "content_rates": {
+          "h": {
+            "rate": -3.814697265625e-06,
+            "absolute_local_rate_scale": 34983958508.61023
+          },
+          "temp_h": {
+            "rate": 1.52587890625e-05,
+            "absolute_local_rate_scale": 349834214990.727
+          },
+          "salt_h": {
+            "rate": -1.5203340808511712e-09,
+            "absolute_local_rate_scale": 15663273.874336457
+          },
+          "tracer_h": {
+            "rate": -1.3505641049960104e-11,
+            "absolute_local_rate_scale": 447522.1106953272
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.998782065778279,
+            "maximum": 10.098648021875483
+          },
+          "salinity": {
+            "minimum": -0.2877233971368289,
+            "maximum": 0.0035523081466836584
+          },
+          "tracer": {
+            "minimum": -0.008220668489623667,
+            "maximum": 0.00010149451847667594
+          }
+        }
+      },
+      {
+        "dt_s": 948.7313990913801,
+        "transport_bound_s": 4049916.0175105315,
+        "maximum_carrier_outflow_fraction": 0.00023425952414553075,
+        "minimum_euler_h_m": 0.9360338348490557,
+        "all_finite": true,
+        "incidence_residual_max_m3_s": 2.384185791015625e-07,
+        "incidence_local_scale_m3_s": 8745567936.709667,
+        "content_rates": {
+          "h": {
+            "rate": -9.5367431640625e-07,
+            "absolute_local_rate_scale": 17496537880.015778
+          },
+          "temp_h": {
+            "rate": -7.62939453125e-06,
+            "absolute_local_rate_scale": 174965232952.20718
+          },
+          "salt_h": {
+            "rate": 4.149569576838985e-12,
+            "absolute_local_rate_scale": 425555.36869912245
+          },
+          "tracer_h": {
+            "rate": 1.4632739464559563e-13,
+            "absolute_local_rate_scale": 12158.724819974928
+          }
+        },
+        "euler_concentrations": {
+          "temperature_degC": {
+            "minimum": 9.0704957786439,
+            "maximum": 10.000000000000002
+          },
+          "salinity": {
+            "minimum": 0.0,
+            "maximum": 2.711053978955291
+          },
+          "tracer": {
+            "minimum": 0.0,
+            "maximum": 0.07745868511300832
+          }
+        }
+      }
+    ]
+  }
+]
