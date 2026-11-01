@@ -1,0 +1,151 @@
+{
+  "input_fixture_sha256": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+  "configuration": {
+    "scope": "unimplemented active-energy design; no timestep",
+    "layers": 3,
+    "alpha_K_inverse": 0.0002,
+    "beta_inverse_salinity": 0.00076,
+    "T_reference_degC": 10.0,
+    "S_reference": 35.0
+  },
+  "work": {
+    "anomaly_energy_J": -3.328319823818632e+21,
+    "total_mechanical_energy_J": -3.324531161620587e+21,
+    "derivative_relative_errors": {
+      "u_e": 0.0,
+      "h": 3.8840653918819746e-16,
+      "temp_h": 1.8351726591541167e-16,
+      "salt_h": 1.9317606938464388e-16
+    },
+    "proposed_work_W": -0.3359375,
+    "absolute_local_work_scale_W": 2.001083989994604e+16,
+    "normalized_proposed_work": -1.6787776109332915e-17,
+    "archived_pressure_graft_work_W": -1250253883972.0586,
+    "archived_pressure_graft_normalized_work": -6.247436672855537e-05,
+    "interpretation": "proposal algebra only; no new runtime or timestep",
+    "anomaly_finite_differences": [
+      {
+        "field": "h",
+        "direction_scale_native": 1.0,
+        "epsilon": 0.1,
+        "analytic_J": 2.029822589237345e+19,
+        "fd_J": 2.0298225892332667e+19,
+        "relative_error": 2.0092333298607894e-12
+      },
+      {
+        "field": "h",
+        "direction_scale_native": 1.0,
+        "epsilon": 0.01,
+        "analytic_J": 2.029822589237345e+19,
+        "fd_J": 2.0298225891724493e+19,
+        "relative_error": 3.197116612264275e-11
+      },
+      {
+        "field": "h",
+        "direction_scale_native": 1.0,
+        "epsilon": 0.001,
+        "analytic_J": 2.029822589237345e+19,
+        "fd_J": 2.0298225894293504e+19,
+        "relative_error": 9.459217067445347e-11
+      },
+      {
+        "field": "h",
+        "direction_scale_native": 1.0,
+        "epsilon": 0.0001,
+        "analytic_J": 2.029822589237345e+19,
+        "fd_J": 2.029822590582784e+19,
+        "relative_error": 6.62835723641008e-10
+      },
+      {
+        "field": "temp_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.1,
+        "analytic_J": 1.6977770901604654e+18,
+        "fd_J": 1.6977770901982413e+18,
+        "relative_error": 2.2250195398990578e-11
+      },
+      {
+        "field": "temp_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.01,
+        "analytic_J": 1.6977770901604654e+18,
+        "fd_J": 1.697777090297856e+18,
+        "relative_error": 8.092381078543975e-11
+      },
+      {
+        "field": "temp_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.001,
+        "analytic_J": 1.6977770901604654e+18,
+        "fd_J": 1.697777087676416e+18,
+        "relative_error": 1.4631186993842755e-09
+      },
+      {
+        "field": "temp_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.0001,
+        "analytic_J": 1.6977770901604654e+18,
+        "fd_J": 1.69777711546368e+18,
+        "relative_error": 1.4903731908414708e-08
+      },
+      {
+        "field": "salt_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.1,
+        "analytic_J": -6.451552942609758e+18,
+        "fd_J": -6.451552942612808e+18,
+        "relative_error": 4.726725529693071e-13
+      },
+      {
+        "field": "salt_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.01,
+        "analytic_J": -6.451552942609758e+18,
+        "fd_J": -6.451552942371635e+18,
+        "relative_error": 3.690940927219228e-11
+      },
+      {
+        "field": "salt_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.001,
+        "analytic_J": -6.451552942609758e+18,
+        "fd_J": -6.451552936787968e+18,
+        "relative_error": 9.023858689199552e-10
+      },
+      {
+        "field": "salt_h",
+        "direction_scale_native": 10.0,
+        "epsilon": 0.0001,
+        "analytic_J": -6.451552942609758e+18,
+        "fd_J": -6.4515529375744e+18,
+        "relative_error": 7.804877760118195e-10
+      }
+    ]
+  },
+  "rest": [
+    {
+      "topography": false,
+      "force_m_s2": {
+        "l1": 5.110696657804676e-21,
+        "l2": 8.396547941678532e-21,
+        "linf": 3.174192782490473e-20
+      },
+      "maximum_eta_m": 0.0,
+      "construction": "horizontal upper interfaces, topographic thickness only in bottom constant-density layer"
+    },
+    {
+      "topography": true,
+      "force_m_s2": {
+        "l1": 8.166405470305001e-21,
+        "l2": 1.4331993254283805e-20,
+        "linf": 6.479802046495398e-20
+      },
+      "maximum_eta_m": 0.0,
+      "construction": "horizontal upper interfaces, topographic thickness only in bottom constant-density layer"
+    }
+  ],
+  "constant_density_limit": {
+    "energy_J": 0.0,
+    "force_max_m_s2": 0.0
+  }
+}
