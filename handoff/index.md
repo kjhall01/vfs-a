@@ -1,3 +1,13 @@
+# Current handoff — ocean rotating-flow investigation
+
+Starting main: `e959b7005832a5041e082b6e300838e15bfbaa9e`; GitHub and ancestry
+confirm #26/#27 merged. Original atmospheric worktrees remain untouched.
+The reference ocean remains default. Runtime and fixtures are unchanged.
+Read [rotating-flow diagnosis](../verification/ocean/ROTATING_BALANCE.md).
+Older draft/unmerged entries below are historical snapshots.
+
+---
+
 # Current handoff — Williamson rotating-balance measurements
 
 Recovered publication work on 31 October 2026: 615 installed-wheel tests pass,

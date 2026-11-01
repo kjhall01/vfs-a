@@ -1,5 +1,10 @@
 # Component ownership and structural migration
 
+> Historical structural record. Main now includes the independent ocean state,
+> column, reference solver and explicit constant-density candidate through merged
+> #26/#27. See [current ocean ownership](../verification/ocean/README.md).
+> Statements below that ocean is not installed describe the earlier extraction.
+
 Structural baseline: merged main `3f806a947e2ff8a5947953137a96af02861d083f`,
 confirmed through GitHub before branching. This is distinct from the historical
 scientific baseline. PRs #18/#19 and their evidence stay on their own branches;

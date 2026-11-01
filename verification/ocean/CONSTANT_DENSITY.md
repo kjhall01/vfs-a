@@ -1,5 +1,11 @@
 # Constant-density ocean: separate numerical change
 
+> Status reconciled against main `e959b7005832a5041e082b6e300838e15bfbaa9e`:
+> #26 and #27 are merged and their heads are ancestors of main. Draft/unmerged
+> language below describes the original publication, not current status.
+> The reference solver remains default; the constant-density candidate remains
+> explicit. Current investigation: [rotating-flow diagnosis](ROTATING_BALANCE.md).
+
 This dependent change adds `ConstantDensityDynamics`, selected explicitly from
 `vfs.ocean.conservative`. `Ocean` still defaults to the extracted reference.
 The reference equations and their 1,416-array capture are not replaced.

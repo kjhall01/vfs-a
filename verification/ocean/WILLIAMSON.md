@@ -1,5 +1,11 @@
 # Williamson steady rotating flow: measurements with frozen operators
 
+> Status reconciled against main `e959b7005832a5041e082b6e300838e15bfbaa9e`:
+> #26 and #27 are merged and their heads are ancestors of main. Draft/unmerged
+> language below describes the original publication, not current status.
+> The reference solver remains default; the constant-density candidate remains
+> explicit. Current investigation: [rotating-flow diagnosis](ROTATING_BALANCE.md).
+
 This is Williamson et al. (1992) shallow-water test case 2, with the rotation
 axis aligned with the geographic pole (alpha=0). It measures the explicit
 `ConstantDensityDynamics` candidate; the archived ocean remains the default.
