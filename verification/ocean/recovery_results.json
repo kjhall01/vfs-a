@@ -1,0 +1,30 @@
+{
+  "recovered_local_commit": "acaf12a6ab22833443e31849c05732b281d2e6f9",
+  "local_integration_parent": "9123ae5",
+  "published_integration_parent": "018da8ca621e7829cecb4d942b896ca30bc1b633",
+  "published_driver_commit": "7e53cd453bb8fea49d654fcf699b0937c6e45c20",
+  "original_artifact_hashes_verified": 25,
+  "installed_runtime_python_files_identical": 97,
+  "runtime_and_historical_fixtures_changed": false,
+  "validation": {
+    "mode": "portable, installed wheel outside checkout, CPU float64",
+    "tests": 616,
+    "passed": 615,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 55.876
+  },
+  "replay": {
+    "cells": 64,
+    "dt_s": 600,
+    "days": 5,
+    "lloyd_iterations": 100,
+    "exact_final_arrays": 5,
+    "exact_daily_metrics": true,
+    "exact_initial_balance": true,
+    "driver_sha256": "15ffda63947898484c7cfb85fbbea346e5f2fb8e3bf2e577cebb44faf6ce51f4"
+  },
+  "setup_note": "Initial check omitted examples/bounded_moist.py: five missing-file failures, 610 passed, one skipped. Full rerun after copying unchanged examples passed. No source, fixture or tolerance changes.",
+  "verification_hosted_ci": "pending publication"
+}

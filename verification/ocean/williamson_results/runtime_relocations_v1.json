@@ -1,0 +1,831 @@
+{
+  "version": "structural-v1",
+  "historical_numerical_baseline": "8f5edc749bdd6fe3e0c54b74122d5ec8ab2a8648",
+  "before_structure": "3f806a947e2ff8a5947953137a96af02861d083f",
+  "structural_commit": "6c5bf938503b357ba01c50ab99ae7e2cc770e90a",
+  "review": "#25; docs/PACKAGE_OWNERSHIP.md and 457-definition AST/capture evidence",
+  "runtime": {
+    "vfs/__init__.py": {
+      "sha256": "ad8eff6173ab15a21c7091423325ad338b631234b4d2bbbf4de78845ceab3f3b",
+      "old_paths": [
+        "vfs/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/__init__.py": "cad30d3df7cc8a1402a6bfa2701fa2d3fb582fdcba771f70886bcc9778a00a13"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/__init__.py": {
+      "sha256": "2ed5e928722fba55e301b3585476b74eb0b924336a2efdd4e2017e0b36d37cc2",
+      "old_paths": [
+        "vfs/atmosphere/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/__init__.py": "5b5d43b305567a94aa93a76d7e8812b07b90bf282a4d3658c35fc3c75a1c6cee"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/boundary.py": {
+      "sha256": "00be6e430668fcfb6872aae10f7b64910440860ff8f08d94a0545dded79ff632",
+      "old_paths": [
+        "vfs/boundary.py"
+      ],
+      "old_sha256": {
+        "vfs/boundary.py": "99ad2c88620381859e2dca563d36394bd54dd9f8dca44b32e3137062146a5267"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/bounded_moist.py": {
+      "sha256": "d240914e55db06843eda264a3ca29a505ef241f5bb63ac21e9f91fb7dc2a1de7",
+      "old_paths": [
+        "vfs/atmosphere/bounded_moist.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/bounded_moist.py": "d240914e55db06843eda264a3ca29a505ef241f5bb63ac21e9f91fb7dc2a1de7"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/bounded_transport.py": {
+      "sha256": "ab099f8eeca91121c79d1fe53ef3f587af41ad361f9c2982daab590f78174632",
+      "old_paths": [
+        "vfs/atmosphere/bounded_transport.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/bounded_transport.py": "ab099f8eeca91121c79d1fe53ef3f587af41ad361f9c2982daab590f78174632"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/column.py": {
+      "sha256": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1",
+      "old_paths": [
+        "vfs/geometry/column.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/conservative.py": {
+      "sha256": "81e8fce87de8ab5dd374e0004285c27b5078b3e29a83b116a8a853b935e06ef8",
+      "old_paths": [
+        "vfs/atmosphere/conservative.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/conservative.py": "73a4e99e8477080800198afbeee75d3a1f4e6e4884cffeb2a9715384f94021e2"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/constants.py": {
+      "sha256": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc",
+      "old_paths": [
+        "vfs/atmosphere/constants.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/constants.py": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/dry_energy.py": {
+      "sha256": "c81ef31b816185d07a2bd7d9130bb8e6f9ec03928b2e86eae3fa6386f5795c98",
+      "old_paths": [
+        "vfs/atmosphere/dry_energy.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/dry_energy.py": "3cfc91d873cd2c5df9ad8aabaa0eb3617570f8ac0d78a92d9c64155e729fba97"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/dry_model.py": {
+      "sha256": "398b114608df18e653267aa119920226d331480ec5f0b04baa70b52b7261c019",
+      "old_paths": [
+        "vfs/model.py"
+      ],
+      "old_sha256": {
+        "vfs/model.py": "b6bd1066422f2862b1ccff0414b3f52f7643b9e30d4e0657ae12bcf19f1090cf"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/earth.py": {
+      "sha256": "9827f360e54b21abc15105c33684ae40dc7a00970812f93cc472ae34905c20ef",
+      "old_paths": [
+        "vfs/earth.py"
+      ],
+      "old_sha256": {
+        "vfs/earth.py": "24710d093f07bf8963da4fb49fc68eeae9e2c93431aefae88c463812ec772673"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/era5.py": {
+      "sha256": "1f7ac4b81f2f01073b5d6f10ff3af8081a66b027826414354ecf26b47b26e544",
+      "old_paths": [
+        "vfs/era5.py"
+      ],
+      "old_sha256": {
+        "vfs/era5.py": "30944744f181cd84720ba14be1c158b142c0961b5e2279ad6ea186aacc5d4a15"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/gibbs_means.py": {
+      "sha256": "26d2bfa3394fb5238f6f0b1114d03440aa5a3d5877495ec4e97914ed3123bd81",
+      "old_paths": [
+        "vfs/atmosphere/gibbs_means.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/gibbs_means.py": "26d2bfa3394fb5238f6f0b1114d03440aa5a3d5877495ec4e97914ed3123bd81"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/held_suarez.py": {
+      "sha256": "be218c2339f6c4ec6f6d5aaffb7c1579bec6298eb8e7d3b5791b7b89328acb56",
+      "old_paths": [
+        "vfs/atmosphere/held_suarez.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/held_suarez.py": "6ff83dacec7fe760d729c6120e983c3e8911d046cf702b1b195cb3c65d6be323"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/__init__.py": {
+      "sha256": "5bf6f37ba4c016984e66f457ffe1a17a15a7493c17965e6cd03214b954d6086c",
+      "old_paths": [
+        "vfs/integrators/imex/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/__init__.py": "c9ea73c555e7c7be9d11fa8a4859ffc55e4bfda7d33462e82dc8e2cc8ed00db9"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/conservative_wave.py": {
+      "sha256": "cc3fff7960eaa0273cc9ff2df816f32fbf36d73e0651944806c38106191af000",
+      "old_paths": [
+        "vfs/integrators/imex/conservative_wave.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/conservative_wave.py": "c0aaebe5642c1c85eadca3138772ac7d93fb5b11947d0a17f0fc8aa033e433c7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/dry_ark.py": {
+      "sha256": "31fe328cc5a006151ceb736defa75e28898593aec255aff4261843d902ba67d2",
+      "old_paths": [
+        "vfs/integrators/imex/dry_ark.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/dry_ark.py": "60659fecd347d24f6461362eb8ac925c8205ac8fb9c51a1cce59411998061b46"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/moist_ark.py": {
+      "sha256": "db954479885062ebe43b3a1a3667f4416c175afa8cc5de26c62db954036171f5",
+      "old_paths": [
+        "vfs/integrators/imex/moist_ark.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/moist_ark.py": "2e2ebf4207ac4bc1ba3352fa3c3d70a2b00d3f5cd72bdfbc1b10c46b6b83613a"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/moist_wave.py": {
+      "sha256": "a422e90a33db4765758483c76976a9cd994be32dc116e7c7b2eb8fd2ad16cf2f",
+      "old_paths": [
+        "vfs/integrators/imex/moist_wave.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/moist_wave.py": "a73983978a89dd0c63172f1262081deb058bceb76dde906a46a89b3318cbc013"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/solvers.py": {
+      "sha256": "fba713c6345c39467d6795bf20e031dd7fc21c7624554f7b9c3647be47c78ec3",
+      "old_paths": [
+        "vfs/integrators/imex/solvers.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/solvers.py": "fd6150bb9789ced54342f9880e9e5dafc3c6efee8fddf471403a015c96cb5d3d"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/imex/transfer.py": {
+      "sha256": "fb1f54c43460e8d607c82a6c459bc3223c276b1b8193f5b64c0642fcc4078370",
+      "old_paths": [
+        "vfs/geometry/mesh/multilevel.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/mesh/multilevel.py": "909d772cd603db1ad3726e555f14003078af7e73c33ad2a090fa97d27ecb16f9"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/initial_conditions/__init__.py": {
+      "sha256": "e67072ee6e4cf93e038f7083040d2af98e16ee3b9ec98a6978bc1ff91222a4cd",
+      "old_paths": [
+        "vfs/initial_conditions/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/__init__.py": "74717b68183d9b6a88303774b0ead452f635223a06186b1c974ef21614267de7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/initial_conditions/analytic_climate.py": {
+      "sha256": "d76f1228ff5c73cde0b07c73a9d2feea2b7e95bc4abe91df910b2a8dc958b0db",
+      "old_paths": [
+        "vfs/initial_conditions/analytic_climate.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/analytic_climate.py": "f7de1d59c5135fb9d92da13576d9aef9f2c6525e948f80383c30f6230fa970d5"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/initial_conditions/equilibrium.py": {
+      "sha256": "0457e2811b1ebad9d6debce4d46dd2b1b6238ab545e15eb0204f214706647975",
+      "old_paths": [
+        "vfs/initial_conditions/equilibrium.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/equilibrium.py": "0ee706ecbc9778100f995c5d1de4d2780c3d62335f908e842b81a95c8e0ead45"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/initial_conditions/held_suarez.py": {
+      "sha256": "10a8c3e144343f5824676af61abdbbb4425a436e3101192cd4aca553392edf2b",
+      "old_paths": [
+        "vfs/initial_conditions/held_suarez.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/held_suarez.py": "5133e1573b2e36969778a74e789d1e264cd7953a72c98e6185d856a93f1949d7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/initial_conditions/jablonski_williamson.py": {
+      "sha256": "2f94e94fd41df1835d512949ffc85c40eb904df5e490ca2e0e8d6f0b31a22c72",
+      "old_paths": [
+        "vfs/initial_conditions/jablonski_williamson.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/jablonski_williamson.py": "e5cfcdb9af407c69062d998492510cb2fbe942188c21c9a3644d47c387b0ea2c"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/io.py": {
+      "sha256": "c6fe5c29f3360fc6352afa816bd890afcc79c3201b5bccd57c013680e976d2f3",
+      "old_paths": [
+        "vfs/core/io.py"
+      ],
+      "old_sha256": {
+        "vfs/core/io.py": "11142ac4878ab311a7cf100cc2f93fcc7fe6b94cb790f9fd42cf193b9118e749"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/mixture_thermodynamics.py": {
+      "sha256": "a30736eefdfe4c9e8649db06b7dbd6104de274d4cf072191570a76bbb5d7f35a",
+      "old_paths": [
+        "vfs/atmosphere/mixture_thermodynamics.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/mixture_thermodynamics.py": "a30736eefdfe4c9e8649db06b7dbd6104de274d4cf072191570a76bbb5d7f35a"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/model.py": {
+      "sha256": "4e30640593e98c0719b294baf9169f5f4fa36e1ad53d9a763f871933977cb6c6",
+      "old_paths": [
+        "vfs/atmosphere/model.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/model.py": "4e30640593e98c0719b294baf9169f5f4fa36e1ad53d9a763f871933977cb6c6"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/moist_budgets.py": {
+      "sha256": "2c234564347b49153f8e8ffafaf1a276dca2375ae27fe81536ffe1c4763c731d",
+      "old_paths": [
+        "vfs/atmosphere/moist_budgets.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/moist_budgets.py": "2c234564347b49153f8e8ffafaf1a276dca2375ae27fe81536ffe1c4763c731d"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/moist_conservative.py": {
+      "sha256": "81b262e9f574f93c3c2debd0723aac2c1c0412f4dfd65446cc846e0dfe158d4c",
+      "old_paths": [
+        "vfs/atmosphere/moist_conservative.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/moist_conservative.py": "4a387a36315f7738aba3bff6b71b4621fac8451550e8aa0e484fc755351b2e27"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/moist_cp.py": {
+      "sha256": "78b67bfad735d222b049feb3dc821536115b7795237d16cfcba465bbf533e70b",
+      "old_paths": [
+        "vfs/atmosphere/moist_cp.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/moist_cp.py": "78b67bfad735d222b049feb3dc821536115b7795237d16cfcba465bbf533e70b"
+      },
+      "role": "unchanged"
+    },
+    "vfs/atmosphere/moisture.py": {
+      "sha256": "2e0c0659f62d8a1a217ce0e2c1b6720441eeb5e307e6d5e5e83cbc6aa6bd997a",
+      "old_paths": [
+        "vfs/moisture.py"
+      ],
+      "old_sha256": {
+        "vfs/moisture.py": "034b0911dceeb4212c96fbf27219129bff62995949d07870259a9eddcc0cca8d"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/regrid.py": {
+      "sha256": "a9e710f54accdcf4e4660b68a8024767986f088abc623df80c8104fa1bed6cb1",
+      "old_paths": [
+        "vfs/geometry/regrid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/scalar_transport.py": {
+      "sha256": "bd799a3088d3d0163808eb028bcb852e6769b91184428690194f609b38904b55",
+      "old_paths": [
+        "vfs/atmosphere/scalar_transport.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/scalar_transport.py": "c60e664fe51baa05d00d39151b8261aa12afff6f61fd748a70762735d565c01b"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/state.py": {
+      "sha256": "d9846293e49de07c12d673e2cce6943577b2cc42df754aafb227a85322b8975f",
+      "old_paths": [
+        "vfs/core/state.py"
+      ],
+      "old_sha256": {
+        "vfs/core/state.py": "c7e9e120320385b8aebfffbc427e4fdcf56709f86d047d6063c16a867c36581a"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/steppers.py": {
+      "sha256": "ed0322a21b1d095b358ec0c736847f841488ca17d07ed13b88ed7471ecd65415",
+      "old_paths": [
+        "vfs/atmosphere/steppers.py"
+      ],
+      "old_sha256": {
+        "vfs/atmosphere/steppers.py": "d72c8a223c77041825e620e31ec94f883172a54e8c48f14efdd7fcb0cb6a5df4"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/atmosphere/topography.py": {
+      "sha256": "df52bd9e19e7cc62e845676e6273be1fdc268b768d3842f841e769c5a2884469",
+      "old_paths": [
+        "vfs/data/topography.py"
+      ],
+      "old_sha256": {
+        "vfs/data/topography.py": "3ff66004f7a2eceeaa7be72452210179b4d5b0bd734a380e9d305a89d1c7ad70"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/boundary.py": {
+      "sha256": "22c50438f332a3e4dd1c939c288f9d8a1dc9f7047e75ed5b88bf077597f5db56",
+      "old_paths": [
+        "vfs/boundary.py"
+      ],
+      "old_sha256": {
+        "vfs/boundary.py": "99ad2c88620381859e2dca563d36394bd54dd9f8dca44b32e3137062146a5267"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/core/__init__.py": {
+      "sha256": "e2aa94eaf6ed31416ab5ed1e47b2f78cca7156da903637d1557c915b64c01c1d",
+      "old_paths": [
+        "vfs/core/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/core/__init__.py": "f8c816137228c5f137b26419bb6d1518bb32551ab8ca3507b47a82b2118b61f7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/core/config.py": {
+      "sha256": "c4b1d86fa3c87d9209daa27ea4e206d3183cf710a564299154ae9fc24db6a468",
+      "old_paths": [
+        "vfs/core/config.py"
+      ],
+      "old_sha256": {
+        "vfs/core/config.py": "c4b1d86fa3c87d9209daa27ea4e206d3183cf710a564299154ae9fc24db6a468"
+      },
+      "role": "unchanged"
+    },
+    "vfs/core/diagnostic_contracts.py": {
+      "sha256": "968b6a7baad79439c971459a81f51f73022332cdd0f6fe66f6605a74b8e74e83",
+      "old_paths": [
+        "vfs/core/diagnostic_contracts.py"
+      ],
+      "old_sha256": {
+        "vfs/core/diagnostic_contracts.py": "968b6a7baad79439c971459a81f51f73022332cdd0f6fe66f6605a74b8e74e83"
+      },
+      "role": "unchanged"
+    },
+    "vfs/core/integrators.py": {
+      "sha256": "7b0c1f0de5a4185ff7911aedcb6d9a78db5b41c66a45ea20ea4e6d2c7543c701",
+      "old_paths": [
+        "vfs/core/integrators.py"
+      ],
+      "old_sha256": {
+        "vfs/core/integrators.py": "dac76cb319b01c0986d67b937ff7bf279928bc0fe35a056137f7f79820a4d0fe"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/core/io.py": {
+      "sha256": "fd38ae01582fa19849549a45a9b96f1dcea5c4a9e0d264ef0124020862583b01",
+      "old_paths": [
+        "vfs/core/io.py"
+      ],
+      "old_sha256": {
+        "vfs/core/io.py": "11142ac4878ab311a7cf100cc2f93fcc7fe6b94cb790f9fd42cf193b9118e749"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/core/state.py": {
+      "sha256": "261d86773f4631009b0fcad520296882d6c4caf2cd9023ceefa99ed135b702b9",
+      "old_paths": [
+        "vfs/core/state.py"
+      ],
+      "old_sha256": {
+        "vfs/core/state.py": "c7e9e120320385b8aebfffbc427e4fdcf56709f86d047d6063c16a867c36581a"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/data/__init__.py": {
+      "sha256": "bc80e212916c9a3119ae7f0bb9cb010e3221a79eb293a9cd61667922c55cfd83",
+      "old_paths": [
+        "vfs/data/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/data/__init__.py": "48549284725b48dc2dcaa1cc4c330d5bea7e92fe33d5ad4eb001e7d3d0483db1"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/data/elevation.py": {
+      "sha256": "4cff2139c6bb4314f8010737809a3d90f10b1de0862cdd9da4073be1a1faeaed",
+      "old_paths": [
+        "vfs/data/topography.py"
+      ],
+      "old_sha256": {
+        "vfs/data/topography.py": "3ff66004f7a2eceeaa7be72452210179b4d5b0bd734a380e9d305a89d1c7ad70"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/data/topography.py": {
+      "sha256": "d0115b221d9ba24c492dae0979234d973aaeaf28ec98c7812b3b69849e34724c",
+      "old_paths": [
+        "vfs/data/topography.py"
+      ],
+      "old_sha256": {
+        "vfs/data/topography.py": "3ff66004f7a2eceeaa7be72452210179b4d5b0bd734a380e9d305a89d1c7ad70"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/earth.py": {
+      "sha256": "98e9e31fe5e7de9d901aaf519375255a745249c02cd7998d4b65375166f03f75",
+      "old_paths": [
+        "vfs/earth.py"
+      ],
+      "old_sha256": {
+        "vfs/earth.py": "24710d093f07bf8963da4fb49fc68eeae9e2c93431aefae88c463812ec772673"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/era5.py": {
+      "sha256": "1a414ad559cae02b28c3ea44cd672f46b3a398c78456bebffe59471f42a5e8d8",
+      "old_paths": [
+        "vfs/era5.py"
+      ],
+      "old_sha256": {
+        "vfs/era5.py": "30944744f181cd84720ba14be1c158b142c0961b5e2279ad6ea186aacc5d4a15"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/field.py": {
+      "sha256": "3564866a47d6547a146af1e953fb54df2ea257ffddc6304502d26c28a8144853",
+      "old_paths": [
+        "vfs/field.py"
+      ],
+      "old_sha256": {
+        "vfs/field.py": "3564866a47d6547a146af1e953fb54df2ea257ffddc6304502d26c28a8144853"
+      },
+      "role": "unchanged"
+    },
+    "vfs/geometry/__init__.py": {
+      "sha256": "c5e0ead6522c31d6b7cc38a17861ad51a2151599d73a4fc1a15aaa508594c906",
+      "old_paths": [
+        "vfs/geometry/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/__init__.py": "b163722e08870c4cd3a177df3f0277d65a7625b3d31aff9a450ed9d705d33b25"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/geometry/column.py": {
+      "sha256": "3a6202a2a087e16453935c4a02caba7f48b6d3753872cfcdb9e9b3a5a1f67ac8",
+      "old_paths": [
+        "vfs/geometry/column.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/geometry/geodesic.py": {
+      "sha256": "a8a7628d5c4bddcb18a0d6f4ee25abb3cdb6e5c767f362e8a6fef973e969f26f",
+      "old_paths": [
+        "vfs/geometry/geodesic.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/geodesic.py": "a8a7628d5c4bddcb18a0d6f4ee25abb3cdb6e5c767f362e8a6fef973e969f26f"
+      },
+      "role": "unchanged"
+    },
+    "vfs/geometry/mesh/__init__.py": {
+      "sha256": "cb17cea1b8e6d60ef10098db185989f10d2611f5c45fecf8bafb81dee545f19f",
+      "old_paths": [
+        "vfs/geometry/mesh/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/mesh/__init__.py": "cb17cea1b8e6d60ef10098db185989f10d2611f5c45fecf8bafb81dee545f19f"
+      },
+      "role": "unchanged"
+    },
+    "vfs/geometry/mesh/grid.py": {
+      "sha256": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+      "old_paths": [
+        "vfs/geometry/mesh/grid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1"
+      },
+      "role": "unchanged"
+    },
+    "vfs/geometry/mesh/io.py": {
+      "sha256": "eb96e59acf536b19f2b1ded85ff3ecd4039029982cfa9ca3ed1e3ffd1ebd8c43",
+      "old_paths": [
+        "vfs/geometry/mesh/io.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/mesh/io.py": "eb96e59acf536b19f2b1ded85ff3ecd4039029982cfa9ca3ed1e3ffd1ebd8c43"
+      },
+      "role": "unchanged"
+    },
+    "vfs/geometry/mesh/multilevel.py": {
+      "sha256": "4e788635de1493d631f5c9c82ef71ade1d553052d68231adda7c6399bd0b1fdc",
+      "old_paths": [
+        "vfs/geometry/mesh/multilevel.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/mesh/multilevel.py": "909d772cd603db1ad3726e555f14003078af7e73c33ad2a090fa97d27ecb16f9"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/geometry/regrid.py": {
+      "sha256": "c85b88cc058d0b83a61eb3f79a36e151781282be6a9f6f4d2dc8cfd11c9d57fd",
+      "old_paths": [
+        "vfs/geometry/regrid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/geometry/remap.py": {
+      "sha256": "79bc7663320f18cb559e4ff3d72978ab8bbf2cc68acbdd14c043f581f2c2c818",
+      "old_paths": [
+        "vfs/geometry/regrid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/imex.py": {
+      "sha256": "d1ae41b95dc567751e1a55d601420628f60ef5fff28e166a4fa224a1410c88f9",
+      "old_paths": [
+        "vfs/imex.py"
+      ],
+      "old_sha256": {
+        "vfs/imex.py": "e79b6450767451667a913983f5d603d6dfaf1bf548d7c62fc4838feb4fb73c5f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/initial_conditions/__init__.py": {
+      "sha256": "d71589271fb5eedcf4643ffc5a1d813ec52bc55bc01325065ad7d70c59bcf9ef",
+      "old_paths": [
+        "vfs/initial_conditions/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/__init__.py": "74717b68183d9b6a88303774b0ead452f635223a06186b1c974ef21614267de7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/initial_conditions/analytic_climate.py": {
+      "sha256": "adc3967a0bbdd2e82516c90506faf4289be69330a0389778faa839067711c8fd",
+      "old_paths": [
+        "vfs/initial_conditions/analytic_climate.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/analytic_climate.py": "f7de1d59c5135fb9d92da13576d9aef9f2c6525e948f80383c30f6230fa970d5"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/initial_conditions/equilibrium.py": {
+      "sha256": "82a6a3b4518c5f27ef0f9dfd9d8ccd3e4b230119c0ff6589acefedad23ffa409",
+      "old_paths": [
+        "vfs/initial_conditions/equilibrium.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/equilibrium.py": "0ee706ecbc9778100f995c5d1de4d2780c3d62335f908e842b81a95c8e0ead45"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/initial_conditions/held_suarez.py": {
+      "sha256": "0060a60426d74f940f88d2aaaa7ea003bf40074bd25062202627c1791919e708",
+      "old_paths": [
+        "vfs/initial_conditions/held_suarez.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/held_suarez.py": "5133e1573b2e36969778a74e789d1e264cd7953a72c98e6185d856a93f1949d7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/initial_conditions/jablonski_williamson.py": {
+      "sha256": "211e36959771e68b88016958e045febb08dec762a362daabecdb9ae281a8b7f3",
+      "old_paths": [
+        "vfs/initial_conditions/jablonski_williamson.py"
+      ],
+      "old_sha256": {
+        "vfs/initial_conditions/jablonski_williamson.py": "e5cfcdb9af407c69062d998492510cb2fbe942188c21c9a3644d47c387b0ea2c"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/__init__.py": {
+      "sha256": "14be3b23fcca7505d20fcac4a864cf7558d0e8b77a4c0c19adee1a3fdb4c2513",
+      "old_paths": [
+        "vfs/integrators/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/__init__.py": "c3fdf083115236b994b6501c9bec14e27e997438ee5bba5761acbf30b4413c71"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/explicit.py": {
+      "sha256": "c208055171a3bff3bcaa4b08b67eed4e893e3993429c9084882d9121f711a22d",
+      "old_paths": [
+        "vfs/core/integrators.py"
+      ],
+      "old_sha256": {
+        "vfs/core/integrators.py": "dac76cb319b01c0986d67b937ff7bf279928bc0fe35a056137f7f79820a4d0fe"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/__init__.py": {
+      "sha256": "e5bf1499471c041158ce3b584382cff579fa62ec6f30baf93140dd41531a18bc",
+      "old_paths": [
+        "vfs/integrators/imex/__init__.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/__init__.py": "c9ea73c555e7c7be9d11fa8a4859ffc55e4bfda7d33462e82dc8e2cc8ed00db9"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/conservative_wave.py": {
+      "sha256": "cbb0f4e524ce587cea934cc228accd2a582cfe6901b9a4c27681215be9d7ae4a",
+      "old_paths": [
+        "vfs/integrators/imex/conservative_wave.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/conservative_wave.py": "c0aaebe5642c1c85eadca3138772ac7d93fb5b11947d0a17f0fc8aa033e433c7"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/dry_ark.py": {
+      "sha256": "66fb16131b476ab675ed9bad7a2212e135ecee9bf0f1d5bf180fb6b2b09f13e0",
+      "old_paths": [
+        "vfs/integrators/imex/dry_ark.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/dry_ark.py": "60659fecd347d24f6461362eb8ac925c8205ac8fb9c51a1cce59411998061b46"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/moist_ark.py": {
+      "sha256": "280fe78bc6e5af92fca1c1275bdba96d6ec673de337c63cf0ecdfb02f9e8111b",
+      "old_paths": [
+        "vfs/integrators/imex/moist_ark.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/moist_ark.py": "2e2ebf4207ac4bc1ba3352fa3c3d70a2b00d3f5cd72bdfbc1b10c46b6b83613a"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/moist_wave.py": {
+      "sha256": "07d6758e53bbc0a39b690ffd38e3479fdeeb80f6d32f40bb95c5ca2f625aa708",
+      "old_paths": [
+        "vfs/integrators/imex/moist_wave.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/moist_wave.py": "a73983978a89dd0c63172f1262081deb058bceb76dde906a46a89b3318cbc013"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/solvers.py": {
+      "sha256": "f4ab42373ee0a20754085d2f3fb0c7a3776b881c84ade0156ba0ce06ee869f52",
+      "old_paths": [
+        "vfs/integrators/imex/solvers.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/solvers.py": "fd6150bb9789ced54342f9880e9e5dafc3c6efee8fddf471403a015c96cb5d3d"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/imex/tableau.py": {
+      "sha256": "e8f47f833b99d3c302c29e70e739d0e737f7111c2d9b6fc6d352e78530e096e3",
+      "old_paths": [
+        "vfs/integrators/imex/tableau.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/tableau.py": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/krylov.py": {
+      "sha256": "02aff0ab369ee2bf1f74ebf1addaa11859ff675f02ca6a85410ca7a1355d7ac5",
+      "old_paths": [
+        "vfs/integrators/imex/solvers.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/solvers.py": "fd6150bb9789ced54342f9880e9e5dafc3c6efee8fddf471403a015c96cb5d3d"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/integrators/tableau.py": {
+      "sha256": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1",
+      "old_paths": [
+        "vfs/integrators/imex/tableau.py"
+      ],
+      "old_sha256": {
+        "vfs/integrators/imex/tableau.py": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/io.py": {
+      "sha256": "77f53bd97f172a83418d8ac6453f5780ca100bddc707917a6ba504dda1b04556",
+      "old_paths": [
+        "vfs/boundary.py",
+        "vfs/core/io.py"
+      ],
+      "old_sha256": {
+        "vfs/boundary.py": "99ad2c88620381859e2dca563d36394bd54dd9f8dca44b32e3137062146a5267",
+        "vfs/core/io.py": "11142ac4878ab311a7cf100cc2f93fcc7fe6b94cb790f9fd42cf193b9118e749"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/model.py": {
+      "sha256": "450325a200b1c81f46601daa82077a74234af19fe004ac2ff8654d27a77141cc",
+      "old_paths": [
+        "vfs/model.py"
+      ],
+      "old_sha256": {
+        "vfs/model.py": "b6bd1066422f2862b1ccff0414b3f52f7643b9e30d4e0657ae12bcf19f1090cf"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/moisture.py": {
+      "sha256": "73366703f35f9882a1453753854dde4c05234d81ea9a9bb60833b666f1cb841e",
+      "old_paths": [
+        "vfs/moisture.py"
+      ],
+      "old_sha256": {
+        "vfs/moisture.py": "034b0911dceeb4212c96fbf27219129bff62995949d07870259a9eddcc0cca8d"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/ocean/__init__.py": {
+      "sha256": "f8a7267a7ae859a5885bc9ca659cc0cdf454c2df8134514c7028694d52734132",
+      "old_paths": [
+        "vfs/geometry/regrid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    },
+    "vfs/ocean/regrid.py": {
+      "sha256": "eee2228f307c1227ace83b4a4a3234d98688c7bf031ac085fc76895b67e82f06",
+      "old_paths": [
+        "vfs/geometry/regrid.py"
+      ],
+      "old_sha256": {
+        "vfs/geometry/regrid.py": "b76c5aa239bf650e0969160d3bb551c8d69dd7c80861663e7c8f272d00fa7c0f"
+      },
+      "role": "reviewed relocation, split, or import/compatibility boundary"
+    }
+  }
+}

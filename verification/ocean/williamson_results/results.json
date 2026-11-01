@@ -1,0 +1,1720 @@
+{
+  "configuration": {
+    "parameters": {
+      "radius_m": 6371220.0,
+      "gravity_m_s2": 9.80616,
+      "omega_s_inverse": 7.292e-05,
+      "equatorial_speed_m_s": 38.61068276698372,
+      "equatorial_thickness_m": 2998.1154702758267,
+      "alpha": 0.0
+    },
+    "cells": [
+      64,
+      256,
+      1024
+    ],
+    "dt_s": [
+      600,
+      300,
+      150
+    ],
+    "days": 5,
+    "lloyd_iters": 100,
+    "stepper": "production SSPRK3",
+    "input_directory": null,
+    "sampling": "cell-center h and edge-midpoint normal velocity; alpha=0"
+  },
+  "cases": [
+    {
+      "cells": 64,
+      "edges": 186,
+      "mesh_spacing_m": 2823173.3559915605,
+      "initial_balance": {
+        "momentum_residual_m_s2": {
+          "l1": 7.555662480743031e-05,
+          "l2": 9.624111825935969e-05,
+          "linf": 0.00023637377233828318
+        },
+        "thickness_residual_m_s": {
+          "l1": 0.0001414179691666984,
+          "l2": 0.00017857531706807502,
+          "linf": 0.0003534797716850067
+        },
+        "term_magnitudes_m_s2": {
+          "pressure": {
+            "l1": 0.001205914705673154,
+            "l2": 0.0014598279425592233,
+            "linf": 0.002781606750393406
+          },
+          "kinetic": {
+            "l1": 4.696985876057711e-05,
+            "l2": 5.758087461930799e-05,
+            "linf": 0.00011725196467032113
+          },
+          "rotation": {
+            "l1": 0.0012002664998371135,
+            "l2": 0.0014550894950637158,
+            "linf": 0.0028272933083114383
+          }
+        },
+        "term_errors_m_s2": {
+          "pressure": {
+            "l1": 4.3309464786472664e-05,
+            "l2": 5.5245692162899706e-05,
+            "linf": 0.00012784267727014966
+          },
+          "kinetic": {
+            "l1": 4.565679762419925e-06,
+            "l2": 5.956370608912804e-06,
+            "linf": 1.6890635058143804e-05
+          },
+          "rotation": {
+            "l1": 0.0001030846740151916,
+            "l2": 0.00013819338985469288,
+            "linf": 0.0003139381443697056
+          }
+        },
+        "energy_rate_W": 918.0,
+        "energy_work_scale_W": 3.4434197458355446e+18,
+        "energy_rate_normalized": 2.6659543934782415e-16
+      },
+      "runs": {
+        "600": {
+          "steps": 720,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1210.0000415779152,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 20.79733502891656,
+                "l2": 24.749156992933298,
+                "linf": 65.05678774232297
+              },
+              "u_error_m_s": {
+                "l1": 1.0734609460542004,
+                "l2": 1.3603534052521722,
+                "linf": 3.9566903117705206
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9420422938605188e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -6.683116041435787e-08
+              },
+              "minimum_thickness_m": 1202.142594455769,
+              "maximum_temperature_error_degC": 1.5987211554602254e-14,
+              "maximum_salinity_error": 7.815970093361102e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 26.344269079409756,
+                "l2": 30.551148337155254,
+                "linf": 69.0053076934148
+              },
+              "u_error_m_s": {
+                "l1": 1.3684041813017478,
+                "l2": 1.7125790594651118,
+                "linf": 5.029697786866725
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9420422938605188e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.3302159731872307e-07
+              },
+              "minimum_thickness_m": 1174.4966202447977,
+              "maximum_temperature_error_degC": 3.019806626980426e-14,
+              "maximum_salinity_error": 8.526512829121202e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 12.780499722935431,
+                "l2": 15.747939669774466,
+                "linf": 33.95284773901858
+              },
+              "u_error_m_s": {
+                "l1": 1.489022936133161,
+                "l2": 1.8660864689007448,
+                "linf": 5.236089193606677
+              },
+              "relative_budget_change": {
+                "volume": 2.1241087589099423e-16,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -2.0026171513614056e-07
+              },
+              "minimum_thickness_m": 1180.8886627047361,
+              "maximum_temperature_error_degC": 2.3092638912203256e-14,
+              "maximum_salinity_error": 8.526512829121202e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 18.77382827226999,
+                "l2": 24.491454690148228,
+                "linf": 78.21441711046668
+              },
+              "u_error_m_s": {
+                "l1": 1.9229080116639963,
+                "l2": 2.399164116598332,
+                "linf": 6.503694007031854
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -2.669802077803449e-07
+              },
+              "minimum_thickness_m": 1191.321965799335,
+              "maximum_temperature_error_degC": 2.842170943040401e-14,
+              "maximum_salinity_error": 8.526512829121202e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 31.19951262026399,
+                "l2": 38.06112253946667,
+                "linf": 107.33012893886234
+              },
+              "u_error_m_s": {
+                "l1": 2.3221709719334096,
+                "l2": 2.885982717354016,
+                "linf": 7.605324802387429
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -3.343610430705943e-07
+              },
+              "minimum_thickness_m": 1167.4713842195076,
+              "maximum_temperature_error_degC": 2.6645352591003757e-14,
+              "maximum_salinity_error": 9.947598300641403e-14,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "300": {
+          "steps": 1440,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1210.0000415779152,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 20.797726244215987,
+                "l2": 24.74964460586811,
+                "linf": 65.05872527477436
+              },
+              "u_error_m_s": {
+                "l1": 1.0734943726885948,
+                "l2": 1.3603930394439532,
+                "linf": 3.956809284143027
+              },
+              "relative_budget_change": {
+                "volume": -2.1241087589099423e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9420422938605188e-16,
+                "tracer_content": -2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -8.362505485868215e-09
+              },
+              "minimum_thickness_m": 1202.1429831728362,
+              "maximum_temperature_error_degC": 2.1316282072803006e-14,
+              "maximum_salinity_error": 1.0658141036401503e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 26.345526344957516,
+                "l2": 30.5525434493373,
+                "linf": 69.00774410363624
+              },
+              "u_error_m_s": {
+                "l1": 1.3684552220697082,
+                "l2": 1.712637482714547,
+                "linf": 5.029842862040697
+              },
+              "relative_budget_change": {
+                "volume": -4.2482175178198847e-16,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9420422938605188e-16,
+                "tracer_content": -4.2482175178198847e-16,
+                "constant_density_mechanical_energy": -1.6644985954417147e-08
+              },
+              "minimum_thickness_m": 1174.49501709807,
+              "maximum_temperature_error_degC": 4.440892098500626e-14,
+              "maximum_salinity_error": 1.4210854715202004e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 12.780890830330211,
+                "l2": 15.747943383173139,
+                "linf": 33.9470455912342
+              },
+              "u_error_m_s": {
+                "l1": 1.489044050329501,
+                "l2": 1.8661291402002513,
+                "linf": 5.236252187737421
+              },
+              "relative_budget_change": {
+                "volume": -4.2482175178198847e-16,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": -1.9420422938605188e-16,
+                "tracer_content": -4.2482175178198847e-16,
+                "constant_density_mechanical_energy": -2.506057913095282e-08
+              },
+              "minimum_thickness_m": 1180.887452204643,
+              "maximum_temperature_error_degC": 2.3092638912203256e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 18.774648315645305,
+                "l2": 24.492067001258164,
+                "linf": 78.21476471297206
+              },
+              "u_error_m_s": {
+                "l1": 1.9229592024037858,
+                "l2": 2.39923651499329,
+                "linf": 6.503791180247751
+              },
+              "relative_budget_change": {
+                "volume": -2.1241087589099423e-16,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": 0.0,
+                "tracer_content": -2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -3.341257336204599e-08
+              },
+              "minimum_thickness_m": 1191.3232380862714,
+              "maximum_temperature_error_degC": 4.796163466380676e-14,
+              "maximum_salinity_error": 1.3500311979441904e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 31.202472572537943,
+                "l2": 38.064806464760686,
+                "linf": 107.33952373976967
+              },
+              "u_error_m_s": {
+                "l1": 2.322236085596335,
+                "l2": 2.8860683753267042,
+                "linf": 7.605595333166654
+              },
+              "relative_budget_change": {
+                "volume": -2.1241087589099423e-16,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": -3.8840845877210375e-16,
+                "tracer_content": -2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -4.184734539178632e-08
+              },
+              "minimum_thickness_m": 1167.4663536895632,
+              "maximum_temperature_error_degC": 3.552713678800501e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "150": {
+          "steps": 2880,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1210.0000415779152,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 20.797776508234737,
+                "l2": 24.749707428731824,
+                "linf": 65.05897156302444
+              },
+              "u_error_m_s": {
+                "l1": 1.0734985685837772,
+                "l2": 1.3603980140365786,
+                "linf": 3.956824238774452
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9420422938605188e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.0455900623510878e-09
+              },
+              "minimum_thickness_m": 1202.1430311223498,
+              "maximum_temperature_error_degC": 3.730349362740526e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 26.34568210851065,
+                "l2": 30.552715476344822,
+                "linf": 69.00804677816473
+              },
+              "u_error_m_s": {
+                "l1": 1.3684615918083982,
+                "l2": 1.7126447836517578,
+                "linf": 5.029861378161282
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": 1.9420422938605188e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -2.0811287254143036e-09
+              },
+              "minimum_thickness_m": 1174.4948127952186,
+              "maximum_temperature_error_degC": 4.440892098500626e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 12.780938710137598,
+                "l2": 15.747942772224562,
+                "linf": 33.94631632990263
+              },
+              "u_error_m_s": {
+                "l1": 1.4890466419062969,
+                "l2": 1.8661344018250388,
+                "linf": 5.2362718094692084
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": -1.9420422938605188e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -3.1333674258240968e-09
+              },
+              "minimum_thickness_m": 1180.8873115682418,
+              "maximum_temperature_error_degC": 3.019806626980426e-14,
+              "maximum_salinity_error": 1.4921397450962104e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 18.774754064780776,
+                "l2": 24.4921490417266,
+                "linf": 78.21482087376785
+              },
+              "u_error_m_s": {
+                "l1": 1.922965643805598,
+                "l2": 2.3992456626663663,
+                "linf": 6.503803799082435
+              },
+              "relative_budget_change": {
+                "volume": -2.1241087589099423e-16,
+                "temperature_content": 1.699287007127954e-16,
+                "salinity_content": -1.9420422938605188e-16,
+                "tracer_content": -2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -4.177703048137678e-09
+              },
+              "minimum_thickness_m": 1191.3233889191079,
+              "maximum_temperature_error_degC": 4.440892098500626e-14,
+              "maximum_salinity_error": 1.5631940186722204e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 31.20284319585545,
+                "l2": 38.06526668380655,
+                "linf": 107.34070174696899
+              },
+              "u_error_m_s": {
+                "l1": 2.3222442695255405,
+                "l2": 2.8860791131708625,
+                "linf": 7.605630110619572
+              },
+              "relative_budget_change": {
+                "volume": -2.1241087589099423e-16,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9420422938605188e-16,
+                "tracer_content": -2.1241087589099423e-16,
+                "constant_density_mechanical_energy": -5.232327195957191e-09
+              },
+              "minimum_thickness_m": 1167.4657270025139,
+              "maximum_temperature_error_degC": 4.085620730620576e-14,
+              "maximum_salinity_error": 1.5631940186722204e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        }
+      },
+      "timestep_comparisons": [
+        {
+          "coarse_dt_s": 600,
+          "fine_dt_s": 300,
+          "h_difference_m": {
+            "l1": 0.004074033207266309,
+            "l2": 0.004931263056518527,
+            "linf": 0.011849306129533943
+          },
+          "u_difference_m_s": {
+            "l1": 0.00019458817779654096,
+            "l2": 0.00025050318457064464,
+            "linf": 0.0009609550864198013
+          }
+        },
+        {
+          "coarse_dt_s": 300,
+          "fine_dt_s": 150,
+          "h_difference_m": {
+            "l1": 0.0005078091514744772,
+            "l2": 0.0006159583213955954,
+            "linf": 0.0014784279392188182
+          },
+          "u_difference_m_s": {
+            "l1": 2.445060966364862e-05,
+            "l2": 3.13497626691365e-05,
+            "linf": 0.00011951870641357942
+          }
+        }
+      ]
+    },
+    {
+      "cells": 256,
+      "edges": 762,
+      "mesh_spacing_m": 1411586.6779957803,
+      "initial_balance": {
+        "momentum_residual_m_s2": {
+          "l1": 4.416197408615695e-05,
+          "l2": 6.386486970747719e-05,
+          "linf": 0.00030017040977746803
+        },
+        "thickness_residual_m_s": {
+          "l1": 7.910697910168082e-05,
+          "l2": 0.0001115658958259869,
+          "linf": 0.0003579260859065978
+        },
+        "term_magnitudes_m_s2": {
+          "pressure": {
+            "l1": 0.0012613769041934612,
+            "l2": 0.0015003379161837263,
+            "linf": 0.002872142371059503
+          },
+          "kinetic": {
+            "l1": 5.19565880088068e-05,
+            "l2": 6.123851044999937e-05,
+            "linf": 0.00013152831414632409
+          },
+          "rotation": {
+            "l1": 0.0012973836406950533,
+            "l2": 0.0015499424264821256,
+            "linf": 0.003080021997744775
+          }
+        },
+        "term_errors_m_s2": {
+          "pressure": {
+            "l1": 1.4050158895608828e-05,
+            "l2": 1.6882354697449362e-05,
+            "linf": 5.1925062147880946e-05
+          },
+          "kinetic": {
+            "l1": 8.35868753507467e-06,
+            "l2": 1.3370439110055567e-05,
+            "linf": 5.737135597827165e-05
+          },
+          "rotation": {
+            "l1": 4.777679404667043e-05,
+            "l2": 6.810043721802803e-05,
+            "linf": 0.00032914751855908577
+          }
+        },
+        "energy_rate_W": 1224.0,
+        "energy_work_scale_W": 2.591641004851082e+18,
+        "energy_rate_normalized": 4.722876346333824e-16
+      },
+      "runs": {
+        "600": {
+          "steps": 720,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1121.5904253284546,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 7.8890612615925795,
+                "l2": 9.799212724861196,
+                "linf": 28.528817258125855
+              },
+              "u_error_m_s": {
+                "l1": 0.4114211085445371,
+                "l2": 0.5157411023167982,
+                "linf": 1.61870212196321
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -1.5505694224929075e-07
+              },
+              "minimum_thickness_m": 1120.1983067984888,
+              "maximum_temperature_error_degC": 1.7763568394002505e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 6.473215796658591,
+                "l2": 8.2408272623701,
+                "linf": 27.7697255219241
+              },
+              "u_error_m_s": {
+                "l1": 0.5068399726768944,
+                "l2": 0.639373331945914,
+                "linf": 2.015230719350198
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.6989915883731895e-16,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -3.092339183427747e-07
+              },
+              "minimum_thickness_m": 1118.381564956604,
+              "maximum_temperature_error_degC": 1.7763568394002505e-14,
+              "maximum_salinity_error": 1.2789769243681803e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 7.704522154420034,
+                "l2": 9.64577230864863,
+                "linf": 24.71700116753709
+              },
+              "u_error_m_s": {
+                "l1": 0.6127035499897063,
+                "l2": 0.7754737796666653,
+                "linf": 2.960112183925311
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -4.629731947117683e-07
+              },
+              "minimum_thickness_m": 1122.7522725174445,
+              "maximum_temperature_error_degC": 1.9539925233402755e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 7.771694958892357,
+                "l2": 9.871503916228237,
+                "linf": 32.57760050964362
+              },
+              "u_error_m_s": {
+                "l1": 0.6117638218512181,
+                "l2": 0.7840865102069815,
+                "linf": 3.3460139320324735
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.6989915883731895e-16,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -6.152033221900201e-07
+              },
+              "minimum_thickness_m": 1122.914357066404,
+              "maximum_temperature_error_degC": 2.1316282072803006e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 8.292257000414669,
+                "l2": 10.798073577427214,
+                "linf": 33.27664263456154
+              },
+              "u_error_m_s": {
+                "l1": 0.6613522694521382,
+                "l2": 0.8360099708394451,
+                "linf": 2.591186358645402
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 3.883409344853005e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -7.657773770761071e-07
+              },
+              "minimum_thickness_m": 1118.1171843912527,
+              "maximum_temperature_error_degC": 3.197442310920451e-14,
+              "maximum_salinity_error": 9.947598300641403e-14,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "300": {
+          "steps": 1440,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1121.5904253284546,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 7.891151170715116,
+                "l2": 9.802834606031476,
+                "linf": 28.54643459636918
+              },
+              "u_error_m_s": {
+                "l1": 0.4115363058518574,
+                "l2": 0.5158763221311112,
+                "linf": 1.619075826450584
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.952402542216122e-08
+              },
+              "minimum_thickness_m": 1120.1982044471144,
+              "maximum_temperature_error_degC": 3.552713678800501e-14,
+              "maximum_salinity_error": 1.0658141036401503e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 6.477961998056604,
+                "l2": 8.246599803250055,
+                "linf": 27.796861170669217
+              },
+              "u_error_m_s": {
+                "l1": 0.5070515055488486,
+                "l2": 0.6396166809604243,
+                "linf": 2.0201371468557845
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 1.6989915883731895e-16,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -3.902597617387547e-08
+              },
+              "minimum_thickness_m": 1118.3786064759004,
+              "maximum_temperature_error_degC": 3.730349362740526e-14,
+              "maximum_salinity_error": 1.9184653865522705e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 7.709525391907813,
+                "l2": 9.652803687233412,
+                "linf": 24.7395458976398
+              },
+              "u_error_m_s": {
+                "l1": 0.6129272267637181,
+                "l2": 0.7757324481552009,
+                "linf": 2.9618664264810164
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 3.397983176746379e-16,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -5.856083637741969e-08
+              },
+              "minimum_thickness_m": 1122.7543889474393,
+              "maximum_temperature_error_degC": 4.796163466380676e-14,
+              "maximum_salinity_error": 1.3500311979441904e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 7.783177351143542,
+                "l2": 9.887507245163139,
+                "linf": 32.69149496119826
+              },
+              "u_error_m_s": {
+                "l1": 0.612020597678956,
+                "l2": 0.7844297722594981,
+                "linf": 3.3471156044684633
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -7.799189856805796e-08
+              },
+              "minimum_thickness_m": 1122.920084279974,
+              "maximum_temperature_error_degC": 2.4868995751603507e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 8.304980380512255,
+                "l2": 10.81490480643331,
+                "linf": 33.31365203596988
+              },
+              "u_error_m_s": {
+                "l1": 0.6615958194415098,
+                "l2": 0.8364518947974902,
+                "linf": 2.5935003185481946
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.6989915883731895e-16,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -9.729936445507177e-08
+              },
+              "minimum_thickness_m": 1118.1137127405966,
+              "maximum_temperature_error_degC": 2.6645352591003757e-14,
+              "maximum_salinity_error": 1.5631940186722204e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "150": {
+          "steps": 2880,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1121.5904253284546,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 7.891412863537333,
+                "l2": 9.803284943265291,
+                "linf": 28.54864397671963
+              },
+              "u_error_m_s": {
+                "l1": 0.4115510165264423,
+                "l2": 0.515893476407436,
+                "linf": 1.619119967254047
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 3.883409344853005e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -2.4442532238592082e-09
+              },
+              "minimum_thickness_m": 1120.198184836242,
+              "maximum_temperature_error_degC": 4.263256414560601e-14,
+              "maximum_salinity_error": 1.5631940186722204e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 6.478581877815207,
+                "l2": 8.247358034494846,
+                "linf": 27.800197232452774
+              },
+              "u_error_m_s": {
+                "l1": 0.5070781802059547,
+                "l2": 0.6396473123690055,
+                "linf": 2.0207666669141053
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.6989915883731895e-16,
+                "salinity_content": 3.883409344853005e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -4.887168345560917e-09
+              },
+              "minimum_thickness_m": 1118.3782528443378,
+              "maximum_temperature_error_degC": 6.572520305780927e-14,
+              "maximum_salinity_error": 2.2026824808563106e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 7.710162896528839,
+                "l2": 9.653700959878384,
+                "linf": 24.742528177418535
+              },
+              "u_error_m_s": {
+                "l1": 0.612955405205006,
+                "l2": 0.7757649598564283,
+                "linf": 2.9620826513995766
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 1.9417046724265025e-16,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -7.335601976381535e-09
+              },
+              "minimum_thickness_m": 1122.754682266518,
+              "maximum_temperature_error_degC": 7.283063041541027e-14,
+              "maximum_salinity_error": 2.3447910280083306e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 7.784631581894756,
+                "l2": 9.889534918618708,
+                "linf": 32.70614961374031
+              },
+              "u_error_m_s": {
+                "l1": 0.6120532157168302,
+                "l2": 0.7844733464450744,
+                "linf": 3.3472522664592894
+              },
+              "relative_budget_change": {
+                "volume": -2.1237394854664866e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 3.883409344853005e-16,
+                "tracer_content": -2.1237394854664866e-16,
+                "constant_density_mechanical_energy": -9.772396738846748e-09
+              },
+              "minimum_thickness_m": 1122.9207764709026,
+              "maximum_temperature_error_degC": 4.618527782440651e-14,
+              "maximum_salinity_error": 2.0605739337042905e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 8.306639396590437,
+                "l2": 10.817077249653263,
+                "linf": 33.31920832313017
+              },
+              "u_error_m_s": {
+                "l1": 0.6616272273211027,
+                "l2": 0.8365082542542096,
+                "linf": 2.593806659934671
+              },
+              "relative_budget_change": {
+                "volume": -4.247478970932973e-16,
+                "temperature_content": 0.0,
+                "salinity_content": 3.883409344853005e-16,
+                "tracer_content": -4.247478970932973e-16,
+                "constant_density_mechanical_energy": -1.2195106771558753e-08
+              },
+              "minimum_thickness_m": 1118.1132657403732,
+              "maximum_temperature_error_degC": 6.039613253960852e-14,
+              "maximum_salinity_error": 2.0605739337042905e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        }
+      },
+      "timestep_comparisons": [
+        {
+          "coarse_dt_s": 600,
+          "fine_dt_s": 300,
+          "h_difference_m": {
+            "l1": 0.030709171640902297,
+            "l2": 0.04230239577306769,
+            "linf": 0.16987579067472325
+          },
+          "u_difference_m_s": {
+            "l1": 0.001417362238447385,
+            "l2": 0.001926078194099418,
+            "linf": 0.010027691689422191
+          }
+        },
+        {
+          "coarse_dt_s": 300,
+          "fine_dt_s": 150,
+          "h_difference_m": {
+            "l1": 0.003865128697740179,
+            "l2": 0.005290456620697064,
+            "linf": 0.019987440962722758
+          },
+          "u_difference_m_s": {
+            "l1": 0.00017868223824773032,
+            "l2": 0.00024424136571358395,
+            "linf": 0.0013364889866478435
+          }
+        }
+      ]
+    },
+    {
+      "cells": 1024,
+      "edges": 3066,
+      "mesh_spacing_m": 705793.3389978901,
+      "initial_balance": {
+        "momentum_residual_m_s2": {
+          "l1": 3.0043491623382324e-05,
+          "l2": 5.6801313075240456e-05,
+          "linf": 0.00032860317745395215
+        },
+        "thickness_residual_m_s": {
+          "l1": 5.6055342768670026e-05,
+          "l2": 9.357427084737682e-05,
+          "linf": 0.00048631858814677164
+        },
+        "term_magnitudes_m_s2": {
+          "pressure": {
+            "l1": 0.0012929878550244354,
+            "l2": 0.00151097416874401,
+            "linf": 0.002925444082882324
+          },
+          "kinetic": {
+            "l1": 5.1535399778276374e-05,
+            "l2": 6.146025285590212e-05,
+            "linf": 0.00014764463490578566
+          },
+          "rotation": {
+            "l1": 0.0013399718537907025,
+            "l2": 0.00156752965747651,
+            "linf": 0.003116737635732978
+          }
+        },
+        "term_errors_m_s2": {
+          "pressure": {
+            "l1": 2.917502557458273e-06,
+            "l2": 4.00828851138037e-06,
+            "linf": 1.7304315660170416e-05
+          },
+          "kinetic": {
+            "l1": 6.849583410004378e-06,
+            "l2": 1.2345054214875056e-05,
+            "linf": 6.58080466976198e-05
+          },
+          "rotation": {
+            "l1": 3.074547141495563e-05,
+            "l2": 5.812042156957712e-05,
+            "linf": 0.0003296525911713771
+          }
+        },
+        "energy_rate_W": 127.5,
+        "energy_work_scale_W": 1.3653433037119004e+18,
+        "energy_rate_normalized": 9.338310713017833e-17
+      },
+      "runs": {
+        "600": {
+          "steps": 720,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1097.38659503417,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 3.1605833416187616,
+                "l2": 4.3777421979440065,
+                "linf": 22.191800191264292
+              },
+              "u_error_m_s": {
+                "l1": 0.13943832572541665,
+                "l2": 0.18858724756761736,
+                "linf": 0.9295310975948183
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9417735298651462e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -3.2642717466070254e-07
+              },
+              "minimum_thickness_m": 1094.7664092861487,
+              "maximum_temperature_error_degC": 2.3092638912203256e-14,
+              "maximum_salinity_error": 7.815970093361102e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 2.7496791127375806,
+                "l2": 3.982391718536833,
+                "linf": 17.72085435272038
+              },
+              "u_error_m_s": {
+                "l1": 0.15236861879491356,
+                "l2": 0.20662571645847896,
+                "linf": 0.8864273008419303
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 1.6990518386320032e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -6.295180346729751e-07
+              },
+              "minimum_thickness_m": 1093.9028621161349,
+              "maximum_temperature_error_degC": 2.1316282072803006e-14,
+              "maximum_salinity_error": 8.526512829121202e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 3.231056091584582,
+                "l2": 4.544753782212011,
+                "linf": 26.40404728107069
+              },
+              "u_error_m_s": {
+                "l1": 0.18488751589568284,
+                "l2": 0.2494655095442448,
+                "linf": 1.260908665920926
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -9.17383377989692e-07
+              },
+              "minimum_thickness_m": 1096.8170485337232,
+              "maximum_temperature_error_degC": 2.842170943040401e-14,
+              "maximum_salinity_error": 9.947598300641403e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 3.1757478537585797,
+                "l2": 4.501176187755949,
+                "linf": 19.306588334195567
+              },
+              "u_error_m_s": {
+                "l1": 0.20938401439954824,
+                "l2": 0.27541783832921174,
+                "linf": 1.1731764698330238
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.1902530930349976e-06
+              },
+              "minimum_thickness_m": 1097.0543035390208,
+              "maximum_temperature_error_degC": 2.842170943040401e-14,
+              "maximum_salinity_error": 8.526512829121202e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 3.775767026941297,
+                "l2": 5.092274326400034,
+                "linf": 24.18975366871473
+              },
+              "u_error_m_s": {
+                "l1": 0.2476010930044643,
+                "l2": 0.32279220802748737,
+                "linf": 1.3492057290423993
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": -1.6990518386320032e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.448008097015227e-06
+              },
+              "minimum_thickness_m": 1094.2021185662818,
+              "maximum_temperature_error_degC": 2.6645352591003757e-14,
+              "maximum_salinity_error": 1.0658141036401503e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "300": {
+          "steps": 1440,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1097.38659503417,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 3.175486108398537,
+                "l2": 4.39476952023611,
+                "linf": 22.308524010843485
+              },
+              "u_error_m_s": {
+                "l1": 0.1400707988988049,
+                "l2": 0.18937427477330915,
+                "linf": 0.9313106918160692
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": -1.6990518386320032e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -4.255272689400055e-08
+              },
+              "minimum_thickness_m": 1094.7357642104682,
+              "maximum_temperature_error_degC": 2.842170943040401e-14,
+              "maximum_salinity_error": 9.947598300641403e-14,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 2.7785676228607183,
+                "l2": 4.015779662707588,
+                "linf": 17.70359912494041
+              },
+              "u_error_m_s": {
+                "l1": 0.1537398298826108,
+                "l2": 0.2081926025548613,
+                "linf": 0.8937992501878611
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": -3.8835470597302924e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -8.408095093635461e-08
+              },
+              "minimum_thickness_m": 1093.8710189323458,
+              "maximum_temperature_error_degC": 2.6645352591003757e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 3.258902149755867,
+                "l2": 4.580298135773109,
+                "linf": 26.52469158453505
+              },
+              "u_error_m_s": {
+                "l1": 0.18635323175172797,
+                "l2": 0.25138556092093267,
+                "linf": 1.2708701266786946
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.254906322756466e-07
+              },
+              "minimum_thickness_m": 1096.8273425138361,
+              "maximum_temperature_error_degC": 3.375077994860476e-14,
+              "maximum_salinity_error": 1.1368683772161603e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 3.2351344179065036,
+                "l2": 4.56121326956359,
+                "linf": 19.338346447845197
+              },
+              "u_error_m_s": {
+                "l1": 0.21102047891306255,
+                "l2": 0.2774665486883441,
+                "linf": 1.1745506432503632
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.6665016651060374e-07
+              },
+              "minimum_thickness_m": 1097.0429353688544,
+              "maximum_temperature_error_degC": 4.973799150320701e-14,
+              "maximum_salinity_error": 1.0658141036401503e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 3.8162012730741517,
+                "l2": 5.139231453581441,
+                "linf": 24.298369597765486
+              },
+              "u_error_m_s": {
+                "l1": 0.24932430048252233,
+                "l2": 0.3249449157592488,
+                "linf": 1.376061361854017
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": -1.6990518386320032e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -2.0737692293354365e-07
+              },
+              "minimum_thickness_m": 1094.1213735003748,
+              "maximum_temperature_error_degC": 3.375077994860476e-14,
+              "maximum_salinity_error": 1.0658141036401503e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        },
+        "150": {
+          "steps": 2880,
+          "series": [
+            {
+              "time_s": 0,
+              "h_error_m": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "u_error_m_s": {
+                "l1": 0.0,
+                "l2": 0.0,
+                "linf": 0.0
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": 0.0,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": 0.0
+              },
+              "minimum_thickness_m": 1097.38659503417,
+              "maximum_temperature_error_degC": 1.7763568394002505e-15,
+              "maximum_salinity_error": 7.105427357601002e-15,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 86400,
+              "h_error_m": {
+                "l1": 3.177446383093969,
+                "l2": 4.397037705686609,
+                "linf": 22.323531442922786
+              },
+              "u_error_m_s": {
+                "l1": 0.14015327530572336,
+                "l2": 0.189476442569514,
+                "linf": 0.9315344755206745
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9417735298651462e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -5.3588698236121155e-09
+              },
+              "minimum_thickness_m": 1094.7318307994105,
+              "maximum_temperature_error_degC": 3.907985046680551e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 172800,
+              "h_error_m": {
+                "l1": 2.782417615263532,
+                "l2": 4.020095228003507,
+                "linf": 17.6997731592096
+              },
+              "u_error_m_s": {
+                "l1": 0.1539203088453972,
+                "l2": 0.20840254122157026,
+                "linf": 0.8947466546820131
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9417735298651462e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -1.0622943392542246e-08
+              },
+              "minimum_thickness_m": 1093.8671191357198,
+              "maximum_temperature_error_degC": 4.618527782440651e-14,
+              "maximum_salinity_error": 1.2079226507921703e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 259200,
+              "h_error_m": {
+                "l1": 3.2629131116488272,
+                "l2": 4.5852862949350355,
+                "linf": 26.537899533507698
+              },
+              "u_error_m_s": {
+                "l1": 0.18655399948778414,
+                "l2": 0.2516479389495725,
+                "linf": 1.2722612772039277
+              },
+              "relative_budget_change": {
+                "volume": 2.123814798290004e-16,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9417735298651462e-16,
+                "tracer_content": 2.123814798290004e-16,
+                "constant_density_mechanical_energy": -1.590618426139459e-08
+              },
+              "minimum_thickness_m": 1096.828978455932,
+              "maximum_temperature_error_degC": 6.039613253960852e-14,
+              "maximum_salinity_error": 1.4921397450962104e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 345600,
+              "h_error_m": {
+                "l1": 3.2432658391851206,
+                "l2": 4.569682515011365,
+                "linf": 19.34186505094658
+              },
+              "u_error_m_s": {
+                "l1": 0.21125292445257515,
+                "l2": 0.2777557441170528,
+                "linf": 1.174766866401086
+              },
+              "relative_budget_change": {
+                "volume": 2.123814798290004e-16,
+                "temperature_content": -1.6990518386320032e-16,
+                "salinity_content": 0.0,
+                "tracer_content": 2.123814798290004e-16,
+                "constant_density_mechanical_energy": -2.1191365314878018e-08
+              },
+              "minimum_thickness_m": 1097.0410302853975,
+              "maximum_temperature_error_degC": 4.973799150320701e-14,
+              "maximum_salinity_error": 2.0605739337042905e-13,
+              "maximum_uniform_tracer_error": 0.0
+            },
+            {
+              "time_s": 432000,
+              "h_error_m": {
+                "l1": 3.822044804796231,
+                "l2": 5.146203641307118,
+                "linf": 24.31173306556775
+              },
+              "u_error_m_s": {
+                "l1": 0.24957335096265515,
+                "l2": 0.3252531525193645,
+                "linf": 1.379625441378181
+              },
+              "relative_budget_change": {
+                "volume": 0.0,
+                "temperature_content": 0.0,
+                "salinity_content": -1.9417735298651462e-16,
+                "tracer_content": 0.0,
+                "constant_density_mechanical_energy": -2.645463191744939e-08
+              },
+              "minimum_thickness_m": 1094.1101009841043,
+              "maximum_temperature_error_degC": 4.973799150320701e-14,
+              "maximum_salinity_error": 2.5579538487363607e-13,
+              "maximum_uniform_tracer_error": 0.0
+            }
+          ]
+        }
+      },
+      "timestep_comparisons": [
+        {
+          "coarse_dt_s": 600,
+          "fine_dt_s": 300,
+          "h_difference_m": {
+            "l1": 0.15264031499832012,
+            "l2": 0.19995684721260637,
+            "linf": 1.069941030600603
+          },
+          "u_difference_m_s": {
+            "l1": 0.006952916733728683,
+            "l2": 0.008889430688889827,
+            "linf": 0.04110360044520789
+          }
+        },
+        {
+          "coarse_dt_s": 300,
+          "fine_dt_s": 150,
+          "h_difference_m": {
+            "l1": 0.020819002986648,
+            "l2": 0.027508461037442644,
+            "linf": 0.15129529552859822
+          },
+          "u_difference_m_s": {
+            "l1": 0.000944637032507151,
+            "l2": 0.0012066057336112743,
+            "linf": 0.00578936375321959
+          }
+        }
+      ]
+    }
+  ],
+  "spatial_orders": [
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 150,
+      "field": "h_error_m",
+      "observed_order": 1.815164446894405
+    },
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 150,
+      "field": "u_error_m_s",
+      "observed_order": 1.7866591662573659
+    },
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 300,
+      "field": "h_error_m",
+      "observed_order": 1.8154367763868617
+    },
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 300,
+      "field": "u_error_m_s",
+      "observed_order": 1.7867510029652416
+    },
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 600,
+      "field": "h_error_m",
+      "observed_order": 1.8175441593786275
+    },
+    {
+      "coarse_cells": 64,
+      "fine_cells": 256,
+      "dt_s": 600,
+      "field": "u_error_m_s",
+      "observed_order": 1.7874706061952943
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 150,
+      "field": "h_error_m",
+      "observed_order": 1.0717302863626972
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 150,
+      "field": "u_error_m_s",
+      "observed_order": 1.3628167357960776
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 300,
+      "field": "h_error_m",
+      "observed_order": 1.0733964338326702
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 300,
+      "field": "u_error_m_s",
+      "observed_order": 1.3640873967092901
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 600,
+      "field": "h_error_m",
+      "observed_order": 1.0843919063622642
+    },
+    {
+      "coarse_cells": 256,
+      "fine_cells": 1024,
+      "dt_s": 600,
+      "field": "u_error_m_s",
+      "observed_order": 1.37291439558664
+    }
+  ],
+  "limitations": [
+    "Point-sampled analytic initial data, not exact finite-volume cell/edge averages",
+    "Axis-aligned global one-layer constant-density flow only; no coast or stratification",
+    "Finite-time errors mix mesh representation, spatial dynamics and temporal error",
+    "No scientific acceptance thresholds or general positivity/long-run qualification"
+  ]
+}

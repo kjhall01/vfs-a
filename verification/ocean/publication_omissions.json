@@ -1,0 +1,94 @@
+{
+  "recovered_commit": "17e561d",
+  "integration_parent": "018da8ca621e7829cecb4d942b896ca30bc1b633",
+  "driver_parent": "7e53cd453bb8fea49d654fcf699b0937c6e45c20",
+  "max_file_bytes": 131072,
+  "omitted_files": [
+    {
+      "path": "verification/ocean/williamson.png",
+      "bytes": 247074,
+      "sha256": "a5190c06c53220de6f19d593d7e85e9325d562656bbbc814b917a0a026da3fad",
+      "git_blob_sha": "6784e69dbfa2f1a13990cff466dae8075ef7bd37",
+      "reason": "Exceeds the conservative 128 KiB per-file publication cap; omitted at user direction."
+    },
+    {
+      "path": "verification/ocean/williamson_results/initial_terms_1024.npz",
+      "bytes": 145787,
+      "sha256": "89063f82479a8faf83abfa60e6b576f6a1fe74187d90adfb3f28144d794f0401",
+      "git_blob_sha": "339a028453524d67f0310ad7111f171245e544ca",
+      "reason": "Exceeds the conservative 128 KiB per-file publication cap; omitted at user direction."
+    },
+    {
+      "path": "verification/ocean/williamson_results/inputs_1024.npz",
+      "bytes": 1941619,
+      "sha256": "5a341ed942b2d78fa5c225c5a41d5fd623cc9e35e4a0f76f21b7617b576567c5",
+      "git_blob_sha": "da2e172c2b96849783f1fe8f04f9cb0806ee2526",
+      "reason": "Exceeds the conservative 128 KiB per-file publication cap; omitted at user direction."
+    },
+    {
+      "path": "verification/ocean/williamson_results/inputs_256.npz",
+      "bytes": 452220,
+      "sha256": "08de3f1d805be93510322cd9d6708330e299d6a633650fa3b562cf976bbc3303",
+      "git_blob_sha": "e6cba054666adc232e53038033e9f071bf921d0d",
+      "reason": "Exceeds the conservative 128 KiB per-file publication cap; omitted at user direction."
+    },
+    {
+      "path": "verification/ocean/williamson_replay.json",
+      "bytes": 26263,
+      "sha256": "370007c3ef00f69c5018b04d407493e03a165df542c72bc1d5122cc25b34726a",
+      "git_blob_sha": "a21746cf21f9471a30c79af693214786d1cd524d",
+      "reason": "Detailed local machine/environment metadata omitted following automatic approval review. Original file retained locally."
+    },
+    {
+      "path": "verification/ocean/williamson_results/manifest.json",
+      "bytes": 26877,
+      "sha256": "5458cf1b7317911848d71107cf5b4c10e1f4adbba3707c82a2e554862c36db9d",
+      "git_blob_sha": "c7e66ce67309d301686ab48b6a0eb1141ac612db",
+      "reason": "Detailed local machine/environment metadata omitted following automatic approval review. Original file retained locally."
+    }
+  ],
+  "original_campaign_manifest": "williamson_results/manifest.json",
+  "publication_scope": "Partial original evidence. Complete numerical JSON summaries, all nine endpoint arrays, and frozen 64-cell inputs are retained. Frozen 256/1024-cell inputs and raw 1024-cell initial terms are omitted; exact replay of those larger cases requires the original omitted inputs. No replacement or re-encoding of omitted files. The full environment manifest and detailed replay report are also omitted; original artifact hashes are retained here without machine metadata.",
+  "publication_validation": {
+    "retained_original_manifest_artifacts_sha256_verified": 22,
+    "intentionally_absent_original_manifest_artifacts": [
+      "initial_terms_1024.npz",
+      "inputs_1024.npz",
+      "inputs_256.npz"
+    ],
+    "installed_integration_runtime_python_files_identical": 97,
+    "focused_installed_wheel_tests_passed": 3,
+    "corrected_gibbs_v1_portable_tensor_comparisons_passed": 142,
+    "dry_helper_portable_tensor_comparisons_passed": 93,
+    "original_full_suite_result": "615 passed, 1 CUDA skip; original recovery result, not rerun during size-limited publication"
+  },
+  "original_campaign_manifest_preserved_locally": true,
+  "original_campaign_manifest_published": false,
+  "recorded_original_artifacts_sha256": {
+    "capture_ocean.py": "7d6a3e6a3aea5a1738deea222595659e5bb23826e4cc49aee3702bb6dbc03ab9",
+    "case_1024.json": "f3f9fec26671b88ad36207810e8166cce4fc14ab9301cbe84f66e4adeed4f817",
+    "case_256.json": "d70361e4b37d941449707d527437e7136c6f66ef0df66bc6cee2fcdb71dcf727",
+    "case_64.json": "5a0fd512acad778f1111f1db97b35d7076b7df8fc78fb249e6dfc95516b33364",
+    "final_1024_dt150.npz": "c568a153587517e86f89713954941e2f9641b34316d11bf8d64b19df734c8bd6",
+    "final_1024_dt300.npz": "efbc448405578a8cbe834093b98ba95eb056e7d8be918baebf514106cb331000",
+    "final_1024_dt600.npz": "dd2020e2360c786df14409096ff27bf77a6c69bbb3c31d782496482d87abc3e0",
+    "final_256_dt150.npz": "7f6e74ac1dfb6ec7fc6f5d91c3207f8570d4f00aad61527d0dc9a5aedcd3bf5b",
+    "final_256_dt300.npz": "a63b4ffe28b32926f3646476685743a3c79b532f72f19d1920e3d467ec50da25",
+    "final_256_dt600.npz": "5e63793ec53cb13703caa2f1c0a35f95674578f47a6b3ae6c73a301f7c082b0b",
+    "final_64_dt150.npz": "9eabcacaa4b39b746de7679d1598a45cc1d16775d20a7b849febd7f0a891e695",
+    "final_64_dt300.npz": "d101e10be1b4e427e6ccc6f440279e0e9087d29ad51788cc4a1df54db3acf504",
+    "final_64_dt600.npz": "0fea85e2df6182e0263b5f3db67d75483201e5f1f1b1d59e557ef43cb023bd9e",
+    "initial_terms_1024.npz": "89063f82479a8faf83abfa60e6b576f6a1fe74187d90adfb3f28144d794f0401",
+    "initial_terms_256.npz": "8d2987d0d523d627e6f6828d4c0f428496a771652ac71903542f2fed4b943ea3",
+    "initial_terms_64.npz": "0fbf5aba3bb818d6c737aedeccda43093b2ec19a7f54373897b9bd2c342ec4ea",
+    "inputs_1024.npz": "5a341ed942b2d78fa5c225c5a41d5fd623cc9e35e4a0f76f21b7617b576567c5",
+    "inputs_256.npz": "08de3f1d805be93510322cd9d6708330e299d6a633650fa3b562cf976bbc3303",
+    "inputs_64.npz": "e2009a209935a7b39497649dfb134a900de95af3c682135517f715d0af4853d1",
+    "record_environment.py": "f0861098d19c188bc5fdc52238a76881fa970957b1038fb18425e0f1e8acfd73",
+    "results.json": "35b40394f9b2628514412356c9a06b307a6d711e37a1421abaae7cd1c2fa880b",
+    "run_verification.py": "1f139b3e9be5c90acba45bdf2fc3e62c58ca302a580ec528994b75dbf05e4020",
+    "runtime_relocations_v1.json": "c957d6e3971a57f646e87cd1fd4543234e086996b50c1178ac919b8228453b2b",
+    "structural_sources.py": "839c719d1b28776e7211a8c118401c32dff62d35f28615e7f0fce812e15f1d19",
+    "verify_ocean_williamson.py": "15ffda63947898484c7cfb85fbbea346e5f2fb8e3bf2e577cebb44faf6ce51f4"
+  }
+}
