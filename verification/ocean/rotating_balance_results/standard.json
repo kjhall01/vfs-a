@@ -1,0 +1,284 @@
+[
+  {
+    "cells": 64,
+    "momentum_residual_m_s2": {
+      "l1": 7.555662480743031e-05,
+      "l2": 9.624111825935969e-05,
+      "linf": 0.00023637377233828318
+    },
+    "thickness_residual_m_s": {
+      "l1": 0.0001414179691666984,
+      "l2": 0.00017857531706807502,
+      "linf": 0.0003534797716850067
+    },
+    "term_magnitudes_m_s2": {
+      "pressure": {
+        "l1": 0.001205914705673154,
+        "l2": 0.0014598279425592233,
+        "linf": 0.002781606750393406
+      },
+      "kinetic": {
+        "l1": 4.696985876057711e-05,
+        "l2": 5.758087461930799e-05,
+        "linf": 0.00011725196467032113
+      },
+      "rotation": {
+        "l1": 0.0012002664998371135,
+        "l2": 0.0014550894950637158,
+        "linf": 0.0028272933083114383
+      }
+    },
+    "term_errors_m_s2": {
+      "pressure": {
+        "l1": 4.3309464786472664e-05,
+        "l2": 5.5245692162899706e-05,
+        "linf": 0.00012784267727014966
+      },
+      "kinetic": {
+        "l1": 4.565679762419925e-06,
+        "l2": 5.956370608912804e-06,
+        "linf": 1.6890635058143804e-05
+      },
+      "rotation": {
+        "l1": 0.0001030846740151916,
+        "l2": 0.00013819338985469288,
+        "linf": 0.0003139381443697056
+      }
+    },
+    "energy_rate_W": 918.0,
+    "energy_work_scale_W": 3.4434197458355446e+18,
+    "energy_rate_normalized": 2.6659543934782415e-16,
+    "rotation_ablation_rms_m_s2": {
+      "raw_with_exact_q": 0.00014552737692873806,
+      "geometry_skew_with_exact_q": 0.0001455273769287381,
+      "layer_skew_with_exact_q": 0.00012562199706975594,
+      "layer_skew_increment": 5.44431008404935e-05,
+      "raw_geometry_projection_increment": 2.3213005413552747e-19,
+      "audit_minus_production": 0.0
+    },
+    "kinetic": {
+      "value_error_rms_m2_s2": 12.421561461025647,
+      "force_error_rms_m_s2": 5.956370608912843e-06,
+      "analytic_value_stencil_error_rms_m_s2": 2.204068238054678e-06,
+      "reconstruction_force_error_rms_m_s2": 5.780259473304059e-06,
+      "second_moment_defect_rms": 0.039926671449055914
+    },
+    "geometry": {
+      "rotation_constant_vector_defect_rms": 0.038944198663785616,
+      "face_dual_midpoint_offset_over_dc_rms": 0.021892478619244014,
+      "normal_radial_max": 6.661338147750939e-16,
+      "area_relative_sphere_error": 2.220446049250313e-16,
+      "cell_area_coefficient_variation": 0.04298796280699968
+    },
+    "manufactured_rotation_unit_speed": {
+      "z": 0.03028971241560148,
+      "x": 0.033193873878020336,
+      "tilted": 0.03218102013321819
+    },
+    "curl": {
+      "face_midpoint_error_rms_s_inverse": 4.773073116642819e-07,
+      "exact_dual_circulation_error_rms_s_inverse": 2.4545926401767446e-07,
+      "sampling_difference_rms_m_s": 0.22835545503108148,
+      "reference": "vertex point vorticity; exact dual circulation instead gives its triangle average"
+    },
+    "face_average_minus_point_velocity_rms_m_s": 0.08058546364731686,
+    "cell_average": {
+      "orders": [
+        6,
+        10
+      ],
+      "quadrature_difference_rms_m": 5.611179482360679e-10,
+      "average_minus_point_rms_m": 26.231665724341863,
+      "pressure_force_change_rms_m_s2": 6.76641598073832e-05
+    },
+    "runtime_seconds": 0.1253657080233097
+  },
+  {
+    "cells": 256,
+    "momentum_residual_m_s2": {
+      "l1": 4.416197408615374e-05,
+      "l2": 6.386486970746734e-05,
+      "linf": 0.0003001704097774882
+    },
+    "thickness_residual_m_s": {
+      "l1": 7.910697910170756e-05,
+      "l2": 0.00011156589582602223,
+      "linf": 0.0003579260859073738
+    },
+    "term_magnitudes_m_s2": {
+      "pressure": {
+        "l1": 0.0012613769041934602,
+        "l2": 0.0015003379161837255,
+        "linf": 0.0028721423710594968
+      },
+      "kinetic": {
+        "l1": 5.195658800880762e-05,
+        "l2": 6.123851044999965e-05,
+        "linf": 0.0001315283141463267
+      },
+      "rotation": {
+        "l1": 0.0012973836406950543,
+        "l2": 0.0015499424264821262,
+        "linf": 0.0030800219977447844
+      }
+    },
+    "term_errors_m_s2": {
+      "pressure": {
+        "l1": 1.4050158895609667e-05,
+        "l2": 1.688235469745036e-05,
+        "linf": 5.1925062147881705e-05
+      },
+      "kinetic": {
+        "l1": 8.358687535076328e-06,
+        "l2": 1.3370439110057466e-05,
+        "linf": 5.737135597827149e-05
+      },
+      "rotation": {
+        "l1": 4.77767940466669e-05,
+        "l2": 6.810043721801917e-05,
+        "linf": 0.0003291475185591133
+      }
+    },
+    "energy_rate_W": 584.0,
+    "energy_work_scale_W": 2.5916410048508877e+18,
+    "energy_rate_normalized": 2.2533985181855883e-16,
+    "rotation_ablation_rms_m_s2": {
+      "raw_with_exact_q": 6.894054509730963e-05,
+      "geometry_skew_with_exact_q": 6.894054509730964e-05,
+      "layer_skew_with_exact_q": 6.700502680620232e-05,
+      "layer_skew_increment": 1.6383765500548294e-05,
+      "raw_geometry_projection_increment": 4.496047342267502e-19,
+      "audit_minus_production": 0.0
+    },
+    "kinetic": {
+      "value_error_rms_m2_s2": 11.959171580202767,
+      "force_error_rms_m_s2": 1.337043911005747e-05,
+      "analytic_value_stencil_error_rms_m_s2": 6.73534176429614e-07,
+      "reconstruction_force_error_rms_m_s2": 1.3609842014315832e-05,
+      "second_moment_defect_rms": 0.03355467603067925
+    },
+    "geometry": {
+      "rotation_constant_vector_defect_rms": 0.03702973628536191,
+      "face_dual_midpoint_offset_over_dc_rms": 0.0199782044422597,
+      "normal_radial_max": 1.925543058334256e-15,
+      "area_relative_sphere_error": 2.220446049250313e-16,
+      "cell_area_coefficient_variation": 0.04665259707802079
+    },
+    "manufactured_rotation_unit_speed": {
+      "z": 0.02542955012078741,
+      "x": 0.019706398099532573,
+      "tilted": 0.024289940007615543
+    },
+    "curl": {
+      "face_midpoint_error_rms_s_inverse": 3.2557218439958414e-07,
+      "exact_dual_circulation_error_rms_s_inverse": 1.0642311237375163e-07,
+      "sampling_difference_rms_m_s": 0.08873058010984379,
+      "reference": "vertex point vorticity; exact dual circulation instead gives its triangle average"
+    },
+    "face_average_minus_point_velocity_rms_m_s": 0.023522220855906526,
+    "cell_average": {
+      "orders": [
+        6,
+        10
+      ],
+      "quadrature_difference_rms_m": 2.1419700759885863e-12,
+      "average_minus_point_rms_m": 6.948755128817922,
+      "pressure_force_change_rms_m_s2": 1.905440663128484e-05
+    },
+    "runtime_seconds": 0.08596316701732576
+  },
+  {
+    "cells": 1024,
+    "momentum_residual_m_s2": {
+      "l1": 3.004349162338116e-05,
+      "l2": 5.680131307523167e-05,
+      "linf": 0.0003286031774536269
+    },
+    "thickness_residual_m_s": {
+      "l1": 5.605534276891555e-05,
+      "l2": 9.357427084750413e-05,
+      "linf": 0.00048631858813978255
+    },
+    "term_magnitudes_m_s2": {
+      "pressure": {
+        "l1": 0.0012929878550244378,
+        "l2": 0.0015109741687440125,
+        "linf": 0.0029254440828823053
+      },
+      "kinetic": {
+        "l1": 5.153539977827659e-05,
+        "l2": 6.146025285590109e-05,
+        "linf": 0.00014764463490585895
+      },
+      "rotation": {
+        "l1": 0.0013399718537907004,
+        "l2": 0.001567529657476507,
+        "linf": 0.0031167376357328137
+      }
+    },
+    "term_errors_m_s2": {
+      "pressure": {
+        "l1": 2.917502557458194e-06,
+        "l2": 4.008288511379944e-06,
+        "linf": 1.7304315660156538e-05
+      },
+      "kinetic": {
+        "l1": 6.849583410001508e-06,
+        "l2": 1.2345054214870967e-05,
+        "linf": 6.58080466975832e-05
+      },
+      "rotation": {
+        "l1": 3.0745471414957985e-05,
+        "l2": 5.8120421569569786e-05,
+        "linf": 0.00032965259117105953
+      }
+    },
+    "energy_rate_W": -350.5,
+    "energy_work_scale_W": 1.365343303712292e+18,
+    "energy_rate_normalized": -2.5671199254210286e-16,
+    "rotation_ablation_rms_m_s2": {
+      "raw_with_exact_q": 5.830376611438632e-05,
+      "geometry_skew_with_exact_q": 5.830376611438632e-05,
+      "layer_skew_with_exact_q": 5.814783484716352e-05,
+      "layer_skew_increment": 4.760779447210107e-06,
+      "raw_geometry_projection_increment": 1.5979566317347129e-18,
+      "audit_minus_production": 0.0
+    },
+    "kinetic": {
+      "value_error_rms_m2_s2": 5.876909876822985,
+      "force_error_rms_m_s2": 1.2345054214870945e-05,
+      "analytic_value_stencil_error_rms_m_s2": 1.5991367020692423e-07,
+      "reconstruction_force_error_rms_m_s2": 1.2412137451063317e-05,
+      "second_moment_defect_rms": 0.030021872581280803
+    },
+    "geometry": {
+      "rotation_constant_vector_defect_rms": 0.029152514389105322,
+      "face_dual_midpoint_offset_over_dc_rms": 0.01846233391530036,
+      "normal_radial_max": 8.409939411535561e-15,
+      "area_relative_sphere_error": 2.220446049250313e-16,
+      "cell_area_coefficient_variation": 0.032608106161985936
+    },
+    "manufactured_rotation_unit_speed": {
+      "z": 0.014087612162825138,
+      "x": 0.018183749646221117,
+      "tilted": 0.01593658619616514
+    },
+    "curl": {
+      "face_midpoint_error_rms_s_inverse": 4.3228697923000525e-07,
+      "exact_dual_circulation_error_rms_s_inverse": 7.918473540648902e-08,
+      "sampling_difference_rms_m_s": 0.06058626751497273,
+      "reference": "vertex point vorticity; exact dual circulation instead gives its triangle average"
+    },
+    "face_average_minus_point_velocity_rms_m_s": 0.005561438069193306,
+    "cell_average": {
+      "orders": [
+        6,
+        10
+      ],
+      "quadrature_difference_rms_m": 2.082744443865939e-12,
+      "average_minus_point_rms_m": 1.6722743077313542,
+      "pressure_force_change_rms_m_s2": 5.511898941036726e-06
+    },
+    "runtime_seconds": 0.3493307080352679
+  }
+]
