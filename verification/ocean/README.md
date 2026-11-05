@@ -11,6 +11,8 @@ restores the archived layered solver as an explicit, experimental reference.
 It does not correct its energy functional, rotation, pressure gradient,
 thickness positivity, vertical remap or nonlinear thermodynamics.
 
+Current next-step evidence: [carrier/content admissibility](TRANSPORT_ADMISSIBILITY.md).
+
 ## Source and coordination
 
 - Donor: `VFS-main.zip`, SHA-256
