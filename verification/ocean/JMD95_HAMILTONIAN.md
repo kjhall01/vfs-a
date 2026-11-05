@@ -1,5 +1,10 @@
 # Active JMD95 ocean: energy-derived experimental runtime
 
+An additional opt-in [ALE remap](ALE_REMAP.md) now wraps this unchanged dynamics
+path. It conserves volume/content/edge momentum and reports its nonzero energy
+changes separately. The no-remap results below remain historical evidence for
+the material-layer model, not validation of the combined ALE scheme.
+
 This is a separately selected numerical formulation on top of draft #30
 (`8efd7ff6f16d538e2438601d8d3b537f938ecb24`). It implements active potential
 temperature and salinity, nonlinear pressure-dependent JMD95 density, and a

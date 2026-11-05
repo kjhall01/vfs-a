@@ -1,4 +1,24 @@
-# Current ocean handoff — active JMD95 Hamiltonian candidate
+# Current ocean handoff — conservative vertical ALE remap
+
+Main `5841cda8b4585418b18f0ba0486315870b1a59b2` includes merged #28–#31.
+New branch `ocean/ale-remap` adds one ocean-only runtime module: bounded
+piecewise-linear overlap remapping, a prescribed reference target, compatible
+edge-momentum remapping and an explicit checked-SSPRK3/ALE wrapper. All 99
+pre-existing runtime files, defaults, fixtures and tolerances remain unchanged.
+The user explicitly accepts nonzero remap energy changes for this milestone.
+See [implementation, measurements and reproduction](../verification/ocean/ALE_REMAP.md).
+
+The remap is opt-in and its energy changes are returned explicitly. Coarse
+sharp-interface full-period waves show substantial phase and dynamic-enthalpy
+errors; do not characterize these as negligible based on total-H normalization.
+PLM smooth-profile convergence is about second order. Inventory/momentum tests,
+coast masks, stage rejection and selected derivatives are checked. CPU float64
+only; no GPU/compile/long-backward or long-climate qualification. Atmospheric
+worktrees remain untouched. Leave the PR draft/unmerged for review.
+
+---
+
+# Historical ocean handoff — active JMD95 Hamiltonian candidate
 
 User-directed numerical extension of #30, on `ocean/jmd95-hamiltonian`.
 New opt-in JMD95Dynamics/JMD95Energy use active potential T and practical S,
