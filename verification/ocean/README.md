@@ -13,6 +13,9 @@ thickness positivity, vertical remap or nonlinear thermodynamics.
 
 Current next-step evidence: [carrier/content admissibility](TRANSPORT_ADMISSIBILITY.md).
 
+Active stratification is a [separate unimplemented energy/content design](BOUSSINESQ_ENERGY_DESIGN.md),
+not a runtime option or a new default.
+
 ## Source and coordination
 
 - Donor: `VFS-main.zip`, SHA-256
