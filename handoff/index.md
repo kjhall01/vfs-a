@@ -1,3 +1,24 @@
+# Current ocean handoff — active JMD95 Hamiltonian candidate
+
+User-directed numerical extension of #30, on `ocean/jmd95-hamiltonian`.
+New opt-in JMD95Dynamics/JMD95Energy use active potential T and practical S,
+a fixed-datum buoyancy integral, analytic fixed-content energy derivatives,
+and centered energy-paired scalar fluxes/pressure. Use checked_ssprk3 explicitly
+for full-Euler stage rejection. No atmosphere imports in the new ocean modules;
+all pre-existing runtime files, defaults, fixtures and tolerances are unchanged.
+
+Read [derivation, evidence, reproduction and limits](../verification/ocean/JMD95_HAMILTONIAN.md).
+Installed-wheel suite: 642 passed, one CUDA skip; nine new tests.
+Spatial work closes to roundoff; independent pressure refinement is about second
+order; short internal-wave errors decrease with refinement; temporal order is
+about three. This is adiabatic, centered, unforced and experimental: no bounded
+mixing, heat budget, Poisson/Jacobi proof, long-run or GPU qualification.
+The rotation/kinetic reconstruction issue from #28 remains open.
+Keep the dependent draft unmerged. Next: rotating/many-period stratified tests
+and a separately derived bounded/mixing energy budget.
+
+---
+
 # Current ocean handoff — three bounded milestones, no runtime adoption
 
 Main baseline: `e959b7005832a5041e082b6e300838e15bfbaa9e` (merged #26/#27).

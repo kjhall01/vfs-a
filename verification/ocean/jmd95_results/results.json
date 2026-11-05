@@ -1,0 +1,352 @@
+{
+  "device": "cpu",
+  "dtype": "float64",
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "work": {
+    "gradient_relative_errors": {
+      "u_e": 0.0,
+      "h": 6.109120049916094e-16,
+      "temp_h": 4.619716445920253e-16,
+      "salt_h": 3.2338623921694595e-16
+    },
+    "energy_rate_W": -0.07275390625,
+    "absolute_local_work_W": 1.0282950270722596e+16,
+    "normalized_work": -7.075197714136907e-18,
+    "finite_differences": [
+      {
+        "field": "u_e",
+        "epsilon": 0.1,
+        "relative_error": 7.093737377293758e-13
+      },
+      {
+        "field": "u_e",
+        "epsilon": 0.01,
+        "relative_error": 3.874071967672837e-11
+      },
+      {
+        "field": "u_e",
+        "epsilon": 0.001,
+        "relative_error": 5.633764517076911e-11
+      },
+      {
+        "field": "h",
+        "epsilon": 0.1,
+        "relative_error": 1.2580816610704433e-09
+      },
+      {
+        "field": "h",
+        "epsilon": 0.01,
+        "relative_error": 7.492494605942027e-10
+      },
+      {
+        "field": "h",
+        "epsilon": 0.001,
+        "relative_error": 4.8707197113310205e-09
+      },
+      {
+        "field": "temp_h",
+        "epsilon": 0.1,
+        "relative_error": 1.375777624923231e-08
+      },
+      {
+        "field": "temp_h",
+        "epsilon": 0.01,
+        "relative_error": 3.117167675747429e-08
+      },
+      {
+        "field": "temp_h",
+        "epsilon": 0.001,
+        "relative_error": 4.32045994311047e-07
+      },
+      {
+        "field": "salt_h",
+        "epsilon": 0.1,
+        "relative_error": 2.899569586833255e-10
+      },
+      {
+        "field": "salt_h",
+        "epsilon": 0.01,
+        "relative_error": 1.476217680020184e-09
+      },
+      {
+        "field": "salt_h",
+        "epsilon": 0.001,
+        "relative_error": 1.3105238877989244e-07
+      }
+    ],
+    "quadrature": [
+      {
+        "order": 2,
+        "relative_energy_error_against_independent_24": 1.3296074631849897e-07
+      },
+      {
+        "order": 4,
+        "relative_energy_error_against_independent_24": 1.2333409428274365e-14
+      },
+      {
+        "order": 8,
+        "relative_energy_error_against_independent_24": 5.502598052614717e-15
+      },
+      {
+        "order": 16,
+        "relative_energy_error_against_independent_24": 6.451321854789667e-15
+      }
+    ],
+    "zero_velocity": [
+      {
+        "epsilon_m_s": 0.001,
+        "pressure_jump_rms_m_s2": 0.0,
+        "rhs_jump_rms_m_s2": 1.1653066622824915e-07
+      },
+      {
+        "epsilon_m_s": 1e-06,
+        "pressure_jump_rms_m_s2": 0.0,
+        "rhs_jump_rms_m_s2": 1.1653066622825537e-10
+      },
+      {
+        "epsilon_m_s": 1e-09,
+        "pressure_jump_rms_m_s2": 0.0,
+        "rhs_jump_rms_m_s2": 1.165306662507651e-13
+      },
+      {
+        "epsilon_m_s": 1e-12,
+        "pressure_jump_rms_m_s2": 0.0,
+        "rhs_jump_rms_m_s2": 1.1653066643941105e-16
+      }
+    ]
+  },
+  "rest": [
+    {
+      "topography": false,
+      "rms_acceleration_m_s2": 6.36635997264742e-21,
+      "max_acceleration_m_s2": 3.2337205876249446e-20
+    },
+    {
+      "topography": true,
+      "rms_acceleration_m_s2": 1.1130765834572056e-19,
+      "max_acceleration_m_s2": 5.243133943504119e-19
+    }
+  ],
+  "pressure": [
+    {
+      "cells": 64,
+      "rms_error_m_s2": 1.0395418014632238e-09,
+      "reference_rms_m_s2": 1.083583778909447e-07,
+      "max_error_m_s2": 3.6285380103222385e-09
+    },
+    {
+      "cells": 256,
+      "rms_error_m_s2": 2.511282279526271e-10,
+      "reference_rms_m_s2": 1.0837613507063926e-07,
+      "max_error_m_s2": 1.0951201390709079e-09
+    },
+    {
+      "cells": 1024,
+      "rms_error_m_s2": 6.484094339830273e-11,
+      "reference_rms_m_s2": 1.0837536713975941e-07,
+      "max_error_m_s2": 2.747744673987574e-10
+    }
+  ],
+  "internal_wave": [
+    {
+      "cells": 32,
+      "internal_speed_m_s": 3.7683841917574177,
+      "period_s": 117898.88482910735,
+      "fraction_of_period": 0.05,
+      "initial_interface_amplitude_m": 0.1,
+      "steps": 197,
+      "dt_s": 29.92357482972268,
+      "projection_error_over_amplitude": 0.0033989818952736995,
+      "energy_change_J": 145408.0,
+      "relative_total_energy_change": 2.0601749928730802e-14,
+      "energy_change_over_initial_perturbation": 1.9895291919274993e-05,
+      "inventory_relative_changes": {
+        "volume": 3.3157279810811524e-16,
+        "temperature_content": 2.1507424742148017e-16,
+        "salinity_content": -3.0100225643857266e-16
+      },
+      "min_thickness_m": 499.90961413611194,
+      "salinity_range": [
+        33.99999999999991,
+        35.500000000000085
+      ]
+    },
+    {
+      "cells": 64,
+      "internal_speed_m_s": 3.7683841917574177,
+      "period_s": 117898.88482910735,
+      "fraction_of_period": 0.05,
+      "initial_interface_amplitude_m": 0.1,
+      "steps": 197,
+      "dt_s": 29.92357482972268,
+      "projection_error_over_amplitude": 0.001692319848791284,
+      "energy_change_J": 35840.0,
+      "relative_total_energy_change": 5.0778961091970625e-15,
+      "energy_change_over_initial_perturbation": 4.9011123564604224e-06,
+      "inventory_relative_changes": {
+        "volume": 0.0,
+        "temperature_content": 0.0,
+        "salinity_content": 0.0
+      },
+      "min_thickness_m": 499.9071988510866,
+      "salinity_range": [
+        33.9999999999999,
+        35.5000000000001
+      ]
+    },
+    {
+      "cells": 128,
+      "internal_speed_m_s": 3.7683841917574177,
+      "period_s": 117898.88482910735,
+      "fraction_of_period": 0.05,
+      "initial_interface_amplitude_m": 0.1,
+      "steps": 232,
+      "dt_s": 25.409242420066242,
+      "projection_error_over_amplitude": 0.0008789053045208074,
+      "energy_change_J": 57344.0,
+      "relative_total_energy_change": 8.12463377471186e-15,
+      "energy_change_over_initial_perturbation": 7.84498533127832e-06,
+      "inventory_relative_changes": {
+        "volume": -1.6578639905405765e-16,
+        "temperature_content": 0.0,
+        "salinity_content": -3.010022564385727e-16
+      },
+      "min_thickness_m": 499.90598591628714,
+      "salinity_range": [
+        33.999999999999865,
+        35.50000000000013
+      ]
+    }
+  ],
+  "temporal": {
+    "duration_s": 400.0,
+    "reference_dt_s": 1.25,
+    "reference_refinement_error": 9.382464746052336e-15,
+    "rows": [
+      {
+        "dt_s": 40.0,
+        "rms_nondimensional_error": 3.358061437147815e-10,
+        "energy_change_J": -232289280.0
+      },
+      {
+        "dt_s": 20.0,
+        "rms_nondimensional_error": 4.28387976335094e-11,
+        "energy_change_J": -29086720.0
+      },
+      {
+        "dt_s": 10.0,
+        "rms_nondimensional_error": 5.398611811342119e-12,
+        "energy_change_J": -3737600.0
+      }
+    ],
+    "pairwise_orders": [
+      2.970638731917579,
+      2.9882575999513437
+    ]
+  },
+  "runtime_sha256": {
+    "__init__.py": "ad8eff6173ab15a21c7091423325ad338b631234b4d2bbbf4de78845ceab3f3b",
+    "atmosphere/__init__.py": "2ed5e928722fba55e301b3585476b74eb0b924336a2efdd4e2017e0b36d37cc2",
+    "atmosphere/boundary.py": "00be6e430668fcfb6872aae10f7b64910440860ff8f08d94a0545dded79ff632",
+    "atmosphere/bounded_moist.py": "d240914e55db06843eda264a3ca29a505ef241f5bb63ac21e9f91fb7dc2a1de7",
+    "atmosphere/bounded_transport.py": "ab099f8eeca91121c79d1fe53ef3f587af41ad361f9c2982daab590f78174632",
+    "atmosphere/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1",
+    "atmosphere/conservative.py": "81e8fce87de8ab5dd374e0004285c27b5078b3e29a83b116a8a853b935e06ef8",
+    "atmosphere/constants.py": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc",
+    "atmosphere/dry_energy.py": "c81ef31b816185d07a2bd7d9130bb8e6f9ec03928b2e86eae3fa6386f5795c98",
+    "atmosphere/dry_model.py": "398b114608df18e653267aa119920226d331480ec5f0b04baa70b52b7261c019",
+    "atmosphere/earth.py": "9827f360e54b21abc15105c33684ae40dc7a00970812f93cc472ae34905c20ef",
+    "atmosphere/era5.py": "1f7ac4b81f2f01073b5d6f10ff3af8081a66b027826414354ecf26b47b26e544",
+    "atmosphere/gibbs_means.py": "2e119368ee46e60878fd1defcaf2f74a8f41b760401ddd9d2406533f0b60e463",
+    "atmosphere/held_suarez.py": "be218c2339f6c4ec6f6d5aaffb7c1579bec6298eb8e7d3b5791b7b89328acb56",
+    "atmosphere/imex/__init__.py": "5bf6f37ba4c016984e66f457ffe1a17a15a7493c17965e6cd03214b954d6086c",
+    "atmosphere/imex/conservative_wave.py": "cc3fff7960eaa0273cc9ff2df816f32fbf36d73e0651944806c38106191af000",
+    "atmosphere/imex/dry_ark.py": "31fe328cc5a006151ceb736defa75e28898593aec255aff4261843d902ba67d2",
+    "atmosphere/imex/moist_ark.py": "db954479885062ebe43b3a1a3667f4416c175afa8cc5de26c62db954036171f5",
+    "atmosphere/imex/moist_wave.py": "a422e90a33db4765758483c76976a9cd994be32dc116e7c7b2eb8fd2ad16cf2f",
+    "atmosphere/imex/solvers.py": "fba713c6345c39467d6795bf20e031dd7fc21c7624554f7b9c3647be47c78ec3",
+    "atmosphere/imex/transfer.py": "fb1f54c43460e8d607c82a6c459bc3223c276b1b8193f5b64c0642fcc4078370",
+    "atmosphere/initial_conditions/__init__.py": "e67072ee6e4cf93e038f7083040d2af98e16ee3b9ec98a6978bc1ff91222a4cd",
+    "atmosphere/initial_conditions/analytic_climate.py": "d76f1228ff5c73cde0b07c73a9d2feea2b7e95bc4abe91df910b2a8dc958b0db",
+    "atmosphere/initial_conditions/equilibrium.py": "0457e2811b1ebad9d6debce4d46dd2b1b6238ab545e15eb0204f214706647975",
+    "atmosphere/initial_conditions/held_suarez.py": "10a8c3e144343f5824676af61abdbbb4425a436e3101192cd4aca553392edf2b",
+    "atmosphere/initial_conditions/jablonski_williamson.py": "2f94e94fd41df1835d512949ffc85c40eb904df5e490ca2e0e8d6f0b31a22c72",
+    "atmosphere/io.py": "c6fe5c29f3360fc6352afa816bd890afcc79c3201b5bccd57c013680e976d2f3",
+    "atmosphere/mixture_thermodynamics.py": "a30736eefdfe4c9e8649db06b7dbd6104de274d4cf072191570a76bbb5d7f35a",
+    "atmosphere/model.py": "4e30640593e98c0719b294baf9169f5f4fa36e1ad53d9a763f871933977cb6c6",
+    "atmosphere/moist_budgets.py": "2c234564347b49153f8e8ffafaf1a276dca2375ae27fe81536ffe1c4763c731d",
+    "atmosphere/moist_conservative.py": "81b262e9f574f93c3c2debd0723aac2c1c0412f4dfd65446cc846e0dfe158d4c",
+    "atmosphere/moist_cp.py": "78b67bfad735d222b049feb3dc821536115b7795237d16cfcba465bbf533e70b",
+    "atmosphere/moisture.py": "2e0c0659f62d8a1a217ce0e2c1b6720441eeb5e307e6d5e5e83cbc6aa6bd997a",
+    "atmosphere/regrid.py": "a9e710f54accdcf4e4660b68a8024767986f088abc623df80c8104fa1bed6cb1",
+    "atmosphere/scalar_transport.py": "bd799a3088d3d0163808eb028bcb852e6769b91184428690194f609b38904b55",
+    "atmosphere/state.py": "d9846293e49de07c12d673e2cce6943577b2cc42df754aafb227a85322b8975f",
+    "atmosphere/steppers.py": "ed0322a21b1d095b358ec0c736847f841488ca17d07ed13b88ed7471ecd65415",
+    "atmosphere/topography.py": "df52bd9e19e7cc62e845676e6273be1fdc268b768d3842f841e769c5a2884469",
+    "boundary.py": "22c50438f332a3e4dd1c939c288f9d8a1dc9f7047e75ed5b88bf077597f5db56",
+    "core/__init__.py": "e2aa94eaf6ed31416ab5ed1e47b2f78cca7156da903637d1557c915b64c01c1d",
+    "core/config.py": "c4b1d86fa3c87d9209daa27ea4e206d3183cf710a564299154ae9fc24db6a468",
+    "core/diagnostic_contracts.py": "968b6a7baad79439c971459a81f51f73022332cdd0f6fe66f6605a74b8e74e83",
+    "core/integrators.py": "7b0c1f0de5a4185ff7911aedcb6d9a78db5b41c66a45ea20ea4e6d2c7543c701",
+    "core/io.py": "fd38ae01582fa19849549a45a9b96f1dcea5c4a9e0d264ef0124020862583b01",
+    "core/state.py": "261d86773f4631009b0fcad520296882d6c4caf2cd9023ceefa99ed135b702b9",
+    "data/__init__.py": "bc80e212916c9a3119ae7f0bb9cb010e3221a79eb293a9cd61667922c55cfd83",
+    "data/elevation.py": "4cff2139c6bb4314f8010737809a3d90f10b1de0862cdd9da4073be1a1faeaed",
+    "data/topography.py": "d0115b221d9ba24c492dae0979234d973aaeaf28ec98c7812b3b69849e34724c",
+    "earth.py": "98e9e31fe5e7de9d901aaf519375255a745249c02cd7998d4b65375166f03f75",
+    "era5.py": "1a414ad559cae02b28c3ea44cd672f46b3a398c78456bebffe59471f42a5e8d8",
+    "field.py": "3564866a47d6547a146af1e953fb54df2ea257ffddc6304502d26c28a8144853",
+    "geometry/__init__.py": "c5e0ead6522c31d6b7cc38a17861ad51a2151599d73a4fc1a15aaa508594c906",
+    "geometry/column.py": "3a6202a2a087e16453935c4a02caba7f48b6d3753872cfcdb9e9b3a5a1f67ac8",
+    "geometry/geodesic.py": "a8a7628d5c4bddcb18a0d6f4ee25abb3cdb6e5c767f362e8a6fef973e969f26f",
+    "geometry/mesh/__init__.py": "cb17cea1b8e6d60ef10098db185989f10d2611f5c45fecf8bafb81dee545f19f",
+    "geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+    "geometry/mesh/io.py": "eb96e59acf536b19f2b1ded85ff3ecd4039029982cfa9ca3ed1e3ffd1ebd8c43",
+    "geometry/mesh/multilevel.py": "4e788635de1493d631f5c9c82ef71ade1d553052d68231adda7c6399bd0b1fdc",
+    "geometry/regrid.py": "c85b88cc058d0b83a61eb3f79a36e151781282be6a9f6f4d2dc8cfd11c9d57fd",
+    "geometry/remap.py": "79bc7663320f18cb559e4ff3d72978ab8bbf2cc68acbdd14c043f581f2c2c818",
+    "imex.py": "d1ae41b95dc567751e1a55d601420628f60ef5fff28e166a4fa224a1410c88f9",
+    "initial_conditions/__init__.py": "d71589271fb5eedcf4643ffc5a1d813ec52bc55bc01325065ad7d70c59bcf9ef",
+    "initial_conditions/analytic_climate.py": "adc3967a0bbdd2e82516c90506faf4289be69330a0389778faa839067711c8fd",
+    "initial_conditions/equilibrium.py": "82a6a3b4518c5f27ef0f9dfd9d8ccd3e4b230119c0ff6589acefedad23ffa409",
+    "initial_conditions/held_suarez.py": "0060a60426d74f940f88d2aaaa7ea003bf40074bd25062202627c1791919e708",
+    "initial_conditions/jablonski_williamson.py": "211e36959771e68b88016958e045febb08dec762a362daabecdb9ae281a8b7f3",
+    "integrators/__init__.py": "14be3b23fcca7505d20fcac4a864cf7558d0e8b77a4c0c19adee1a3fdb4c2513",
+    "integrators/explicit.py": "c208055171a3bff3bcaa4b08b67eed4e893e3993429c9084882d9121f711a22d",
+    "integrators/imex/__init__.py": "e5bf1499471c041158ce3b584382cff579fa62ec6f30baf93140dd41531a18bc",
+    "integrators/imex/conservative_wave.py": "cbb0f4e524ce587cea934cc228accd2a582cfe6901b9a4c27681215be9d7ae4a",
+    "integrators/imex/dry_ark.py": "66fb16131b476ab675ed9bad7a2212e135ecee9bf0f1d5bf180fb6b2b09f13e0",
+    "integrators/imex/moist_ark.py": "280fe78bc6e5af92fca1c1275bdba96d6ec673de337c63cf0ecdfb02f9e8111b",
+    "integrators/imex/moist_wave.py": "07d6758e53bbc0a39b690ffd38e3479fdeeb80f6d32f40bb95c5ca2f625aa708",
+    "integrators/imex/solvers.py": "f4ab42373ee0a20754085d2f3fb0c7a3776b881c84ade0156ba0ce06ee869f52",
+    "integrators/imex/tableau.py": "e8f47f833b99d3c302c29e70e739d0e737f7111c2d9b6fc6d352e78530e096e3",
+    "integrators/krylov.py": "02aff0ab369ee2bf1f74ebf1addaa11859ff675f02ca6a85410ca7a1355d7ac5",
+    "integrators/tableau.py": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1",
+    "io.py": "77f53bd97f172a83418d8ac6453f5780ca100bddc707917a6ba504dda1b04556",
+    "model.py": "450325a200b1c81f46601daa82077a74234af19fe004ac2ff8654d27a77141cc",
+    "moisture.py": "73366703f35f9882a1453753854dde4c05234d81ea9a9bb60833b666f1cb841e",
+    "ocean/__init__.py": "ccefaf5fdbd086680d62d34afda3eb6fdc3a045dfea1ac67b61d6c3db5d56a6e",
+    "ocean/column.py": "996857a903d612984aaaa46288da6299ed6c7db7204d1d006a345317006577b7",
+    "ocean/conservative.py": "a6baf1a6ea1a20fdd986048f152a06e3d3661b9bbe4f52860a3289bd2de53ff7",
+    "ocean/constants.py": "66040cd703194abb47c52b43b253a42d382b8a6b811383fa828a076131c2bd30",
+    "ocean/diagnostics.py": "25851b4e8ddba9476504d79e365f2612e39e5e98bbcdddecc200b8308490afbf",
+    "ocean/domain.py": "9c10f94c592eb66f75239b0e6ecd0271006f8825c29539474f105195bd84afa2",
+    "ocean/dynamics.py": "1a656e72a4b89997f2e3325b623c22ac8132a3ca0b85b42cb791e946e8d0434f",
+    "ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7",
+    "ocean/eos.py": "a1fa25bc46491791866aa3ae6a25143dbde5008fe48e566657c5bff87d38cce6",
+    "ocean/helpers.py": "f0c8a5e57dfb91b162a1e821711f548cd9f6f0b45a6bd7528c8add623d077002",
+    "ocean/initial_conditions.py": "2af37b5e6a45c606afeb4aff4cde412a4ac074a96556945d517812298068cd2a",
+    "ocean/io.py": "9fdd86bc89d7682425c584c79f59d9b32fc04b0cbe881a073530308bd0ce3299",
+    "ocean/jmd95.py": "f233dce80a9d7f116a7a0a8bc9b7001f56a74c908c17534adc4af127635d294c",
+    "ocean/jmd95_energy.py": "57778357346bafdb9dbb52ebb959b630cc385dc02f07a26df68667a387d17f39",
+    "ocean/mixed_layer.py": "3186a4836cef062b37ec360d6a84274ad022fea3be4cedb35dea7fa2041eae26",
+    "ocean/model.py": "02e5b1080505e7b22468c26c1889bda3f21d4a09b12d9f336634716089d93993",
+    "ocean/physics.py": "f8c64d659d2e88af42a6992818ad801666dbe95397ce8b2b3e985ef96077fe6b",
+    "ocean/regrid.py": "d566f52603c20d15d5a041a76b3007c60c92d634f65ac4a4af5890491b86f03b",
+    "ocean/state.py": "21e60cab5662677bff7b441a60337c1214252218a25a10fe5cbeace80af0d1b3"
+  },
+  "driver_sha256": "92e413b11249ec4eb03a124e974fc2a531be52e34002974f0156e63937bc7916",
+  "scope": "experimental adiabatic centered JMD95; no long-run, limiter/mixing, GPU or full Poisson qualification"
+}
