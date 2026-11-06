@@ -138,6 +138,9 @@ jobs:
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I examples/ocean_jmd95.py
           python -I tools/verify_ocean_jmd95.py --output jmd95-smoke --quick
+      - name: Ocean bounded transport measurements (no accuracy gate)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_bounded_transport.py --output bounded-transport.json --quick
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -200,4 +203,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/ocean-extraction.json
             ${{ runner.temp }}/vfs-check/williamson-smoke/
             ${{ runner.temp }}/vfs-check/jmd95-smoke/
+            ${{ runner.temp }}/vfs-check/bounded-transport.json
           if-no-files-found: warn

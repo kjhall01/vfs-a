@@ -167,3 +167,10 @@ Checkpoint-54 files, tolerances and historical reproduction commands are unchang
 Ocean-only rotating-balance diagnosis after merged #26/#27: see
 [the report](../verification/ocean/ROTATING_BALANCE.md). Atmospheric runtime,
 fixtures and verification policy remain unchanged.
+
+Ocean-owned bounded horizontal transport on merged JMD95 #31: see
+[the derivation and measurement report](../verification/ocean/BOUNDED_TRANSPORT.md).
+Installed-wheel portable suite: 659 passed, one CUDA skip. Existing runtime and
+fixtures remain unchanged. An experimental active composition preserves scalar
+bounds but reports unclosed limiter work; no bounded energy-closing active
+stepper is promoted. ALE #32 remains a separate draft.
