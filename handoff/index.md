@@ -1,4 +1,30 @@
-# Current ocean handoff — bounded horizontal transport first pass
+# Current ocean handoff — thermal work and entropy audit
+
+Dependent on #33 at `ae8d1a1348fd154bc5a9c0fcda8b296eeac95664`, branch
+`ocean/thermodynamic-work-closure`. All runtime files remain unchanged; new
+research code/tests use explicit constant-cp and idealized composition entropy.
+JMD95 density is retained. These calorics are not empirical seawater validation.
+
+Read [the derivation, counterexamples and next boundary](../verification/ocean/THERMAL_WORK.md).
+Signed thermal conversion closes instantaneous energy work without a force jump
+at zero velocity, while accounting explicitly for changed temperature content.
+However, that equal-endpoint thermal allocation decreases entropy on tilted
+layers. Do not promote it as a bounded active ocean stepper.
+
+A separate fixed-geometry thermodynamic exchange reference conserves spatial
+energy/salt and produces nonnegative entropy, including a limited salt outflow
+budget. It is not an advective-limiter repair. Large finite Euler stress updates
+can still decrease entropy; do not infer a finite-step law from the spatial proof.
+
+Installed-wheel portable suite: 680 passed, one CUDA skip; 21 new tests. The
+164-tensor ocean capture is exact, and atmospheric portable comparisons pass.
+No new runtime default, fixture, tolerance or ALE change. Keep drafts unmerged.
+Next: validated reference calorics and matched thermodynamic face/exchange
+operators, with stage positivity and entropy accounting, before runtime adoption.
+
+---
+
+# Previous ocean handoff — bounded horizontal transport first pass
 
 Base main `5841cda8b4585418b18f0ba0486315870b1a59b2` includes JMD95 #31.
 The independent `ocean/bounded-transport-first-pass` branch adds ocean-owned

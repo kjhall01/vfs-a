@@ -174,3 +174,10 @@ Installed-wheel portable suite: 659 passed, one CUDA skip. Existing runtime and
 fixtures remain unchanged. An experimental active composition preserves scalar
 bounds but reports unclosed limiter work; no bounded energy-closing active
 stepper is promoted. ALE #32 remains a separate draft.
+
+Dependent thermal-work research: see [the caloric derivation and entropy audit](../verification/ocean/THERMAL_WORK.md).
+Installed-wheel portable: 680 passed, one CUDA skip. A declared caloric completion
+closes instantaneous energy work continuously at zero velocity, but its simple
+thermal allocation fails an entropy counterexample on tilted layers. A separate
+thermodynamic exchange reference satisfies spatial energy/salt/entropy laws;
+finite-step entropy is not inferred. All runtime files remain unchanged.
