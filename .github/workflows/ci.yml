@@ -181,6 +181,11 @@ jobs:
           python -I tools/probe_ocean_hamiltonian_ale.py --audit --output hamiltonian-ale-audits.json
           python -I tools/probe_ocean_hamiltonian_ale.py --layers 8 --periods .001 --output hamiltonian-ale-wave.json
           python -I tools/probe_ocean_hamiltonian_feasibility.py hamiltonian-ale-feasibility.json
+      - name: Adaptive thermal ALE constraints and wave smoke
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_adaptive_thermal.py --audit --output adaptive-thermal-audits.json
+          python -I tools/probe_ocean_adaptive_thermal.py --layers 8 --periods .001 --output adaptive-thermal-wave.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -252,4 +257,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/entropy-ale*.json
             ${{ runner.temp }}/vfs-check/enthalpy-ale*.json
             ${{ runner.temp }}/vfs-check/hamiltonian-ale*.json
+            ${{ runner.temp }}/vfs-check/adaptive-thermal*.json
           if-no-files-found: warn

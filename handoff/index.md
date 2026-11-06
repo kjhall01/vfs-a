@@ -1,3 +1,24 @@
+# Current ocean handoff — adaptive thermal ALE allocation
+
+This branch follows draft #41 at 6dec5c01ab3353f33fbb9bd39a85bf5c394dc748.
+Read [ADAPTIVE_THERMAL_ALE.md](../verification/ocean/ADAPTIVE_THERMAL_ALE.md).
+The research-only AdaptiveThermalRemapper performs layerwise mass-weighted
+linearized projections with full nonlinear local Hamiltonian and entropy checks.
+It resolves the three weak-stable cases rejected by the uniform allocation,
+without changing tolerances, target grids or provisional conservative fields.
+All 16 audits and eight feasibility cases complete. Matched 8/32/64-layer waves
+(.05 period, 197 remaps) retain essentially unchanged salinity-projection errors
+and roundoff-level column energy closure. The method is not a certified global
+optimizer and rejects rank/domain/nonconvergence failures.
+
+Validation: installed-wheel portable suite 816 passed/one CUDA skip; 164 legacy
+ocean tensors exact; 142 moist and 93 dry portable comparisons pass. No runtime,
+rotation, atmosphere, fixture or default changes. No GPU/long-run claim.
+Next: qualify repeated resets near neutral stratification and front cycles, then
+consider thermocline-aware weights or target-grid adaptation with explicit budgets.
+
+---
+
 # Current ocean handoff — conditional Hamiltonian ALE closure
 
 This branch follows #40. Read [HAMILTONIAN_ALE.md](../verification/ocean/HAMILTONIAN_ALE.md).

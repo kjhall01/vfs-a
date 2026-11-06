@@ -281,3 +281,16 @@ Three weak stable stratification cases fail the column entropy condition and are
 explicitly rejected. This is a conditional research method, not a universal ALE fix.
 Installed-wheel suite: 799 passed, one CUDA skip; 164 legacy ocean tensors unchanged;
 142 moist and 93 dry portable comparisons pass. No runtime/default/fixture changes.
+
+
+## Adaptive thermal ALE allocation
+
+The research candidate now permits different temperature corrections by layer,
+with mass-weighted linearized minimum-change projections and full nonlinear
+Hamiltonian/entropy checks. It rescues all three previous weak-stable rejection
+cases with unchanged tolerances; all eight feasibility cases and 16 remap audits
+complete. Matched 8/32/64-layer .05-period waves retain essentially unchanged
+errors and roundoff energy closure. This does not establish universal feasibility
+or nonlinear optimality. Installed-wheel tests: 816 passed, one CUDA skip; legacy
+ocean 164 exact; moist 142/dry 93 portable comparisons pass. No runtime changes.
+See [the derivation and measurements](../verification/ocean/ADAPTIVE_THERMAL_ALE.md).
