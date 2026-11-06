@@ -1,4 +1,28 @@
-# Current ocean handoff — active JMD95 Hamiltonian candidate
+# Current ocean handoff — bounded horizontal transport first pass
+
+Base main `5841cda8b4585418b18f0ba0486315870b1a59b2` includes JMD95 #31.
+The independent `ocean/bounded-transport-first-pass` branch adds ocean-owned
+donor/FCT volume/content ledgers, actual-carrier Euler budgets, all-face bounds,
+and a research composition with the existing centered JMD95 momentum tendency.
+It borrows atmospheric transport ideas without importing atmospheric code.
+T and S are independent concentrations; no sum-to-one species constraint.
+
+Read [derivation, measurements and limits](../verification/ocean/BOUNDED_TRANSPORT.md).
+Installed-wheel suite: 659 passed, one CUDA skip; 17 new tests. The 164-tensor
+legacy-ocean comparison is exact and atmospheric portable comparisons pass.
+The active research composition preserves scalar bounds and inventories but
+has a measured energy residual. The diagnostic all-mechanical pairing closes
+work and reintroduces a zero-velocity force jump; it is never installed in a step.
+No new active runtime stepper, default change, thermal reservoir or fixture change.
+
+Keep this draft unmerged. Next: derive a physical thermodynamic treatment of
+limiter work, preserving T/S inventories and continuous forces, before promoting
+a bounded active stepper. ALE #32 remains separate; its composition and energy
+accounting are later work. Long active runs, GPU and performance are unqualified.
+
+---
+
+# Previous ocean handoff — active JMD95 Hamiltonian candidate
 
 User-directed numerical extension of #30, on `ocean/jmd95-hamiltonian`.
 New opt-in JMD95Dynamics/JMD95Energy use active potential T and practical S,
