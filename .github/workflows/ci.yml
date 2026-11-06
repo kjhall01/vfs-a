@@ -141,6 +141,9 @@ jobs:
       - name: Ocean bounded transport measurements (no accuracy gate)
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/probe_ocean_bounded_transport.py --output bounded-transport.json --quick
+      - name: Ocean thermal-work and entropy measurements (research only)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_thermal_work.py --output thermal-work.json --quick
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -204,4 +207,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/williamson-smoke/
             ${{ runner.temp }}/vfs-check/jmd95-smoke/
             ${{ runner.temp }}/vfs-check/bounded-transport.json
+            ${{ runner.temp }}/vfs-check/thermal-work.json
           if-no-files-found: warn
