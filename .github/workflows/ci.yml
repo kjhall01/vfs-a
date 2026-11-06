@@ -153,6 +153,13 @@ jobs:
       - name: Ocean Gibbs entropy transport measurements (research candidate)
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/probe_ocean_entropy.py --output entropy-transport.json
+      - name: Ocean qualification driver smoke (no accuracy gates)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/qualify_ocean_entropy.py wave --cells 32 --periods .001 --output qualification-wave.json
+          python -I tools/qualify_ocean_entropy.py balance --cells 32 --profile topography --days .01 --output qualification-rest.json
+          python -I tools/qualify_ocean_entropy.py transport --cells 16 --profile sharp --circuits .1 --output qualification-transport.json
+          python -I tools/probe_ocean_initial_balance.py --cells 32 --lloyd-iters 2 --output qualification-initial.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -219,4 +226,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/thermal-work.json
             ${{ runner.temp }}/vfs-check/seawater-reference.json
             ${{ runner.temp }}/vfs-check/entropy-transport.json
+            ${{ runner.temp }}/vfs-check/qualification-*.json
           if-no-files-found: warn

@@ -1,0 +1,52 @@
+{
+  "candidate_commit": "705720c79e38c2f07de39d45a33c9ede50707b87",
+  "kind": "transport",
+  "cells": 64,
+  "status": "completed",
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "source_sha256": {
+    "qualify_ocean_entropy.py": "71dcd76fab3038a6e9bbd6abd87fdef9651e4b14189b1b386428b2260e58c233",
+    "ocean_entropy_research.py": "d683d13d73d23c9e11e403ab5cef0eaec4ede3a835073fdb8e638cdc8cc912cd",
+    "ocean_gibbs_faces.py": "5b466bc0c8da38ea3716933cebb6b6461eb74852e04f844102c9a4e8693d08ca"
+  },
+  "completed_steps": 320,
+  "dt_s": 0.003125,
+  "circuits": 1,
+  "profile": "smooth",
+  "scope": "isolated prescribed-carrier scalar fluxes; momentum/heating disabled",
+  "fields": {
+    "entropy": {
+      "l1": 0.0694629970759939,
+      "rms": 0.07712515559540914,
+      "minimum": 146.58136636861613,
+      "maximum": 168.1875430453357,
+      "undershoot": 0.004833887231001199,
+      "overshoot": 0.00472816903408102,
+      "inventory_change": -2.7284841053187847e-12,
+      "total_variation": 43.21235335343914
+    },
+    "salinity": {
+      "l1": 0.0051378249085644034,
+      "rms": 0.00570419370661105,
+      "minimum": 34.20092915224559,
+      "maximum": 35.79906737563327,
+      "undershoot": 0.00035533332590631517,
+      "overshoot": 0.00035186120477703753,
+      "inventory_change": -1.1368683772161603e-13,
+      "total_variation": 3.1962764467753573
+    },
+    "passive": {
+      "l1": 0.0025689146465764567,
+      "rms": 0.0028522401581994265,
+      "minimum": 0.100465430485005,
+      "maximum": 0.8995345695149934,
+      "undershoot": 0.00017681230074763354,
+      "overshoot": 0.00017681230074617638,
+      "inventory_change": -4.996003610813204e-16,
+      "total_variation": 1.5981382780599769
+    }
+  },
+  "wall_seconds": 24.37140251100209
+}

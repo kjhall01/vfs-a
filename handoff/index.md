@@ -1,3 +1,30 @@
+# Current ocean handoff — frozen-candidate qualification
+
+This branch measures draft #36 at
+`705720c79e38c2f07de39d45a33c9ede50707b87`; it does not change the candidate.
+Read [the campaign report](../verification/ocean/QUALIFICATION_CAMPAIGN.md)
+and its compact per-case JSON evidence before interpreting conservation as
+accuracy. The campaign covers three-period nonlinear internal waves, seven-day
+Williamson jets, one-day flat/sloping stratified rest, and isolated smooth/sharp
+scalar transport. CPU float64 only; no GPU or backward qualification.
+
+Smooth transport converges at approximately second order, but sharp fronts
+oscillate beyond their initial extrema. Passive nonnegativity is not a maximum
+principle. Rotating-jet drift persists under timestep refinement even though
+energy loss improves; the fine initial tests show slower kinetic/rotation convergence than pressure.
+Initial-balance tests extend to 65,536 cells, plus a mesh-relaxation comparison.
+Flat/sloping stratified rest stays near roundoff. These findings remain exposed,
+not corrected or assigned subjective acceptance thresholds in this branch.
+
+Next numerical work should separately address sharp-front limiting with the
+Gibbs/work/entropy pairing intact, and joint rotation/kinetic reconstruction
+consistency. Then rerun these frozen cases before active runtime promotion,
+baroclinic-growth qualification and ALE composition. ALE #32 remains separate;
+no coupled atmosphere claim follows. All installed runtime files, defaults,
+fixtures and tolerances are unchanged. No oversized artifacts are uploaded.
+
+---
+
 # Current ocean handoff — Gibbs/entropy transport candidate
 
 Dependent on #35 at `c3e9d6cdf39f4d978ed30cfb9dc22d660f7c4e39`, branch

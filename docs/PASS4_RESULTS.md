@@ -202,3 +202,15 @@ neighbors remain limited. Active salinity must be strictly positive; scalar
 admissibility is not a local-extremum theorem. Pressure and short internal-wave
 refinement are measured; long runs/GPU/performance remain unqualified. All
 installed runtime files, defaults, historical fixtures and tolerances are intact.
+
+
+Frozen #36 qualification campaign: see [the methods and measurements](../verification/ocean/QUALIFICATION_CAMPAIGN.md).
+Installed-wheel portable suite: **722 passed, one CUDA skip**, including five
+new instrumentation/reference tests; all 164 legacy ocean tensors exactly
+equal and atmospheric portable comparisons pass. Full nonlinear waves and
+balanced flows are distinguished from isolated prescribed-carrier transport.
+The campaign reports phase/envelope behavior, jet drift and sharp-front
+oscillations without modifying the candidate or setting empirical accuracy
+gates. Smooth transport is approximately second order; sharp transport does
+not preserve local extrema; rotation/kinetic consistency remains unresolved.
+All runtime code, defaults, fixtures and tolerances are unchanged.
