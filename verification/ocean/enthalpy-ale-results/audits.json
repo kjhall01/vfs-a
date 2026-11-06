@@ -1,0 +1,588 @@
+{
+  "status": "completed",
+  "device": "cpu",
+  "dtype": "float64",
+  "torch": "2.15.0+cpu",
+  "source_sha256": {
+    "probe_ocean_enthalpy_ale.py": "6d341df9f361828748ee0c20469fe037814168168c885cb568ee97977da7d49d",
+    "ocean_enthalpy_ale.py": "de0c2db581723138adce283b7594275a57c8fd7e3ea7158cecac34ba3f32a234"
+  },
+  "audits": [
+    {
+      "kind": "front",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -32.98874071235243,
+        "free_surface": 0.0,
+        "total": -28904109.74568894,
+        "dynamic_enthalpy": 304140.59346948547,
+        "reference_thermal": -29208217.350415286
+      },
+      "entropy_change_J_K": -33554432.0,
+      "min_column_entropy_change": -741341.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "front",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -32.98874071235243,
+        "free_surface": 0.0,
+        "total": 308947.9493058179,
+        "dynamic_enthalpy": 308980.9380389672,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 5.155713745773029e+19,
+      "min_column_entropy_change": 1.51580624580975e+18,
+      "enthalpy_residual_max": 4.470348358154297e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "front",
+      "coast": false,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -17.59607513932414,
+        "free_surface": 0.0,
+        "total": -9850339.603804203,
+        "dynamic_enthalpy": 47858.165939951454,
+        "reference_thermal": -9898180.173665067
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -708573.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "front",
+      "coast": false,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -17.59607513932414,
+        "free_surface": 0.0,
+        "total": 52112.0764475972,
+        "dynamic_enthalpy": 52129.67252683051,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 1.7814695145107358e+19,
+      "min_column_entropy_change": 5.239533089192673e+17,
+      "enthalpy_residual_max": 4.470348358154297e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -18.388335604788526,
+        "free_surface": 0.0,
+        "total": -19814070.3888345,
+        "dynamic_enthalpy": 208409.44649540778,
+        "reference_thermal": -20022461.447000295
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -741341.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -18.388335604788526,
+        "free_surface": 0.0,
+        "total": 211707.38465220673,
+        "dynamic_enthalpy": 211725.77299520752,
+        "reference_thermal": -8.4204400277454e-06
+      },
+      "entropy_change_J_K": 3.5343778366258938e+19,
+      "min_column_entropy_change": 0.0,
+      "enthalpy_residual_max": 3.725290298461914e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -9.735907660843983,
+        "free_surface": 0.0,
+        "total": -6752469.914143272,
+        "dynamic_enthalpy": 32807.81976737678,
+        "reference_thermal": -6785267.998004518
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -708573.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -9.735907660843983,
+        "free_surface": 0.0,
+        "total": 35724.82497287883,
+        "dynamic_enthalpy": 35734.56087329795,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 1.2212429001045574e+19,
+      "min_column_entropy_change": 0.0,
+      "enthalpy_residual_max": 4.470348358154297e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -32.957932339148044,
+        "free_surface": 0.0,
+        "total": -32.957922245316546,
+        "dynamic_enthalpy": 7.025971416087622e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": -33554432.0,
+      "min_column_entropy_change": -491520.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -32.957932339148044,
+        "free_surface": 0.0,
+        "total": -32.957922245316546,
+        "dynamic_enthalpy": 7.025971416087622e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -2392064.0,
+      "enthalpy_residual_max": 6.332993507385254e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -17.58430881651151,
+        "free_surface": 0.0,
+        "total": -17.58428702378033,
+        "dynamic_enthalpy": 7.025971416087622e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": -33554432.0,
+      "min_column_entropy_change": -491520.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -17.58430881651151,
+        "free_surface": 0.0,
+        "total": -17.58428702378033,
+        "dynamic_enthalpy": 7.025971416087622e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -2392064.0,
+      "enthalpy_residual_max": 6.332993507385254e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -18.37879493067767,
+        "free_surface": 0.0,
+        "total": -18.37878922215822,
+        "dynamic_enthalpy": 1.2666853615208665e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -491520.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -18.37879493067767,
+        "free_surface": 0.0,
+        "total": -18.37878922215822,
+        "dynamic_enthalpy": 1.2666853615208665e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -2392064.0,
+      "enthalpy_residual_max": 4.0978193283081055e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -9.731594150465497,
+        "free_surface": 0.0,
+        "total": -9.731586744465636,
+        "dynamic_enthalpy": 1.2666853615208665e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -491520.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -9.731594150465497,
+        "free_surface": 0.0,
+        "total": -9.731586744465636,
+        "dynamic_enthalpy": 1.2666853615208665e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -2392064.0,
+      "enthalpy_residual_max": 4.0978193283081055e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "near_fresh",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -32.98874071235243,
+        "free_surface": 0.0,
+        "total": -29702233.36620956,
+        "dynamic_enthalpy": 235604.48085400823,
+        "reference_thermal": -29937804.858329747
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -741341.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "near_fresh",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -32.98874071235243,
+        "free_surface": 0.0,
+        "total": 239721.58045823468,
+        "dynamic_enthalpy": 239754.569216855,
+        "reference_thermal": -3.36817601109816e-05
+      },
+      "entropy_change_J_K": 5.28441842435149e+19,
+      "min_column_entropy_change": 1.5177657290908582e+18,
+      "enthalpy_residual_max": 3.166496753692627e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "near_fresh",
+      "coast": false,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -17.59607513932414,
+        "free_surface": 0.0,
+        "total": -10067011.917024778,
+        "dynamic_enthalpy": 48463.203542166746,
+        "reference_thermal": -10115457.524501635
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -486524.9133286168,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "near_fresh",
+      "coast": false,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -17.59607513932414,
+        "free_surface": 0.0,
+        "total": 51767.4711351642,
+        "dynamic_enthalpy": 51785.06723007894,
+        "reference_thermal": -3.36817601109816e-05
+      },
+      "entropy_change_J_K": 1.820723725940346e+19,
+      "min_column_entropy_change": 5.245697874434409e+17,
+      "enthalpy_residual_max": 4.470348358154297e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "near_fresh",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -18.388335604788526,
+        "free_surface": 0.0,
+        "total": -20360567.935705174,
+        "dynamic_enthalpy": 161396.83075511348,
+        "reference_thermal": -20521946.37812426
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -741341.423338507,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "near_fresh",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -18.388335604788526,
+        "free_surface": 0.0,
+        "total": 164221.1226315795,
+        "dynamic_enthalpy": 164239.51096773866,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 3.6225149767748944e+19,
+      "min_column_entropy_change": 0.0,
+      "enthalpy_residual_max": 3.166496753692627e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "near_fresh",
+      "coast": true,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -9.735907660843983,
+        "free_surface": 0.0,
+        "total": -6900739.365972874,
+        "dynamic_enthalpy": 33224.75636621962,
+        "reference_thermal": -6933954.386431676
+      },
+      "entropy_change_J_K": 0.0,
+      "min_column_entropy_change": -458752.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "near_fresh",
+      "coast": true,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -9.735907660843983,
+        "free_surface": 0.0,
+        "total": 35490.145423126996,
+        "dynamic_enthalpy": 35499.88132942563,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 1.2481131763059393e+19,
+      "min_column_entropy_change": 0.0,
+      "enthalpy_residual_max": 4.470348358154297e-08,
+      "salt_residual_max": 1.4551915228366852e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "upper_salt",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -32.957932339148044,
+        "free_surface": 0.0,
+        "total": -32.957922245316546,
+        "dynamic_enthalpy": 6.578468771676094e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 33554432.0,
+      "min_column_entropy_change": -262144.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "upper_salt",
+      "coast": false,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -32.957932339148044,
+        "free_surface": 0.0,
+        "total": -32.9579390861966,
+        "dynamic_enthalpy": 6.578468771676094e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 33554432.0,
+      "min_column_entropy_change": -2743185.159511319,
+      "enthalpy_residual_max": 3.3527612686157227e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "upper_salt",
+      "coast": false,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -17.58430881651151,
+        "free_surface": 0.0,
+        "total": -17.584303864660384,
+        "dynamic_enthalpy": 6.578468771676094e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 33554432.0,
+      "min_column_entropy_change": -262144.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "upper_salt",
+      "coast": false,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -17.58430881651151,
+        "free_surface": 0.0,
+        "total": -17.584320705540442,
+        "dynamic_enthalpy": 6.578468771676094e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 33554432.0,
+      "min_column_entropy_change": -2743185.159511319,
+      "enthalpy_residual_max": 3.3527612686157227e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 32
+    },
+    {
+      "kind": "upper_salt",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -18.37879493067767,
+        "free_surface": 0.0,
+        "total": -18.378806063038276,
+        "dynamic_enthalpy": 3.289234385838047e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -262144.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "upper_salt",
+      "coast": true,
+      "method": "pcm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -18.37879493067767,
+        "free_surface": 0.0,
+        "total": -18.37878922215822,
+        "dynamic_enthalpy": 3.289234385838047e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -2743185.159511319,
+      "enthalpy_residual_max": 3.3527612686157227e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "upper_salt",
+      "coast": true,
+      "method": "plm",
+      "scheme": "entropy",
+      "energy_J_m2": {
+        "kinetic": -9.731594150465497,
+        "free_surface": 0.0,
+        "total": -9.731603585345692,
+        "dynamic_enthalpy": 3.289234385838047e-08,
+        "reference_thermal": 0.0
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -262144.0,
+      "enthalpy_residual_max": null,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    },
+    {
+      "kind": "upper_salt",
+      "coast": true,
+      "method": "plm",
+      "scheme": "enthalpy",
+      "energy_J_m2": {
+        "kinetic": -9.731594150465497,
+        "free_surface": 0.0,
+        "total": -9.731586744465636,
+        "dynamic_enthalpy": 3.289234385838047e-08,
+        "reference_thermal": 1.68408800554908e-05
+      },
+      "entropy_change_J_K": 16777216.0,
+      "min_column_entropy_change": -2743185.159511319,
+      "enthalpy_residual_max": 3.3527612686157227e-08,
+      "salt_residual_max": 1.8189894035458565e-11,
+      "changed_columns": 22
+    }
+  ]
+}
