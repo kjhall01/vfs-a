@@ -214,3 +214,28 @@ oscillations without modifying the candidate or setting empirical accuracy
 gates. Smooth transport is approximately second order; sharp transport does
 not preserve local extrema; rotation/kinetic consistency remains unresolved.
 All runtime code, defaults, fixtures and tolerances are unchanged.
+
+
+## Sharp-front research pass after draft #37
+
+See [SHARP_FRONT.md](../verification/ocean/SHARP_FRONT.md) and its four compact JSON
+reports. Local FCT targets plus a kinetic-work guard remove measured sharp-front
+SP/passive overshoots while retaining the parent Hamiltonian work identity and
+single-edge zero-velocity continuity. Active local bounds are conditional on the
+work guard; temperature can still exceed initial extrema. Smooth-profile convergence
+slows to observed orders 1.6–1.7, and numerical entropy production is explicitly
+accounted. Rotation/kinetic operators and all installed runtime files remain unchanged.
+
+The two-hour active-front comparison at dt=30 s gives SP 34–36 and passive maximum
+1 to roundoff, versus parent SP 33.743–36.171 and passive maximum 1.084. Halving dt
+reduces energy drift from −43.05 to −5.52 J/m². These are short trajectory measurements,
+not physical accuracy gates or long-run qualification.
+
+## Validation
+
+Installed-wheel tests run outside the checkout: **736 passed, one CUDA skip**.
+All 164 legacy ocean integration tensors are exactly unchanged. Atmosphere portable
+comparisons pass for 142 moist and 93 dry tensors. Fourteen new focused tests exercise
+independent Hamiltonian derivatives/work, entropy accounting, local passive bounds,
+global salinity admissibility and zero crossings with other faces still limited.
+Historical exact archive differences remain separate; no fixtures or tolerances changed.

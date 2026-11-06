@@ -160,6 +160,11 @@ jobs:
           python -I tools/qualify_ocean_entropy.py balance --cells 32 --profile topography --days .01 --output qualification-rest.json
           python -I tools/qualify_ocean_entropy.py transport --cells 16 --profile sharp --circuits .1 --output qualification-transport.json
           python -I tools/probe_ocean_initial_balance.py --cells 32 --lloyd-iters 2 --output qualification-initial.json
+      - name: Ocean sharp-front target and active-work checks (research)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_front.py --quick --output sharp-front.json
+          python -I tools/probe_ocean_front.py --trajectory --duration 60 --output sharp-front-active.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -227,4 +232,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/seawater-reference.json
             ${{ runner.temp }}/vfs-check/entropy-transport.json
             ${{ runner.temp }}/vfs-check/qualification-*.json
+            ${{ runner.temp }}/vfs-check/sharp-front*.json
           if-no-files-found: warn
