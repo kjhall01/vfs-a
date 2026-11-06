@@ -167,3 +167,8 @@ Checkpoint-54 files, tolerances and historical reproduction commands are unchang
 Ocean-only rotating-balance diagnosis after merged #26/#27: see
 [the report](../verification/ocean/ROTATING_BALANCE.md). Atmospheric runtime,
 fixtures and verification policy remain unchanged.
+
+Subsequent ocean ALE implementation after merged #31: see
+[the remap report](../verification/ocean/ALE_REMAP.md). It adds bounded vertical
+content/momentum remapping with explicit energy-change diagnostics. Existing
+runtime expressions and atmospheric numerical behavior remain unchanged.

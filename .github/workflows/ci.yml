@@ -138,6 +138,11 @@ jobs:
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I examples/ocean_jmd95.py
           python -I tools/verify_ocean_jmd95.py --output jmd95-smoke --quick
+      - name: Conservative ocean ALE remap example and measurements
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I examples/ocean_ale.py
+          python -I tools/verify_ocean_ale.py --output ale-smoke --quick
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -200,4 +205,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/ocean-extraction.json
             ${{ runner.temp }}/vfs-check/williamson-smoke/
             ${{ runner.temp }}/vfs-check/jmd95-smoke/
+            ${{ runner.temp }}/vfs-check/ale-smoke/
           if-no-files-found: warn

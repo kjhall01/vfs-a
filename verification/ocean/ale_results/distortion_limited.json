@@ -1,0 +1,210 @@
+{
+  "layers": 4,
+  "cells": 32,
+  "remap_every_steps": 1,
+  "steps": 3930,
+  "dt_s": 29.999716241503144,
+  "period_s": 117898.88482910735,
+  "periods": 1.0,
+  "projection_rms_error": 0.06266792791127136,
+  "fitted_reference_frequency_amplitude": 0.9896585898186931,
+  "fitted_phase_rad": -0.08059766686574944,
+  "initial_perturbation_energy_J": 7308777472.0,
+  "total_energy_change_J": 242688.0,
+  "remap_energy_change_J": {
+    "kinetic": 0.0,
+    "free_surface": 0.0,
+    "total": 0.0,
+    "dynamic_enthalpy": 0.0
+  },
+  "remaining_dynamics_change_J": 242688.0,
+  "remap_energy_over_initial_perturbation": 0.0,
+  "total_energy_over_initial_perturbation": 3.3205006025938013e-05,
+  "inventory_relative_changes": {
+    "volume": 3.3157279810811524e-16,
+    "temperature_content": 4.3014849484296035e-16,
+    "salinity_content": -3.0100225643857266e-16
+  },
+  "min_thickness_m": 249.9532119629339,
+  "temperature_range_C": [
+    4.0,
+    17.000000000000263
+  ],
+  "salinity_range": [
+    33.99999999999961,
+    35.500000000000604
+  ],
+  "samples": [
+    {
+      "time_over_period": 0.0,
+      "projection_over_initial": 1.0,
+      "reference": 1.0
+    },
+    {
+      "time_over_period": 0.03104325699745547,
+      "projection_over_initial": 0.9819749095102608,
+      "reference": 0.9810378760621126
+    },
+    {
+      "time_over_period": 0.06208651399491094,
+      "projection_over_initial": 0.9285495093162708,
+      "reference": 0.924870628536922
+    },
+    {
+      "time_over_period": 0.09312977099236641,
+      "projection_over_initial": 0.8416499705797,
+      "reference": 0.8336283580420738
+    },
+    {
+      "time_over_period": 0.12417302798982188,
+      "projection_over_initial": 0.7244092847235217,
+      "reference": 0.7107713590605627
+    },
+    {
+      "time_over_period": 0.15521628498727735,
+      "projection_over_initial": 0.5810542598610482,
+      "reference": 0.5609588908750375
+    },
+    {
+      "time_over_period": 0.18625954198473282,
+      "projection_over_initial": 0.4167530788557874,
+      "reference": 0.38987247866384783
+    },
+    {
+      "time_over_period": 0.2173027989821883,
+      "projection_over_initial": 0.23742892760602785,
+      "reference": 0.20400044593186742
+    },
+    {
+      "time_over_period": 0.24834605597964376,
+      "projection_over_initial": 0.04954642462940517,
+      "reference": 0.010391849721598482
+    },
+    {
+      "time_over_period": 0.27938931297709924,
+      "projection_over_initial": -0.14012144148170597,
+      "reference": -0.18361084957340015
+    },
+    {
+      "time_over_period": 0.3104325699745547,
+      "projection_over_initial": -0.3247374613604358,
+      "reference": -0.37065024549649556
+    },
+    {
+      "time_over_period": 0.34147582697201023,
+      "projection_over_initial": -0.49764664253292024,
+      "reference": -0.5436330096341653
+    },
+    {
+      "time_over_period": 0.37251908396946565,
+      "projection_over_initial": -0.6526160597565229,
+      "reference": -0.695998900761015
+    },
+    {
+      "time_over_period": 0.4035623409669211,
+      "projection_over_initial": -0.7840594826469262,
+      "reference": -0.8219695570541379
+    },
+    {
+      "time_over_period": 0.4346055979643766,
+      "projection_over_initial": -0.8872386961284106,
+      "reference": -0.9167676361191984
+    },
+    {
+      "time_over_period": 0.4656488549618321,
+      "projection_over_initial": -0.958434267292391,
+      "reference": -0.9767979921075867
+    },
+    {
+      "time_over_period": 0.49669211195928753,
+      "projection_over_initial": -0.9950796106817855,
+      "reference": -0.9997840189187275
+    },
+    {
+      "time_over_period": 0.527735368956743,
+      "projection_over_initial": -0.9958535219379292,
+      "reference": -0.9848539887741562
+    },
+    {
+      "time_over_period": 0.5587786259541985,
+      "projection_over_initial": -0.9607278413150074,
+      "reference": -0.9325741118378684
+    },
+    {
+      "time_over_period": 0.589821882951654,
+      "projection_over_initial": -0.8909685215934425,
+      "reference": -0.8449270631217106
+    },
+    {
+      "time_over_period": 0.6208651399491094,
+      "projection_over_initial": -0.7890900510972392,
+      "reference": -0.7252367910267751
+    },
+    {
+      "time_over_period": 0.6519083969465649,
+      "projection_over_initial": -0.6587648631616657,
+      "reference": -0.5780424591003085
+    },
+    {
+      "time_over_period": 0.6829516539440205,
+      "projection_over_initial": -0.5046909871625502,
+      "reference": -0.408926301672199
+    },
+    {
+      "time_over_period": 0.7139949109414758,
+      "projection_over_initial": -0.3324227050145177,
+      "reference": -0.22430192181654912
+    },
+    {
+      "time_over_period": 0.7450381679389313,
+      "projection_over_initial": -0.14817031500501002,
+      "reference": -0.031171060278917525
+    },
+    {
+      "time_over_period": 0.7760814249363868,
+      "projection_over_initial": 0.04142377617032603,
+      "reference": 0.16314194027528509
+    },
+    {
+      "time_over_period": 0.8071246819338422,
+      "projection_over_initial": 0.22952455502491584,
+      "reference": 0.35126790544755115
+    },
+    {
+      "time_over_period": 0.8381679389312978,
+      "projection_over_initial": 0.4093508527537915,
+      "reference": 0.526072299502821
+    },
+    {
+      "time_over_period": 0.8692111959287532,
+      "projection_over_initial": 0.5744198517949147,
+      "reference": 0.6809257972711662
+    },
+    {
+      "time_over_period": 0.9002544529262086,
+      "projection_over_initial": 0.7187808234033166,
+      "reference": 0.8099556963187903
+    },
+    {
+      "time_over_period": 0.9312977099236642,
+      "projection_over_initial": 0.8372296635313864,
+      "reference": 0.9082686347708258
+    },
+    {
+      "time_over_period": 0.9623409669211196,
+      "projection_over_initial": 0.9254964909316428,
+      "reference": 0.97213616838002
+    },
+    {
+      "time_over_period": 0.9933842239185751,
+      "projection_over_initial": 0.9803995461189918,
+      "reference": 0.9991361689705647
+    },
+    {
+      "time_over_period": 1.0,
+      "projection_over_initial": 0.9875750833046936,
+      "reference": 1.0
+    }
+  ],
+  "policy": "Keep columns within 0.5..2 reference thickness ratio; reset distorted columns only."
+}
