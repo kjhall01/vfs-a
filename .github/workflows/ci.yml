@@ -150,6 +150,9 @@ jobs:
       - name: Ocean seawater caloric reference and enthalpy measurements (research only)
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/probe_ocean_seawater.py --output seawater-reference.json
+      - name: Ocean Gibbs entropy transport measurements (research candidate)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_entropy.py --output entropy-transport.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -215,4 +218,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/bounded-transport.json
             ${{ runner.temp }}/vfs-check/thermal-work.json
             ${{ runner.temp }}/vfs-check/seawater-reference.json
+            ${{ runner.temp }}/vfs-check/entropy-transport.json
           if-no-files-found: warn
