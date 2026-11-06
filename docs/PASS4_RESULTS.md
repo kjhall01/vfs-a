@@ -268,3 +268,16 @@ closure or a claim of improved wave accuracy. Entropy changes are recorded expli
 Installed-wheel portable suite: 783 passed, one CUDA skip; all 164 legacy ocean
 integration tensors exactly unchanged. No installed runtime/default/fixture/tolerance
 changes; rotation and atmosphere remain frozen. All uploads below 128 KiB.
+
+
+## Conditional local Hamiltonian ALE closure after #40
+
+[HAMILTONIAN_ALE.md](../verification/ocean/HAMILTONIAN_ALE.md) derives local energy
+ownership and a nonlinear thermal projection using the original Hamiltonian.
+Short waves at 8/32/64 layers close remap energy to roundoff, with accumulated
+residuals near 1e-4 J/m². Salt, momentum and passives remain conservative; finite-step
+energy drift is not compensated. Wave errors are essentially unchanged.
+Three weak stable stratification cases fail the column entropy condition and are
+explicitly rejected. This is a conditional research method, not a universal ALE fix.
+Installed-wheel suite: 799 passed, one CUDA skip; 164 legacy ocean tensors unchanged;
+142 moist and 93 dry portable comparisons pass. No runtime/default/fixture changes.

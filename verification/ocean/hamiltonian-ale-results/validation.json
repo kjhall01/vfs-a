@@ -1,0 +1,12 @@
+{
+  "parent_commit": "450bf96d6fa7b03b383ed83866ab9c0f26823933",
+  "portable_tests_passed": 799,
+  "cuda_skips": 1,
+  "legacy_ocean_tensors_exact": 164,
+  "source_sha256": {
+    "tools/ocean_hamiltonian_ale.py": "dee4dc1035b005464be61a685e749361842655857c9b4b731b5e90e99aeeae6b",
+    "tools/probe_ocean_hamiltonian_ale.py": "7e9f141bcfe86519235716621c4b46d2fd6f6af7617f14e3cfc01b73af2499bb",
+    "tools/probe_ocean_hamiltonian_feasibility.py": "bdc33bf1abb3d9fbf9611306970c252249107703829ebd2d1f3f1be316863936",
+    "tests/ocean/test_hamiltonian_ale.py": "db0a056d79ae7bff6ec05d937bd6f815e806b785178840b948517263465856c1"
+  }
+}

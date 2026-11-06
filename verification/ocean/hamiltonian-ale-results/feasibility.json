@@ -1,0 +1,50 @@
+[
+  {
+    "sign": 1.0,
+    "amplitude_C": 1e-06,
+    "status": "rejected",
+    "reason": "energy-closing remap decreases column entropy beyond roundoff"
+  },
+  {
+    "sign": 1.0,
+    "amplitude_C": 0.0001,
+    "status": "rejected",
+    "reason": "energy-closing remap decreases column entropy beyond roundoff"
+  },
+  {
+    "sign": 1.0,
+    "amplitude_C": 0.01,
+    "status": "rejected",
+    "reason": "energy-closing remap decreases column entropy beyond roundoff"
+  },
+  {
+    "sign": 1.0,
+    "amplitude_C": 1.0,
+    "status": "completed",
+    "min_entropy_change": 2.917436465524473e+16
+  },
+  {
+    "sign": -1.0,
+    "amplitude_C": 1e-06,
+    "status": "completed",
+    "min_entropy_change": 2308205665.463476
+  },
+  {
+    "sign": -1.0,
+    "amplitude_C": 0.0001,
+    "status": "completed",
+    "min_entropy_change": 231174849489.64362
+  },
+  {
+    "sign": -1.0,
+    "amplitude_C": 0.01,
+    "status": "completed",
+    "min_entropy_change": 26247679239100.062
+  },
+  {
+    "sign": -1.0,
+    "amplitude_C": 1.0,
+    "status": "completed",
+    "min_entropy_change": 3.4061844158612556e+16
+  }
+]

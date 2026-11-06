@@ -175,6 +175,12 @@ jobs:
         run: |
           python -I tools/probe_ocean_enthalpy_ale.py --audit --output enthalpy-ale-audits.json
           python -I tools/probe_ocean_enthalpy_ale.py --layers 8 --periods .001 --output enthalpy-ale-wave.json
+      - name: Local Hamiltonian ALE closure and feasibility checks
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_hamiltonian_ale.py --audit --output hamiltonian-ale-audits.json
+          python -I tools/probe_ocean_hamiltonian_ale.py --layers 8 --periods .001 --output hamiltonian-ale-wave.json
+          python -I tools/probe_ocean_hamiltonian_feasibility.py hamiltonian-ale-feasibility.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -245,4 +251,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/sharp-front*.json
             ${{ runner.temp }}/vfs-check/entropy-ale*.json
             ${{ runner.temp }}/vfs-check/enthalpy-ale*.json
+            ${{ runner.temp }}/vfs-check/hamiltonian-ale*.json
           if-no-files-found: warn

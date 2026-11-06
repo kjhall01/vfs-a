@@ -1,3 +1,32 @@
+# Current ocean handoff — conditional Hamiltonian ALE closure
+
+This branch follows #40. Read [HAMILTONIAN_ALE.md](../verification/ocean/HAMILTONIAN_ALE.md).
+The research HamiltonianRemapper follows potential-enthalpy remapping with a
+column-local nonlinear energy solve. Column kinetic ownership uses the actual
+interpolation transpose; thermal and dynamic-enthalpy terms use the original H.
+The explicit vertical allocation is a uniform temperature increment per column.
+Salt, passives, thickness and momentum retain their provisional conservative values.
+
+Short 8/32/64-layer waves complete 197 remaps with accumulated remap energy changes
+about −0.00010/+0.00022/+0.00017 J/m² (previously +88/−132/−167 J/m²). Per-column
+energy residuals are around roundoff. Wave errors remain essentially unchanged.
+This corrects only remap energy, not finite-timestep drift.
+
+IMPORTANT SCOPE: the root must also satisfy column entropy nondecrease. Three weak
+stable stratification cases in the explicit feasibility sweep fail this condition
+and are rejected without state mutation or fallback. This is a conditional research
+projection, not a universally feasible production remapper. No claim that every
+possible allocation fails follows from this particular policy's rejection.
+
+Validation: 799 installed-wheel portable tests passed, one CUDA skip; 164 legacy
+ocean tensors exactly unchanged; atmosphere portable comparisons pass. Sixteen
+focused tests include energy ownership, independent derivatives, domain/entropy
+rejection and combined-step accounting. Rotation/runtime/defaults unchanged.
+Next work: feasibility-aware grid/allocation choices and longer wave qualification,
+while preserving the failure evidence. Leave draft/unmerged. No GPU/climate claim.
+
+---
+
 # Current ocean handoff — potential-enthalpy remap experiment
 
 This branch follows #39 and adds an explicitly selected research EnthalpyRemapper.
