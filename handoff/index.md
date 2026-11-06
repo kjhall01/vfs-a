@@ -1,3 +1,30 @@
+# Current ocean handoff — sharp-front transport research
+
+The sharp-front pass builds on draft #37 (`bf5ad5cb8887ec05d26e0566dde0c636daf0676a`).
+Read [the report](../verification/ocean/SHARP_FRONT.md) for derivation and measured limitations.
+Rotation, kinetic reconstruction, installed runtime, defaults, fixtures and tolerances remain frozen.
+A local flux-correction target controls entropy, salt and passives; a matched Hamiltonian
+work budget blends active corrections toward the parent when needed for zero-velocity continuity.
+Passive local bounds survive this blend; active local bounds are conditional. Temperature
+has no maximum principle. No post-step clipping or ocean import from atmosphere is added.
+
+The isolated 64-cell sharp front stays within SP 34–36 and passive 0–1 to roundoff,
+compared with parent SP 33.235–36.773 and passive maximum 1.279. Smooth-profile
+observed orders fall to about 1.6–1.7. A two-hour, 32-cell, three-layer active comparison
+also preserves these SP/passive bounds; temperature still overshoots its initial range.
+Energy drift improves from −43.05 to −5.52 J/m² on timestep halving. Numerical entropy
+production is recorded explicitly and is not a calibrated physical mixing closure.
+
+Validation: installed-wheel portable suite 736 passed, one CUDA skip; all 164 legacy
+ocean tensors exactly unchanged; atmosphere portable comparisons pass (142 moist,
+93 dry tensors). Fourteen focused tests cover independent energy derivatives/work,
+Euler/SSP budgets, global admissibility, passive local bounds and single-edge zero
+crossings with other faces limited. No GPU, long-run, full backward or ALE qualification.
+Next work is broader front-candidate wave/jet qualification and the smooth-extrema
+accuracy tradeoff; smaller rotation residuals are not a prerequisite. Draft and unmerged.
+
+---
+
 # Current ocean handoff — frozen-candidate qualification
 
 This branch measures draft #36 at
