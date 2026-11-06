@@ -181,3 +181,13 @@ closes instantaneous energy work continuously at zero velocity, but its simple
 thermal allocation fails an entropy counterexample on tilted layers. A separate
 thermodynamic exchange reference satisfies spatial energy/salt/entropy laws;
 finite-step entropy is not inferred. All runtime files remain unchanged.
+
+Dependent seawater-reference research: see [surface calorics and enthalpy coordinates](../verification/ocean/SEAWATER_CALORICS.md).
+Installed-wheel portable: **697 passed, one CUDA skip**, including 17 new tests;
+164 legacy ocean tensors exactly equal; atmospheric portable comparisons pass.
+One surface Gibbs fit reproduces GSW caloric references with explicit scale
+conversions, and an enthalpy-content research state retains JMD95 density with
+analytic matched energy derivatives/forces. The first-law work identity and
+separate entropy-producing exchange are independently checked. The tilted-layer
+advective entropy failure remains; no bounded active runtime promotion follows.
+All 100 runtime Python files, defaults, fixtures and tolerances are unchanged.

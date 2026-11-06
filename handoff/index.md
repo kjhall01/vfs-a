@@ -1,4 +1,39 @@
-# Current ocean handoff — thermal work and entropy audit
+# Current ocean handoff — seawater calorics and enthalpy coordinates
+
+Dependent on #34 at `81481b0b81dcd193666dde86db265b82b7c70d61`, branch
+`ocean/seawater-caloric-reference`. All 100 installed runtime Python files
+remain unchanged. New research code fits one surface Gibbs potential to GSW
+3.6.23 evaluations and derives enthalpy, entropy and heat capacity analytically.
+Temperature scale and reference-composition salinity conversion are explicit.
+JMD95 still supplies density; this is not a switch to full TEOS-10 dynamics.
+
+Read [derivation, independent reference checks and limits](../verification/ocean/SEAWATER_CALORICS.md).
+A small research state stores potential enthalpy content and recovers theta
+for JMD95. Analytic transformed covectors and a matched centered force close
+spatial work; signed thermal conversion tracks the nonconservative thermal
+inventory contribution. Salt, volume and passive inventories remain conserved.
+The same energy/entropy definitions also drive a separate thermodynamic
+exchange reference. No forward autograd or atmospheric imports are added.
+
+The tilted-layer counterexample still decreases entropy with calibrated
+calorics. Do not promote this as a complete bounded active runtime stepper.
+Positive salt alone also fails to guarantee joint thermodynamic admissibility:
+the extreme exchange test is rejected outside the declared reference domain.
+
+Installed-wheel portable suite: **697 passed, one CUDA skip**, including 17
+new tests; 164 ocean comparison tensors exactly equal; atmospheric portable
+comparisons pass. Independent GSW measurement runs outside the checkout and
+is required in hosted CI. Reference data and compact results are committed;
+all uploaded files stay below 128 KiB. No default, fixture, tolerance or ALE
+change. Keep drafts unmerged. GPU, long runs and performance are unqualified.
+
+Next: a joint enthalpy/salinity/geometry face construction with both the
+Hamiltonian work identity and entropy inequality, plus full Euler caloric
+admissibility, before runtime adoption and ALE composition.
+
+---
+
+# Previous ocean handoff — thermal work and entropy audit
 
 Dependent on #33 at `ae8d1a1348fd154bc5a9c0fcda8b296eeac95664`, branch
 `ocean/thermodynamic-work-closure`. All runtime files remain unchanged; new
