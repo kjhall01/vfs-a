@@ -1,3 +1,28 @@
+# Current ocean handoff — potential-enthalpy remap experiment
+
+This branch follows #39 and adds an explicitly selected research EnthalpyRemapper.
+Read [ENTHALPY_ALE.md](../verification/ocean/ENTHALPY_ALE.md). It conservatively
+projects potential enthalpy and salt, then reconstructs the existing entropy state.
+The density EOS, Hamiltonian, sharp-front solver, momentum remap and grid policy
+are unchanged. All installed runtime files and atmosphere remain unchanged.
+
+In short wave trajectories, the dominant ~63 kJ/m² reference-thermal loss disappears:
+total remap energy change is +88 J/m² at eight layers, −132 J/m² at 32, and −167 J/m²
+at 64. These remaining dynamic-enthalpy changes are not negligible relative to the
+tiny wave energy. Entropy is produced by the mixed thermodynamic state and explicitly
+accounted. The wave accuracy tradeoff remains visible; no total-energy-conserving
+or universally entropy-stable PLM claim is made.
+
+Wave comparisons use column SALINITY content so both remap variants share a
+conserved observable. Runs cover 0.05 period; they are not full-period qualification.
+Validation: 783 installed-wheel portable tests passed, one CUDA skip; 164 legacy
+ocean tensors exactly unchanged. Twenty focused tests include repeated remaps,
+complete-step entropy accounting and one derivative check. Leave draft/unmerged.
+The next step is a local full-Hamiltonian treatment of the remaining mechanical
+energy changes, together with wave and mixing accuracy checks; no global heat fix.
+
+---
+
 # Current ocean handoff — entropy ALE integration
 
 This branch combines draft #38's entropy/salt sharp-front candidate with the

@@ -170,6 +170,11 @@ jobs:
         run: |
           python -I tools/probe_ocean_entropy_ale.py --layers 8 --periods .001 --output entropy-ale.json
           python -I tools/probe_ocean_ale_smooth.py entropy-ale-smooth.json
+      - name: Potential-enthalpy ALE energy and mixing checks
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_enthalpy_ale.py --audit --output enthalpy-ale-audits.json
+          python -I tools/probe_ocean_enthalpy_ale.py --layers 8 --periods .001 --output enthalpy-ale-wave.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -239,4 +244,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/qualification-*.json
             ${{ runner.temp }}/vfs-check/sharp-front*.json
             ${{ runner.temp }}/vfs-check/entropy-ale*.json
+            ${{ runner.temp }}/vfs-check/enthalpy-ale*.json
           if-no-files-found: warn

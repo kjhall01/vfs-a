@@ -254,3 +254,17 @@ Short integrated entropy runs expose a persistent reference-thermal energy defec
 Installed-wheel suite: 763 passed, one CUDA skip; 164 legacy ocean tensors exactly
 unchanged; both atmosphere portable comparisons pass. See the report for scope,
 reproduction and actual-remap diagnostics. This is not long-run qualification.
+
+
+## Potential-enthalpy ALE experiment after #39
+
+[ENTHALPY_ALE.md](../verification/ocean/ENTHALPY_ALE.md) documents explicit
+potential-enthalpy/salt remapping followed by reconstruction of the entropy state.
+The ~63 kJ/m² thermal loss in the short wave experiment is removed to numerical
+precision; total remap residuals remain +88/−132/−167 J/m² at 8/32/64 layers, mainly
+dynamic enthalpy. Wave accuracy is measured separately using column salinity, which
+both remap schemes conserve. This is a thermal-energy improvement, not full energy
+closure or a claim of improved wave accuracy. Entropy changes are recorded explicitly.
+Installed-wheel portable suite: 783 passed, one CUDA skip; all 164 legacy ocean
+integration tensors exactly unchanged. No installed runtime/default/fixture/tolerance
+changes; rotation and atmosphere remain frozen. All uploads below 128 KiB.
