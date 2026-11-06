@@ -148,6 +148,30 @@ class ReferenceGrid:
         return state.h.sum(-1, keepdim=True) * fractions
 
 
+class DistortionLimitedGrid:
+    """Keep material layers until thickness ratios leave a prescribed band.
+
+    Ratios are relative to ReferenceGrid (or a caller supplied target). A wet
+    column outside [min_ratio,max_ratio] is reset in full; others are retained.
+    This avoids repeatedly mixing a resolved moving interface merely to keep
+    it at a fixed depth. It is not a slope limiter or an energy correction.
+    Switching is discontinuous in grid choice; gradients at the trigger are
+    not qualified. Explicit thresholds are numerical policy, not accuracy gates.
+    """
+    def __init__(self, reference=None, *, min_ratio=.5, max_ratio=2.):
+        if not (0 < min_ratio < 1 < max_ratio < float('inf')):
+            raise ValueError('require 0 < min_ratio < 1 < max_ratio < infinity')
+        self.reference = ReferenceGrid() if reference is None else reference
+        self.min_ratio, self.max_ratio = min_ratio, max_ratio
+
+    def __call__(self, state):
+        target = self.reference(state)
+        _geometry(state.h, target)
+        ratio = state.h / target
+        reset = ((ratio < self.min_ratio) | (ratio > self.max_ratio)).any(-1, keepdim=True)
+        return torch.where(reset, target, state.h)
+
+
 @dataclass(frozen=True)
 class RemapReport:
     """Connected tensor diagnostics, with per-column residuals, not only sums.
@@ -190,6 +214,19 @@ class VerticalRemapper:
             # Keep finite land placeholders and all inactive velocities intact.
             target_h = torch.where(domain.wet_cell[:, None], target_h, state.h)
         state.column.validate_thickness(target_h, min_thickness=model.dynamics.min_thickness)
+        _geometry(state.h, target_h)
+        # Avoid roundoff diffusion and unnecessary work for an identity regrid.
+        # Report tensors stay connected to the state; no graph is cached.
+        if torch.equal(target_h, state.h):
+            if not report:
+                return state, None
+            residuals = {name: (getattr(state,name)*0).sum(-1)
+                         for name in ('h','temp_h','salt_h')}
+            if state.tracer_h is not None:
+                residuals['tracer_h'] = (state.tracer_h*0).sum(-2)
+            zero = state.h.sum()*0 + state.u_e.sum()*0
+            return state, RemapReport(residuals, state.u_e.sum(-1)*0,
+                {name: zero for name in ('kinetic','free_surface','dynamic_enthalpy','total')})
         fields = [state.temp_h[..., None], state.salt_h[..., None]]
         if state.tracer_h is not None:
             fields.append(state.tracer_h)

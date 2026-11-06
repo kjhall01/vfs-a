@@ -200,3 +200,24 @@ def test_selected_full_ale_step_directional_derivative(mesh):
     eps = .01
     difference = (objective(content+eps*direction)-objective(content-eps*direction))/(2*eps)
     torch.testing.assert_close((gradient*direction).sum(),difference,rtol=2e-6,atol=1e-12)
+
+
+def test_distortion_target_preserves_small_motion_and_resets_thin_columns(mesh):
+    from vfs.ocean.ale import DistortionLimitedGrid
+    model,state = case(mesh)
+    target = DistortionLimitedGrid()
+    assert torch.equal(target(state),state.h)
+    result,report = VerticalRemapper().remap_with_report(model,state,target(state))
+    assert result is state
+    assert all(float(v) == 0 for v in report.energy_change.values())
+    h = state.h.clone()
+    removed = h[0,0]*.9
+    h[0,0] -= removed
+    h[0,1] += removed
+    distorted = model.state(u_e=state.u_e,h=h,temperature=state.temperature(),salinity=state.salinity())
+    new = target(distorted)
+    assert torch.equal(new[1:],h[1:])
+    torch.testing.assert_close(new[0],ReferenceGrid()(distorted)[0])
+    mapped = VerticalRemapper()(model,distorted,new)
+    torch.testing.assert_close(mapped.temp_h.sum(-1),distorted.temp_h.sum(-1),rtol=3e-14,atol=1e-10)
+    assert mapped.h[0,0] > h[0,0]

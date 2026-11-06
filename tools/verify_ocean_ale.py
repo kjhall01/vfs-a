@@ -15,7 +15,7 @@ import torch
 import vfs
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import Ocean, OceanColumn
-from vfs.ocean.ale import ALEStepper, ReferenceGrid, VerticalRemapper, remap_contents
+from vfs.ocean.ale import ALEStepper, ReferenceGrid, DistortionLimitedGrid, VerticalRemapper, remap_contents
 from vfs.ocean.eos import jmd95_seawater_density
 from vfs.ocean.jmd95 import JMD95Dynamics, checked_ssprk3
 
@@ -112,7 +112,7 @@ def wave_case(n_layers):
     return model,state,rest,mode,period,max_dt
 
 
-def internal_wave(n_layers,remap_every,periods=1.):
+def internal_wave(n_layers,remap_every,periods=1., *, distortion_limited=False):
     model,state,rest,mode,period,max_dt = wave_case(n_layers)
     initial = state
     steps = math.ceil(periods*period/max_dt)
@@ -126,7 +126,8 @@ def internal_wave(n_layers,remap_every,periods=1.):
     energy0 = float(model.dynamics.total_energy(initial))
     perturbation = abs(energy0-float(model.dynamics.total_energy(rest)))
     energy_remap = {k:0. for k in model.dynamics.energy.terms(state)}
-    remapper,target = VerticalRemapper(),ReferenceGrid()
+    remapper = VerticalRemapper()
+    target = DistortionLimitedGrid() if distortion_limited else ReferenceGrid()
     samples = [dict(time_over_period=0.,projection_over_initial=1.,reference=1.)]
     inventory0 = model.budgets(initial)
     sample_stride = max(1,steps//32)
@@ -167,6 +168,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--quick',action='store_true')
+    parser.add_argument('--distortion-limited',action='store_true',help='run the four-layer wave with distortion-triggered remapping')
     args = parser.parse_args()
     args.output.mkdir(parents=True,exist_ok=False)
     torch.set_default_dtype(torch.float64)
@@ -178,8 +180,9 @@ def main():
         result['rest'] = rest_measurements()
         result['waves'] = []
         if not args.quick:
-            for layers,interval in ((4,0),(4,1),(8,1),(8,10)):
-                row = internal_wave(layers,interval)
+            for layers,interval in (((4,1),) if args.distortion_limited else ((4,0),(4,1),(8,1),(8,10))):
+                row = internal_wave(layers,interval,distortion_limited=args.distortion_limited)
+                row["distortion_limited"] = args.distortion_limited
                 result['waves'].append(row)
                 print({key:value for key,value in row.items() if key != 'samples'},flush=True)
                 (args.output/'partial.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')

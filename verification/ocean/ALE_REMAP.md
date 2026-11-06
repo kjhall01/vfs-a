@@ -199,3 +199,42 @@ an independent dispersion relation from one period.
 - [MOM6 vertical Lagrangian method](https://mom6.readthedocs.io/en/main/api/generated/pages/ALE.html).
 - [MOM6 vertical reconstruction](https://mom6.readthedocs.io/en/main/api/generated/pages/Vertical_Reconstruction.html).
 - [Griffies, Adcroft and Hallberg (2020), vertical Lagrangian-remap primer](https://doi.org/10.1029/2019MS001954).
+
+## Follow-up: avoid remapping healthy material layers
+
+`DistortionLimitedGrid` is an optional target policy. It retains a column's
+current grid while every thickness/reference-thickness ratio is within [0.5,2].
+It resets the entire column to its reference target if any ratio leaves that
+band. These configurable thresholds are numerical policy, not scientific
+acceptance thresholds. It does not control interface slopes or prevent invalid
+horizontal Euler stages. It must be applied before layers become invalid.
+
+```python
+from vfs.ocean.ale import ALEStepper, DistortionLimitedGrid
+stepper = ALEStepper(target=DistortionLimitedGrid())
+```
+
+An identity target now returns the original state exactly, avoiding unnecessary
+roundoff diffusion. A test exercises both retention and an actual thin-column
+reset, including inventory conservation. Trigger switching is not a smooth
+operation; no differentiability at that switch is claimed. Defaults remain
+unchanged, and fixed-target tests/results above remain evidence of the problem.
+
+Reproduce the complete-period comparison with:
+
+```bash
+python -I tools/verify_ocean_ale.py --output ale-adaptive --distortion-limited
+```
+
+The compact `ale_results/distortion_limited.json` records the four-layer result.
+The small-amplitude wave remains inside the permitted thickness band, so this
+case avoids remapping entirely and should recover the material-layer control.
+This demonstrates the benefit of avoiding unnecessary remaps, **not** improved
+accuracy or energy conservation when distorted layers actually require remapping.
+Resolving required-remap errors across sharp T/S interfaces remains open.
+
+Measured full-period result: normalized projection RMS error 0.0626679,
+phase -0.0805977 rad (4.62 degrees in magnitude), and zero remap energy change.
+This exactly matches the earlier no-remap control. Total dynamics/time-stepping
+energy change remains 3.32e-5 of initial perturbation energy. The installed-wheel
+suite after this extension reports 660 passed and one CUDA skip.

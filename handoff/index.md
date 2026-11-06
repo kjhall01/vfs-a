@@ -1,3 +1,15 @@
+# ALE follow-up: distortion-limited target
+
+An optional DistortionLimitedGrid retains healthy material columns and resets
+columns outside configured thickness-ratio bounds. Identity remaps are exact
+no-ops. The four-layer full-period wave then matches the no-remap control:
+projection error 0.06267, phase magnitude 4.62 degrees, zero remap energy change.
+This case triggers no remaps: it does not resolve errors when remapping is
+required. The forced thin-column reset test preserves inventories. Installed
+wheel: 660 passed, one CUDA skip. See ALE_REMAP.md for reproduction and limits.
+
+---
+
 # Current ocean handoff — conservative vertical ALE remap
 
 Main `5841cda8b4585418b18f0ba0486315870b1a59b2` includes merged #28–#31.
