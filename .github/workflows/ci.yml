@@ -33,6 +33,9 @@ jobs:
           python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --prefer-binary "${wheels[0]}[test]"
+          # Independent research reference only; never a VFS runtime dependency.
+          # GSW 3.6.23 requires Python >=3.11; this validation job uses 3.12.
+          python -m pip install 'gsw==3.6.23'
           python -m pip check
           mkdir -p "$RUNNER_TEMP/vfs-check"
           cp -R tests tools examples "$RUNNER_TEMP/vfs-check/"
@@ -144,6 +147,9 @@ jobs:
       - name: Ocean thermal-work and entropy measurements (research only)
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/probe_ocean_thermal_work.py --output thermal-work.json --quick
+      - name: Ocean seawater caloric reference and enthalpy measurements (research only)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_seawater.py --output seawater-reference.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -208,4 +214,5 @@ jobs:
             ${{ runner.temp }}/vfs-check/jmd95-smoke/
             ${{ runner.temp }}/vfs-check/bounded-transport.json
             ${{ runner.temp }}/vfs-check/thermal-work.json
+            ${{ runner.temp }}/vfs-check/seawater-reference.json
           if-no-files-found: warn
