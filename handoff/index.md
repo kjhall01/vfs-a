@@ -1,3 +1,29 @@
+# Current ocean handoff — entropy ALE integration
+
+This branch combines draft #38's entropy/salt sharp-front candidate with the
+unchanged vertical remap machinery from #32. Read
+[ENTROPY_ALE.md](../verification/ocean/ENTROPY_ALE.md) before interpreting success.
+The new research wrapper conserves native entropy/salt/passive contents and edge
+momentum, and reports energy and temperature-content changes separately. It does
+not turn remapping into energy-conserving physical mixing. Rotation remains frozen.
+
+Original-remap full-period wave RMS improves with vertical refinement: approximately
+0.442/0.268/0.191/0.155/0.137 at 4/8/16/32/64 layers, versus 0.0627 without remap.
+Energy defects do not decrease monotonically. Integrated entropy/ALE trajectories
+are explicitly short (0.05 period); they exercise actual remapping, not just a
+non-triggering grid policy. Reference-thermal energy loss is an unresolved issue.
+Smooth single-remap temperature RMS decreases from 0.0703°C at eight layers to
+0.00319°C at 64. Layer count alone is not a qualification criterion.
+
+Validation: 763 installed-wheel portable tests passed, one CUDA skip; all 164
+legacy ocean tensors exactly unchanged; 142 moist/93 dry atmosphere portable
+comparisons pass. Nine new integration tests and the original 18 ALE tests pass.
+Next scientific work should address the remap's thermodynamic energy defect and
+required-remap wave accuracy, then longer integrated runs. No climate, GPU,
+long-backward or atmosphere-coupling qualification. Leave draft and unmerged.
+
+---
+
 # Current ocean handoff — sharp-front transport research
 
 The sharp-front pass builds on draft #37 (`bf5ad5cb8887ec05d26e0566dde0c636daf0676a`).

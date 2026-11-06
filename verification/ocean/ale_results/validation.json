@@ -1,0 +1,42 @@
+{
+  "base_commit": "5841cda8b4585418b18f0ba0486315870b1a59b2",
+  "device": "cpu",
+  "dtype": "float64",
+  "torch": "2.15.0+cpu",
+  "installed_wheel": true,
+  "test_runs": {
+    "full_suite": {
+      "passed": 658,
+      "skipped": 1,
+      "failed": 0
+    },
+    "focused_final": {
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0
+    }
+  },
+  "unique_cases": {
+    "passed": 659,
+    "skipped": 1,
+    "failed": 0
+  },
+  "tests_note": "Full suite contains 16 new ALE cases; final focused run includes the additional full-step directional derivative. Union counts each case once.",
+  "corrected_gibbs_portable_tensors": 142,
+  "dry_helpers_portable_tensors": 93,
+  "legacy_ocean_same_environment_exact_tensors": 164,
+  "preexisting_runtime_files_unchanged": 99,
+  "new_runtime_files": [
+    "vfs/ocean/ale.py"
+  ],
+  "claims_excluded": [
+    "exact energy conservation",
+    "bounded horizontal transport",
+    "well-balanced sloping grids",
+    "third-order combined ALE stepping",
+    "GPU/compile",
+    "long-backward",
+    "long-climate"
+  ],
+  "large_file_policy": "No published file exceeds 128 KiB. Wheels, full logs and field binaries are omitted."
+}

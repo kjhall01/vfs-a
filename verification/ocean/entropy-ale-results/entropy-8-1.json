@@ -1,0 +1,188 @@
+{
+  "status": "completed",
+  "scheme": "entropy-front",
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "dtype": "float64",
+  "source_sha256": {
+    "probe_ocean_entropy_ale.py": "8fd48ef7601aea449ff36cb9214020cb462804b58a68b77deca01087cb0b0254",
+    "ocean_entropy_ale.py": "34e42160d6c6ca7a1c0cc33ab3e4c803267330d9c4a6a0a7cc6ecaea8607f117",
+    "ocean_front_research.py": "16fa83b914e53368c0096a292a9a8841fd89240da93ff72f23832d4f79d39a47",
+    "verify_ocean_ale.py": "1754419d876df98498d19b2275c5425eccc6869297592bc822873be55d1aa223"
+  },
+  "wave": {
+    "layers": 8,
+    "remap_every": 1,
+    "periods": 0.05,
+    "steps": 197,
+    "dt_s": 29.92357482972268,
+    "period_s": 117898.88482910735,
+    "projection_rms_error": 0.003632481325730893,
+    "fitted_amplitude": 0.8358384002866498,
+    "fitted_phase_rad": 0.00043024274197113314,
+    "initial_perturbation_energy_J": 7310671872.0,
+    "total_energy_change_J": -7918266622148608.0,
+    "remap_energy_change_J": {
+      "kinetic": -399.81055478272174,
+      "free_surface": -0.1940787360072136,
+      "total": -7918266540359680.0,
+      "dynamic_enthalpy": 9162919080960.0,
+      "reference_thermal": -7927429454626816.0
+    },
+    "remaining_dynamics_change_J": -81788928.0,
+    "remap_energy_over_initial_perturbation": -1083110.646873207,
+    "changed_column_events": 6304,
+    "actual_remap_events": 197,
+    "max_column_relative_residual": {
+      "h": 3.4579746873197697e-16,
+      "entropy_h": 2.607282046477897e-16,
+      "salt_h": 3.612181883285155e-16
+    },
+    "entropy_produced_J_K": 3833.0573682004197,
+    "entropy_budget_residual_J_K": -331513.05736820045,
+    "salt_relative_change": -6.642957339825794e-15,
+    "min_thickness_m": 124.99998654698734,
+    "temperature_range": [
+      3.9999999999997358,
+      17.00000000000025
+    ],
+    "samples": [
+      {
+        "time_over_period": 0.0,
+        "projection_over_initial": 1.0
+      },
+      {
+        "time_over_period": 0.0015228426395939086,
+        "projection_over_initial": 0.9999576889548953
+      },
+      {
+        "time_over_period": 0.003045685279187817,
+        "projection_over_initial": 0.999832228336798
+      },
+      {
+        "time_over_period": 0.004568527918781726,
+        "projection_over_initial": 0.9996252562715359
+      },
+      {
+        "time_over_period": 0.006091370558375634,
+        "projection_over_initial": 0.9993392548457362
+      },
+      {
+        "time_over_period": 0.007614213197969543,
+        "projection_over_initial": 0.9989771579395917
+      },
+      {
+        "time_over_period": 0.009137055837563452,
+        "projection_over_initial": 0.9985418334492763
+      },
+      {
+        "time_over_period": 0.01065989847715736,
+        "projection_over_initial": 0.9980355784752175
+      },
+      {
+        "time_over_period": 0.012182741116751269,
+        "projection_over_initial": 0.9974597171182654
+      },
+      {
+        "time_over_period": 0.013705583756345178,
+        "projection_over_initial": 0.996814372165688
+      },
+      {
+        "time_over_period": 0.015228426395939087,
+        "projection_over_initial": 0.9960984510467373
+      },
+      {
+        "time_over_period": 0.016751269035532996,
+        "projection_over_initial": 0.9953098485089166
+      },
+      {
+        "time_over_period": 0.018274111675126905,
+        "projection_over_initial": 0.9944458299878987
+      },
+      {
+        "time_over_period": 0.019796954314720814,
+        "projection_over_initial": 0.9935035276487819
+      },
+      {
+        "time_over_period": 0.02131979695431472,
+        "projection_over_initial": 0.9924804610586895
+      },
+      {
+        "time_over_period": 0.02284263959390863,
+        "projection_over_initial": 0.9913749900777551
+      },
+      {
+        "time_over_period": 0.024365482233502538,
+        "projection_over_initial": 0.9901866195995075
+      },
+      {
+        "time_over_period": 0.025888324873096447,
+        "projection_over_initial": 0.9889161020601804
+      },
+      {
+        "time_over_period": 0.027411167512690356,
+        "projection_over_initial": 0.9875653195311802
+      },
+      {
+        "time_over_period": 0.028934010152284265,
+        "projection_over_initial": 0.9861369661986324
+      },
+      {
+        "time_over_period": 0.030456852791878174,
+        "projection_over_initial": 0.9846340875081299
+      },
+      {
+        "time_over_period": 0.03197969543147208,
+        "projection_over_initial": 0.9830595576603379
+      },
+      {
+        "time_over_period": 0.03350253807106599,
+        "projection_over_initial": 0.9814155882568854
+      },
+      {
+        "time_over_period": 0.0350253807106599,
+        "projection_over_initial": 0.9797033555373608
+      },
+      {
+        "time_over_period": 0.03654822335025381,
+        "projection_over_initial": 0.977922812599757
+      },
+      {
+        "time_over_period": 0.03807106598984772,
+        "projection_over_initial": 0.9760727201170012
+      },
+      {
+        "time_over_period": 0.03959390862944163,
+        "projection_over_initial": 0.9741508900985644
+      },
+      {
+        "time_over_period": 0.04111675126903554,
+        "projection_over_initial": 0.972154599225088
+      },
+      {
+        "time_over_period": 0.04263959390862944,
+        "projection_over_initial": 0.9700810981723051
+      },
+      {
+        "time_over_period": 0.04416243654822335,
+        "projection_over_initial": 0.9679281263331897
+      },
+      {
+        "time_over_period": 0.04568527918781726,
+        "projection_over_initial": 0.965694340531313
+      },
+      {
+        "time_over_period": 0.047208121827411166,
+        "projection_over_initial": 0.9633795816163074
+      },
+      {
+        "time_over_period": 0.048730964467005075,
+        "projection_over_initial": 0.9609849317040567
+      },
+      {
+        "time_over_period": 0.05,
+        "projection_over_initial": 0.9589298964376802
+      }
+    ]
+  }
+}
