@@ -1,0 +1,278 @@
+{
+  "candidate_commit": "705720c79e38c2f07de39d45a33c9ede50707b87",
+  "scope": "initial tendencies only; no integration",
+  "status": "completed",
+  "dtype": "float64",
+  "device": "cpu",
+  "torch": "2.15.0+cpu",
+  "evaluation_dt_s": 1.0,
+  "source_sha256": {
+    "probe_ocean_initial_balance.py": "9b8ef8200ccae625fae07004efee0801b8b52f79783d39791accb1785562dbf1",
+    "qualify_ocean_entropy.py": "71dcd76fab3038a6e9bbd6abd87fdef9651e4b14189b1b386428b2260e58c233",
+    "ocean_entropy_research.py": "d683d13d73d23c9e11e403ab5cef0eaec4ede3a835073fdb8e638cdc8cc912cd",
+    "verify_ocean_williamson.py": "15ffda63947898484c7cfb85fbbea346e5f2fb8e3bf2e577cebb44faf6ce51f4"
+  },
+  "cells": 4096,
+  "edges": 12282,
+  "lloyd_iterations_requested": 20,
+  "mesh_build_seconds": 4.410115749000397,
+  "mean_cell_length_km": 352.88448387872006,
+  "minimum_dc_km": 334.79597260275506,
+  "maximum_dc_km": 502.95843434971175,
+  "cell_area_cv": 0.01751854857751472,
+  "lloyd_diagnostics": {
+    "converged": false,
+    "stop_reason": "iteration_budget",
+    "iterations": 20,
+    "tolerances": {
+      "mean_offset_rad": 1e-06,
+      "rms_relative_offset": 0.0001,
+      "max_relative_offset": 0.0005
+    },
+    "final": {
+      "iteration": 20,
+      "objective": 0.006364827098092718,
+      "mean_offset_rad": 0.00012970997925263144,
+      "max_offset_rad": 0.00040416023728247614,
+      "rms_relative_offset": 0.0028903814073425933,
+      "max_relative_offset": 0.007309337738981414
+    },
+    "history": [
+      {
+        "iteration": 0,
+        "objective": 0.006388317439498081,
+        "mean_offset_rad": 0.00022436728195461883,
+        "max_offset_rad": 0.0034759795711128433,
+        "rms_relative_offset": 0.006667538804266598,
+        "max_relative_offset": 0.06113866666853333
+      },
+      {
+        "iteration": 1,
+        "objective": 0.0063852533136739,
+        "mean_offset_rad": 0.00020497413269335264,
+        "max_offset_rad": 0.001807351386405988,
+        "rms_relative_offset": 0.005519399890677207,
+        "max_relative_offset": 0.0321392796107101
+      },
+      {
+        "iteration": 2,
+        "objective": 0.006383043017983425,
+        "mean_offset_rad": 0.00019368230905732702,
+        "max_offset_rad": 0.0012967737381083815,
+        "rms_relative_offset": 0.005000770375937994,
+        "max_relative_offset": 0.023428819740707534
+      },
+      {
+        "iteration": 3,
+        "objective": 0.006381205085695285,
+        "mean_offset_rad": 0.00018517089296384703,
+        "max_offset_rad": 0.00110240041610879,
+        "rms_relative_offset": 0.004652332100879896,
+        "max_relative_offset": 0.019881613085214286
+      },
+      {
+        "iteration": 4,
+        "objective": 0.006379603857830318,
+        "mean_offset_rad": 0.00017829959398559038,
+        "max_offset_rad": 0.0009455300239623003,
+        "rms_relative_offset": 0.004390762444601351,
+        "max_relative_offset": 0.01702888603000889
+      },
+      {
+        "iteration": 5,
+        "objective": 0.006378171794889198,
+        "mean_offset_rad": 0.00017250248741749305,
+        "max_offset_rad": 0.0008194092143147806,
+        "rms_relative_offset": 0.004182843523411804,
+        "max_relative_offset": 0.014847685543683655
+      },
+      {
+        "iteration": 6,
+        "objective": 0.0063768686332998925,
+        "mean_offset_rad": 0.00016747954271753714,
+        "max_offset_rad": 0.0007667046491353407,
+        "rms_relative_offset": 0.004010968336987463,
+        "max_relative_offset": 0.0138829226906508
+      },
+      {
+        "iteration": 7,
+        "objective": 0.006375668124558587,
+        "mean_offset_rad": 0.0001630312872457654,
+        "max_offset_rad": 0.0007228821783684233,
+        "rms_relative_offset": 0.003864740076601487,
+        "max_relative_offset": 0.013080283088609439
+      },
+      {
+        "iteration": 8,
+        "objective": 0.00637455204592996,
+        "mean_offset_rad": 0.00015902299836901505,
+        "max_offset_rad": 0.0006846783074848156,
+        "rms_relative_offset": 0.003737642722673871,
+        "max_relative_offset": 0.01238070835995004
+      },
+      {
+        "iteration": 9,
+        "objective": 0.006373507099755926,
+        "mean_offset_rad": 0.00015537152137004906,
+        "max_offset_rad": 0.0006501497939529191,
+        "rms_relative_offset": 0.003625402462538281,
+        "max_relative_offset": 0.011748995217165534
+      },
+      {
+        "iteration": 10,
+        "objective": 0.006372523176960243,
+        "mean_offset_rad": 0.00015203074323543128,
+        "max_offset_rad": 0.0006181420744831616,
+        "rms_relative_offset": 0.0035250847043072223,
+        "max_relative_offset": 0.011164184333702563
+      },
+      {
+        "iteration": 11,
+        "objective": 0.006371592345274735,
+        "mean_offset_rad": 0.00014897378227690737,
+        "max_offset_rad": 0.0005879780155632808,
+        "rms_relative_offset": 0.003434547761972484,
+        "max_relative_offset": 0.010613933473383201
+      },
+      {
+        "iteration": 12,
+        "objective": 0.006370708230470257,
+        "mean_offset_rad": 0.0001461655234907668,
+        "max_offset_rad": 0.0005592749215050094,
+        "rms_relative_offset": 0.003352231840561189,
+        "max_relative_offset": 0.010091212913899026
+      },
+      {
+        "iteration": 13,
+        "objective": 0.006369865590055923,
+        "mean_offset_rad": 0.0001435673759320389,
+        "max_offset_rad": 0.0005318347915065438,
+        "rms_relative_offset": 0.003276953208019089,
+        "max_relative_offset": 0.009592326591517587
+      },
+      {
+        "iteration": 14,
+        "objective": 0.006369060034764118,
+        "mean_offset_rad": 0.0001411636934693878,
+        "max_offset_rad": 0.0005055766076425868,
+        "rms_relative_offset": 0.003207792168131697,
+        "max_relative_offset": 0.009115692996840905
+      },
+      {
+        "iteration": 15,
+        "objective": 0.0063682878353503725,
+        "mean_offset_rad": 0.0001389250559147985,
+        "max_offset_rad": 0.0004804934519909729,
+        "rms_relative_offset": 0.003144024753226236,
+        "max_relative_offset": 0.008661074134657228
+      },
+      {
+        "iteration": 16,
+        "objective": 0.006367545776399197,
+        "mean_offset_rad": 0.0001368345977138125,
+        "max_offset_rad": 0.0004566250775060611,
+        "rms_relative_offset": 0.0030850800991105366,
+        "max_relative_offset": 0.008229082897116767
+      },
+      {
+        "iteration": 17,
+        "objective": 0.006366831049088972,
+        "mean_offset_rad": 0.00013487608230238965,
+        "max_offset_rad": 0.0004340408295915151,
+        "rms_relative_offset": 0.003030514931492397,
+        "max_relative_offset": 0.007820876702527678
+      },
+      {
+        "iteration": 18,
+        "objective": 0.006366141163155703,
+        "mean_offset_rad": 0.00013303969477209294,
+        "max_offset_rad": 0.00041283015584765205,
+        "rms_relative_offset": 0.0029800006575982003,
+        "max_relative_offset": 0.007448422172833291
+      },
+      {
+        "iteration": 19,
+        "objective": 0.006365473869781368,
+        "mean_offset_rad": 0.00013131911273554786,
+        "max_offset_rad": 0.0004077669088118921,
+        "rms_relative_offset": 0.002933321243426394,
+        "max_relative_offset": 0.0073740544567484
+      },
+      {
+        "iteration": 20,
+        "objective": 0.006364827098092718,
+        "mean_offset_rad": 0.00012970997925263144,
+        "max_offset_rad": 0.00040416023728247614,
+        "rms_relative_offset": 0.0028903814073425933,
+        "max_relative_offset": 0.007309337738981414
+      }
+    ]
+  },
+  "constant_density_operator_diagnosis": {
+    "momentum_residual_m_s2": {
+      "l1": 3.46038774151008e-05,
+      "l2": 8.277522614432272e-05,
+      "linf": 0.0004734221812893692
+    },
+    "thickness_residual_m_s": {
+      "l1": 1.2461235582305108e-05,
+      "l2": 2.3282124300511156e-05,
+      "linf": 0.00013725133384148908
+    },
+    "term_magnitudes_m_s2": {
+      "pressure": {
+        "l1": 0.0013205253603501266,
+        "l2": 0.0015136099320085016,
+        "linf": 0.0028013543874206115
+      },
+      "kinetic": {
+        "l1": 5.2711830022959276e-05,
+        "l2": 6.086890271891539e-05,
+        "linf": 0.00013496954568824066
+      },
+      "rotation": {
+        "l1": 0.001371729876948734,
+        "l2": 0.001574809067454425,
+        "linf": 0.002933550417088161
+      }
+    },
+    "term_errors_m_s2": {
+      "pressure": {
+        "l1": 7.070332036300157e-07,
+        "l2": 8.576553641689216e-07,
+        "linf": 2.781975561124382e-06
+      },
+      "kinetic": {
+        "l1": 3.7487770843238985e-06,
+        "l2": 7.872281360831511e-06,
+        "linf": 3.9454971788428765e-05
+      },
+      "rotation": {
+        "l1": 3.330782351331579e-05,
+        "l2": 7.892637610741833e-05,
+        "linf": 0.0004372704074586402
+      }
+    },
+    "energy_rate_W": 471.9375,
+    "energy_work_scale_W": 1.4662963240014612e+18,
+    "energy_rate_normalized": 3.218568390815455e-16
+  },
+  "candidate_momentum_rms_m_s2": 8.277522614432273e-05,
+  "candidate_h_rate_rms_m_s": 2.328212430051125e-05,
+  "candidate_minus_constant_density_momentum_rms_m_s2": 2.995600187142855e-18,
+  "candidate_minus_constant_density_h_rate_rms_m_s": 3.32943894120777e-17,
+  "candidate_normalized_energy_work": -8.416419931233174e-16,
+  "rest": {
+    "flat": {
+      "momentum_rms_m_s2": 1.9693672712268121e-19,
+      "momentum_max_m_s2": 1.0326218007493524e-18,
+      "h_rate_rms_m_s": 0.0
+    },
+    "topography": {
+      "momentum_rms_m_s2": 1.0461618072267167e-18,
+      "momentum_max_m_s2": 7.091359834413002e-18,
+      "h_rate_rms_m_s": 0.0
+    }
+  },
+  "wall_seconds": 5.324116288997175
+}

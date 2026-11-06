@@ -1,0 +1,40 @@
+{
+  "candidate_commit": "705720c79e38c2f07de39d45a33c9ede50707b87",
+  "runtime_tree": "90090cf8e0d725293dea4b91d2967a55a21ed1e8",
+  "status": "completed",
+  "trajectory_or_transport_cases": 15,
+  "additional_initial_balance_cases": 5,
+  "local_validation": {
+    "installed_wheel_portable_passed": 722,
+    "cuda_skips": 1,
+    "legacy_ocean_exact_tensors": 164,
+    "atmosphere_corrected_gibbs_portable": "pass",
+    "atmosphere_dry_helpers_portable": "pass"
+  },
+  "case_files": {
+    "wave-32.json": "32dc0e3e0c4dbe085a06f4166c9ef37b9ad08a05ecf685d93cf9dbe1c2529e04",
+    "wave-64.json": "40e8970a6da170c9d4fcb4f4c9a021da7fce4b8726d35ce59b73c298e1f99cba",
+    "wave-32-halfdt.json": "5ba2b317a1999c7bc72b80a34ebc4a2cf55c68263fbe44eaa3a05786a0df5d9e",
+    "jet-64.json": "97151468ee6f535b74b181f303313a176317ab7970dd196d3dd2d5dc18a5f432",
+    "jet-128.json": "a82a10839bb485589498aa9d641d86fa9134d535a31c4da45b0601ecd96efc4a",
+    "rest-topography.json": "3a6995861c731c9281a458a5c2b73e780f1be8f3c18a004a2b0d548c044f25e4",
+    "initial-1024.json": "6a8227f3e9ca6aa1a36727392619a9cec3f965402a84e42119ad6f4ab4d5a0f4",
+    "initial-16384.json": "cfb909cbe44fba6a84f09d82a0a9e20350d8510cb2cb5e364e36b7d5e9ef3521",
+    "initial-4096-lloyd100.json": "986799c5d038de2af6ed7736c253c25de62d5fbca96a834293cf412a6d956b0e",
+    "initial-4096.json": "6f93efd4eb178124efa4774ad2763bcaecc7d3386717c576edcf4bf0e601a7e8",
+    "initial-65536.json": "196a537115c2f85c06491f52dc63e8d4105c301ea5ca40eb445c94b632e11af4",
+    "jet-256.json": "e5770edca8754ae6a7cdc403c15b67ba4e2dfa898c6a9d357059de8231ab23b8",
+    "jet-64-halfdt.json": "1c60bc9e929f76d2d0d0dfe237a050b88c64bed3a4a742122cfc862476fbe7dd",
+    "rest-flat.json": "39c0d8e7d66ae607c42210c70ca35ec72267b664f40e38e9651cb271cee563fb",
+    "transport-sharp-128.json": "52b224591d49a6afe62c35b1601c1e6cb6a51adda8a7a80537e07041558d3f09",
+    "transport-sharp-32.json": "330b343cf753cde6a7dd4212be7aaa4857deb7779a3d637a26cc7c817b45f3c5",
+    "transport-sharp-64.json": "6801a8da6c1de854f996d7290189df618b3f726eb251ca9d266fb1d6c79ea4de",
+    "transport-smooth-128.json": "5fe6c4c13b46eefff53d1ba90d936940f9319b5b1c0fbc1defc129f60c709e94",
+    "transport-smooth-32.json": "8f75b53543dec8464b01b9db38c583a6af34bbf3b3cfed24c0d3c3c483945d12",
+    "transport-smooth-64.json": "42d63027e30293d8ab1e06046d1068c88d2fff5c4c440d32c7c2f0db2789c775"
+  },
+  "analysis_sources": {
+    "analyze_ocean_qualification.py": "692113de61cec95dcedf6c8f91f3647d032b64ace2033ea845dc4111fa9d6a24",
+    "plot_ocean_qualification.py": "5803e8ce6e2683717478f6205b7ec4f9284085a197af1d342c7f247686902ccc"
+  }
+}

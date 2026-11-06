@@ -1,0 +1,918 @@
+{
+  "candidate_commit": "705720c79e38c2f07de39d45a33c9ede50707b87",
+  "scope": "initial tendencies only; no integration",
+  "status": "completed",
+  "dtype": "float64",
+  "device": "cpu",
+  "torch": "2.15.0+cpu",
+  "evaluation_dt_s": 1.0,
+  "source_sha256": {
+    "probe_ocean_initial_balance.py": "9b8ef8200ccae625fae07004efee0801b8b52f79783d39791accb1785562dbf1",
+    "qualify_ocean_entropy.py": "71dcd76fab3038a6e9bbd6abd87fdef9651e4b14189b1b386428b2260e58c233",
+    "ocean_entropy_research.py": "d683d13d73d23c9e11e403ab5cef0eaec4ede3a835073fdb8e638cdc8cc912cd",
+    "verify_ocean_williamson.py": "15ffda63947898484c7cfb85fbbea346e5f2fb8e3bf2e577cebb44faf6ce51f4"
+  },
+  "cells": 4096,
+  "edges": 12282,
+  "lloyd_iterations_requested": 100,
+  "mesh_build_seconds": 13.189696333996835,
+  "mean_cell_length_km": 352.88448387872006,
+  "minimum_dc_km": 285.52708570083064,
+  "maximum_dc_km": 504.6683202003902,
+  "cell_area_cv": 0.041120621203485794,
+  "lloyd_diagnostics": {
+    "converged": false,
+    "stop_reason": "iteration_budget",
+    "iterations": 100,
+    "tolerances": {
+      "mean_offset_rad": 1e-06,
+      "rms_relative_offset": 0.0001,
+      "max_relative_offset": 0.0005
+    },
+    "final": {
+      "iteration": 100,
+      "objective": 0.006267236077984961,
+      "mean_offset_rad": 0.00010843413656925005,
+      "max_offset_rad": 0.0006063164070550543,
+      "rms_relative_offset": 0.0023964273299146607,
+      "max_relative_offset": 0.011803586407428337
+    },
+    "history": [
+      {
+        "iteration": 0,
+        "objective": 0.006388317439498081,
+        "mean_offset_rad": 0.00022436728195461883,
+        "max_offset_rad": 0.0034759795711128433,
+        "rms_relative_offset": 0.006667538804266598,
+        "max_relative_offset": 0.06113866666853333
+      },
+      {
+        "iteration": 1,
+        "objective": 0.0063852533136739,
+        "mean_offset_rad": 0.00020497413269335264,
+        "max_offset_rad": 0.001807351386405988,
+        "rms_relative_offset": 0.005519399890677207,
+        "max_relative_offset": 0.0321392796107101
+      },
+      {
+        "iteration": 2,
+        "objective": 0.006383043017983425,
+        "mean_offset_rad": 0.00019368230905732702,
+        "max_offset_rad": 0.0012967737381083815,
+        "rms_relative_offset": 0.005000770375937994,
+        "max_relative_offset": 0.023428819740707534
+      },
+      {
+        "iteration": 3,
+        "objective": 0.006381205085695285,
+        "mean_offset_rad": 0.00018517089296384703,
+        "max_offset_rad": 0.00110240041610879,
+        "rms_relative_offset": 0.004652332100879896,
+        "max_relative_offset": 0.019881613085214286
+      },
+      {
+        "iteration": 4,
+        "objective": 0.006379603857830318,
+        "mean_offset_rad": 0.00017829959398559038,
+        "max_offset_rad": 0.0009455300239623003,
+        "rms_relative_offset": 0.004390762444601351,
+        "max_relative_offset": 0.01702888603000889
+      },
+      {
+        "iteration": 5,
+        "objective": 0.006378171794889198,
+        "mean_offset_rad": 0.00017250248741749305,
+        "max_offset_rad": 0.0008194092143147806,
+        "rms_relative_offset": 0.004182843523411804,
+        "max_relative_offset": 0.014847685543683655
+      },
+      {
+        "iteration": 6,
+        "objective": 0.0063768686332998925,
+        "mean_offset_rad": 0.00016747954271753714,
+        "max_offset_rad": 0.0007667046491353407,
+        "rms_relative_offset": 0.004010968336987463,
+        "max_relative_offset": 0.0138829226906508
+      },
+      {
+        "iteration": 7,
+        "objective": 0.006375668124558587,
+        "mean_offset_rad": 0.0001630312872457654,
+        "max_offset_rad": 0.0007228821783684233,
+        "rms_relative_offset": 0.003864740076601487,
+        "max_relative_offset": 0.013080283088609439
+      },
+      {
+        "iteration": 8,
+        "objective": 0.00637455204592996,
+        "mean_offset_rad": 0.00015902299836901505,
+        "max_offset_rad": 0.0006846783074848156,
+        "rms_relative_offset": 0.003737642722673871,
+        "max_relative_offset": 0.01238070835995004
+      },
+      {
+        "iteration": 9,
+        "objective": 0.006373507099755926,
+        "mean_offset_rad": 0.00015537152137004906,
+        "max_offset_rad": 0.0006501497939529191,
+        "rms_relative_offset": 0.003625402462538281,
+        "max_relative_offset": 0.011748995217165534
+      },
+      {
+        "iteration": 10,
+        "objective": 0.006372523176960243,
+        "mean_offset_rad": 0.00015203074323543128,
+        "max_offset_rad": 0.0006181420744831616,
+        "rms_relative_offset": 0.0035250847043072223,
+        "max_relative_offset": 0.011164184333702563
+      },
+      {
+        "iteration": 11,
+        "objective": 0.006371592345274735,
+        "mean_offset_rad": 0.00014897378227690737,
+        "max_offset_rad": 0.0005879780155632808,
+        "rms_relative_offset": 0.003434547761972484,
+        "max_relative_offset": 0.010613933473383201
+      },
+      {
+        "iteration": 12,
+        "objective": 0.006370708230470257,
+        "mean_offset_rad": 0.0001461655234907668,
+        "max_offset_rad": 0.0005592749215050094,
+        "rms_relative_offset": 0.003352231840561189,
+        "max_relative_offset": 0.010091212913899026
+      },
+      {
+        "iteration": 13,
+        "objective": 0.006369865590055923,
+        "mean_offset_rad": 0.0001435673759320389,
+        "max_offset_rad": 0.0005318347915065438,
+        "rms_relative_offset": 0.003276953208019089,
+        "max_relative_offset": 0.009592326591517587
+      },
+      {
+        "iteration": 14,
+        "objective": 0.006369060034764118,
+        "mean_offset_rad": 0.0001411636934693878,
+        "max_offset_rad": 0.0005055766076425868,
+        "rms_relative_offset": 0.003207792168131697,
+        "max_relative_offset": 0.009115692996840905
+      },
+      {
+        "iteration": 15,
+        "objective": 0.0063682878353503725,
+        "mean_offset_rad": 0.0001389250559147985,
+        "max_offset_rad": 0.0004804934519909729,
+        "rms_relative_offset": 0.003144024753226236,
+        "max_relative_offset": 0.008661074134657228
+      },
+      {
+        "iteration": 16,
+        "objective": 0.006367545776399197,
+        "mean_offset_rad": 0.0001368345977138125,
+        "max_offset_rad": 0.0004566250775060611,
+        "rms_relative_offset": 0.0030850800991105366,
+        "max_relative_offset": 0.008229082897116767
+      },
+      {
+        "iteration": 17,
+        "objective": 0.006366831049088972,
+        "mean_offset_rad": 0.00013487608230238965,
+        "max_offset_rad": 0.0004340408295915151,
+        "rms_relative_offset": 0.003030514931492397,
+        "max_relative_offset": 0.007820876702527678
+      },
+      {
+        "iteration": 18,
+        "objective": 0.006366141163155703,
+        "mean_offset_rad": 0.00013303969477209294,
+        "max_offset_rad": 0.00041283015584765205,
+        "rms_relative_offset": 0.0029800006575982003,
+        "max_relative_offset": 0.007448422172833291
+      },
+      {
+        "iteration": 19,
+        "objective": 0.006365473869781368,
+        "mean_offset_rad": 0.00013131911273554786,
+        "max_offset_rad": 0.0004077669088118921,
+        "rms_relative_offset": 0.002933321243426394,
+        "max_relative_offset": 0.0073740544567484
+      },
+      {
+        "iteration": 20,
+        "objective": 0.006364827098092718,
+        "mean_offset_rad": 0.00012970997925263144,
+        "max_offset_rad": 0.00040416023728247614,
+        "rms_relative_offset": 0.0028903814073425933,
+        "max_relative_offset": 0.007309337738981414
+      },
+      {
+        "iteration": 21,
+        "objective": 0.0063641988830625,
+        "mean_offset_rad": 0.00012820764149308012,
+        "max_offset_rad": 0.0004010608737118761,
+        "rms_relative_offset": 0.002851230139781916,
+        "max_relative_offset": 0.007253741373887832
+      },
+      {
+        "iteration": 22,
+        "objective": 0.006363587333829912,
+        "mean_offset_rad": 0.00012679757879767456,
+        "max_offset_rad": 0.00041865217093023973,
+        "rms_relative_offset": 0.002815450185277362,
+        "max_relative_offset": 0.0075665313018827285
+      },
+      {
+        "iteration": 23,
+        "objective": 0.006362990921605416,
+        "mean_offset_rad": 0.000125450686999658,
+        "max_offset_rad": 0.0004503510700333972,
+        "rms_relative_offset": 0.002781763854709554,
+        "max_relative_offset": 0.008148348535995519
+      },
+      {
+        "iteration": 24,
+        "objective": 0.0063624086341036445,
+        "mean_offset_rad": 0.00012415884205491757,
+        "max_offset_rad": 0.0004731833217917741,
+        "rms_relative_offset": 0.002749594512828606,
+        "max_relative_offset": 0.008571328557780738
+      },
+      {
+        "iteration": 25,
+        "objective": 0.006361839699533078,
+        "mean_offset_rad": 0.00012291936417091763,
+        "max_offset_rad": 0.0004867061194396089,
+        "rms_relative_offset": 0.002718613351076018,
+        "max_relative_offset": 0.008826466430763518
+      },
+      {
+        "iteration": 26,
+        "objective": 0.006361283479762392,
+        "mean_offset_rad": 0.00012173625938303671,
+        "max_offset_rad": 0.0004909698821099247,
+        "rms_relative_offset": 0.0026887246541254157,
+        "max_relative_offset": 0.00891368499021366
+      },
+      {
+        "iteration": 27,
+        "objective": 0.0063607393661158085,
+        "mean_offset_rad": 0.0001206143724377227,
+        "max_offset_rad": 0.00048659011186030234,
+        "rms_relative_offset": 0.002660093426592616,
+        "max_relative_offset": 0.008843284562875439
+      },
+      {
+        "iteration": 28,
+        "objective": 0.006360206673100777,
+        "mean_offset_rad": 0.00011956452348833225,
+        "max_offset_rad": 0.0004746684149370177,
+        "rms_relative_offset": 0.002633143195852789,
+        "max_relative_offset": 0.008634623319729034
+      },
+      {
+        "iteration": 29,
+        "objective": 0.006359684539742005,
+        "mean_offset_rad": 0.00011860264188799056,
+        "max_offset_rad": 0.0004566338670536889,
+        "rms_relative_offset": 0.0026085364886812845,
+        "max_relative_offset": 0.00831328615425704
+      },
+      {
+        "iteration": 30,
+        "objective": 0.0063591718426465604,
+        "mean_offset_rad": 0.00011775285930212206,
+        "max_offset_rad": 0.00043405832448710746,
+        "rms_relative_offset": 0.00258715630338595,
+        "max_relative_offset": 0.007907715524519235
+      },
+      {
+        "iteration": 31,
+        "objective": 0.0063586671173467835,
+        "mean_offset_rad": 0.00011705005658883916,
+        "max_offset_rad": 0.00040848806772830586,
+        "rms_relative_offset": 0.002570104765067454,
+        "max_relative_offset": 0.007446095017871042
+      },
+      {
+        "iteration": 32,
+        "objective": 0.0063581684804603356,
+        "mean_offset_rad": 0.00011654032721103715,
+        "max_offset_rad": 0.00039016365795246417,
+        "rms_relative_offset": 0.002558727537835389,
+        "max_relative_offset": 0.0070575666699696825
+      },
+      {
+        "iteration": 33,
+        "objective": 0.006357673526078855,
+        "mean_offset_rad": 0.00011628244987867821,
+        "max_offset_rad": 0.00039019206814267746,
+        "rms_relative_offset": 0.0025546633287628615,
+        "max_relative_offset": 0.007057746378231004
+      },
+      {
+        "iteration": 34,
+        "objective": 0.0063571792052883325,
+        "mean_offset_rad": 0.00011634944154636504,
+        "max_offset_rad": 0.0003902051153036852,
+        "rms_relative_offset": 0.0025599008127802176,
+        "max_relative_offset": 0.007057571116391377
+      },
+      {
+        "iteration": 35,
+        "objective": 0.0063566816596605236,
+        "mean_offset_rad": 0.00011682764314899563,
+        "max_offset_rad": 0.00039016869251814855,
+        "rms_relative_offset": 0.0025767858084346502,
+        "max_relative_offset": 0.0070564217561493656
+      },
+      {
+        "iteration": 36,
+        "objective": 0.006356176018609716,
+        "mean_offset_rad": 0.00011782307686668195,
+        "max_offset_rad": 0.00039005484112374886,
+        "rms_relative_offset": 0.002608191638181448,
+        "max_relative_offset": 0.007053790020193886
+      },
+      {
+        "iteration": 37,
+        "objective": 0.006355656087539074,
+        "mean_offset_rad": 0.0001194616400119088,
+        "max_offset_rad": 0.0003898431445981972,
+        "rms_relative_offset": 0.002657531555550461,
+        "max_relative_offset": 0.0071273246937046215
+      },
+      {
+        "iteration": 38,
+        "objective": 0.0063551139709403515,
+        "mean_offset_rad": 0.00012188788304567442,
+        "max_offset_rad": 0.0003907100423281506,
+        "rms_relative_offset": 0.0027286949171278028,
+        "max_relative_offset": 0.0072362442211622
+      },
+      {
+        "iteration": 39,
+        "objective": 0.006354539629462863,
+        "mean_offset_rad": 0.0001252601231897809,
+        "max_offset_rad": 0.00040589388785138307,
+        "rms_relative_offset": 0.0028258460791688715,
+        "max_relative_offset": 0.007360562893633331
+      },
+      {
+        "iteration": 40,
+        "objective": 0.006353920377037525,
+        "mean_offset_rad": 0.00012974146519454454,
+        "max_offset_rad": 0.00043662816322396597,
+        "rms_relative_offset": 0.002953211135693419,
+        "max_relative_offset": 0.007893141348735542
+      },
+      {
+        "iteration": 41,
+        "objective": 0.006353240345422506,
+        "mean_offset_rad": 0.00013538750025013217,
+        "max_offset_rad": 0.00046859381796810834,
+        "rms_relative_offset": 0.0031143336812186973,
+        "max_relative_offset": 0.008469867174264695
+      },
+      {
+        "iteration": 42,
+        "objective": 0.006352480420630968,
+        "mean_offset_rad": 0.00014219295924360018,
+        "max_offset_rad": 0.0005014797224290157,
+        "rms_relative_offset": 0.003308886987562561,
+        "max_relative_offset": 0.009066183100373507
+      },
+      {
+        "iteration": 43,
+        "objective": 0.006351619376523843,
+        "mean_offset_rad": 0.00015010136576589119,
+        "max_offset_rad": 0.0005345068615693158,
+        "rms_relative_offset": 0.003534131650521601,
+        "max_relative_offset": 0.009664642843421492
+      },
+      {
+        "iteration": 44,
+        "objective": 0.0063506347116231154,
+        "mean_offset_rad": 0.0001589217704652283,
+        "max_offset_rad": 0.000566959038513391,
+        "rms_relative_offset": 0.0037845425735650758,
+        "max_relative_offset": 0.01025780602998224
+      },
+      {
+        "iteration": 45,
+        "objective": 0.00634950503543763,
+        "mean_offset_rad": 0.00016829738392534386,
+        "max_offset_rad": 0.0005979335016322168,
+        "rms_relative_offset": 0.004047600308151296,
+        "max_relative_offset": 0.010827949274418899
+      },
+      {
+        "iteration": 46,
+        "objective": 0.0063482147551390256,
+        "mean_offset_rad": 0.00017782876784090633,
+        "max_offset_rad": 0.0006266155680351086,
+        "rms_relative_offset": 0.004308828836023833,
+        "max_relative_offset": 0.011357163483796902
+      },
+      {
+        "iteration": 47,
+        "objective": 0.0063467569766224585,
+        "mean_offset_rad": 0.00018710232666784883,
+        "max_offset_rad": 0.000668756685940733,
+        "rms_relative_offset": 0.004554008566337011,
+        "max_relative_offset": 0.012144998388174228
+      },
+      {
+        "iteration": 48,
+        "objective": 0.0063451353062369265,
+        "mean_offset_rad": 0.00019574373069995265,
+        "max_offset_rad": 0.0007115036858789461,
+        "rms_relative_offset": 0.004770897279674604,
+        "max_relative_offset": 0.012928632497967862
+      },
+      {
+        "iteration": 49,
+        "objective": 0.006343363956183623,
+        "mean_offset_rad": 0.00020346891029137743,
+        "max_offset_rad": 0.0007437050642896008,
+        "rms_relative_offset": 0.004951107214787511,
+        "max_relative_offset": 0.013532469991802552
+      },
+      {
+        "iteration": 50,
+        "objective": 0.0063414655307170165,
+        "mean_offset_rad": 0.00021013580932364992,
+        "max_offset_rad": 0.0007642732542555922,
+        "rms_relative_offset": 0.005091815640802155,
+        "max_relative_offset": 0.013926841406132295
+      },
+      {
+        "iteration": 51,
+        "objective": 0.006339466692036666,
+        "mean_offset_rad": 0.00021573224399356163,
+        "max_offset_rad": 0.0007733861731477825,
+        "rms_relative_offset": 0.0051954760014931425,
+        "max_relative_offset": 0.014112979330306646
+      },
+      {
+        "iteration": 52,
+        "objective": 0.006337394239341876,
+        "mean_offset_rad": 0.0002202064238075776,
+        "max_offset_rad": 0.0007723012713595177,
+        "rms_relative_offset": 0.005264834217339932,
+        "max_relative_offset": 0.014106798652723115
+      },
+      {
+        "iteration": 53,
+        "objective": 0.006335274131270552,
+        "mean_offset_rad": 0.00022356725155423158,
+        "max_offset_rad": 0.0007624207519112851,
+        "rms_relative_offset": 0.0053038178368362415,
+        "max_relative_offset": 0.013940610772981825
+      },
+      {
+        "iteration": 54,
+        "objective": 0.0063331294124751025,
+        "mean_offset_rad": 0.00022592424424430156,
+        "max_offset_rad": 0.0007452261124963408,
+        "rms_relative_offset": 0.005318556825696216,
+        "max_relative_offset": 0.013639601715598929
+      },
+      {
+        "iteration": 55,
+        "objective": 0.0063309781661509135,
+        "mean_offset_rad": 0.00022746016672189033,
+        "max_offset_rad": 0.0007328375600319878,
+        "rms_relative_offset": 0.005316386711640606,
+        "max_relative_offset": 0.013379687218359157
+      },
+      {
+        "iteration": 56,
+        "objective": 0.006328832473705859,
+        "mean_offset_rad": 0.0002283652768282274,
+        "max_offset_rad": 0.0007256739646104471,
+        "rms_relative_offset": 0.005303802037065458,
+        "max_relative_offset": 0.013240961811391554
+      },
+      {
+        "iteration": 57,
+        "objective": 0.0063266998402156105,
+        "mean_offset_rad": 0.00022877761080914008,
+        "max_offset_rad": 0.0007113509283681462,
+        "rms_relative_offset": 0.005284301025929838,
+        "max_relative_offset": 0.012970337473135127
+      },
+      {
+        "iteration": 58,
+        "objective": 0.00632458491008947,
+        "mean_offset_rad": 0.00022889815290504637,
+        "max_offset_rad": 0.0006922061187629451,
+        "rms_relative_offset": 0.00526196753392105,
+        "max_relative_offset": 0.012590592502470351
+      },
+      {
+        "iteration": 59,
+        "objective": 0.00632248904461008,
+        "mean_offset_rad": 0.00022901798526957587,
+        "max_offset_rad": 0.0006931983464048524,
+        "rms_relative_offset": 0.005241202428814543,
+        "max_relative_offset": 0.012675068987309567
+      },
+      {
+        "iteration": 60,
+        "objective": 0.006320410722420178,
+        "mean_offset_rad": 0.00022919717269108576,
+        "max_offset_rad": 0.0006990810601490329,
+        "rms_relative_offset": 0.005223042089286591,
+        "max_relative_offset": 0.01280225993258033
+      },
+      {
+        "iteration": 61,
+        "objective": 0.0063183481879747205,
+        "mean_offset_rad": 0.00022940955798570893,
+        "max_offset_rad": 0.00071019353004044,
+        "rms_relative_offset": 0.005206702543633854,
+        "max_relative_offset": 0.013035856503126926
+      },
+      {
+        "iteration": 62,
+        "objective": 0.006316300356523641,
+        "mean_offset_rad": 0.0002296031682430891,
+        "max_offset_rad": 0.0007246465683438305,
+        "rms_relative_offset": 0.005191164054607968,
+        "max_relative_offset": 0.013308646411553555
+      },
+      {
+        "iteration": 63,
+        "objective": 0.006314266843148175,
+        "mean_offset_rad": 0.0002297212705486723,
+        "max_offset_rad": 0.0007363680562895495,
+        "rms_relative_offset": 0.00517570588511975,
+        "max_relative_offset": 0.013534638472677742
+      },
+      {
+        "iteration": 64,
+        "objective": 0.006312247624077116,
+        "mean_offset_rad": 0.0002297917913779457,
+        "max_offset_rad": 0.0007449045649875866,
+        "rms_relative_offset": 0.005160238178780391,
+        "max_relative_offset": 0.013698113009164258
+      },
+      {
+        "iteration": 65,
+        "objective": 0.006310242435446867,
+        "mean_offset_rad": 0.00022980721795986224,
+        "max_offset_rad": 0.0007521581901002942,
+        "rms_relative_offset": 0.005145670155498218,
+        "max_relative_offset": 0.013840876247093478
+      },
+      {
+        "iteration": 66,
+        "objective": 0.006308250475829169,
+        "mean_offset_rad": 0.00022969585211360155,
+        "max_offset_rad": 0.0007615572275085299,
+        "rms_relative_offset": 0.005131315224398536,
+        "max_relative_offset": 0.014024056372408543
+      },
+      {
+        "iteration": 67,
+        "objective": 0.006306271443904166,
+        "mean_offset_rad": 0.0002294262771407047,
+        "max_offset_rad": 0.0007844306147962788,
+        "rms_relative_offset": 0.005116823551359602,
+        "max_relative_offset": 0.014466284250700293
+      },
+      {
+        "iteration": 68,
+        "objective": 0.006304305639023511,
+        "mean_offset_rad": 0.00022888681846469994,
+        "max_offset_rad": 0.000803687623052142,
+        "rms_relative_offset": 0.005099781579498491,
+        "max_relative_offset": 0.01484730983909073
+      },
+      {
+        "iteration": 69,
+        "objective": 0.006302355146445393,
+        "mean_offset_rad": 0.0002280105152605449,
+        "max_offset_rad": 0.0008106603510203558,
+        "rms_relative_offset": 0.00507918466006918,
+        "max_relative_offset": 0.014999046529575543
+      },
+      {
+        "iteration": 70,
+        "objective": 0.006300422658831906,
+        "mean_offset_rad": 0.0002267711104777339,
+        "max_offset_rad": 0.0008150085295155032,
+        "rms_relative_offset": 0.005054188688636374,
+        "max_relative_offset": 0.015097847017667922
+      },
+      {
+        "iteration": 71,
+        "objective": 0.006298512055661121,
+        "mean_offset_rad": 0.00022516114448383227,
+        "max_offset_rad": 0.0008111186439981257,
+        "rms_relative_offset": 0.005021531904629459,
+        "max_relative_offset": 0.01504597703177523
+      },
+      {
+        "iteration": 72,
+        "objective": 0.006296629452872793,
+        "mean_offset_rad": 0.0002231700708588385,
+        "max_offset_rad": 0.0007964718070393283,
+        "rms_relative_offset": 0.004978847391331911,
+        "max_relative_offset": 0.014789335334240131
+      },
+      {
+        "iteration": 73,
+        "objective": 0.006294782485309014,
+        "mean_offset_rad": 0.0002207271798362204,
+        "max_offset_rad": 0.0007945523743287675,
+        "rms_relative_offset": 0.0049243203874963495,
+        "max_relative_offset": 0.014751364926137987
+      },
+      {
+        "iteration": 74,
+        "objective": 0.006292979705843749,
+        "mean_offset_rad": 0.000217791748780382,
+        "max_offset_rad": 0.0007839347618278137,
+        "rms_relative_offset": 0.0048572005709413444,
+        "max_relative_offset": 0.014570743261308207
+      },
+      {
+        "iteration": 75,
+        "objective": 0.006291229513415431,
+        "mean_offset_rad": 0.0002144142377283758,
+        "max_offset_rad": 0.0007643944387169079,
+        "rms_relative_offset": 0.004778588748579626,
+        "max_relative_offset": 0.014218995294295872
+      },
+      {
+        "iteration": 76,
+        "objective": 0.006289538968317743,
+        "mean_offset_rad": 0.00021061174660115566,
+        "max_offset_rad": 0.0007383723247914456,
+        "rms_relative_offset": 0.0046898557089326805,
+        "max_relative_offset": 0.01374121875705939
+      },
+      {
+        "iteration": 77,
+        "objective": 0.006287913718562521,
+        "mean_offset_rad": 0.0002064151114675369,
+        "max_offset_rad": 0.0007181296197472271,
+        "rms_relative_offset": 0.00459275077302305,
+        "max_relative_offset": 0.013307553450633142
+      },
+      {
+        "iteration": 78,
+        "objective": 0.006286357781931429,
+        "mean_offset_rad": 0.0002018892233071649,
+        "max_offset_rad": 0.0007326364762672214,
+        "rms_relative_offset": 0.0044893285056897625,
+        "max_relative_offset": 0.013598192626541624
+      },
+      {
+        "iteration": 79,
+        "objective": 0.006284873314992723,
+        "mean_offset_rad": 0.00019715220164160763,
+        "max_offset_rad": 0.0007375053189231303,
+        "rms_relative_offset": 0.004382491228669889,
+        "max_relative_offset": 0.013708098617206175
+      },
+      {
+        "iteration": 80,
+        "objective": 0.006283460493726523,
+        "mean_offset_rad": 0.00019231141115891212,
+        "max_offset_rad": 0.0007329953570669338,
+        "rms_relative_offset": 0.004273923809621011,
+        "max_relative_offset": 0.013640654384035916
+      },
+      {
+        "iteration": 81,
+        "objective": 0.006282118540514858,
+        "mean_offset_rad": 0.00018744478863706466,
+        "max_offset_rad": 0.0007273617599441248,
+        "rms_relative_offset": 0.004164276271699809,
+        "max_relative_offset": 0.013414474822442598
+      },
+      {
+        "iteration": 82,
+        "objective": 0.006280846152510122,
+        "mean_offset_rad": 0.0001825877850853982,
+        "max_offset_rad": 0.0007108762384234698,
+        "rms_relative_offset": 0.0040542047089970785,
+        "max_relative_offset": 0.013060547549216794
+      },
+      {
+        "iteration": 83,
+        "objective": 0.006279641573332384,
+        "mean_offset_rad": 0.00017772708260552548,
+        "max_offset_rad": 0.0006830103950624649,
+        "rms_relative_offset": 0.003944130847876201,
+        "max_relative_offset": 0.012618159435852387
+      },
+      {
+        "iteration": 84,
+        "objective": 0.006278502896581273,
+        "mean_offset_rad": 0.00017284440629634297,
+        "max_offset_rad": 0.0006505346497899226,
+        "rms_relative_offset": 0.0038337095450978837,
+        "max_relative_offset": 0.012130830157885365
+      },
+      {
+        "iteration": 85,
+        "objective": 0.006277428244271022,
+        "mean_offset_rad": 0.0001679783650626431,
+        "max_offset_rad": 0.0006497337502517573,
+        "rms_relative_offset": 0.0037236070955986283,
+        "max_relative_offset": 0.01184734583778747
+      },
+      {
+        "iteration": 86,
+        "objective": 0.00627641541123225,
+        "mean_offset_rad": 0.00016311311565405902,
+        "max_offset_rad": 0.0007056357567230203,
+        "rms_relative_offset": 0.003613824340213009,
+        "max_relative_offset": 0.012734901877046869
+      },
+      {
+        "iteration": 87,
+        "objective": 0.006275462271482013,
+        "mean_offset_rad": 0.00015826304733110064,
+        "max_offset_rad": 0.0007478073668730839,
+        "rms_relative_offset": 0.0035044715015128272,
+        "max_relative_offset": 0.0134984184925839
+      },
+      {
+        "iteration": 88,
+        "objective": 0.006274566630441569,
+        "mean_offset_rad": 0.0001534671952376615,
+        "max_offset_rad": 0.0007734888990458152,
+        "rms_relative_offset": 0.003396209485901563,
+        "max_relative_offset": 0.013961859392807191
+      },
+      {
+        "iteration": 89,
+        "objective": 0.0062737260014387175,
+        "mean_offset_rad": 0.000148770644648513,
+        "max_offset_rad": 0.0007815476830055203,
+        "rms_relative_offset": 0.0032900201862117798,
+        "max_relative_offset": 0.014104898977965826
+      },
+      {
+        "iteration": 90,
+        "objective": 0.006272937540284573,
+        "mean_offset_rad": 0.00014420851297925348,
+        "max_offset_rad": 0.0007726388178520807,
+        "rms_relative_offset": 0.0031867463133876967,
+        "max_relative_offset": 0.0139399517241801
+      },
+      {
+        "iteration": 91,
+        "objective": 0.006272198170638177,
+        "mean_offset_rad": 0.0001398000853920142,
+        "max_offset_rad": 0.000748964864171585,
+        "rms_relative_offset": 0.0030870361625587235,
+        "max_relative_offset": 0.013507613047777353
+      },
+      {
+        "iteration": 92,
+        "objective": 0.0062715047122523515,
+        "mean_offset_rad": 0.00013555673617914981,
+        "max_offset_rad": 0.000713755764510603,
+        "rms_relative_offset": 0.002991286259696484,
+        "max_relative_offset": 0.012867014469139827
+      },
+      {
+        "iteration": 93,
+        "objective": 0.006270853931031439,
+        "mean_offset_rad": 0.00013149667237859338,
+        "max_offset_rad": 0.0006706505144881544,
+        "rms_relative_offset": 0.0029001068977714236,
+        "max_relative_offset": 0.012084473712642744
+      },
+      {
+        "iteration": 94,
+        "objective": 0.006270242558297667,
+        "mean_offset_rad": 0.00012762115407192966,
+        "max_offset_rad": 0.000631872992167819,
+        "rms_relative_offset": 0.002813577548081018,
+        "max_relative_offset": 0.011342900719564262
+      },
+      {
+        "iteration": 95,
+        "objective": 0.006269667472611928,
+        "mean_offset_rad": 0.00012393123233678168,
+        "max_offset_rad": 0.0005967780572403852,
+        "rms_relative_offset": 0.0027317801352171257,
+        "max_relative_offset": 0.011386218716275449
+      },
+      {
+        "iteration": 96,
+        "objective": 0.0062691256858826705,
+        "mean_offset_rad": 0.00012042549011521183,
+        "max_offset_rad": 0.0005975389908743265,
+        "rms_relative_offset": 0.002654792308830494,
+        "max_relative_offset": 0.011456355517887843
+      },
+      {
+        "iteration": 97,
+        "objective": 0.0062686143374648395,
+        "mean_offset_rad": 0.000117118699790242,
+        "max_offset_rad": 0.0005964088635848751,
+        "rms_relative_offset": 0.0025827236435693717,
+        "max_relative_offset": 0.011438779210076876
+      },
+      {
+        "iteration": 98,
+        "objective": 0.006268130683029227,
+        "mean_offset_rad": 0.00011402238641082943,
+        "max_offset_rad": 0.0005920481808264094,
+        "rms_relative_offset": 0.0025156949365717973,
+        "max_relative_offset": 0.011367555028213667
+      },
+      {
+        "iteration": 99,
+        "objective": 0.006267672085829901,
+        "mean_offset_rad": 0.00011113060063208698,
+        "max_offset_rad": 0.0005908392338649999,
+        "rms_relative_offset": 0.0024537779888217015,
+        "max_relative_offset": 0.011494547118503796
+      },
+      {
+        "iteration": 100,
+        "objective": 0.006267236077984961,
+        "mean_offset_rad": 0.00010843413656925005,
+        "max_offset_rad": 0.0006063164070550543,
+        "rms_relative_offset": 0.0023964273299146607,
+        "max_relative_offset": 0.011803586407428337
+      }
+    ]
+  },
+  "constant_density_operator_diagnosis": {
+    "momentum_residual_m_s2": {
+      "l1": 5.923603186369018e-05,
+      "l2": 8.367836393360849e-05,
+      "linf": 0.0004044336578150759
+    },
+    "thickness_residual_m_s": {
+      "l1": 6.259168223257437e-05,
+      "l2": 0.0001082883581443164,
+      "linf": 0.0006225948780676116
+    },
+    "term_magnitudes_m_s2": {
+      "pressure": {
+        "l1": 0.0012575410806825605,
+        "l2": 0.0015135346713135425,
+        "linf": 0.00291799610754936
+      },
+      "kinetic": {
+        "l1": 6.0968880503511583e-05,
+        "l2": 7.480061888220909e-05,
+        "linf": 0.00033539477863546734
+      },
+      "rotation": {
+        "l1": 0.0013053717648822698,
+        "l2": 0.0015741701721864055,
+        "linf": 0.003112632727859497
+      }
+    },
+    "term_errors_m_s2": {
+      "pressure": {
+        "l1": 1.4035003063098957e-06,
+        "l2": 2.068444448745766e-06,
+        "linf": 1.138100172426253e-05
+      },
+      "kinetic": {
+        "l1": 2.6385012875051783e-05,
+        "l2": 4.4167666254077596e-05,
+        "linf": 0.00032803983783099075
+      },
+      "rotation": {
+        "l1": 4.027596116744518e-05,
+        "l2": 5.890892409965238e-05,
+        "linf": 0.00030332881968185284
+      }
+    },
+    "energy_rate_W": 1112.25,
+    "energy_work_scale_W": 3.394982995447066e+18,
+    "energy_rate_normalized": 3.276157793696207e-16
+  },
+  "candidate_momentum_rms_m_s2": 8.367836393360845e-05,
+  "candidate_h_rate_rms_m_s": 0.00010828835814431655,
+  "candidate_minus_constant_density_momentum_rms_m_s2": 2.96004048602614e-18,
+  "candidate_minus_constant_density_h_rate_rms_m_s": 3.219847826532585e-17,
+  "candidate_normalized_energy_work": 2.331136075530858e-16,
+  "rest": {
+    "flat": {
+      "momentum_rms_m_s2": 1.9641715910796393e-19,
+      "momentum_max_m_s2": 1.0252020496204201e-18,
+      "h_rate_rms_m_s": 0.0
+    },
+    "topography": {
+      "momentum_rms_m_s2": 1.0299287347945822e-18,
+      "momentum_max_m_s2": 6.526494737712791e-18,
+      "h_rate_rms_m_s": 0.0
+    }
+  },
+  "wall_seconds": 14.030850773000566
+}
