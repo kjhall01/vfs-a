@@ -239,3 +239,18 @@ comparisons pass for 142 moist and 93 dry tensors. Fourteen new focused tests ex
 independent Hamiltonian derivatives/work, entropy accounting, local passive bounds,
 global salinity admissibility and zero crossings with other faces still limited.
 Historical exact archive differences remain separate; no fixtures or tolerances changed.
+
+
+## Entropy ALE integration and vertical refinement
+
+See [ENTROPY_ALE.md](../verification/ocean/ENTROPY_ALE.md). The research wrapper
+composes #38's checked entropy/salt timestep with #32's bounded overlap remap.
+Native entropy, salt, passive contents and edge momentum are conserved; nonlinear
+energy and temperature-content changes are measured explicitly. No energy fix,
+state clipping, runtime default change or atmospheric import is introduced.
+The original full-period wave improves through 64 layers but retains an RMS
+penalty (0.137 versus 0.0627 without remap); its energy defect is non-monotonic.
+Short integrated entropy runs expose a persistent reference-thermal energy defect.
+Installed-wheel suite: 763 passed, one CUDA skip; 164 legacy ocean tensors exactly
+unchanged; both atmosphere portable comparisons pass. See the report for scope,
+reproduction and actual-remap diagnostics. This is not long-run qualification.
