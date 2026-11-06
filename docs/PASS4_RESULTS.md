@@ -191,3 +191,14 @@ analytic matched energy derivatives/forces. The first-law work identity and
 separate entropy-producing exchange are independently checked. The tilted-layer
 advective entropy failure remains; no bounded active runtime promotion follows.
 All 100 runtime Python files, defaults, fixtures and tolerances are unchanged.
+
+Dependent Gibbs/entropy candidate: see [the ocean transport derivation and evidence](../verification/ocean/ENTROPY_TRANSPORT.md).
+Installed-wheel portable: **717 passed, one CUDA skip**, including 20 new tests;
+164 legacy ocean tensors exactly equal; atmospheric portable checks pass. The
+research entropy state, ocean Gibbs means, composition-attached entropy flux
+and mechanical/nonnegative-heat work split remove #35's tilted entropy failure.
+Per-incidence budgets avoid a force jump when one edge crosses zero while
+neighbors remain limited. Active salinity must be strictly positive; scalar
+admissibility is not a local-extremum theorem. Pressure and short internal-wave
+refinement are measured; long runs/GPU/performance remain unqualified. All
+installed runtime files, defaults, historical fixtures and tolerances are intact.

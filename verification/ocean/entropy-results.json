@@ -1,0 +1,720 @@
+{
+  "status": "research candidate; strictly positive active salt, no local-extremum guarantee",
+  "cases": [
+    {
+      "kind": "front",
+      "coast": false,
+      "dt_s": 10.0,
+      "energy_rate_W": 14.87109375,
+      "normalized_energy_rate": 3.177799008395016e-17,
+      "absolute_local_work_W": 4.679683551638723e+17,
+      "entropy_rate_W_K": 0.0,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 0.0,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 50,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 6.30961949354969e-12,
+      "finite_entropy_change_J_K": -8490724.75,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -4.6264701320948e-17,
+      "energy_change_J_m2": -2.013076088509852e-06,
+      "stage_salinity_range": [
+        33.99999973378993,
+        36.00000013689533
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.6729909989249393e-16,
+        "salinity_content": 1.5296306224213485e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "dt_s": 10.0,
+      "energy_rate_W": 8.6875,
+      "normalized_energy_rate": 3.0273844621988425e-17,
+      "absolute_local_work_W": 2.8696388279967968e+17,
+      "entropy_rate_W_K": 0.0,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 0.0,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 26,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 6.30961949354969e-12,
+      "finite_entropy_change_J_K": -7224305.4375,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -5.747987353504858e-17,
+      "energy_change_J_m2": -6.164393070995071e-06,
+      "stage_salinity_range": [
+        33.99999980854086,
+        36.00000013689533
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.220285705263155e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": false,
+      "dt_s": 10.0,
+      "energy_rate_W": 8.453125,
+      "normalized_energy_rate": 1.5489487636525833e-17,
+      "absolute_local_work_W": 5.457330286423836e+17,
+      "entropy_rate_W_K": 0.03125,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 1.8136907568811233e-17,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 50,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 2.0463630789890885e-12,
+      "finite_entropy_change_J_K": -17690134.0,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -7.868206862678098e-17,
+      "energy_change_J_m2": -8.08536771941527e-06,
+      "stage_salinity_range": [
+        33.999999733698424,
+        36.00000013571658
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.6729911223541496e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": true,
+      "dt_s": 10.0,
+      "energy_rate_W": -8.609375,
+      "normalized_energy_rate": -2.4686003464376142e-17,
+      "absolute_local_work_W": 3.487553184712143e+17,
+      "entropy_rate_W_K": 0.015625,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 1.4183335466304106e-17,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 26,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 2.0463630789890885e-12,
+      "finite_entropy_change_J_K": -17127105.25,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -1.1113242158506063e-16,
+      "energy_change_J_m2": -1.5615384273407913e-05,
+      "stage_salinity_range": [
+        33.999999808460814,
+        36.00000013571658
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 2.231368170425221e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "dt_s": 10.0,
+      "energy_rate_W": 28.671875,
+      "normalized_energy_rate": 5.24004587137529e-17,
+      "absolute_local_work_W": 5.4716839706738765e+17,
+      "entropy_rate_W_K": 0.078125,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 4.529961601894018e-17,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 50,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 6.7302101391941704e-12,
+      "finite_entropy_change_J_K": -16178406.25,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -7.195608521765425e-17,
+      "energy_change_J_m2": -1.0475849274491409e-05,
+      "stage_salinity_range": [
+        34.999999999999986,
+        35.000000000000014
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.6729898880628635e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 1.6669131833955435e-16
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "dt_s": 10.0,
+      "energy_rate_W": 20.0,
+      "normalized_energy_rate": 5.721270522109253e-17,
+      "absolute_local_work_W": 3.4957270282382355e+17,
+      "entropy_rate_W_K": 0.03125,
+      "nonnegative_entropy_production_W_K": 0.0,
+      "entropy_flux_roundoff_normalized": 2.8356091688676516e-17,
+      "heat_W": 0.0,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 0,
+      "limited_passive_faces": 26,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 6.7302101391941704e-12,
+      "finite_entropy_change_J_K": -10992136.125,
+      "predicted_entropy_change_J_K": 0.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -7.130430494875987e-17,
+      "energy_change_J_m2": -1.0435067727675713e-05,
+      "stage_salinity_range": [
+        34.99999999999999,
+        35.000000000000014
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.11544502965761e-16,
+        "tracer_content": 1.2122540614413917e-16
+      }
+    },
+    {
+      "kind": "near_fresh",
+      "coast": false,
+      "dt_s": 10.0,
+      "energy_rate_W": 8.0,
+      "normalized_energy_rate": 1.5594241001513377e-17,
+      "absolute_local_work_W": 5.1300989892509824e+17,
+      "entropy_rate_W_K": 215684016423143.84,
+      "nonnegative_entropy_production_W_K": 215684016423143.8,
+      "entropy_flux_roundoff_normalized": 2.1127400615168898e-17,
+      "heat_W": 6.076218496134684e+16,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 46,
+      "limited_passive_faces": 50,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 9.549694368615746e-12,
+      "finite_entropy_change_J_K": 1411462653834094.8,
+      "predicted_entropy_change_J_K": 1411462662151577.0,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -4.4111918506490136e-17,
+      "energy_change_J_m2": 48.470425219398514,
+      "stage_salinity_range": [
+        2.499593176645445e-11,
+        35.000001351547965
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 3.3459819978498786e-16,
+        "salinity_content": 3.0619055299114347e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "near_fresh",
+      "coast": true,
+      "dt_s": 10.0,
+      "energy_rate_W": 0.0,
+      "normalized_energy_rate": 0.0,
+      "absolute_local_work_W": 3.215357338024097e+17,
+      "entropy_rate_W_K": 140522170492967.47,
+      "nonnegative_entropy_production_W_K": 140522170492967.47,
+      "entropy_flux_roundoff_normalized": 0.0,
+      "heat_W": 3.963917363271237e+16,
+      "mechanically_paired_work_W": 0.0,
+      "limited_active_faces": 25,
+      "limited_passive_faces": 26,
+      "maximum_force_correction_m_s2": 0.0,
+      "maximum_gibbs_identity_residual_J_kg": 9.549694368615746e-12,
+      "finite_entropy_change_J_K": 904257516336701.1,
+      "predicted_entropy_change_J_K": 904257521394966.2,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -3.9183253391843944e-17,
+      "energy_change_J_m2": 46.546350633540825,
+      "stage_salinity_range": [
+        4.4432389713528314e-11,
+        35.00000174409813
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.220285705263155e-16,
+        "salinity_content": 1.1139413569626103e-16,
+        "tracer_content": 2.4367467183626503e-16
+      }
+    },
+    {
+      "kind": "upper_salt",
+      "coast": false,
+      "dt_s": 10.0,
+      "energy_rate_W": -9.21875,
+      "normalized_energy_rate": -1.6714494492097954e-17,
+      "absolute_local_work_W": 5.515422559957354e+17,
+      "entropy_rate_W_K": 33.15625,
+      "nonnegative_entropy_production_W_K": 33.18691253542486,
+      "entropy_flux_roundoff_normalized": -1.8255533930065298e-17,
+      "heat_W": 9407.555587525181,
+      "mechanically_paired_work_W": 385734820.04187167,
+      "limited_active_faces": 47,
+      "limited_passive_faces": 50,
+      "maximum_force_correction_m_s2": 1.0929944931627177e-10,
+      "maximum_gibbs_identity_residual_J_kg": 7.80131514943605e-12,
+      "finite_entropy_change_J_K": -12209857.0,
+      "predicted_entropy_change_J_K": 79.7951887514071,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -5.576057563945361e-17,
+      "energy_change_J_m2": -6.944722706792436e-06,
+      "stage_salinity_range": [
+        41.9899999995844,
+        41.99999999997411
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.2748112788330317e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "upper_salt",
+      "coast": true,
+      "dt_s": 10.0,
+      "energy_rate_W": 7.859375,
+      "normalized_energy_rate": 2.230565430187974e-17,
+      "absolute_local_work_W": 3.5234900055532896e+17,
+      "entropy_rate_W_K": 33.25,
+      "nonnegative_entropy_production_W_K": 33.18691253542486,
+      "entropy_flux_roundoff_normalized": 5.877888162441909e-17,
+      "heat_W": 9407.555587525181,
+      "mechanically_paired_work_W": 191778466.92152798,
+      "limited_active_faces": 25,
+      "limited_passive_faces": 26,
+      "maximum_force_correction_m_s2": 1.0929944931627177e-10,
+      "maximum_gibbs_identity_residual_J_kg": 6.16091379301853e-12,
+      "finite_entropy_change_J_K": -9913368.5,
+      "predicted_entropy_change_J_K": 79.84007684088698,
+      "finite_entropy_budget_error_over_initial_absolute_entropy": -6.602986357642144e-17,
+      "energy_change_J_m2": -8.39568364358534e-06,
+      "stage_salinity_range": [
+        34.99999999999999,
+        41.999999999954895
+      ],
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.8592978120237813e-16,
+        "tracer_content": 1.2122540614413917e-16
+      }
+    }
+  ],
+  "zero_velocity": [
+    {
+      "kind": "front",
+      "velocity_factor": -1.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 1.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": -0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": -1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": -1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": -1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": -0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "front",
+      "velocity_factor": 0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -1.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 236626768002824.78,
+      "limited_active_faces": 43
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 1.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 215684016423143.8,
+      "limited_active_faces": 46
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 228213407882.00134,
+      "limited_active_faces": 40
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 207693302042.82874,
+      "limited_active_faces": 35
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": -0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "near_fresh",
+      "velocity_factor": 0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -1.0,
+      "maximum_force_correction_m_s2": 1.1136536917440418e-10,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 42
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 1.0,
+      "maximum_force_correction_m_s2": 1.0929944931627177e-10,
+      "entropy_production_W_K": 33.18691253542486,
+      "limited_active_faces": 47
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 0.001,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 1e-06,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 1e-09,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 1e-12,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": -0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    },
+    {
+      "kind": "upper_salt",
+      "velocity_factor": 0.0,
+      "maximum_force_correction_m_s2": 0.0,
+      "entropy_production_W_K": 0.0,
+      "limited_active_faces": 0
+    }
+  ],
+  "single_edge_zero_velocity": [
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": -0.01,
+      "force_correction_m_s2": 9.390810738870335e-11,
+      "limited_active_faces": 47
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": 0.01,
+      "force_correction_m_s2": -5.429072084390902e-11,
+      "limited_active_faces": 47
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": -0.001,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": 0.001,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": -1e-06,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": 1e-06,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": -1e-09,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": 1e-09,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": -0.0,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    },
+    {
+      "edge": 14,
+      "layer": 0,
+      "velocity_m_s": 0.0,
+      "force_correction_m_s2": -0.0,
+      "limited_active_faces": 46
+    }
+  ],
+  "pressure_refinement": [
+    {
+      "cells": 64,
+      "rms_error_m_s2": 1.039483538268845e-09,
+      "reference_rms_m_s2": 1.083583778909447e-07,
+      "maximum_error_m_s2": 3.6281895272051468e-09
+    },
+    {
+      "cells": 256,
+      "rms_error_m_s2": 2.5111427941505764e-10,
+      "reference_rms_m_s2": 1.0837613507063926e-07,
+      "maximum_error_m_s2": 1.0950328072190713e-09
+    },
+    {
+      "cells": 1024,
+      "rms_error_m_s2": 6.483729371883023e-11,
+      "reference_rms_m_s2": 1.0837536713975941e-07,
+      "maximum_error_m_s2": 2.747629344066765e-10
+    }
+  ],
+  "temporal_refinement": [
+    {
+      "duration_s": 1000.0,
+      "dt_s": 1000.0,
+      "energy_change_J_m2": -0.0487205979834078
+    },
+    {
+      "duration_s": 1000.0,
+      "dt_s": 500.0,
+      "energy_change_J_m2": -0.006114219757990856
+    },
+    {
+      "duration_s": 1000.0,
+      "dt_s": 250.0,
+      "energy_change_J_m2": -0.0007873136560960569
+    }
+  ],
+  "internal_wave": [
+    {
+      "cells": 64,
+      "period_s": 117898.88482910735,
+      "fraction_of_period": 0.05,
+      "steps": 197,
+      "dt_s": 29.92357482972268,
+      "projection_error_over_amplitude": 0.001692319852840277,
+      "energy_change_J_m2": -0.0009085882874728702,
+      "minimum_thickness_m": 499.9071988510715,
+      "salinity_range": [
+        33.99999999999987,
+        35.500000000000185
+      ]
+    },
+    {
+      "cells": 256,
+      "period_s": 117898.88482910735,
+      "fraction_of_period": 0.05,
+      "steps": 324,
+      "dt_s": 18.194272350170888,
+      "projection_error_over_amplitude": 0.0004530567868557529,
+      "energy_change_J_m2": -0.0014812933107336379,
+      "minimum_thickness_m": 499.9054104028433,
+      "salinity_range": [
+        33.99999999999974,
+        35.50000000000039
+      ]
+    }
+  ],
+  "files_sha256": {
+    "probe_ocean_entropy.py": "131f03980d72bee5872db9d78cfcede037aed8c97896b177bbe5f7c26ab3c789",
+    "ocean_gibbs_faces.py": "5b466bc0c8da38ea3716933cebb6b6461eb74852e04f844102c9a4e8693d08ca",
+    "ocean_entropy_research.py": "d683d13d73d23c9e11e403ab5cef0eaec4ede3a835073fdb8e638cdc8cc912cd",
+    "surface-gibbs-reference.json": "c52467612cdc7d2e7444673e781485b8fab6a126681c35cd8bfdff5e343c9e2b"
+  },
+  "environment": {
+    "torch": "2.15.0+cpu",
+    "dtype": "float64",
+    "device": "cpu",
+    "threads": 1
+  }
+}

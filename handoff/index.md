@@ -1,4 +1,43 @@
-# Current ocean handoff — seawater calorics and enthalpy coordinates
+# Current ocean handoff — Gibbs/entropy transport candidate
+
+Dependent on #35 at `c3e9d6cdf39f4d978ed30cfb9dc22d660f7c4e39`, branch
+`ocean/entropy-compatible-transport`. New research state stores entropy and
+salt contents, with explicit temperature recovery for unchanged JMD95 density.
+The physical Hamiltonian is the same as #35. Surface calorics are derived from
+GSW/TEOS-10; this is explicitly borrowed thermodynamic physics, not a new EOS.
+
+Read [provenance, derivation, budgets and limits](../verification/ocean/ENTROPY_TRANSPORT.md).
+Ocean-owned Gibbs face means cancel reference-caloric pressure; entropy-flux
+changes are attached to actual salt-flux changes, adapting atmospheric ideas
+without imports. Positive limiter work is mechanically paired; negative work
+becomes nonnegative heat. The tilted-layer entropy failure in #35 is removed.
+
+New per-incidence amount allowances recover the high trace as an individual
+edge's velocity vanishes, even while other edges remain limited. Tests cover
+that stronger limit as well as whole-flow rest. Positive salt, nonnegative
+passives, energy work and every Euler entropy-source ledger are checked.
+
+Scope: strictly **0 < SP < 42**, interior reference temperatures, nonnegative
+passives; no salt floor. Exactly fresh active water is unsupported. Limiting
+enforces admissibility, not local extrema; full stages leaving the nonlinear
+caloric domain are rejected. No automatic dt retry or exact finite-step energy
+claim. Equal heat allocation is numerical, not a calibrated mixing closure.
+
+Installed-wheel portable: **717 passed, one CUDA skip**, including 20 new
+tests. All 164 legacy-ocean tensors exactly equal; atmospheric portable checks
+pass. Independent pressure refinement is about second order; 0.05-period
+internal-wave errors decrease at 64/256 cells. Temporal energy refinement is
+about third order in the tested short case. Long-wave/jet, GPU, performance and
+full backward qualification remain open. All 100 runtime Python files, defaults,
+fixtures and tolerances are unchanged. Keep drafts unmerged; ALE #32 separate.
+
+Next: transport accuracy/overshoots, sustained wave phase/damping and rotating
+balance; assess the per-face budgets' diffusion, then decide opt-in runtime
+promotion and ALE composition. The new stepper remains a research candidate.
+
+---
+
+# Previous ocean handoff — seawater calorics and enthalpy coordinates
 
 Dependent on #34 at `81481b0b81dcd193666dde86db265b82b7c70d61`, branch
 `ocean/seawater-caloric-reference`. All 100 installed runtime Python files
