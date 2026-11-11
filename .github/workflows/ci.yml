@@ -140,6 +140,7 @@ jobs:
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I examples/ocean_jmd95.py
+          python -I examples/ocean_stratified.py
           python -I tools/verify_ocean_jmd95.py --output jmd95-smoke --quick
       - name: Ocean bounded transport measurements (no accuracy gate)
         working-directory: ${{ runner.temp }}/vfs-check

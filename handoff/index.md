@@ -1,3 +1,27 @@
+# Current ocean handoff — integrated entropy/JMD95 API
+
+The dependent research PRs #32–42 were reviewed without merging them. Selected
+numerics now live in `vfs.ocean.stratified`, with `StratifiedOcean`, explicit
+entropy-state conversion, checked sharp-front SSPRK3, tensor budgets and an
+optional `AdaptiveThermalRemapper`. See [the selection review, API and limits](../docs/OCEAN_INTEGRATION.md).
+Run `python -I examples/ocean_stratified.py` after wheel installation.
+
+Earlier idealized caloric, enthalpy-coordinate dynamics, native-entropy remapping
+and uniform thermal correction remain research evidence, not supported choices.
+All research sources/results remain frozen. Seven migrated expression trees are
+unchanged apart from imports; provenance is recorded in
+`verification/ocean/integration-provenance.json`. Legacy Ocean/defaults, atmosphere,
+rotation, fixtures and tolerances are unchanged. Coasts, absent/zero passives and
+explicit remapping are covered; no forcing/mixing/TKE/EKE integration is claimed.
+
+Support is CPU float64, unbatched and unforced. Remap feasibility and active local
+bounds remain conditional; long adaptive-remap runs and GPU/compile/full backward
+remain unqualified. Review this integration as a dependent draft; do not merge
+all experiments by implication. Next: repeated-reset/front and multi-period wave
+qualification, followed by stress/work and Ekman tests.
+
+---
+
 # Current ocean handoff — adaptive thermal ALE allocation
 
 This branch follows draft #41 at 6dec5c01ab3353f33fbb9bd39a85bf5c394dc748.

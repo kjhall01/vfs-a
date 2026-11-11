@@ -294,3 +294,16 @@ errors and roundoff energy closure. This does not establish universal feasibilit
 or nonlinear optimality. Installed-wheel tests: 816 passed, one CUDA skip; legacy
 ocean 164 exact; moist 142/dry 93 portable comparisons pass. No runtime changes.
 See [the derivation and measurements](../verification/ocean/ADAPTIVE_THERMAL_ALE.md).
+
+
+## Selective stratified-ocean integration
+
+The installed `vfs.ocean.stratified` API selects the entropy/Gibbs work pairing,
+sharp-front transport and explicit adaptive Hamiltonian ALE correction. Legacy
+Ocean/defaults remain unchanged. Superseded candidates are retained as evidence.
+See [selection decisions and supported scope](OCEAN_INTEGRATION.md). The standalone
+example imports only the installed package and exercises both timestepping and
+actual remapping. Exact migration comparisons cover states, stage ledgers and
+remap reports across four profiles with/without coast masks. Seven numerical
+module expression trees match their frozen research source apart from imports;
+source hashes are retained. This is API integration, not new physics qualification.
