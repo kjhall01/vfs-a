@@ -1,0 +1,173 @@
+{
+  "status": "completed",
+  "device": "cpu",
+  "dtype": "float64",
+  "source_sha256": {
+    "probe_ocean_adaptive_thermal.py": "aa6d3eb86e1e1579a4e9b4ed3676c87c80e0532aeb5427534861f99b65332921",
+    "ocean_adaptive_thermal_ale.py": "a8c98be9daa1cd01525260b2320b6c92878470ce778c0f58eb324305b710dd0d",
+    "probe_ocean_hamiltonian_ale.py": "7e9f141bcfe86519235716621c4b46d2fd6f6af7617f14e3cfc01b73af2499bb"
+  },
+  "wave": {
+    "layers": 8,
+    "scheme": "adaptive-thermal",
+    "periods": 0.05,
+    "steps": 197,
+    "dt_s": 29.92357482972268,
+    "actual_remap_events": 197,
+    "salinity_projection_rms_error": 0.005664005450346449,
+    "remap_energy_J_m2": {
+      "kinetic": -3.103923652428407e-09,
+      "free_surface": 5.414194757309318e-13,
+      "total": -3.3377210721505446e-05,
+      "dynamic_enthalpy": 87.98049279093144,
+      "reference_thermal": -87.98050840390408
+    },
+    "total_energy_change_J_m2": -0.0008010530573161307,
+    "horizontal_entropy_production_J_K": 3627.7476754922836,
+    "remap_entropy_change_J_K": 27904278040155.746,
+    "entropy_budget_relative_residual": -1.1559771477952972e-14,
+    "max_salt_column_residual": 4.274625098332763e-11,
+    "max_enthalpy_column_residual": 0.4153247233480215,
+    "samples": [
+      {
+        "time_over_period": 0.0,
+        "projection_over_initial": 1.0
+      },
+      {
+        "time_over_period": 0.0015228426395939086,
+        "projection_over_initial": 1.0001149663776048
+      },
+      {
+        "time_over_period": 0.003045685279187817,
+        "projection_over_initial": 1.0005633311319395
+      },
+      {
+        "time_over_period": 0.004568527918781726,
+        "projection_over_initial": 1.0012511292763921
+      },
+      {
+        "time_over_period": 0.006091370558375634,
+        "projection_over_initial": 1.0020218714077365
+      },
+      {
+        "time_over_period": 0.007614213197969543,
+        "projection_over_initial": 1.0026907457483076
+      },
+      {
+        "time_over_period": 0.009137055837563452,
+        "projection_over_initial": 1.003077447513284
+      },
+      {
+        "time_over_period": 0.01065989847715736,
+        "projection_over_initial": 1.0030382026385414
+      },
+      {
+        "time_over_period": 0.012182741116751269,
+        "projection_over_initial": 1.002491303127897
+      },
+      {
+        "time_over_period": 0.013705583756345178,
+        "projection_over_initial": 1.001431627131518
+      },
+      {
+        "time_over_period": 0.015228426395939087,
+        "projection_over_initial": 0.9999315607713869
+      },
+      {
+        "time_over_period": 0.016751269035532996,
+        "projection_over_initial": 0.9981281551056236
+      },
+      {
+        "time_over_period": 0.018274111675126905,
+        "projection_over_initial": 0.996198792911151
+      },
+      {
+        "time_over_period": 0.019796954314720814,
+        "projection_over_initial": 0.9943296867793485
+      },
+      {
+        "time_over_period": 0.02131979695431472,
+        "projection_over_initial": 0.992682809270934
+      },
+      {
+        "time_over_period": 0.02284263959390863,
+        "projection_over_initial": 0.9913671344490615
+      },
+      {
+        "time_over_period": 0.024365482233502538,
+        "projection_over_initial": 0.990419299727207
+      },
+      {
+        "time_over_period": 0.025888324873096447,
+        "projection_over_initial": 0.9897971192373345
+      },
+      {
+        "time_over_period": 0.027411167512690356,
+        "projection_over_initial": 0.9893870964829892
+      },
+      {
+        "time_over_period": 0.028934010152284265,
+        "projection_over_initial": 0.9890245982021344
+      },
+      {
+        "time_over_period": 0.030456852791878174,
+        "projection_over_initial": 0.9885231097723123
+      },
+      {
+        "time_over_period": 0.03197969543147208,
+        "projection_over_initial": 0.9877073804475304
+      },
+      {
+        "time_over_period": 0.03350253807106599,
+        "projection_over_initial": 0.9864445728794947
+      },
+      {
+        "time_over_period": 0.0350253807106599,
+        "projection_over_initial": 0.9846678824784602
+      },
+      {
+        "time_over_period": 0.03654822335025381,
+        "projection_over_initial": 0.9823884257170339
+      },
+      {
+        "time_over_period": 0.03807106598984772,
+        "projection_over_initial": 0.9796932858872581
+      },
+      {
+        "time_over_period": 0.03959390862944163,
+        "projection_over_initial": 0.9767300636314556
+      },
+      {
+        "time_over_period": 0.04111675126903554,
+        "projection_over_initial": 0.973680682093835
+      },
+      {
+        "time_over_period": 0.04263959390862944,
+        "projection_over_initial": 0.9707290998560743
+      },
+      {
+        "time_over_period": 0.04416243654822335,
+        "projection_over_initial": 0.9680286670390447
+      },
+      {
+        "time_over_period": 0.04568527918781726,
+        "projection_over_initial": 0.9656749179712276
+      },
+      {
+        "time_over_period": 0.047208121827411166,
+        "projection_over_initial": 0.963688628457712
+      },
+      {
+        "time_over_period": 0.048730964467005075,
+        "projection_over_initial": 0.9620121520836294
+      },
+      {
+        "time_over_period": 0.05,
+        "projection_over_initial": 0.9607625683171886
+      }
+    ],
+    "max_column_relative_energy_residual": 9.214614586359438e-16,
+    "max_abs_temperature_increment_C": 3.483347299493289e-08,
+    "sum_column_residual_J": 2930330.017075209
+  }
+}

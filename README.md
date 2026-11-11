@@ -62,3 +62,7 @@ GPU execution or long-rollout gradients.
 Atmospheric verification campaigns are paused during the behavior-preserving
 ownership migration. Numerical fixes and reference-policy decisions remain in
 separate PRs; this structural stack makes no new scientific qualification claim.
+
+
+Opt-in active entropy/JMD95 ocean: see [integration scope and API](docs/OCEAN_INTEGRATION.md)
+and the runnable [stratified ocean example](examples/ocean_stratified.py).

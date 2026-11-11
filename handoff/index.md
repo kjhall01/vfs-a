@@ -1,4 +1,307 @@
-# Current ocean handoff — active JMD95 Hamiltonian candidate
+# Current ocean handoff — integrated entropy/JMD95 API
+
+The dependent research PRs #32–42 were reviewed without merging them. Selected
+numerics now live in `vfs.ocean.stratified`, with `StratifiedOcean`, explicit
+entropy-state conversion, checked sharp-front SSPRK3, tensor budgets and an
+optional `AdaptiveThermalRemapper`. See [the selection review, API and limits](../docs/OCEAN_INTEGRATION.md).
+Run `python -I examples/ocean_stratified.py` after wheel installation.
+
+Earlier idealized caloric, enthalpy-coordinate dynamics, native-entropy remapping
+and uniform thermal correction remain research evidence, not supported choices.
+All research sources/results remain frozen. Seven migrated expression trees are
+unchanged apart from imports; provenance is recorded in
+`verification/ocean/integration-provenance.json`. Legacy Ocean/defaults, atmosphere,
+rotation, fixtures and tolerances are unchanged. Coasts, absent/zero passives and
+explicit remapping are covered; no forcing/mixing/TKE/EKE integration is claimed.
+
+Support is CPU float64, unbatched and unforced. Remap feasibility and active local
+bounds remain conditional; long adaptive-remap runs and GPU/compile/full backward
+remain unqualified. Review this integration as a dependent draft; do not merge
+all experiments by implication. Next: repeated-reset/front and multi-period wave
+qualification, followed by stress/work and Ekman tests.
+
+---
+
+# Current ocean handoff — adaptive thermal ALE allocation
+
+This branch follows draft #41 at 6dec5c01ab3353f33fbb9bd39a85bf5c394dc748.
+Read [ADAPTIVE_THERMAL_ALE.md](../verification/ocean/ADAPTIVE_THERMAL_ALE.md).
+The research-only AdaptiveThermalRemapper performs layerwise mass-weighted
+linearized projections with full nonlinear local Hamiltonian and entropy checks.
+It resolves the three weak-stable cases rejected by the uniform allocation,
+without changing tolerances, target grids or provisional conservative fields.
+All 16 audits and eight feasibility cases complete. Matched 8/32/64-layer waves
+(.05 period, 197 remaps) retain essentially unchanged salinity-projection errors
+and roundoff-level column energy closure. The method is not a certified global
+optimizer and rejects rank/domain/nonconvergence failures.
+
+Validation: installed-wheel portable suite 816 passed/one CUDA skip; 164 legacy
+ocean tensors exact; 142 moist and 93 dry portable comparisons pass. No runtime,
+rotation, atmosphere, fixture or default changes. No GPU/long-run claim.
+Next: qualify repeated resets near neutral stratification and front cycles, then
+consider thermocline-aware weights or target-grid adaptation with explicit budgets.
+
+---
+
+# Current ocean handoff — conditional Hamiltonian ALE closure
+
+This branch follows #40. Read [HAMILTONIAN_ALE.md](../verification/ocean/HAMILTONIAN_ALE.md).
+The research HamiltonianRemapper follows potential-enthalpy remapping with a
+column-local nonlinear energy solve. Column kinetic ownership uses the actual
+interpolation transpose; thermal and dynamic-enthalpy terms use the original H.
+The explicit vertical allocation is a uniform temperature increment per column.
+Salt, passives, thickness and momentum retain their provisional conservative values.
+
+Short 8/32/64-layer waves complete 197 remaps with accumulated remap energy changes
+about −0.00010/+0.00022/+0.00017 J/m² (previously +88/−132/−167 J/m²). Per-column
+energy residuals are around roundoff. Wave errors remain essentially unchanged.
+This corrects only remap energy, not finite-timestep drift.
+
+IMPORTANT SCOPE: the root must also satisfy column entropy nondecrease. Three weak
+stable stratification cases in the explicit feasibility sweep fail this condition
+and are rejected without state mutation or fallback. This is a conditional research
+projection, not a universally feasible production remapper. No claim that every
+possible allocation fails follows from this particular policy's rejection.
+
+Validation: 799 installed-wheel portable tests passed, one CUDA skip; 164 legacy
+ocean tensors exactly unchanged; atmosphere portable comparisons pass. Sixteen
+focused tests include energy ownership, independent derivatives, domain/entropy
+rejection and combined-step accounting. Rotation/runtime/defaults unchanged.
+Next work: feasibility-aware grid/allocation choices and longer wave qualification,
+while preserving the failure evidence. Leave draft/unmerged. No GPU/climate claim.
+
+---
+
+# Current ocean handoff — potential-enthalpy remap experiment
+
+This branch follows #39 and adds an explicitly selected research EnthalpyRemapper.
+Read [ENTHALPY_ALE.md](../verification/ocean/ENTHALPY_ALE.md). It conservatively
+projects potential enthalpy and salt, then reconstructs the existing entropy state.
+The density EOS, Hamiltonian, sharp-front solver, momentum remap and grid policy
+are unchanged. All installed runtime files and atmosphere remain unchanged.
+
+In short wave trajectories, the dominant ~63 kJ/m² reference-thermal loss disappears:
+total remap energy change is +88 J/m² at eight layers, −132 J/m² at 32, and −167 J/m²
+at 64. These remaining dynamic-enthalpy changes are not negligible relative to the
+tiny wave energy. Entropy is produced by the mixed thermodynamic state and explicitly
+accounted. The wave accuracy tradeoff remains visible; no total-energy-conserving
+or universally entropy-stable PLM claim is made.
+
+Wave comparisons use column SALINITY content so both remap variants share a
+conserved observable. Runs cover 0.05 period; they are not full-period qualification.
+Validation: 783 installed-wheel portable tests passed, one CUDA skip; 164 legacy
+ocean tensors exactly unchanged. Twenty focused tests include repeated remaps,
+complete-step entropy accounting and one derivative check. Leave draft/unmerged.
+The next step is a local full-Hamiltonian treatment of the remaining mechanical
+energy changes, together with wave and mixing accuracy checks; no global heat fix.
+
+---
+
+# Current ocean handoff — entropy ALE integration
+
+This branch combines draft #38's entropy/salt sharp-front candidate with the
+unchanged vertical remap machinery from #32. Read
+[ENTROPY_ALE.md](../verification/ocean/ENTROPY_ALE.md) before interpreting success.
+The new research wrapper conserves native entropy/salt/passive contents and edge
+momentum, and reports energy and temperature-content changes separately. It does
+not turn remapping into energy-conserving physical mixing. Rotation remains frozen.
+
+Original-remap full-period wave RMS improves with vertical refinement: approximately
+0.442/0.268/0.191/0.155/0.137 at 4/8/16/32/64 layers, versus 0.0627 without remap.
+Energy defects do not decrease monotonically. Integrated entropy/ALE trajectories
+are explicitly short (0.05 period); they exercise actual remapping, not just a
+non-triggering grid policy. Reference-thermal energy loss is an unresolved issue.
+Smooth single-remap temperature RMS decreases from 0.0703°C at eight layers to
+0.00319°C at 64. Layer count alone is not a qualification criterion.
+
+Validation: 763 installed-wheel portable tests passed, one CUDA skip; all 164
+legacy ocean tensors exactly unchanged; 142 moist/93 dry atmosphere portable
+comparisons pass. Nine new integration tests and the original 18 ALE tests pass.
+Next scientific work should address the remap's thermodynamic energy defect and
+required-remap wave accuracy, then longer integrated runs. No climate, GPU,
+long-backward or atmosphere-coupling qualification. Leave draft and unmerged.
+
+---
+
+# Current ocean handoff — sharp-front transport research
+
+The sharp-front pass builds on draft #37 (`bf5ad5cb8887ec05d26e0566dde0c636daf0676a`).
+Read [the report](../verification/ocean/SHARP_FRONT.md) for derivation and measured limitations.
+Rotation, kinetic reconstruction, installed runtime, defaults, fixtures and tolerances remain frozen.
+A local flux-correction target controls entropy, salt and passives; a matched Hamiltonian
+work budget blends active corrections toward the parent when needed for zero-velocity continuity.
+Passive local bounds survive this blend; active local bounds are conditional. Temperature
+has no maximum principle. No post-step clipping or ocean import from atmosphere is added.
+
+The isolated 64-cell sharp front stays within SP 34–36 and passive 0–1 to roundoff,
+compared with parent SP 33.235–36.773 and passive maximum 1.279. Smooth-profile
+observed orders fall to about 1.6–1.7. A two-hour, 32-cell, three-layer active comparison
+also preserves these SP/passive bounds; temperature still overshoots its initial range.
+Energy drift improves from −43.05 to −5.52 J/m² on timestep halving. Numerical entropy
+production is recorded explicitly and is not a calibrated physical mixing closure.
+
+Validation: installed-wheel portable suite 736 passed, one CUDA skip; all 164 legacy
+ocean tensors exactly unchanged; atmosphere portable comparisons pass (142 moist,
+93 dry tensors). Fourteen focused tests cover independent energy derivatives/work,
+Euler/SSP budgets, global admissibility, passive local bounds and single-edge zero
+crossings with other faces limited. No GPU, long-run, full backward or ALE qualification.
+Next work is broader front-candidate wave/jet qualification and the smooth-extrema
+accuracy tradeoff; smaller rotation residuals are not a prerequisite. Draft and unmerged.
+
+---
+
+# Current ocean handoff — frozen-candidate qualification
+
+This branch measures draft #36 at
+`705720c79e38c2f07de39d45a33c9ede50707b87`; it does not change the candidate.
+Read [the campaign report](../verification/ocean/QUALIFICATION_CAMPAIGN.md)
+and its compact per-case JSON evidence before interpreting conservation as
+accuracy. The campaign covers three-period nonlinear internal waves, seven-day
+Williamson jets, one-day flat/sloping stratified rest, and isolated smooth/sharp
+scalar transport. CPU float64 only; no GPU or backward qualification.
+
+Smooth transport converges at approximately second order, but sharp fronts
+oscillate beyond their initial extrema. Passive nonnegativity is not a maximum
+principle. Rotating-jet drift persists under timestep refinement even though
+energy loss improves; the fine initial tests show slower kinetic/rotation convergence than pressure.
+Initial-balance tests extend to 65,536 cells, plus a mesh-relaxation comparison.
+Flat/sloping stratified rest stays near roundoff. These findings remain exposed,
+not corrected or assigned subjective acceptance thresholds in this branch.
+
+Next numerical work should separately address sharp-front limiting with the
+Gibbs/work/entropy pairing intact, and joint rotation/kinetic reconstruction
+consistency. Then rerun these frozen cases before active runtime promotion,
+baroclinic-growth qualification and ALE composition. ALE #32 remains separate;
+no coupled atmosphere claim follows. All installed runtime files, defaults,
+fixtures and tolerances are unchanged. No oversized artifacts are uploaded.
+
+---
+
+# Current ocean handoff — Gibbs/entropy transport candidate
+
+Dependent on #35 at `c3e9d6cdf39f4d978ed30cfb9dc22d660f7c4e39`, branch
+`ocean/entropy-compatible-transport`. New research state stores entropy and
+salt contents, with explicit temperature recovery for unchanged JMD95 density.
+The physical Hamiltonian is the same as #35. Surface calorics are derived from
+GSW/TEOS-10; this is explicitly borrowed thermodynamic physics, not a new EOS.
+
+Read [provenance, derivation, budgets and limits](../verification/ocean/ENTROPY_TRANSPORT.md).
+Ocean-owned Gibbs face means cancel reference-caloric pressure; entropy-flux
+changes are attached to actual salt-flux changes, adapting atmospheric ideas
+without imports. Positive limiter work is mechanically paired; negative work
+becomes nonnegative heat. The tilted-layer entropy failure in #35 is removed.
+
+New per-incidence amount allowances recover the high trace as an individual
+edge's velocity vanishes, even while other edges remain limited. Tests cover
+that stronger limit as well as whole-flow rest. Positive salt, nonnegative
+passives, energy work and every Euler entropy-source ledger are checked.
+
+Scope: strictly **0 < SP < 42**, interior reference temperatures, nonnegative
+passives; no salt floor. Exactly fresh active water is unsupported. Limiting
+enforces admissibility, not local extrema; full stages leaving the nonlinear
+caloric domain are rejected. No automatic dt retry or exact finite-step energy
+claim. Equal heat allocation is numerical, not a calibrated mixing closure.
+
+Installed-wheel portable: **717 passed, one CUDA skip**, including 20 new
+tests. All 164 legacy-ocean tensors exactly equal; atmospheric portable checks
+pass. Independent pressure refinement is about second order; 0.05-period
+internal-wave errors decrease at 64/256 cells. Temporal energy refinement is
+about third order in the tested short case. Long-wave/jet, GPU, performance and
+full backward qualification remain open. All 100 runtime Python files, defaults,
+fixtures and tolerances are unchanged. Keep drafts unmerged; ALE #32 separate.
+
+Next: transport accuracy/overshoots, sustained wave phase/damping and rotating
+balance; assess the per-face budgets' diffusion, then decide opt-in runtime
+promotion and ALE composition. The new stepper remains a research candidate.
+
+---
+
+# Previous ocean handoff — seawater calorics and enthalpy coordinates
+
+Dependent on #34 at `81481b0b81dcd193666dde86db265b82b7c70d61`, branch
+`ocean/seawater-caloric-reference`. All 100 installed runtime Python files
+remain unchanged. New research code fits one surface Gibbs potential to GSW
+3.6.23 evaluations and derives enthalpy, entropy and heat capacity analytically.
+Temperature scale and reference-composition salinity conversion are explicit.
+JMD95 still supplies density; this is not a switch to full TEOS-10 dynamics.
+
+Read [derivation, independent reference checks and limits](../verification/ocean/SEAWATER_CALORICS.md).
+A small research state stores potential enthalpy content and recovers theta
+for JMD95. Analytic transformed covectors and a matched centered force close
+spatial work; signed thermal conversion tracks the nonconservative thermal
+inventory contribution. Salt, volume and passive inventories remain conserved.
+The same energy/entropy definitions also drive a separate thermodynamic
+exchange reference. No forward autograd or atmospheric imports are added.
+
+The tilted-layer counterexample still decreases entropy with calibrated
+calorics. Do not promote this as a complete bounded active runtime stepper.
+Positive salt alone also fails to guarantee joint thermodynamic admissibility:
+the extreme exchange test is rejected outside the declared reference domain.
+
+Installed-wheel portable suite: **697 passed, one CUDA skip**, including 17
+new tests; 164 ocean comparison tensors exactly equal; atmospheric portable
+comparisons pass. Independent GSW measurement runs outside the checkout and
+is required in hosted CI. Reference data and compact results are committed;
+all uploaded files stay below 128 KiB. No default, fixture, tolerance or ALE
+change. Keep drafts unmerged. GPU, long runs and performance are unqualified.
+
+Next: a joint enthalpy/salinity/geometry face construction with both the
+Hamiltonian work identity and entropy inequality, plus full Euler caloric
+admissibility, before runtime adoption and ALE composition.
+
+---
+
+# Previous ocean handoff — thermal work and entropy audit
+
+Dependent on #33 at `ae8d1a1348fd154bc5a9c0fcda8b296eeac95664`, branch
+`ocean/thermodynamic-work-closure`. All runtime files remain unchanged; new
+research code/tests use explicit constant-cp and idealized composition entropy.
+JMD95 density is retained. These calorics are not empirical seawater validation.
+
+Read [the derivation, counterexamples and next boundary](../verification/ocean/THERMAL_WORK.md).
+Signed thermal conversion closes instantaneous energy work without a force jump
+at zero velocity, while accounting explicitly for changed temperature content.
+However, that equal-endpoint thermal allocation decreases entropy on tilted
+layers. Do not promote it as a bounded active ocean stepper.
+
+A separate fixed-geometry thermodynamic exchange reference conserves spatial
+energy/salt and produces nonnegative entropy, including a limited salt outflow
+budget. It is not an advective-limiter repair. Large finite Euler stress updates
+can still decrease entropy; do not infer a finite-step law from the spatial proof.
+
+Installed-wheel portable suite: 680 passed, one CUDA skip; 21 new tests. The
+164-tensor ocean capture is exact, and atmospheric portable comparisons pass.
+No new runtime default, fixture, tolerance or ALE change. Keep drafts unmerged.
+Next: validated reference calorics and matched thermodynamic face/exchange
+operators, with stage positivity and entropy accounting, before runtime adoption.
+
+---
+
+# Previous ocean handoff — bounded horizontal transport first pass
+
+Base main `5841cda8b4585418b18f0ba0486315870b1a59b2` includes JMD95 #31.
+The independent `ocean/bounded-transport-first-pass` branch adds ocean-owned
+donor/FCT volume/content ledgers, actual-carrier Euler budgets, all-face bounds,
+and a research composition with the existing centered JMD95 momentum tendency.
+It borrows atmospheric transport ideas without importing atmospheric code.
+T and S are independent concentrations; no sum-to-one species constraint.
+
+Read [derivation, measurements and limits](../verification/ocean/BOUNDED_TRANSPORT.md).
+Installed-wheel suite: 659 passed, one CUDA skip; 17 new tests. The 164-tensor
+legacy-ocean comparison is exact and atmospheric portable comparisons pass.
+The active research composition preserves scalar bounds and inventories but
+has a measured energy residual. The diagnostic all-mechanical pairing closes
+work and reintroduces a zero-velocity force jump; it is never installed in a step.
+No new active runtime stepper, default change, thermal reservoir or fixture change.
+
+Keep this draft unmerged. Next: derive a physical thermodynamic treatment of
+limiter work, preserving T/S inventories and continuous forces, before promoting
+a bounded active stepper. ALE #32 remains separate; its composition and energy
+accounting are later work. Long active runs, GPU and performance are unqualified.
+
+---
+
+# Previous ocean handoff — active JMD95 Hamiltonian candidate
 
 User-directed numerical extension of #30, on `ocean/jmd95-hamiltonian`.
 New opt-in JMD95Dynamics/JMD95Energy use active potential T and practical S,

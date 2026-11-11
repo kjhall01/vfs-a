@@ -75,3 +75,6 @@ all = [
 
 [tool.setuptools.packages.find]
 include = ["vfs*"]
+
+[tool.setuptools.package-data]
+"vfs.ocean.stratified" = ["surface-gibbs-reference.json"]

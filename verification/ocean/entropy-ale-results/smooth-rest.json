@@ -1,0 +1,105 @@
+{
+  "source_sha256": "40233e19addb67973a69852d1c7a465bc65fdb95b57fb1475e572dc7c7942de1",
+  "rows": [
+    {
+      "layers": 8,
+      "temperature_max_error_C": 0.24392578510325258,
+      "temperature_rms_error_C": 0.07026078694965245,
+      "energy_change_J": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -5.1628577863102156e+20,
+        "dynamic_enthalpy": 1.0433269974085665e+19,
+        "reference_thermal": -5.267190486073365e+20
+      },
+      "energy_change_J_m2": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -1012197.0987274206,
+        "dynamic_enthalpy": 20454.806301292298,
+        "reference_thermal": -1032651.9050330834
+      },
+      "actual_changed_columns": 32
+    },
+    {
+      "layers": 16,
+      "temperature_max_error_C": 0.12435228687514854,
+      "temperature_rms_error_C": 0.02535873034186506,
+      "energy_change_J": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -5.2635236752678715e+19,
+        "dynamic_enthalpy": 4.843548663433134e+17,
+        "reference_thermal": -5.311959161349184e+19
+      },
+      "energy_change_J_m2": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -103193.30134012541,
+        "dynamic_enthalpy": 949.5953806188212,
+        "reference_thermal": -104142.8967099021
+      },
+      "actual_changed_columns": 32
+    },
+    {
+      "layers": 32,
+      "temperature_max_error_C": 0.06247698720767758,
+      "temperature_rms_error_C": 0.009015510945604049,
+      "energy_change_J": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -3.251303995557282e+18,
+        "dynamic_enthalpy": -1.513950595776512e+17,
+        "reference_thermal": -3.099908940993921e+18
+      },
+      "energy_change_J_m2": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": -6374.300063252236,
+        "dynamic_enthalpy": -296.8155359082282,
+        "reference_thermal": -6077.484537174708
+      },
+      "actual_changed_columns": 32
+    },
+    {
+      "layers": 64,
+      "temperature_max_error_C": 0.03127616711686443,
+      "temperature_rms_error_C": 0.0031924992611068793,
+      "energy_change_J": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": 4.4229351593895526e+17,
+        "dynamic_enthalpy": -7.209931957600256e+16,
+        "reference_thermal": 5.1439283987913114e+17
+      },
+      "energy_change_J_m2": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": 867.132569110167,
+        "dynamic_enthalpy": -141.3533455997192,
+        "reference_thermal": 1008.485923266007
+      },
+      "actual_changed_columns": 32
+    },
+    {
+      "layers": 128,
+      "temperature_max_error_C": 0.015642794875787125,
+      "temperature_rms_error_C": 0.0011292718562420992,
+      "energy_change_J": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": 2.673895112043397e+17,
+        "dynamic_enthalpy": -2.2291558777749504e+16,
+        "reference_thermal": 2.896810700754125e+17
+      },
+      "energy_change_J_m2": {
+        "kinetic": 0.0,
+        "free_surface": 0.0,
+        "total": 524.2268888150107,
+        "dynamic_enthalpy": -43.70341399055935,
+        "reference_thermal": 567.9303029885338
+      },
+      "actual_changed_columns": 32
+    }
+  ]
+}

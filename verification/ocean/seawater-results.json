@@ -1,0 +1,596 @@
+{
+  "status": "research only; bounded advection still fails the tilted-column entropy audit",
+  "surface_reference": {
+    "gibbs": {
+      "maximum_absolute": 5.002220859751105e-11,
+      "rms": 1.3353708871566497e-11
+    },
+    "h0": {
+      "maximum_absolute": 2.0605511963367462e-08,
+      "rms": 2.1373422125332126e-09
+    },
+    "entropy": {
+      "maximum_absolute": 6.731681878591189e-11,
+      "rms": 7.384407800846467e-12
+    },
+    "cp": {
+      "maximum_absolute": 1.842317942646332e-08,
+      "rms": 1.8715274575055185e-09
+    },
+    "h_theta": {
+      "maximum_absolute": 1.8418631952954456e-08,
+      "rms": 1.8710745811368385e-09
+    },
+    "entropy_theta": {
+      "maximum_absolute": 6.421174703064025e-11,
+      "rms": 6.408680043583443e-12
+    },
+    "h_s": {
+      "maximum_absolute": 1.6789826418062148e-08,
+      "rms": 6.918112637361368e-10
+    },
+    "entropy_s": {
+      "maximum_absolute": 6.20352658131651e-11,
+      "rms": 2.440505786652516e-12
+    },
+    "temperature_inverse": {
+      "maximum_absolute": 2.1316282072803006e-14,
+      "rms": 3.0210136330023643e-15
+    },
+    "samples": 4536,
+    "gsw_version": "3.6.23",
+    "minimum_cp_J_kg_K": 3944.5163984777914,
+    "training": {
+      "samples": 1600,
+      "degree_sqrt_salinity": 6,
+      "degree_temperature": 8,
+      "scaled_condition_number": 9443.730905448343,
+      "maximum_gibbs_residual_J_kg": 4.8203219193965197e-11
+    }
+  },
+  "hybrid_at_depth": [
+    {
+      "depth_m": -0.0,
+      "temperature_K": {
+        "maximum_absolute": 0.0,
+        "rms": 0.0
+      },
+      "chemical_J_kg_PSU": {
+        "maximum_absolute": 1.2008172234345693e-11,
+        "rms": 5.086058968693941e-12
+      }
+    },
+    {
+      "depth_m": 500.0,
+      "temperature_K": {
+        "maximum_absolute": 0.0043665798447136694,
+        "rms": 0.0015865002320723145
+      },
+      "chemical_J_kg_PSU": {
+        "maximum_absolute": 0.1641686671392648,
+        "rms": 0.09593620908818895
+      }
+    },
+    {
+      "depth_m": 2000.0,
+      "temperature_K": {
+        "maximum_absolute": 0.015408076557434924,
+        "rms": 0.006290717056554961
+      },
+      "chemical_J_kg_PSU": {
+        "maximum_absolute": 0.5570056376317609,
+        "rms": 0.35946310495221306
+      }
+    },
+    {
+      "depth_m": 4000.0,
+      "temperature_K": {
+        "maximum_absolute": 0.024758357039729617,
+        "rms": 0.014371725159421788
+      },
+      "chemical_J_kg_PSU": {
+        "maximum_absolute": 0.9973425407922676,
+        "rms": 0.7301658395761922
+      }
+    }
+  ],
+  "cases": [
+    {
+      "kind": "front",
+      "coast": false,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -5.4482421875,
+      "absolute_local_work_W": 4.197654976341089e+17,
+      "normalized_energy_rate": -1.297925203049678e-17,
+      "limiter_work_W": -3862690634361.6885,
+      "thermal_power_W": 3862690634361.688,
+      "entropy": {
+        "advective_W_K": 1337907145915.6274,
+        "conversion_W_K": 13853396132.4147,
+        "total_W_K": 1351760542048.0422,
+        "nodal_W_K": 1351760542048.0527,
+        "face_nodal_normalized_difference": -6.2699223856309635e-18
+      },
+      "potential_enthalpy_content_change": 37644129233.5,
+      "predicted_content_change": 37646432381.93208,
+      "content_budget_residual": -2303148.43208313,
+      "total_energy_change_J_m2": -2.86329105521057e-06,
+      "minimum_stage_salinity": 33.999999999999986,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.5296306224213485e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "front",
+      "coast": false,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 0.3642578125,
+      "absolute_local_work_W": 4.119519218279132e+17,
+      "normalized_energy_rate": 8.842240882958261e-19,
+      "limiter_work_W": -1528679733919.4753,
+      "thermal_power_W": 1528679733919.4753,
+      "entropy": {
+        "advective_W_K": 551424763310.0369,
+        "conversion_W_K": 5485797016.6385565,
+        "total_W_K": 556910560326.6754,
+        "nodal_W_K": 556910560326.707,
+        "face_nodal_normalized_difference": -1.9205595509333612e-17
+      },
+      "potential_enthalpy_content_change": 14745534949.5,
+      "predicted_content_change": 14748226230.54256,
+      "content_budget_residual": -2691281.0425605774,
+      "total_energy_change_J_m2": -5.079991661246844e-06,
+      "minimum_stage_salinity": 33.999999999999986,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 3.059261244842697e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": 12.734375,
+      "absolute_local_work_W": 2.613940618939702e+17,
+      "normalized_energy_rate": 4.871715488764802e-17,
+      "limiter_work_W": -2177782168613.1265,
+      "thermal_power_W": 2177782168613.1265,
+      "entropy": {
+        "advective_W_K": 740330543908.8088,
+        "conversion_W_K": 7815799405.007748,
+        "total_W_K": 748146343313.8165,
+        "nodal_W_K": 748146343313.8545,
+        "face_nodal_normalized_difference": -3.6314838263705675e-17
+      },
+      "potential_enthalpy_content_change": 21226081196.234375,
+      "predicted_content_change": 21227003292.115208,
+      "content_budget_residual": -922095.8808326721,
+      "total_energy_change_J_m2": -5.158319795216437e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.1156397563407906e-16,
+        "tracer_content": 1.2183733591813251e-16
+      }
+    },
+    {
+      "kind": "front",
+      "coast": true,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 6.296875,
+      "absolute_local_work_W": 2.5592979350099827e+17,
+      "normalized_energy_rate": 2.4603915448302185e-17,
+      "limiter_work_W": -1433413636199.4238,
+      "thermal_power_W": 1433413636199.424,
+      "entropy": {
+        "advective_W_K": 498003845074.82385,
+        "conversion_W_K": 5142703847.256859,
+        "total_W_K": 503146548922.0807,
+        "nodal_W_K": 503146548922.0996,
+        "face_nodal_normalized_difference": -1.844597498424215e-17
+      },
+      "potential_enthalpy_content_change": 13889324544.125,
+      "predicted_content_change": 13889747768.363018,
+      "content_budget_residual": -423224.2380180359,
+      "total_energy_change_J_m2": -3.9115992892218475e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.1156397563407906e-16,
+        "tracer_content": 1.2183733591813251e-16
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": false,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -22.5556640625,
+      "absolute_local_work_W": 4.886855937796882e+17,
+      "normalized_energy_rate": -4.6155778581573374e-17,
+      "limiter_work_W": 21908371810.56552,
+      "thermal_power_W": -21908371810.565514,
+      "entropy": {
+        "advective_W_K": 39196262212.97319,
+        "conversion_W_K": -77311466.07615596,
+        "total_W_K": 39118950746.89703,
+        "nodal_W_K": 39118950746.822266,
+        "face_nodal_normalized_difference": 3.879928606233195e-17
+      },
+      "potential_enthalpy_content_change": -216568407.375,
+      "predicted_content_change": -213492418.9898932,
+      "content_budget_residual": -3075988.385106802,
+      "total_energy_change_J_m2": -6.434444311934868e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 3.345982244708299e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": false,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": -2.4931640625,
+      "absolute_local_work_W": 4.886816133947967e+17,
+      "normalized_energy_rate": -5.101816794743656e-18,
+      "limiter_work_W": 12443249664.302929,
+      "thermal_power_W": -12443249664.302929,
+      "entropy": {
+        "advective_W_K": 24003955180.53804,
+        "conversion_W_K": -43911614.25868942,
+        "total_W_K": 23960043566.27935,
+        "nodal_W_K": 23960043566.279297,
+        "face_nodal_normalized_difference": 2.771373294249178e-20
+      },
+      "potential_enthalpy_content_change": -120248597.6875,
+      "predicted_content_change": -116834613.91364244,
+      "content_budget_residual": -3413983.7738575637,
+      "total_energy_change_J_m2": -7.71640228393737e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 3.345982244708299e-16,
+        "salinity_content": 1.5296527554139417e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": true,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -5.783203125,
+      "absolute_local_work_W": 3.124615520040068e+17,
+      "normalized_energy_rate": -1.8508527170491174e-17,
+      "limiter_work_W": 11512938846.5405,
+      "thermal_power_W": -11512938846.5405,
+      "entropy": {
+        "advective_W_K": 20902827601.85185,
+        "conversion_W_K": -40628356.32244678,
+        "total_W_K": 20862199245.529404,
+        "nodal_W_K": 20862199245.523438,
+        "face_nodal_normalized_difference": 4.843766236170441e-18
+      },
+      "potential_enthalpy_content_change": -113488981.96875,
+      "predicted_content_change": -112160888.37194079,
+      "content_budget_residual": -1328093.5968092084,
+      "total_energy_change_J_m2": -7.224921963062317e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.1156840852126105e-16,
+        "tracer_content": 2.438114193598259e-16
+      }
+    },
+    {
+      "kind": "salt_only",
+      "coast": true,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 11.841796875,
+      "absolute_local_work_W": 3.124746289812927e+17,
+      "normalized_energy_rate": 3.78968267395205e-17,
+      "limiter_work_W": 6803246285.178775,
+      "thermal_power_W": -6803246285.178774,
+      "entropy": {
+        "advective_W_K": 13251954109.91151,
+        "conversion_W_K": -24008674.89641619,
+        "total_W_K": 13227945435.015095,
+        "nodal_W_K": 13227945435.017578,
+        "face_nodal_normalized_difference": -2.016161710087896e-18
+      },
+      "potential_enthalpy_content_change": -66267800.875,
+      "predicted_content_change": -64464071.50976955,
+      "content_budget_residual": -1803729.3652304485,
+      "total_energy_change_J_m2": -8.54195007466097e-06,
+      "minimum_stage_salinity": 33.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.1156840852126105e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -1.9140625,
+      "absolute_local_work_W": 4.905914859953705e+17,
+      "normalized_energy_rate": -3.901540394889899e-18,
+      "limiter_work_W": 26998530.10006904,
+      "thermal_power_W": -26998530.100069042,
+      "entropy": {
+        "advective_W_K": 47537.03085791414,
+        "conversion_W_K": -95304.42302649244,
+        "total_W_K": -47767.3921685783,
+        "nodal_W_K": -47767.4072265625,
+        "face_nodal_normalized_difference": 7.810678893045572e-18
+      },
+      "potential_enthalpy_content_change": -3138936.25,
+      "predicted_content_change": -262998.75795239187,
+      "content_budget_residual": -2875937.492047608,
+      "total_energy_change_J_m2": -5.648974227143589e-06,
+      "minimum_stage_salinity": 34.999999999999986,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.6729898880628635e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": false,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 22.0859375,
+      "absolute_local_work_W": 4.905919718457066e+17,
+      "normalized_energy_rate": 4.5018954176743286e-17,
+      "limiter_work_W": 91000.49787400736,
+      "thermal_power_W": -91000.49787400736,
+      "entropy": {
+        "advective_W_K": 98.50533973716801,
+        "conversion_W_K": -321.3489227887419,
+        "total_W_K": -222.8435830515739,
+        "nodal_W_K": -222.9072265625,
+        "face_nodal_normalized_difference": 3.301229292659539e-17
+      },
+      "potential_enthalpy_content_change": -3950338.8125,
+      "predicted_content_change": -901.770917276556,
+      "content_budget_residual": -3949437.0415827236,
+      "total_energy_change_J_m2": -8.375768153394522e-06,
+      "minimum_stage_salinity": 34.999999999999986,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.6729898880628635e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 1.6669131833955435e-16
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -5.25,
+      "absolute_local_work_W": 3.1346013496618944e+17,
+      "normalized_energy_rate": -1.6748541247729244e-17,
+      "limiter_work_W": 15541070.34097566,
+      "thermal_power_W": -15541070.34097566,
+      "entropy": {
+        "advective_W_K": 27259.626498583093,
+        "conversion_W_K": -54859.8137402111,
+        "total_W_K": -27600.18724162801,
+        "nodal_W_K": -27600.224609375,
+        "face_nodal_normalized_difference": 3.03325688447139e-17
+      },
+      "potential_enthalpy_content_change": -724065.34375,
+      "predicted_content_change": -151536.03908286776,
+      "content_budget_residual": -572529.3046671322,
+      "total_energy_change_J_m2": -5.745675487236623e-06,
+      "minimum_stage_salinity": 34.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.11544502965761e-16,
+        "tracer_content": 2.4245081228827834e-16
+      }
+    },
+    {
+      "kind": "tilted",
+      "coast": true,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 2.75,
+      "absolute_local_work_W": 3.134593719552498e+17,
+      "normalized_energy_rate": 8.773066770492339e-18,
+      "limiter_work_W": 48478.12794345336,
+      "thermal_power_W": -48478.12794345335,
+      "entropy": {
+        "advective_W_K": 55.141375263383,
+        "conversion_W_K": -171.180143126163,
+        "total_W_K": -116.03876786277999,
+        "nodal_W_K": -116.052734375,
+        "face_nodal_normalized_difference": 1.133707952332324e-17
+      },
+      "potential_enthalpy_content_change": -1969737.59375,
+      "predicted_content_change": -489.88799935234465,
+      "content_budget_residual": -1969247.7057506477,
+      "total_energy_change_J_m2": -9.744648753051483e-06,
+      "minimum_stage_salinity": 34.99999999999999,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.11544502965761e-16,
+        "tracer_content": 2.4245081228827834e-16
+      }
+    },
+    {
+      "kind": "zero_salt",
+      "coast": false,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": -1.40625,
+      "absolute_local_work_W": 4.299993777346231e+17,
+      "normalized_energy_rate": -3.2703535698320854e-18,
+      "limiter_work_W": -9695404530794.098,
+      "thermal_power_W": 9695404530794.098,
+      "entropy": {},
+      "potential_enthalpy_content_change": 94620827277.78125,
+      "predicted_content_change": 94623441892.41168,
+      "content_budget_residual": -2614614.630432129,
+      "total_energy_change_J_m2": -3.020108878064436e-07,
+      "minimum_stage_salinity": 0.0,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 0.0,
+        "salinity_content": 1.488426299266763e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "zero_salt",
+      "coast": false,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 14.65625,
+      "absolute_local_work_W": 4.2092204098679424e+17,
+      "normalized_energy_rate": 3.4819393077255885e-17,
+      "limiter_work_W": -4613371395089.398,
+      "thermal_power_W": 4613371395089.398,
+      "entropy": {},
+      "potential_enthalpy_content_change": 45146191519.5625,
+      "predicted_content_change": 45149740168.556816,
+      "content_budget_residual": -3548648.994316101,
+      "total_energy_change_J_m2": -5.270136471052678e-06,
+      "minimum_stage_salinity": 0.0,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 3.3459819978498786e-16,
+        "salinity_content": 1.488426299266763e-16,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "zero_salt",
+      "coast": true,
+      "scheme": "donor",
+      "dt_s": 10.0,
+      "energy_rate_W": 9.875,
+      "absolute_local_work_W": 2.667493458708888e+17,
+      "normalized_energy_rate": 3.7019772130124235e-17,
+      "limiter_work_W": -5050981394054.929,
+      "thermal_power_W": 5050981394054.929,
+      "entropy": {},
+      "potential_enthalpy_content_change": 49012382480.328125,
+      "predicted_content_change": 49013092812.693726,
+      "content_budget_residual": -710332.3656005859,
+      "total_energy_change_J_m2": -7.88919116384429e-07,
+      "minimum_stage_salinity": 0.0,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 2.44057141052631e-16,
+        "salinity_content": 0.0,
+        "tracer_content": 0.0
+      }
+    },
+    {
+      "kind": "zero_salt",
+      "coast": true,
+      "scheme": "fct",
+      "dt_s": 10.0,
+      "energy_rate_W": 7.8125,
+      "absolute_local_work_W": 2.6129007370401427e+17,
+      "normalized_energy_rate": 2.9899719837233045e-17,
+      "limiter_work_W": -3040951349990.2695,
+      "thermal_power_W": 3040951349990.2686,
+      "entropy": {},
+      "potential_enthalpy_content_change": 30621755283.6875,
+      "predicted_content_change": 30622673819.78291,
+      "content_budget_residual": -918536.0954093933,
+      "total_energy_change_J_m2": -4.578336837333472e-06,
+      "minimum_stage_salinity": 0.0,
+      "minimum_stage_passive": 0.0,
+      "relative_inventory_errors": {
+        "volume": 1.220285705263155e-16,
+        "salinity_content": 2.1659970829890225e-16,
+        "tracer_content": 1.2183733591813251e-16
+      }
+    }
+  ],
+  "short_temporal_refinement": [
+    {
+      "dt_s": 1000.0,
+      "duration_s": 1000.0,
+      "energy_change_J_m2": -0.04872350902811248
+    },
+    {
+      "dt_s": 500.0,
+      "duration_s": 1000.0,
+      "energy_change_J_m2": -0.006116300937532778
+    },
+    {
+      "dt_s": 250.0,
+      "duration_s": 1000.0,
+      "energy_change_J_m2": -0.0007856422656916086
+    }
+  ],
+  "separate_exchange": [
+    {
+      "salt_mobility": 100000000000000.0,
+      "normalized_energy_rate": -6.6971406830776986e-18,
+      "entropy_rate_W_K": 1261296208698.9639,
+      "nonnegative_face_production_W_K": 1261296208698.9648,
+      "entropy_identity_normalized_difference": -2.1203655522187822e-17,
+      "minimum_salt_limiter": 1.0,
+      "minimum_euler_salinity": 34.0,
+      "maximum_euler_salinity": 36.0,
+      "finite_euler": {
+        "entropy_change_J_K": 12612943216640.0
+      }
+    },
+    {
+      "salt_mobility": 1e+24,
+      "normalized_energy_rate": -2.0881010481586954e-17,
+      "entropy_rate_W_K": 2.110602557119851e+19,
+      "nonnegative_face_production_W_K": 2.110602557119851e+19,
+      "entropy_identity_normalized_difference": 0.0,
+      "minimum_salt_limiter": 0.000606100534497822,
+      "minimum_euler_salinity": 3.599999999999995,
+      "maximum_euler_salinity": 89.91721576397997,
+      "finite_euler": {
+        "rejected": "salinity outside the surface-reference domain"
+      }
+    }
+  ],
+  "files_sha256": {
+    "probe_ocean_seawater.py": "dc7fc30645a9056e2f1ce4db00a4b90289cb9ed2438ac034ca7ebafcbdb794ca",
+    "surface-gibbs-reference.json": "c52467612cdc7d2e7444673e781485b8fab6a126681c35cd8bfdff5e343c9e2b",
+    "ocean_surface_gibbs.py": "7cf00cbbc3510dd043063e4500b2ab4156424165508b372ccad6a64528949e1d",
+    "ocean_enthalpy_research.py": "264cee2794deb2c3fa02f72952d59bcae0f1b04f80b0382a73fe2b0acb2a8cef"
+  },
+  "environment": {
+    "torch": "2.15.0+cpu",
+    "dtype": "float64",
+    "device": "cpu",
+    "threads": 1
+  }
+}

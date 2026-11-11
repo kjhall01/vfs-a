@@ -33,6 +33,9 @@ jobs:
           python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --prefer-binary "${wheels[0]}[test]"
+          # Independent research reference only; never a VFS runtime dependency.
+          # GSW 3.6.23 requires Python >=3.11; this validation job uses 3.12.
+          python -m pip install 'gsw==3.6.23'
           python -m pip check
           mkdir -p "$RUNNER_TEMP/vfs-check"
           cp -R tests tools examples "$RUNNER_TEMP/vfs-check/"
@@ -137,7 +140,53 @@ jobs:
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I examples/ocean_jmd95.py
+          python -I examples/ocean_stratified.py
           python -I tools/verify_ocean_jmd95.py --output jmd95-smoke --quick
+      - name: Ocean bounded transport measurements (no accuracy gate)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_bounded_transport.py --output bounded-transport.json --quick
+      - name: Ocean thermal-work and entropy measurements (research only)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_thermal_work.py --output thermal-work.json --quick
+      - name: Ocean seawater caloric reference and enthalpy measurements (research only)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_seawater.py --output seawater-reference.json
+      - name: Ocean Gibbs entropy transport measurements (research candidate)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: python -I tools/probe_ocean_entropy.py --output entropy-transport.json
+      - name: Ocean qualification driver smoke (no accuracy gates)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/qualify_ocean_entropy.py wave --cells 32 --periods .001 --output qualification-wave.json
+          python -I tools/qualify_ocean_entropy.py balance --cells 32 --profile topography --days .01 --output qualification-rest.json
+          python -I tools/qualify_ocean_entropy.py transport --cells 16 --profile sharp --circuits .1 --output qualification-transport.json
+          python -I tools/probe_ocean_initial_balance.py --cells 32 --lloyd-iters 2 --output qualification-initial.json
+      - name: Ocean sharp-front target and active-work checks (research)
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_front.py --quick --output sharp-front.json
+          python -I tools/probe_ocean_front.py --trajectory --duration 60 --output sharp-front-active.json
+      - name: Entropy ALE composition and actual remap smoke
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_entropy_ale.py --layers 8 --periods .001 --output entropy-ale.json
+          python -I tools/probe_ocean_ale_smooth.py entropy-ale-smooth.json
+      - name: Potential-enthalpy ALE energy and mixing checks
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_enthalpy_ale.py --audit --output enthalpy-ale-audits.json
+          python -I tools/probe_ocean_enthalpy_ale.py --layers 8 --periods .001 --output enthalpy-ale-wave.json
+      - name: Local Hamiltonian ALE closure and feasibility checks
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_hamiltonian_ale.py --audit --output hamiltonian-ale-audits.json
+          python -I tools/probe_ocean_hamiltonian_ale.py --layers 8 --periods .001 --output hamiltonian-ale-wave.json
+          python -I tools/probe_ocean_hamiltonian_feasibility.py hamiltonian-ale-feasibility.json
+      - name: Adaptive thermal ALE constraints and wave smoke
+        working-directory: ${{ runner.temp }}/vfs-check
+        run: |
+          python -I tools/probe_ocean_adaptive_thermal.py --audit --output adaptive-thermal-audits.json
+          python -I tools/probe_ocean_adaptive_thermal.py --layers 8 --periods .001 --output adaptive-thermal-wave.json
       - name: Historical operator comparison (expected disagreement, evidence only)
         continue-on-error: true
         working-directory: ${{ runner.temp }}/vfs-check
@@ -200,4 +249,14 @@ jobs:
             ${{ runner.temp }}/vfs-check/ocean-extraction.json
             ${{ runner.temp }}/vfs-check/williamson-smoke/
             ${{ runner.temp }}/vfs-check/jmd95-smoke/
+            ${{ runner.temp }}/vfs-check/bounded-transport.json
+            ${{ runner.temp }}/vfs-check/thermal-work.json
+            ${{ runner.temp }}/vfs-check/seawater-reference.json
+            ${{ runner.temp }}/vfs-check/entropy-transport.json
+            ${{ runner.temp }}/vfs-check/qualification-*.json
+            ${{ runner.temp }}/vfs-check/sharp-front*.json
+            ${{ runner.temp }}/vfs-check/entropy-ale*.json
+            ${{ runner.temp }}/vfs-check/enthalpy-ale*.json
+            ${{ runner.temp }}/vfs-check/hamiltonian-ale*.json
+            ${{ runner.temp }}/vfs-check/adaptive-thermal*.json
           if-no-files-found: warn
