@@ -1,9 +1,7 @@
 # Contributing
 
-Development is on [GitHub](https://github.com/kjhall01/vfs-a). Read
-[AGENTS.md](AGENTS.md), [the handoff](handoff/index.md),
-[pass-4 results](docs/PASS4_RESULTS.md), and the
-[physical-fields guide](docs/PHYSICAL_FIELDS_API.md) before changing behavior.
+See [package structure](docs/PACKAGE_OWNERSHIP.md), [state conventions](docs/STATE_OWNERSHIP.md)
+and [verification](verification/README.md) before changing numerical behavior.
 
 ## Local setup
 
@@ -16,6 +14,7 @@ python -m pip install build
 # Linux CPU baseline build:
 python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
 python -m pip install --prefer-binary -e '.[test]'
+python -m pip install 'gsw==3.6.23'  # independent ocean verification reference
 python -m pytest tests --fixture-mode=portable -q
 ```
 
@@ -25,8 +24,6 @@ large `dev` extra and `environment.yml` are unnecessary for these checks.
 released wheel is available.
 On macOS use `torch==2.15.0` in the PyTorch install command (no `+cpu` wheel).
 Other platforms/builds are compatibility checks, not promises of exact equality.
-The [public CPU index](https://download.pytorch.org/whl/cpu/torch/) lists the
-Linux Python 3.12 `2.15.0+cpu` wheel, checked on 2026-10-29.
 
 ## Test the installed wheel
 
@@ -41,6 +38,7 @@ source "$check_dir/venv/bin/activate"
 python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
 wheels=("$check_dir"/wheels/*.whl)
 python -m pip install --prefer-binary "${wheels[0]}[test]"
+python -m pip install 'gsw==3.6.23'
 python -m pip check
 cp -R tests tools examples "$check_dir/"
 cd "$check_dir"
@@ -55,6 +53,7 @@ python -I examples/held_suarez.py
 python -I examples/dry_atmosphere.py
 python -I examples/dry_atmosphere.py --imex
 python -I examples/moist_atmosphere.py --imex
+python -I examples/ocean_stratified.py
 ```
 
 Apply the same macOS version substitution here. Confirm the printed package
@@ -92,30 +91,19 @@ tolerances to fix CI. Report version, platform, failing fields and errors;
 investigate differences before proposing numerical changes. A matching torch
 version alone does not guarantee bitwise agreement across platforms.
 
-## Prepare a focused PR
+## Numerical changes
 
-Create a topic branch and keep one concern per PR. Preserve numerical defaults,
-state conventions, interface/edge staggering and integrators. MoistAtmosphere
-uses `BoundedGibbs(base)` and its bounded Euler species
-amount ledger. Vapor must remain strictly positive, with no floor; exact-zero
-water equivalence to the dry core is not established.
+Preserve documented state conventions and explicitly distinguish algorithm changes
+from refactoring. Compare states, stage ledgers, energy/work and gradients where
+relevant. Do not regenerate fixtures or loosen tolerances to resolve failures.
+Keep verification artifacts and source hashes, and report actual tested scope.
 
-Run the wheel checks above, review `git diff --check`, and update the handoff
-and relevant results documentation. Describe the behavior changed, local
-environment/results, remaining failures, and actual GitHub Actions results
-separately (link the run when available). CPU float64 forward checks do not
-qualify GPU, long runs or full backward rollouts. Keep numerical changes and
-scientific verification separate. Do not publish packages or select a license
-as part of routine contributor setup.
+Use the portable suite as the required regression check. Run relevant standalone
+examples and same-environment captures for the affected component. The full CI
+workflow also runs pinned historical experiments and retains informational exact
+fixture discrepancies. See [the workflow](.github/workflows/ci.yml).
 
-Package scope and deliberate API removals are documented in
-[current paths](docs/CURRENT_PATHS.md) and [the removal record](docs/READABILITY_RESULTS.md). Do not restore removed
-domain/ML APIs merely to satisfy historical compatibility expectations.
-
-Before numerical changes, use `tools/capture_readability.py --save /tmp/before.pt`
-with the baseline installed wheel, then `--compare /tmp/before.pt` with the changed
-wheel in the same environment. It checks retained states, energies, gradients,
-ledgers, ARK4 stages and solver records exactly; it never replaces fixtures.
-See [the Held–Suarez archive command](docs/HELD_SUAREZ.md#reproduce-the-archive-comparison).
-The next phase is [scientific verification](docs/VERIFICATION_HANDOFF.md), with the
-implementation frozen; Conda packaging is deferred.
+Keep changes focused and run `git diff --check`. Document behavior, units,
+configuration and limits in the user guides; record detailed measurements in
+verification reports. CPU float64 checks do not imply accelerator, long-run or
+full backward support.

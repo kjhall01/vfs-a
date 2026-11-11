@@ -1,9 +1,8 @@
-# Standalone Held–Suarez forcing
+# Held–Suarez forcing
 
-`vfs.atmosphere.held_suarez.HeldSuarezForcing` preserves the thermal relaxation
-and Rayleigh drag formerly in PR #8's `HeldSuarezPhysics`. It owns prescribed
-buffers only, not geometry, prognostic state or dynamics. There is no restored
-registry, general process framework, legacy dycore or implicit source splitting.
+`vfs.atmosphere.held_suarez.HeldSuarezForcing` provides thermal relaxation
+and Rayleigh drag. It owns prescribed buffers; the atmospheric model owns
+geometry, dynamics and prognostic-state validation.
 
 Run `python examples/held_suarez.py` for a complete CPU float64 example using
 `DryAtmosphere`, tensor initialization and a single forced SSPRK3 step. Its
@@ -50,26 +49,16 @@ preserved; it converts prescribed data to the state's dtype/device, not the
 prognostic state. Graph connections remain intact. Move prescribed buffers with
 `forcing.to(...)` when moving the model.
 
-## Preservation evidence
+## Verification scope
 
-The inherited method bodies have identical executable ASTs to `849ccb8`'s
-HeldSuarezPhysics, apart from the class name and new documentation. The committed
-`tools/check_held_suarez_archive.py` comparison executes that archived source against the installed
-new wheel for 1, 3 and 12 levels, with standard and prescribed-rate configurations.
-It compares rates, tendencies, all three forced SSPRK3 stage inputs, the resulting
-state, energy and energy gradients with respect to wind, theta content and pressure.
-All 132 compared tensors agree exactly (rtol=atol=0) on Apple M3 CPU,
-float64, PyTorch 2.15.0/Accelerate. Fixtures and numerical operators are unchanged. Focused tests check the explicit
-source equations, independent zero-source limits, component budgets, per-stage
-composition, input preservation and connected prescribed-buffer gradients.
+Tests cover source equations, zero-source limits, component budgets, per-stage
+composition, input preservation and prescribed-buffer gradients. The archive
+comparison checks 132 tensors, including forced stages and energy gradients,
+against the pinned reference implementation.
 
-These are CPU float64 regression and representative gradient checks, not a new
-Held–Suarez climate campaign, accelerator qualification or forced-IMEX validation.
-
-Local installed-wheel checks outside the checkout: **527 passed, 1 CUDA skip**;
-both portable comparison tools and all three examples passed. The existing
-bounded-donor gradient warning remains unrelated to this forcing. Hosted check
-outcomes are recorded separately in PR #10 after its updated head runs.
+These are CPU float64 regression and representative gradient checks. Equilibrated
+Held–Suarez climate statistics, accelerator execution and forced IMEX are not
+qualified.
 
 ## Reproduce the archive comparison
 

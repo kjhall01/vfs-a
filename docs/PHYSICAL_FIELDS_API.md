@@ -1,9 +1,8 @@
-# Tensor-first moist workflow
+# Atmospheric physical fields
 
-This provisional nn.Module API owns geometry and dynamics and delegates to
-explicitly selected existing steppers. Bounded SSPRK3 remains the default. See
-[module ownership and stepping](MOIST_MODULE_API.md); start with
-examples/moist_atmosphere.py. Numerical equations are unchanged.
+`MoistAtmosphere` initializes tensor states from physical fields and exposes
+derived fields for diagnostics and output. Bounded SSPRK3 is the default.
+See [the model API](MOIST_MODULE_API.md) and [runnable example](../examples/moist_atmosphere.py).
 
 ## Construct and run
 

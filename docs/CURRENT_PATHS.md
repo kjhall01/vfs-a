@@ -1,150 +1,73 @@
-# Retained atmospheric timestep paths
+# Timestepping
 
-This is current guidance; pass reports and CI investigations describe historical
-snapshots. Start from tensor states on model-owned spherical mesh/column geometry.
-Terrain is fixed `column.phi_s`. Move geometry/model before initialization; use
-explicit state conversion rather than casting inside a tendency.
+| Model | Stepper | Transport and limits |
+| --- | --- | --- |
+| `DryAtmosphere` | `DrySSPRK3()` (default) | Conservative unbatched, tracer-free dry core |
+| `MoistAtmosphere` | `BoundedSSPRK3()` (default) | Three bounded Euler species-amount budgets |
+| `DryAtmosphere` | `DryIMEX()` | ARK4 analytic wave split with residual-checked solves |
+| `MoistAtmosphere` | `CenteredIMEX()` | ARK4 centered mixture transport; no bounded-species guarantee |
+| `StratifiedOcean` | Checked sharp-front SSPRK3 | Entropy/salt work pairing; optional explicit post-step ALE |
+| `Ocean` | `ssprk3` (default) | Behavior depends on the supplied dynamics and sources |
 
-| Path | Entry | Guarantees and limits |
-|---|---|---|
-| Dry conservative SSPRK3 | `DryAtmosphere(mesh, column, stepper=DrySSPRK3())` then `model(state, dt)` | Matched semidiscrete energy/continuity; time integration is not exactly energy conserving. Unbatched, tracer-free, positive fixed lid, direct_u_gl2_adjoint. |
-| Bounded moist SSPRK3 | `MoistAtmosphere(mesh, column, stepper=BoundedSSPRK3())` then `model(state, dt)` | Bounded Euler species amounts are authoritative; three dt-sized Euler budgets and convex combinations. Positive vapor required, no floor. |
-| Dry ARK4 | `DryAtmosphere(mesh, column, stepper=DryIMEX(solver_config=...))` | Frozen analytic conservative wave plus nonlinear explicit residual. No scalar bound/SSP guarantee. |
-| Moist ARK4 | `MoistAtmosphere(mesh, column, stepper=CenteredIMEX())` | Explicit opt-in to centered mixture transport; admissibility rejection, not repair or bounded transport. No bounded IMEX scheme. |
+Atmospheric models advance through `model(state, dt)` or `model.step(state, dt)`.
+Ocean facades use `model.step(state, dt)`. Timesteps are seconds. Invalid states
+are rejected rather than clipped; no universal timestep is prescribed.
 
-Import the model and steppers from `vfs`; import `IMEXSolverConfig` from
-`vfs.imex`. For dry ARK4, use `DryIMEX(solver_config=solver_config)` below.
-Direct `DryPEIMEXARK(dynamics, solver_config).step_with_info(state, dt)` remains
-available for stage diagnostics.
-Use an explicit configuration:
+## Dry atmosphere
+
+`DryAtmosphere` calls its stepper and conservative dynamics. Continuity advances
+surface pressure and determines vertical pressure-coordinate mass transport.
+Analytic derivatives of thermal and kinetic energy supply matched pressure,
+transport and momentum work. The energy diagnostic includes the fixed-lid
+reservoir. SSPRK3 introduces finite-timestep error even when instantaneous work
+closes. [Source](../vfs/atmosphere/conservative.py).
+
+## Moist atmosphere
+
+`MoistAtmosphere` delegates bounded steps to `BoundedGibbs`. Each Euler stage
+constructs carrier/species budgets, limits face transfers and pairs their energy
+work with momentum and intrinsic heating. Water contents are installed from the
+integrated amount ledger, not reconstructed by subtracting large tendencies.
+The three Euler maps use the full timestep and are combined in SSPRK3 order.
+See the [detailed reading guide](BOUNDED_MOIST_READING_GUIDE.md).
+
+## Atmospheric IMEX
+
+ARK4 treats an analytic wave linearization implicitly and the nonlinear residual
+explicitly. The linearization is fixed at the start of each outer timestep. Full
+stage residuals determine convergence; failure raises `IMEXConvergenceError`.
+Solver records are available through `model.stepper.solver.last_step_info`.
 
 ```python
-solver_config = IMEXSolverConfig(
-    preconditioner="hydrostatic_schur",
-    rtol=1e-11, max_iterations=100,
-)
+from vfs import DryIMEX
+from vfs.imex import IMEXSolverConfig
+
+stepper = DryIMEX(solver_config=IMEXSolverConfig(
+    preconditioner="hydrostatic_schur", rtol=1e-11, max_iterations=100,
+))
 ```
 
-This is a documented tested selection. `DryIMEX()` defaults to analytic waves
-and Schur with the original config tolerance/restart/iteration defaults; the
-explicit tolerance above is the one used in the pre/post stage capture. Low-level
-IMEXSolverConfig() is now valid for both retained analytic ARK4 paths. There is
-no operator selector or compiled configuration. Public stepper settings are unchanged.
-Moist CenteredIMEX's existing defaults are analytic gravity waves, Schur,
-rtol=1e-9, 80 iterations, restart=30. ARK4 is the only retained implicit tableau;
-ARK2/3 selectors and pressure-prototype classes were deliberately removed.
-`CenteredSSPRK3` is no longer a model option; the centered moist RHS remains an
-essential ingredient of bounded stepping and ARK4.
+Use a fresh stepper when constructing each atmospheric model. Moist IMEX uses
+centered transport with stage admissibility checks; it is not an SSP or bounded
+transport extension. Long backward trajectories and arbitrary solver settings
+are not qualified. See [moist configuration](MOIST_MODULE_API.md).
 
-## Follow the execution
+## Stratified ocean
 
-### Dry explicit
+`StratifiedOcean.step_with_report` returns the new entropy state and three stage
+work ledgers. Each stage applies the Gibbs/entropy work pairing and local front
+correction, then checks physical admissibility. An optional `target_h` requests
+a remap after the step; otherwise the layers remain material layers.
 
-1. [DryAtmosphere.forward](../vfs/atmosphere/dry_model.py) checks geometry, dtype/device and dt;
-   [DrySSPRK3.advance](../vfs/atmosphere/steppers.py) delegates to the existing
-   [ssprk3](../vfs/integrators/explicit.py) formula. Each of three stages evaluates
-   `DryHydrostaticConservativeDynamics.tendency` and updates tensor contents.
-2. [conservative._assemble](../vfs/atmosphere/conservative.py) builds pressure
-   masses and continuity primitives. Pressure increases downward: p=A+B ps,
-   dp=p[k+1]-p[k]>0. CP interface mass gives each adjacent layer half its dp,
-   with half-weights at the lid and surface. State stores mtheta=dm*theta (Pa K),
-   not temperature or a mass in kg. ps is (cell,1) Pa; u is (edge,full) m/s.
-3. `_layer_divergence` takes horizontal divergence of dp_edge*u (Pa/s).
-   `ps_dot=-sum(layer_divergence)` and `_vertical_mass_flux` integrate the layer
-   continuity residual down the column. Vertical flux is zero at the fixed lid
-   and surface. `_omega_full` averages interface fluxes for CP scalar exchange.
-   `centered_scalar_transport` supplies the horizontal part; vertical adjacent
-   interface fluxes cancel in the column sum.
-4. `thermal_gradients` returns energy covectors with respect to mtheta and ps.
-   Their pairing with transport is pressure work. Explicit transpose operations
-   return the opposite work to edge momentum; area and pressure mass factors
-   belong to the pairing, not an empirical force correction. Rotation is skew
-   paired in the diagonal kinetic metric. Vertical wind exchange includes the
-   changing-mass metric correction; Bernoulli work completes the kinetic pairing.
-5. Divide summed momentum covectors by the edge kinetic metric to obtain m/s².
-   Assemble mtheta (Pa K/s) and ps (Pa/s) tendencies and apply the RK update.
-   `tendency_terms` instead solves components separately for inspection; that
-   distinct rounding path is intentionally retained. `boundary_total_energy`
-   adds the fixed-pressure lid reservoir to atmospheric energy.
+The remapper conservatively projects potential enthalpy, salt, passive contents
+and edge momentum, then adjusts layer temperatures to restore the column
+Hamiltonian subject to an entropy check. Remap energy closure does not compensate
+for timestep drift. See [ocean API and limits](OCEAN_INTEGRATION.md).
 
-[DryEnergy](../vfs/atmosphere/dry_energy.py) owns thermal energy and its analytic
-content/pressure derivatives plus budget diagnostics; the conservative class
-supplies the diagonal kinetic metric. Methods are ordinary class definitions,
-not externally installed alternatives. [ScalarTransportState](../vfs/atmosphere/scalar_transport.py)
-shares the pressure-coordinate transport calculation with moist entropy while
-keeping the physical quantities explicitly distinguished. No forward tendency
-is generated by autograd.
+## Forcing and diagnostics
 
-For an explicitly forced dry step, see [Held–Suarez](HELD_SUAREZ.md) and
-[the runnable example](../examples/held_suarez.py). The source retains existing
-thermal relaxation and drag, summed with the conservative RHS at each SSPRK3
-stage. Its thermal/drag energy work is reported separately. This does not alter
-the conservative operators or configure forcing for ARK4.
-
-### Bounded moist explicit
-
-[model](../vfs/atmosphere/model.py) →
-[stepper](../vfs/atmosphere/steppers.py) →
-[bounded SSPRK3/Euler/evaluate](../vfs/atmosphere/bounded_moist.py).
-See [the detailed bounded reading guide](BOUNDED_MOIST_READING_GUIDE.md).
-Centered candidates, donor fluxes and antidiffusive limiter corrections are
-necessary stages of one retained algorithm, not selectable alternative physics.
-The Euler water update installs integrated species amounts directly; it must not
-be reconstructed from `water + dt * tendency`. Gibbs/limiter work is allocated as
-heat under the default configuration.
-
-### Dry ARK4
-
-[dry_ark](../vfs/atmosphere/imex/dry_ark.py) `_step` freezes
-[conservative_wave](../vfs/atmosphere/imex/conservative_wave.py), then loops over
-the six [ARK4 stages](../vfs/integrators/tableau.py). At anchor y0, solve with
-L(y-y0) implicitly and F(y)-L(y-y0) explicitly. Schur eliminates wind and solves
-the thermodynamic block; multilevel adds the existing geometric preconditioner
-using [mesh transfers](../vfs/geometry/mesh/multilevel.py). [solvers.py](../vfs/atmosphere/imex/solvers.py) owns the physically scaled
-inner product, full-stage residual checks, Schur factorization and multilevel cycles.
-It delegates linear iteration to shared [GMRES](../vfs/integrators/krylov.py);
-[coarse-state assembly](../vfs/atmosphere/imex/transfer.py) stays atmospheric.
-Full residual checks and IMEXConvergenceError remain authoritative for solver
-acceptance; preconditioning changes the solve, not the equation. The final
-weighted sum uses all six explicit and implicit stage tendencies. Stage records
-expose residuals, convergence, iterations and preconditioner applications through
-`model.stepper.solver.last_step_info`; `step_with_info` also returns them.
-
-### Moist ARK4
-
-[moist_ark](../vfs/atmosphere/imex/moist_ark.py) `step_with_info` freezes
-[moist_wave](../vfs/atmosphere/imex/moist_wave.py). Its analytic wave differentiates
-mixture enthalpy/pressure transport at fixed entropy/water contents. Advection,
-rotation and kinetic forces remain explicit. Each actual stage and final state
-is validated; the validator sees outer dt, not an Euler limiter budget. No
-implicit stage is silently converted to bounded transport. Wind is edge/full;
-pressure is cell/1; entropy and each water content are cell/interface. The wave
-maps perturbations in those stored contents, rather than treating temperature or
-fractions as independent prognostics. A stage validator receives the outer dt;
-it is not a bounded Euler flux budget. Full and Schur solves retain rejection
-and failure behavior. Multilevel moist and compiled paths are not supported.
-
-## Evidence boundary
-
-The merged-PR-8 capture uses the existing 16-cell, 3-level dry/moist test states,
-CPU float64, dt=600 s, analytic waves, rtol=1e-11, max_iterations=100. Dry full,
-Schur and multilevel Schur converged in 29, 13 and 23 total iterations; moist full
-and Schur in 30 and 20. All stage states and residual/iteration records were
-captured. This is representative regression evidence, not qualification of every
-solver flag, timestep, resolution, batched run or precision.
-
-Moist ARK4 already had independent DOP853 refinement, conservation and stage
-rejection tests. Dry tests previously selected ARK2; they now exercise ARK4.
-The tiny old refinement interval reached roundoff under ARK4, so the retained
-independent check uses the moist test's 3600 s interval and 600/300/150 s steps.
-Dry wind RMS errors were 3.0452565571e-8, 1.9060099373e-9, 1.1889634595e-10.
-No IMEX backward, accelerator or full-rollout support is established here.
-
-## Verification next
-
-Use [ownership examples](STATE_OWNERSHIP.md) for state construction and the
-[verification handoff](VERIFICATION_HANDOFF.md) for all runnable commands and
-benchmark gaps. [Final cleanup evidence](FINAL_CLEANUP_RESULTS.md) distinguishes
-regression preservation from scientific validation. Freeze the retained
-implementation; propose numerical fixes or missing benchmark capabilities as
-separate work, not further stylistic restructuring.
+[Held–Suarez forcing](HELD_SUAREZ.md) is explicitly summed into each dry SSPRK3
+stage. `Ocean` sums supplied source tendencies; `StratifiedOcean` currently has
+no source interface. Diagnostics report tensor budgets. Neither a successful
+example nor a converged implicit solve establishes physical accuracy; see
+[verification](../verification/README.md).

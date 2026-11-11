@@ -1,27 +1,7 @@
-# Supported stratified-ocean integration
+# Stratified ocean API
 
-This is an opt-in, unforced integration of selected research candidates, based on
-PR #42 at `1b31978cd6c447e9090973ff36628a6c44af3b15`. Reviewed GitHub main is
-`5841cda8b4585418b18f0ba0486315870b1a59b2`. PRs #28–31 are merged; #32–42 remain
-unmerged. This integration does not merge or approve that entire stack.
-
-## Selection review
-
-| PR | Decision | Reason |
-| --- | --- | --- |
-| #28–30 | Retain evidence | Rotation consistency and transport restrictions inform scope; no unsubstantiated rotation fix |
-| #31 | Reuse existing runtime | JMD95 Hamiltonian and fixed rotation/kinetic operators |
-| #32 | Reuse overlap primitives | Conservative scalar and edge-momentum remapping; original temperature-coordinate facade remains legacy |
-| #33 | Reuse transport ledger | Carrier-outflow checks and ocean-owned conservative budgets |
-| #34 | Evidence only | Idealized caloric completion is superseded; do not expose it as a competing solver |
-| #35 | Adopt fitted surface reference only | Retain GSW calibration/provenance; enthalpy-coordinate dynamics failed an entropy case |
-| #36 | Adopt entropy state and work pairing | Checked stages, continuous zero-edge behavior and matched analytic derivatives |
-| #37 | Retain qualification evidence | Defines the limits of current wave, balance and transport claims |
-| #38 | Adopt selected transport | Local passive bounds and work-limited active targets; document conditional active bounds |
-| #39 | Retain native-entropy remap as evidence | Measured thermal-energy loss makes it unsuitable as the selected remapper |
-| #40 | Adopt provisional enthalpy remap internally | Removes dominant thermal defect, but alone does not close full Hamiltonian |
-| #41 | Adopt column-energy ownership only | Uniform correction rejected weak-stable cases; keep that solver research-only |
-| #42 | Expose adaptive remap explicitly | Resolves demonstrated failures; retains mandatory feasibility checks and known limits |
+`StratifiedOcean` combines active JMD95 density, entropy/salinity transport,
+checked SSPRK3 and an optional adaptive energy-closing vertical remap.
 
 ## Public API and ownership
 
@@ -61,24 +41,22 @@ Run `python -I examples/ocean_stratified.py` after installing a wheel. The examp
 uses only installed public package imports, advances three steps and performs a
 real remap. It is a usage demonstration, not a physical-accuracy benchmark.
 
-## Implementation map and provenance
+## Thermodynamics and remapping
 
-`thermodynamics.py` contains the bounded-domain surface Gibbs fit; `faces.py`
-contains ocean Gibbs means; `equations.py` owns the entropy state/Hamiltonian and
-parent work pairing; `transport.py` applies the selected front correction.
-`enthalpy_remap.py`, `energy_columns.py` and `remap.py` implement the selected ALE
-composition. `model.py` supplies the small public facade. Research scripts remain
-frozen as independent migration references. Their duplication is intentional
-historical evidence; package runtime never imports tools, drivers or atmosphere.
-The coefficient JSON is packaged in the wheel, unchanged from its calibration
-artifact. No GSW runtime dependency is introduced. This hybrid reference is not
-full TEOS-10: JMD95 supplies density, with a fitted surface caloric reference and
-reference-composition salinity mapping. See SEAWATER_CALORICS.md in verification.
+JMD95 supplies density. A bundled surface Gibbs fit supplies the caloric reference,
+using reference-composition salinity; this is not full TEOS-10. GSW is not required
+at runtime. The fit's domain, calibration and accuracy are documented in
+[seawater calorics](../verification/ocean/SEAWATER_CALORICS.md).
+
+The adaptive remapper first projects potential enthalpy, salt, passives and edge
+momentum. It then applies layer-dependent temperature adjustments to close the
+column Hamiltonian while checking entropy nondecrease within roundoff. Rank,
+thermal-domain or nonlinear failures reject explicitly. The target grid is a
+caller choice. See [the formulation and measurements](../verification/ocean/ADAPTIVE_THERMAL_ALE.md).
 
 ## Supported scope and unresolved limitations
 
-“Supported” here means an installed API with regression coverage, not a globally
-qualified climate model. Evidence is CPU float64 and unbatched. GPU, compile,
+The API supports unforced, unbatched CPU float64 configurations. GPU, compile,
 long-backward, performance and long climate integrations are unqualified.
 
 - Strictly positive thickness and 0 < SP < 42; temperature strictly inside
@@ -95,23 +73,13 @@ long-backward, performance and long climate integrations are unqualified.
   EOS limits or nonlinear failure reject explicitly. No fallback silently changes
   salt, momentum or the target grid. It does not preserve potential enthalpy
   separately after full-H correction. Entropy nondecrease is within roundoff.
-- Latest adaptive wave evidence is only .05 period. Earlier longer wave tests do
-  not qualify the newer remapper. Repeated near-neutral resets/front cycles remain
+- Latest adaptive wave evidence is only .05 period. Longer runs of other configurations do
+  not establish the adaptive remapper’s behavior. Repeated near-neutral resets/front cycles remain
   needed. Perturbation-energy diagnostics must avoid subtracting huge backgrounds.
 - Rotation/kinetic reconstruction limitations and fine-mesh balance measurements
-  remain unchanged. Better packaging is not a new balance or accuracy result.
+  remain unchanged.
 - Derivatives are piecewise through active-set/iteration changes; existing smooth
   directional checks do not establish gradients across all switching surfaces.
 
-## Verification and next campaign
 
-Migration checks compare native states, all three stage ledgers, Hamiltonian terms
-and adaptive remap reports exactly against frozen research execution across four
-profiles and wet/coastal configurations. Run the full portable suite and legacy
-164-tensor ocean comparison outside the checkout. Historical exact atmosphere
-fixture disagreements remain informational and separate from portable success.
-All research evidence and source hashes remain untouched.
-
-Next: repeated-remap and multi-period wave qualification, then matched stress/work
-integration and Ekman/pumping/basin tests. Atmospheric validation remains separate;
-no new turbulence closure is bundled into this integration.
+See [ocean verification](../verification/ocean/README.md) for measurements and reproduction.
