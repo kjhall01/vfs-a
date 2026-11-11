@@ -1,24 +1,12 @@
-# Current ocean handoff — integrated entropy/JMD95 API
+# Current package documentation
 
-The dependent research PRs #32–42 were reviewed without merging them. Selected
-numerics now live in `vfs.ocean.stratified`, with `StratifiedOcean`, explicit
-entropy-state conversion, checked sharp-front SSPRK3, tensor budgets and an
-optional `AdaptiveThermalRemapper`. See [the selection review, API and limits](../docs/OCEAN_INTEGRATION.md).
-Run `python -I examples/ocean_stratified.py` after wheel installation.
+The [documentation index](../docs/README.md) describes the atmospheric and ocean
+APIs, state ownership, stepping, forcing and verification scope. The stratified
+ocean API is available on main. Run `examples/ocean_stratified.py` for explicit
+stepping and adaptive remapping. See [ocean scope](../docs/OCEAN_INTEGRATION.md)
+for feasibility constraints and outstanding qualification.
 
-Earlier idealized caloric, enthalpy-coordinate dynamics, native-entropy remapping
-and uniform thermal correction remain research evidence, not supported choices.
-All research sources/results remain frozen. Seven migrated expression trees are
-unchanged apart from imports; provenance is recorded in
-`verification/ocean/integration-provenance.json`. Legacy Ocean/defaults, atmosphere,
-rotation, fixtures and tolerances are unchanged. Coasts, absent/zero passives and
-explicit remapping are covered; no forcing/mixing/TKE/EKE integration is claimed.
-
-Support is CPU float64, unbatched and unforced. Remap feasibility and active local
-bounds remain conditional; long adaptive-remap runs and GPU/compile/full backward
-remain unqualified. Review this integration as a dependent draft; do not merge
-all experiments by implication. Next: repeated-reset/front and multi-period wave
-qualification, followed by stress/work and Ekman tests.
+Earlier handoff entries below are historical records, not current instructions.
 
 ---
 

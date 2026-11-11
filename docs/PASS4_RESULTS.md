@@ -301,9 +301,15 @@ See [the derivation and measurements](../verification/ocean/ADAPTIVE_THERMAL_ALE
 The installed `vfs.ocean.stratified` API selects the entropy/Gibbs work pairing,
 sharp-front transport and explicit adaptive Hamiltonian ALE correction. Legacy
 Ocean/defaults remain unchanged. Superseded candidates are retained as evidence.
-See [selection decisions and supported scope](OCEAN_INTEGRATION.md). The standalone
+See [stratified API and supported scope](OCEAN_INTEGRATION.md). The standalone
 example imports only the installed package and exercises both timestepping and
 actual remapping. Exact migration comparisons cover states, stage ledgers and
 remap reports across four profiles with/without coast masks. Seven numerical
 module expression trees match their frozen research source apart from imports;
 source hashes are retained. This is API integration, not new physics qualification.
+
+## Current documentation
+
+The README and current guides describe both components, their public APIs and
+verification limits. Historical numerical reports remain separate and unchanged.
+This documentation update changes no runtime code, fixtures or tolerances.
