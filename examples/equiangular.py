@@ -19,3 +19,11 @@ for nlat in (16, 32, 64, 128):
 # Column mass in kg/m² gives total mass in kg. Leading axes are retained.
 column_mass = torch.full(grid.shape, 10000., dtype=grid.cell_area.dtype)
 print('Uniform column mass (kg):', grid.integral(column_mass).item())
+
+# Illustrative eastward stress (N/m²), supplied at cell centers.
+tau_east = 0.1*latitude.cos()
+tau_north = torch.zeros_like(tau_east)
+stress_curl = grid.curl_from_collocated(tau_east, tau_north)  # N/m³, cell averages
+native_curl = grid.curl_from_collocated(tau_east, tau_north, location='corner')
+print('Global wind-stress curl integral (N/m):', grid.corner_integral(native_curl).item())
+print('Cell wind-stress curl range (N/m³):', stress_curl.min().item(), stress_curl.max().item())

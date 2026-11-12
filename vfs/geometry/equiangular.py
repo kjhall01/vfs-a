@@ -35,7 +35,16 @@ class EquiangularGrid(LatLonGrid):
         north_length[[0, -1]] = 0.  # Exact zero, not cos(pi/2) roundoff.
         east_distance = (radius*dlam*torch.cos(torch.deg2rad(self.lat_deg)))[:, None].expand(self.shape).clone()
         north_distance = torch.full((nlat+1, nlon), radius*dphi, dtype=torch.float64)
-        for name, value in dict(lat_bounds_deg=lat_b, lon_bounds_deg=lon_b,
+        # Dual cells span consecutive cell-center latitudes. Each pole is one
+        # cap, stored as repeated values with 1/nlon of its area per entry.
+        center_sin = torch.sin(torch.deg2rad(self.lat_deg))
+        dual_bounds = torch.cat((center_sin.new_tensor([-1.]), center_sin,
+                                 center_sin.new_tensor([1.])))
+        corner_area = (radius**2*dlam*torch.diff(dual_bounds))[:, None].expand(nlat+1, nlon).clone()
+        lower_fraction = ((center_sin-torch.sin(torch.deg2rad(lat_b[:-1])))
+                          / torch.diff(torch.sin(torch.deg2rad(lat_b))))[:, None]
+        for name, value in dict(corner_area=corner_area, lower_corner_fraction=lower_fraction,
+                                lat_bounds_deg=lat_b, lon_bounds_deg=lon_b,
                                 east_face_length=east_length, north_face_length=north_length,
                                 east_distance=east_distance, north_distance=north_distance,
                                 east_weight=east_length*east_distance,
@@ -116,3 +125,58 @@ class EquiangularGrid(LatLonGrid):
         middle = .5*(northward[..., :-1, :]+northward[..., 1:, :])
         zero = torch.zeros_like(northward[..., :1, :])
         return east, torch.cat((zero, middle, zero), dim=-2)
+
+    def curl(self, east: torch.Tensor, north: torch.Tensor) -> torch.Tensor:
+        """Outward curl from circulation around dual cells, shape (..., nlat+1, nlon).
+
+        Interior (i,j) is at latitude boundary i and longitude boundary j+1.
+        Both polar rows repeat a single cap-average value. corner_area assigns
+        each repeated entry 1/nlon of the cap area, avoiding double counting.
+        Input units per metre; stress in N/m² gives curl in N/m³.
+        """
+        self._check(east, self.shape)
+        self._check(north, (self.nlat+1, self.nlon))
+        if east.shape[:-2] != north.shape[:-2]:
+            raise ValueError("east/north leading axes must agree")
+        # Tangential line integrals on the dual boundary. For grad(q), each
+        # is a difference of endpoint values, so closed loops telescope.
+        e = east*self.east_distance
+        n = north[..., 1:-1, :]*self.north_distance[1:-1]
+        interior = (n.roll(-1, dims=-1)-n+e[..., :-1, :]-e[..., 1:, :]) / self.corner_area[1:-1]
+        south = -e[..., :1, :].sum(-1, keepdim=True)/self.corner_area[0].sum()
+        north_cap = e[..., -1:, :].sum(-1, keepdim=True)/self.corner_area[-1].sum()
+        return torch.cat((south.expand_as(e[..., :1, :]), interior,
+                          north_cap.expand_as(e[..., :1, :])), dim=-2)
+
+    def corner_integral(self, scalar: torch.Tensor) -> torch.Tensor:
+        """Dual-area integral; repeated polar values carry fractional cap areas."""
+        self._check(scalar, (self.nlat+1, self.nlon))
+        return (scalar*self.corner_area).sum((-2, -1))
+
+    def corners_to_cells(self, scalar: torch.Tensor) -> torch.Tensor:
+        """Area-overlap averaging of a piecewise-constant dual-cell field.
+
+        Conserves the area integral. Polar rows are first averaged across
+        longitude because each represents one cap. This smoothing does not
+        recover cell-center point values exactly.
+        """
+        self._check(scalar, (self.nlat+1, self.nlon))
+        south = scalar[..., :1, :].mean(-1, keepdim=True).expand_as(scalar[..., :1, :])
+        north = scalar[..., -1:, :].mean(-1, keepdim=True).expand_as(scalar[..., -1:, :])
+        caps = torch.cat((south, scalar[..., 1:-1, :], north), dim=-2)
+        zonal = .5*(caps+caps.roll(1, dims=-1))
+        return (self.lower_corner_fraction*zonal[..., :-1, :]
+                +(1-self.lower_corner_fraction)*zonal[..., 1:, :])
+
+    def curl_from_collocated(self, eastward: torch.Tensor, northward: torch.Tensor,
+                             *, location: str = "cell") -> torch.Tensor:
+        """Curl of collocated wind/stress, with explicit interpolation and averaging.
+
+        location='corner' retains the native circulation result; 'cell' applies
+        conservative dual-to-cell averaging. No density or Coriolis division is
+        applied: wind-stress curl is not itself Ekman pumping.
+        """
+        if location not in ("cell", "corner"):
+            raise ValueError("location must be 'cell' or 'corner'")
+        result = self.curl(*self.wind_to_faces(eastward, northward))
+        return self.corners_to_cells(result) if location == "cell" else result

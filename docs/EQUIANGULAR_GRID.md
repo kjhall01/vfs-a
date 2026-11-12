@@ -27,6 +27,7 @@ Fields must match the grid's dtype/device; move the grid explicitly with `.to()`
 | Cell scalar | `(nlat, nlon)` | South to north, longitude increasing from 0° |
 | East face component | `(nlat, nlon)` | Index j is the face between cells j and j+1, periodic |
 | North face component | `(nlat+1, nlon)` | Interior index i lies between rows i−1 and i; endpoints at poles |
+| Native curl | `(nlat+1, nlon)` | Interior latitude boundary i, longitude boundary j+1; repeated cap values at poles |
 
 `grad(q)` returns normal derivatives in q-units/m. `div(east, north)` accepts
 normal flux densities, multiplies by face lengths and divides net transport by
@@ -94,3 +95,55 @@ The example reports error multiplied by R², making these values dimensionless:
 This case approaches second-order area-weighted convergence, but polar-row
 maximum error decreases only at approximately first order. Conservative identities
 are not a guarantee of uniformly second-order pointwise accuracy near the poles.
+
+## Curl and wind-stress curl
+
+`curl(east, north)` computes outward circulation per dual-cell area from the
+same face layout as `grad`. Its result has shape `(..., nlat+1, nlon)`.
+Interior entry `(i,j)` is at latitude boundary i and longitude boundary j+1,
+modulo 360°. Both polar rows repeat a **single cap-average value**: there are
+not nlon independent polar points. `corner_area` divides each cap's area equally
+among its repeated entries; use `corner_integral` for its area integral.
+
+For a scalar q, `curl(*grad(q))` vanishes to roundoff because endpoint
+differences telescope around closed loops. The full-sphere curl integral also
+vanishes to roundoff. These are native discrete identities; interpolating an
+independently evaluated analytical gradient does not promise exact cancellation.
+
+For collocated stress arrays with shape `(..., nlat, nlon)`:
+
+```python
+# Continuing the grid/coordinates from the example above:
+tau_east = 0.1 * lat.cos()  # N/m²
+tau_north = torch.zeros_like(tau_east)
+stress_curl = grid.curl_from_collocated(tau_east, tau_north)  # N/m³, cells
+corner_curl = grid.curl_from_collocated(tau_east, tau_north, location="corner")
+```
+
+The helper interpolates onto faces before taking curl. Its default cell result
+uses `corners_to_cells`, an area-overlap average of piecewise-constant dual-cell
+values. This preserves the area integral and smooths the field; it is not an
+exact pointwise curl. Wind input in m/s instead gives relative vorticity in s⁻¹.
+Wind-stress curl is not Ekman pumping: the latter additionally involves density
+and Coriolis, including their spatial variation where applicable.
+
+The native solid-body rotation test matches dual-area-averaged analytic curl,
+including both polar caps, to roundoff. Tilted rotation and collocated-wind
+calculations have separate refinement checks. The pole caps use the circulation
+around the first/last center latitude, never a singular polar derivative.
+
+## Curl and dynamical rotation
+
+The existing Voronoi mesh also computes circulation on dual cells. Direct tests
+check `curl(grad(q))`, global circulation cancellation and the curl adjoint on
+16, 64 and 256-cell meshes, including relaxed and unrelaxed configurations.
+These checks do not require accurate TRiSK tangential reconstruction.
+
+Atmospheric and ocean rotation use that vertex curl to construct absolute
+vorticity. Their energy-work pairing and PV compatibility are distinct: a
+weighted skew rotation has zero kinetic-energy work, but that alone does not
+establish the discrete vorticity/continuity relationship needed for consistent
+PV transport and geostrophic balance. The existing
+[rotation investigation](../verification/ocean/ROTATING_BALANCE.md) records those
+unresolved consistency limits. No rotation operator is changed here. Equiangular
+curl is a diagnostic operator and has no TRiSK rotation dependency.
