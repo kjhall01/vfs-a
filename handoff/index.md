@@ -1495,3 +1495,7 @@ spherical finite differences and WB2 formula replay, and reports coarse-scale
 sensitivity. Cloud and plotting dependencies remain outside the package. Offline
 tests use synthetic data; hosted CI copies the validation code but downloads no
 ERA5 data. See `validation/equiangular_wb2/README.md` for reference conventions.
+
+The optional [polar and energy/tracer mapping audit](../validation/polar_energy/README.md) distinguishes analytic point/area references, ERA5 pole-input sensitivity, and
+nonconservative interpolation defects from nonlinear energy reconstruction.
+Full active thermodynamic mappings remain unqualified.

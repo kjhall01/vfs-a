@@ -72,3 +72,7 @@ The existing portable fixtures are retained, without changed tolerances.
 The optional [WeatherBench2/local-data campaign](../validation/equiangular_wb2/README.md)
 adds real-data comparisons, regional budgets, coordinate invariance, and
 common-scale diagnostics. It does not add package or ordinary-test network access.
+
+The optional [polar and energy/tracer mapping audit](../validation/polar_energy/README.md) distinguishes analytic point/area references, ERA5 pole-input sensitivity, and
+nonconservative interpolation defects from nonlinear energy reconstruction.
+Full active thermodynamic mappings remain unqualified.

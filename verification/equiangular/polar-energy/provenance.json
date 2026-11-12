@@ -1,0 +1,21 @@
+{
+  "base_commit": "69ea3255876955861cf28fffcdcfd09bdc93daf5",
+  "python": "3.12.14",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "device": "CPU",
+  "dtype": "float64",
+  "source_mesh": "deterministic Fibonacci, 3 Lloyd iterations",
+  "input_store": "https://storage.googleapis.com/weatherbench2/datasets/era5/1959-2023_01_10-wb13-6h-1440x721_with_derived_variables.zarr",
+  "driver_sha256": {
+    "validation/polar_energy/data_poles.py": "b97977bd08732bf113554d3ab16ceaf3044650066ee3e35166ea9e50fa68b686",
+    "validation/polar_energy/mapping.py": "22415b742b80a4b385acfa80d96f86db1712f452e8329948a3a07545ddf556c8",
+    "validation/polar_energy/polar.py": "e5e3c7736e851c845b15a699283541e10dd68e94a3140293b90bd7b78c5b9046"
+  },
+  "installed_operator_sha256": {
+    "geometry/equiangular.py": "c03f3cce96dfd36dd14746093462787b1e457751064c6a4fe8e8dfd12c44c0d7",
+    "geometry/remap.py": "79bc7663320f18cb559e4ff3d72978ab8bbf2cc68acbdd14c043f581f2c2c818",
+    "ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7"
+  }
+}

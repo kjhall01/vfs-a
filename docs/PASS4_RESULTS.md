@@ -429,3 +429,11 @@ ordering invariance, scalar identities and coarse-scale sensitivity. It keeps
 WB2 archive comparisons separate from full spherical finite differences because
 the inspected WB2 formulas omit spherical curvature terms. Package dependencies,
 dycore code and fixture tolerances are unchanged. Ordinary CI stays offline.
+
+## Equiangular polar and mapping diagnostics
+
+[Analytic and mapping evidence](../validation/polar_energy/README.md) covers both
+layouts through 720 latitude intervals and one ERA5 pole-input sensitivity case.
+An analogous mechanical Hamiltonian is evaluated on the target grid; inventory
+and energy defects of existing nonconservative KNN are recorded separately.
+Production operators, fixtures and tolerances are unchanged.

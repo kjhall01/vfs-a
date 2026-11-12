@@ -1,0 +1,13 @@
+Installed parent wheel (production files unchanged), tested outside checkout.
+CPU float64; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1.
+python -I -m pytest --fixture-mode=portable -q
+902 passed, 1 skipped (CUDA), 1 existing warning in 171.54 s.
+19 new offline diagnostic tests passed.
+check_baseline.py --reference-version corrected-gibbs-v1 --mode portable: pass
+check_dry_helpers.py --mode portable: pass
+Analytic sweep: 72 cases through 720 latitude intervals.
+Mechanical-energy/tracer mapping: 12 synthetic cases.
+ERA5 pole sensitivity: one 2020-01-15 12 UTC, 250 hPa snapshot.
+No GPU, coupled dynamics or full active thermodynamic mapping qualification.
+Raw input NetCDF is 8 MiB and deliberately omitted.
+Every changed file is <=128 KiB.
