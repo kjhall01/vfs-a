@@ -1,0 +1,19 @@
+{
+  "base_main": "9c756fdb6cb2b3fd8a24679b8cbc4743fa1584ce",
+  "audit_parent": "23e73a833aff964b46a240b9d14c9664ea10fb74",
+  "python": "3.12.14",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "source_sha256": {
+    "vfs/geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+    "vfs/atmosphere/conservative.py": "81e8fce87de8ab5dd374e0004285c27b5078b3e29a83b116a8a853b935e06ef8",
+    "vfs/atmosphere/dry_energy.py": "c81ef31b816185d07a2bd7d9130bb8e6f9ec03928b2e86eae3fa6386f5795c98",
+    "vfs/atmosphere/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1",
+    "vfs/atmosphere/constants.py": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc",
+    "vfs/atmosphere/initial_conditions/jablonski_williamson.py": "2f94e94fd41df1835d512949ffc85c40eb904df5e490ca2e0e8d6f0b31a22c72",
+    "tools/audit_jwa_rotation_balance.py": "10e4a70d38a8da463f0256dfe70e616bf8dc6586fd098be477e43710f79f4bd7",
+    "tools/audit_rotation_pv.py": "0c95359040e4ee9998ebac0ced9ea41538415b1a4074209bf7f5a7754a803a0a",
+    "tests/test_jwa_rotation_audit.py": "091999b81c82cd966bc7d53227b6f3dd91fb5aedaadb5227e2b06ed3463ffcc1"
+  }
+}

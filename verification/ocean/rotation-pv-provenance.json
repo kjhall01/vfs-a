@@ -1,0 +1,17 @@
+{
+  "base_commit": "9c756fdb6cb2b3fd8a24679b8cbc4743fa1584ce",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "source_sha256": {
+    "vfs/geometry/mesh/grid.py": "d3f21f344d0caa3a6fbefde5b850d833c0ab550c882cafd0b21724ee6c438aa1",
+    "vfs/ocean/conservative.py": "a6baf1a6ea1a20fdd986048f152a06e3d3661b9bbe4f52860a3289bd2de53ff7",
+    "vfs/ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7",
+    "vfs/ocean/state.py": "21e60cab5662677bff7b441a60337c1214252218a25a10fe5cbeace80af0d1b3",
+    "vfs/ocean/column.py": "996857a903d612984aaaa46288da6299ed6c7db7204d1d006a345317006577b7",
+    "tools/audit_rotation_pv.py": "0c95359040e4ee9998ebac0ced9ea41538415b1a4074209bf7f5a7754a803a0a",
+    "tests/ocean/test_rotation_pv_audit.py": "39fa7a2d637948534df8b3d8b309b67ff1579c1cd0979c62c76514a71bb0d17a"
+  }
+}
