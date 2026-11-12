@@ -408,3 +408,15 @@ Validation: installed-wheel portable suite 842 passed, one CUDA skip; both
 corrected-Gibbs and dry-helper portable comparisons pass. The equiangular example
 and guide snippets execute. New curl tests include field-value gradcheck. CPU
 float64 only; no GPU or model-rollout qualification is inferred.
+
+
+## Equiangular dataset diagnostics
+
+`EquiangularGrid.from_coordinates` retains either latitude order and cyclic
+longitude offsets/seams, validates midpoint bounds, and supports centered and
+pole-sampled global layouts. Polar scalars use a single cap per pole; vector
+components retain their local longitude-dependent basis. An explicit xarray
+example provides divergence and wind/stress curl without spatial regridding.
+See [qualification](EQUIANGULAR_VALIDATION.md) for analytic vector refinement,
+polar error limits and CPU float64 structural/field-derivative checks. Dycore
+sources, fixtures and historical tolerances are unchanged.
