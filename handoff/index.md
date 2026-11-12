@@ -6,6 +6,10 @@ ocean API is available on main. Run `examples/ocean_stratified.py` for explicit
 stepping and adaptive remapping. See [ocean scope](../docs/OCEAN_INTEGRATION.md)
 for feasibility constraints and outstanding qualification.
 
+The [equiangular grid](../docs/EQUIANGULAR_GRID.md) provides global integrals,
+matched C-grid grad/div/scalar Laplacian and an explicit collocated-wind adapter.
+It is a diagnostics grid, not a dynamical-core mesh.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

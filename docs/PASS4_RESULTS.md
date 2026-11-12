@@ -313,3 +313,23 @@ source hashes are retained. This is API integration, not new physics qualificati
 The README and current guides describe both components, their public APIs and
 verification limits. Historical numerical reports remain separate and unchanged.
 This documentation update changes no runtime code, fixtures or tolerances.
+
+## Equiangular diagnostic operators
+
+Added `vfs.geometry.EquiangularGrid`: exact-area integrals/means, face gradients,
+conservative divergence, matched scalar Laplacian, face inner products and an
+explicit collocated-wind adapter. Existing LatLonGrid behavior and dynamical-core
+operators are unchanged. The grid is global and cell-centered, without masks.
+
+Installed-wheel validation outside the checkout: 834 passed, one CUDA skip;
+corrected-Gibbs and dry-helper portable comparisons pass. Seven new tests cover
+geometry, cancellation, adjointness, dissipation, harmonic refinement, input
+validation and field-value autograd (including gradcheck). The example and guide
+snippet run; local guide links and diff whitespace checks pass. CPU float64 is
+tested; dtype movement is smoke-tested in float32. No GPU or model-rollout claim.
+
+The degree-one harmonic's dimensionless RMS Laplacian error decreases from
+0.00652093 at 16×32 to 0.000127905 at 128×256. Polar-row maximum errors converge
+approximately first order; see [the guide](EQUIANGULAR_GRID.md). A smooth
+northward-wind adapter check (v=cos(latitude), unit radius) has divergence RMS
+errors 0.0111116, 0.00278122 and 0.000695514 at 16×32, 32×64 and 64×128.
