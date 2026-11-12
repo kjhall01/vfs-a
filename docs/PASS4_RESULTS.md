@@ -336,3 +336,18 @@ Installed-wheel validation outside the checkout: 831 passed, one CUDA skip;
 corrected-Gibbs and dry-helper portable comparisons pass. Four focused audit
 tests pass. Relevant installed source hashes match the base tree. CPU float64
 only; no new time integration, GPU, gradient or physical-flow qualification.
+
+## JW-A t=0 rotation comparison
+
+On the recovered 16,384-cell mesh with 32 levels, consistent corner/index
+geometry lowers the current unperturbed JW-A mass-weighted momentum RMS from
+4.40312e-5 to 3.36493e-5 m/s² (23.6%). Maximum residual falls 19.6%. The same
+fixed-vorticity metric-skew pairing retains rotation-work cancellation and
+closed atmospheric energy plus lid work at roundoff. Initial fields and all
+non-rotation terms are identical. No production geometry is replaced and no
+timestep is taken. See [the report](../verification/ocean/JWA_ROTATION_BALANCE.md)
+for configuration, alternate norms, source/state hashes and remaining limits.
+Six focused audit tests pass against the installed wheel, including independent
+dense pairing, production equality and unchanged geometry buffers. No full-suite
+rerun is claimed for this diagnostic-only follow-up; the preceding audit suite
+result remains separately recorded. Oversized mesh input is omitted.

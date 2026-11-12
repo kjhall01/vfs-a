@@ -163,3 +163,7 @@ Validation: installed-wheel suite 831 passed, one CUDA skip; corrected-Gibbs and
 dry-helper portable comparisons pass. Four focused audit tests pass, including
 buffer restoration and an intentionally misindexed comparison that fails the
 compatibility oracle. Runtime source hashes match the base source listed above.
+
+The [JW-A t=0 follow-up](JWA_ROTATION_BALANCE.md) measures the rotation-only
+impact on the recovered 16,384-cell atmospheric mesh: 23.6% lower mass-weighted
+RMS momentum residual with energy-work closure retained. No timestep is taken.

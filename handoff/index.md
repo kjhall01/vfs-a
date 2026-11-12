@@ -9,7 +9,9 @@ for feasibility constraints and outstanding qualification.
 The [rotation/PV audit](../verification/ocean/ROTATION_PV_AUDIT.md) identifies
 shared corner-association/intersection inconsistencies and a separate variable-
 thickness PV-flux mismatch. It includes the recovered 16,384-cell atmosphere
-mesh. Production operators remain unchanged; corrections require separate review.
+mesh. The [JW-A initial-balance check](../verification/ocean/JWA_ROTATION_BALANCE.md)
+shows 23.6% lower momentum RMS for the geometric comparison with energy closure
+retained. Production operators remain unchanged; corrections require separate review.
 
 Earlier handoff entries below are historical records, not current instructions.
 
