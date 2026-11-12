@@ -20,7 +20,7 @@ matching shape/dtype/device and rejects negative or nonfinite k. Exactly zero k
 is allowed, without a floor. Dry-cell k must be zero.
 
 `mix_with_report(state, dt)` runs vertical physics alone. `step_with_report` runs
-the existing checked dynamics, optional requested ALE, then vertical physics.
+the existing checked dynamics, optional requested ALE, optional boundary stresses, then vertical physics.
 This is first-order operator splitting, even though the dynamics uses SSPRK3.
 `closure=None` transports/remaps k without vertical production, mixing or decay.
 `remap_with_report` returns separate resolved-ocean and TKE energy ledgers.
@@ -41,7 +41,8 @@ VFS. L is required; no second length-scale/dissipation equation is solved.
 `c_mu=0` isolates decay, `c_epsilon=0` disables decay and `mix_scalars=False`
 isolates shear/TKE exchange without active or passive scalar mixing.
 
-Top and bottom fluxes are zero. At each step the diffusivities are frozen from
+Mixing itself has zero top and bottom fluxes. Optional
+[boundary stresses](OCEAN_BOUNDARY_STRESS.md) apply in a separate substep. At each step the diffusivities are frozen from
 initial k, with arithmetic averaging to vertical interfaces. Closed implicit
 vertical diffusion mixes native edge-normal momentum, potential enthalpy, salt,
 passives and TKE. It does not reconstruct cell winds for the momentum solve.
@@ -167,9 +168,10 @@ reported separately and is not repaired by this closure.
 ## Boundaries of the implementation
 
 - CPU float64, unbatched states and fixed closed coast masks are the tested scope.
-- No surface wind/wave TKE injection, bottom drag, Langmuir turbulence, prescribed
+- No separate surface wind/wave TKE injection, Langmuir turbulence, prescribed
   background diffusivity or prognostic mixing length. Zero TKE stays zero without
-  a seed or a future source, even in an unstable column.
+  a seed or source, even in an unstable column. Optional bottom drag can produce
+  TKE from a nonzero bottom current; prescribed wind stress acts on resolved KE.
 - No horizontal EKE/backscatter, isotropic turbulent-pressure term, or atmospheric
   physics coupling. Atmospheric TKE remains a separate task.
 - A prescribed L and constant Pr do not establish realistic stability functions,

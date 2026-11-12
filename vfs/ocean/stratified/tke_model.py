@@ -5,6 +5,7 @@ import torch
 from .model import StratifiedOcean
 from .equations import EntropyState
 from .tke import TKEClosure
+from .boundary import OceanBoundaryStress
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class TKEStepReport:
     ocean: object
     turbulence: object
     tke_transport_residual: torch.Tensor
+    boundary: object = None
 
 
 @dataclass(frozen=True)
@@ -34,16 +36,19 @@ class TKERemapReport:
 class TKEOcean:
     """Optional composition; the original StratifiedOcean and its states stay intact.
 
-    First-order splitting: checked dynamics, requested ALE, then vertical TKE
-    physics. closure=None transports/remaps TKE without production or decay.
+    First-order splitting: dynamics, requested ALE, boundary stresses, vertical TKE
+    physics. closure=None disables vertical mixing/decay; boundary drag may still
+    produce TKE when explicitly configured.
     Existing ocean SSPRK3 energy error is not corrected by the closure.
     """
-    def __init__(self, ocean, *, closure=None):
+    def __init__(self, ocean, *, closure=None, boundary=None):
         if not isinstance(ocean, StratifiedOcean):
             raise TypeError('TKEOcean requires a StratifiedOcean')
         if closure is not None and not isinstance(closure, TKEClosure):
             raise TypeError('closure must be TKEClosure or None')
-        self.ocean, self.closure = ocean, closure
+        if boundary is not None and not isinstance(boundary, OceanBoundaryStress):
+            raise TypeError("boundary must be OceanBoundaryStress or None")
+        self.ocean, self.closure, self.boundary = ocean, closure, boundary
 
     def check_state(self, state):
         if not isinstance(state, TKEState):
@@ -99,16 +104,32 @@ class TKEOcean:
         self.check_state(result)
         return result, report
 
-    def step_with_report(self, state, dt, *, target_h=None):
+    def boundary_with_report(self, state, dt, *, surface_stress=None):
+        """Boundary momentum/work alone; no hidden call to vertical mixing."""
+        self.check_state(state)
+        if not math.isfinite(float(dt)) or float(dt) <= 0:
+            raise ValueError('dt must be finite and positive')
+        if self.boundary is None:
+            if surface_stress is not None:
+                raise ValueError('surface_stress requires an explicit OceanBoundaryStress')
+            return state, None
+        resolved, tke_h, report = self.boundary.apply(self.ocean, state.ocean, state.tke_h,
+            dt, surface_stress=surface_stress)
+        result = TKEState(resolved, tke_h)
+        self.check_state(result)
+        return result, report
+
+    def step_with_report(self, state, dt, *, target_h=None, surface_stress=None):
         self.check_state(state)
         packed, report = self.ocean.step_with_report(self._pack(state), dt, target_h=target_h)
         transported = self._unpack(packed, state)
-        end, mixing = self.mix_with_report(transported, dt)
+        forced, boundary = self.boundary_with_report(transported, dt, surface_stress=surface_stress)
+        end, mixing = self.mix_with_report(forced, dt)
         transport_residual = (self.ocean.energy.mass_area(state.ocean)*(transported.tke_h-state.tke_h)).sum()
-        return end, TKEStepReport(report, mixing, transport_residual)
+        return end, TKEStepReport(report, mixing, transport_residual, boundary)
 
-    def step(self, state, dt, *, target_h=None):
-        return self.step_with_report(state, dt, target_h=target_h)[0]
+    def step(self, state, dt, *, target_h=None, surface_stress=None):
+        return self.step_with_report(state, dt, target_h=target_h, surface_stress=surface_stress)[0]
 
     def remap_with_report(self, state, target_h):
         self.check_state(state)

@@ -1516,3 +1516,11 @@ energy ledger. Each interface charges only adjacent TKE reservoirs; geometric
 half-layer weights replace the column-wide allocation. The interface energy
 transport is reported separately from mixing work. Original #51 evidence is
 preserved; see [local qualification](../verification/ocean/LOCAL_TKE_BUOYANCY.md).
+
+## Ocean boundary stress
+
+`OceanBoundaryStress` adds explicit edge-normal wind stress and optional flat-bed
+quadratic drag to `TKEOcean`. Wind work is external; all native drag KE loss goes
+to bottom-layer TKE before mixing/dissipation. No surface TKE flux or sloping-bed
+stress is implemented. See [API](../docs/OCEAN_BOUNDARY_STRESS.md) and
+[qualification](../verification/ocean/BOUNDARY_STRESS.md) for scope and evidence.

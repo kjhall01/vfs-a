@@ -1,0 +1,21 @@
+{
+  "base_commit": "c1a2ef35e0e794a660a2e92f664f4a933a9e3eba",
+  "python": "3.12",
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "source_sha256": {
+    "vfs/ocean/stratified/boundary.py": "d461279cac593a5a2da98a26e8c45117081c55b05f87e75bcaae88a682da984f",
+    "vfs/ocean/stratified/tke_model.py": "1d88636cab6b1acf5f60e58ca80d97c6e6ba51f6964bceed7281aae4289f222e",
+    "vfs/ocean/stratified/tke.py": "0cd0a705b67791b551ebb9720818c6ffc97493a323950b62f667c109e08c3f21",
+    "tests/ocean/test_boundary_stress.py": "cd2e5c2a3abeff157bfce5b09a9c44fd1f1587c86c7ef2ef0e98ea62a4ef5fca",
+    "validation/ocean_boundary/run.py": "83c01aa5172a73482ffe31e6bc12fcad8da4f69ab0e2a8c5ef72de84dab1277f",
+    "examples/ocean_boundary_stress.py": "6a720522e34a8446b46fda5659b1e57cdbffe7536af4f646a7ba6033e8afdefa"
+  },
+  "evidence_sha256": {
+    "verification/ocean/boundary/corrected-gibbs.json": "73718f7c97e0c801c8ac6f67b4061dab6f46cc980bcbe346bc794970e022c7bf",
+    "verification/ocean/boundary/dry-helpers.json": "9426cea9d91e85ec87d0b611055eed91e30addc1dbba54504a74c285ec620896",
+    "verification/ocean/boundary/reference.json": "5ed8d213d7d613660a347b8d90dee31810624996d6075ef8fd5ff56ed15e35dc",
+    "verification/ocean/boundary/spherical.json": "904be4a2cb92ef95537c57a93154b5e95c7a662ecf8ed5bb423d2ff3fc1a3c24"
+  },
+  "scope": "Installed-wheel tests outside checkout. No GPU, float32, long-run or calibrated mixing claim."
+}

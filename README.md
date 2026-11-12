@@ -66,7 +66,9 @@ or timestep recommendations for other resolutions.
   solves and long backward trajectories require separate qualification.
 - CPU float64 is the verified baseline. GPU, reduced precision and long climate
   runs are not generally qualified. No coupled atmosphere–ocean driver or
-  prognostic TKE/EKE closure is provided.
+  horizontal EKE closure is provided. An optional prescribed-length
+  [ocean TKE closure](docs/OCEAN_TKE.md) supports
+  [wind stress and flat-bottom drag](docs/OCEAN_BOUNDARY_STRESS.md).
 
 ## Documentation
 

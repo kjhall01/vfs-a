@@ -8,3 +8,6 @@ __all__ = ['StratifiedOcean', 'EntropyState', 'AdaptiveThermalRemapper', 'StepRe
 from .tke import TKEClosure, TKEReport
 from .tke_model import TKEOcean, TKEState, TKEStepReport, TKERemapReport
 __all__ += ['TKEClosure', 'TKEReport', 'TKEOcean', 'TKEState', 'TKEStepReport', 'TKERemapReport']
+
+from .boundary import OceanBoundaryStress, BoundaryStressReport
+__all__ += ['OceanBoundaryStress', 'BoundaryStressReport']
