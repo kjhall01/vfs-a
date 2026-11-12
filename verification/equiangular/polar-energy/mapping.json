@@ -1,0 +1,338 @@
+[
+  {
+    "mesh_cells": 64,
+    "target_shape": [
+      16,
+      32
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 6.04844340760196e-06,
+    "tracer_inventory_relative_change": -0.0016287952660839625,
+    "salt_inventory_relative_change": 5.124319906584257e-07,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.735990074110773e+18,
+    "source_reconstructed_cell_kinetic_J": 1.0391546001796137e+19,
+    "mapped_kinetic_density_integral_J": 9.724644959923091e+18,
+    "target_collocated_kinetic_J": 9.3250217962032e+18,
+    "target_face_kinetic_J": 9.293088305320487e+18,
+    "source_potential_J": 4.702978169373267e+18,
+    "mapped_potential_density_integral_J": 4.729298644237496e+18,
+    "target_potential_J": 3.627925497185632e+18,
+    "energy_density_transfer_defect_J": 1.497536067654656e+16,
+    "energy_reconstruction_defect_J": -1.5329298016544686e+18,
+    "total_energy_change_J": -1.517954440977922e+18
+  },
+  {
+    "mesh_cells": 64,
+    "target_shape": [
+      17,
+      32
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 8.814929684611886e-06,
+    "tracer_inventory_relative_change": -0.0014099093367740607,
+    "salt_inventory_relative_change": 8.184689628628486e-06,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.735990074110773e+18,
+    "source_reconstructed_cell_kinetic_J": 1.0391546001796137e+19,
+    "mapped_kinetic_density_integral_J": 9.72607743635712e+18,
+    "target_collocated_kinetic_J": 9.329956378049501e+18,
+    "target_face_kinetic_J": 9.298234877893216e+18,
+    "source_potential_J": 4.702978169373267e+18,
+    "mapped_potential_density_integral_J": 4.728249991374709e+18,
+    "target_potential_J": 3.6339371598598856e+18,
+    "energy_density_transfer_defect_J": 1.535918424778752e+16,
+    "energy_reconstruction_defect_J": -1.5221553899787264e+18,
+    "total_energy_change_J": -1.506796205730939e+18
+  },
+  {
+    "mesh_cells": 64,
+    "target_shape": [
+      32,
+      64
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 1.4190134593503817e-05,
+    "tracer_inventory_relative_change": -0.0009630379444429656,
+    "salt_inventory_relative_change": 1.5258705449777035e-05,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.735990074110773e+18,
+    "source_reconstructed_cell_kinetic_J": 1.0391546001796137e+19,
+    "mapped_kinetic_density_integral_J": 9.730337856045564e+18,
+    "target_collocated_kinetic_J": 9.329846983888388e+18,
+    "target_face_kinetic_J": 9.320791215052718e+18,
+    "source_potential_J": 4.702978169373267e+18,
+    "mapped_potential_density_integral_J": 4.718715789846526e+18,
+    "target_potential_J": 3.623139495435006e+18,
+    "energy_density_transfer_defect_J": 1.008540240804864e+16,
+    "energy_reconstruction_defect_J": -1.5051229354043658e+18,
+    "total_energy_change_J": -1.4950375329963172e+18
+  },
+  {
+    "mesh_cells": 64,
+    "target_shape": [
+      33,
+      64
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 1.0995930885986594e-05,
+    "tracer_inventory_relative_change": -0.0011509049709742876,
+    "salt_inventory_relative_change": 1.2578106082764393e-05,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.735990074110773e+18,
+    "source_reconstructed_cell_kinetic_J": 1.0391546001796137e+19,
+    "mapped_kinetic_density_integral_J": 9.730375993988055e+18,
+    "target_collocated_kinetic_J": 9.331789409978204e+18,
+    "target_face_kinetic_J": 9.322812876208065e+18,
+    "source_potential_J": 4.702978169373267e+18,
+    "mapped_potential_density_integral_J": 4.720678613088061e+18,
+    "target_potential_J": 3.6240793494017536e+18,
+    "energy_density_transfer_defect_J": 1.2086363592075264e+16,
+    "energy_reconstruction_defect_J": -1.5041623814662984e+18,
+    "total_energy_change_J": -1.492076017874223e+18
+  },
+  {
+    "mesh_cells": 256,
+    "target_shape": [
+      16,
+      32
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": -1.9673617022437725e-06,
+    "tracer_inventory_relative_change": -0.0001780167871674302,
+    "salt_inventory_relative_change": -2.42486750891174e-07,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.787917496693258e+18,
+    "source_reconstructed_cell_kinetic_J": 9.934415727173872e+18,
+    "mapped_kinetic_density_integral_J": 9.787309913433676e+18,
+    "target_collocated_kinetic_J": 9.67479105503225e+18,
+    "target_face_kinetic_J": 9.647555972204319e+18,
+    "source_potential_J": 4.701176053277711e+18,
+    "mapped_potential_density_integral_J": 4.704185761316496e+18,
+    "target_potential_J": 4.27686943422042e+18,
+    "energy_density_transfer_defect_J": 2402124779204608.0,
+    "energy_reconstruction_defect_J": -5.670702683254323e+17,
+    "total_energy_change_J": -5.6466814354622874e+17
+  },
+  {
+    "mesh_cells": 256,
+    "target_shape": [
+      17,
+      32
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 1.3513570340556598e-05,
+    "tracer_inventory_relative_change": -0.003263829396949061,
+    "salt_inventory_relative_change": 1.6790763891084384e-05,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.787917496693258e+18,
+    "source_reconstructed_cell_kinetic_J": 9.934415727173872e+18,
+    "mapped_kinetic_density_integral_J": 9.78651906089896e+18,
+    "target_collocated_kinetic_J": 9.671372899718541e+18,
+    "target_face_kinetic_J": 9.644504129613892e+18,
+    "source_potential_J": 4.701176053277711e+18,
+    "mapped_potential_density_integral_J": 4.699939884196206e+18,
+    "target_potential_J": 4.2713661250101745e+18,
+    "energy_density_transfer_defect_J": -2634604875804672.0,
+    "energy_reconstruction_defect_J": -5.705886904710994e+17,
+    "total_energy_change_J": -5.7322329534690304e+17
+  },
+  {
+    "mesh_cells": 256,
+    "target_shape": [
+      32,
+      64
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 1.763619852221293e-06,
+    "tracer_inventory_relative_change": -0.0003993497279059302,
+    "salt_inventory_relative_change": 1.7990540217014712e-06,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.787917496693258e+18,
+    "source_reconstructed_cell_kinetic_J": 9.934415727173872e+18,
+    "mapped_kinetic_density_integral_J": 9.784136064830271e+18,
+    "target_collocated_kinetic_J": 9.669779640732672e+18,
+    "target_face_kinetic_J": 9.66159664343545e+18,
+    "source_potential_J": 4.701176053277711e+18,
+    "mapped_potential_density_integral_J": 4.699644241434611e+18,
+    "target_potential_J": 4.271793690006854e+18,
+    "energy_density_transfer_defect_J": -5313243706085376.0,
+    "energy_reconstruction_defect_J": -5.503899728225782e+17,
+    "total_energy_change_J": -5.557032165286646e+17
+  },
+  {
+    "mesh_cells": 256,
+    "target_shape": [
+      33,
+      64
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 2.5639544717300544e-06,
+    "tracer_inventory_relative_change": -0.0008266529797880208,
+    "salt_inventory_relative_change": 3.2923041827548537e-06,
+    "tracer_range": [
+      0.19999999999999993,
+      1.0
+    ],
+    "constant_tracer_max_error": 2.220446049250313e-16,
+    "source_kinetic_J": 9.787917496693258e+18,
+    "source_reconstructed_cell_kinetic_J": 9.934415727173872e+18,
+    "mapped_kinetic_density_integral_J": 9.786707976500687e+18,
+    "target_collocated_kinetic_J": 9.67244865236637e+18,
+    "target_face_kinetic_J": 9.664267184527303e+18,
+    "source_potential_J": 4.701176053277711e+18,
+    "mapped_potential_density_integral_J": 4.698310248335615e+18,
+    "target_potential_J": 4.271711796394841e+18,
+    "energy_density_transfer_defect_J": -4075325134667776.0,
+    "energy_reconstruction_defect_J": -5.490392439141591e+17,
+    "total_energy_change_J": -5.5311456904882586e+17
+  },
+  {
+    "mesh_cells": 1024,
+    "target_shape": [
+      16,
+      32
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 9.77981718650891e-07,
+    "tracer_inventory_relative_change": 0.002897241423515533,
+    "salt_inventory_relative_change": 6.731931040123646e-08,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.800664407947678e+18,
+    "source_reconstructed_cell_kinetic_J": 9.835435032740448e+18,
+    "mapped_kinetic_density_integral_J": 9.808390635885445e+18,
+    "target_collocated_kinetic_J": 9.774438636613044e+18,
+    "target_face_kinetic_J": 9.749572703675089e+18,
+    "source_potential_J": 4.699755374220687e+18,
+    "mapped_potential_density_integral_J": 4.708457801625626e+18,
+    "target_potential_J": 4.582820551924945e+18,
+    "energy_density_transfer_defect_J": 1.642865534270464e+16,
+    "energy_reconstruction_defect_J": -1.8445518191103693e+17,
+    "total_energy_change_J": -1.6802652656833126e+17
+  },
+  {
+    "mesh_cells": 1024,
+    "target_shape": [
+      17,
+      32
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 5.076607808546945e-06,
+    "tracer_inventory_relative_change": -0.004383478474499333,
+    "salt_inventory_relative_change": 6.273328740282042e-06,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.800664407947678e+18,
+    "source_reconstructed_cell_kinetic_J": 9.835435032740448e+18,
+    "mapped_kinetic_density_integral_J": 9.800953837220188e+18,
+    "target_collocated_kinetic_J": 9.774583593625154e+18,
+    "target_face_kinetic_J": 9.749862710409718e+18,
+    "source_potential_J": 4.699755374220687e+18,
+    "mapped_potential_density_integral_J": 4.710595742928292e+18,
+    "target_potential_J": 4.5862751279795384e+18,
+    "energy_density_transfer_defect_J": 1.1129797980114944e+16,
+    "energy_reconstruction_defect_J": -1.754117417592238e+17,
+    "total_energy_change_J": -1.6428194377910886e+17
+  },
+  {
+    "mesh_cells": 1024,
+    "target_shape": [
+      32,
+      64
+    ],
+    "layout": "centers",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 1.58096659500215e-06,
+    "tracer_inventory_relative_change": -0.00015751406454790967,
+    "salt_inventory_relative_change": 2.1410297755400797e-06,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.800664407947678e+18,
+    "source_reconstructed_cell_kinetic_J": 9.835435032740448e+18,
+    "mapped_kinetic_density_integral_J": 9.798884637813834e+18,
+    "target_collocated_kinetic_J": 9.76861263393016e+18,
+    "target_face_kinetic_J": 9.761761525051146e+18,
+    "source_potential_J": 4.699755374220687e+18,
+    "mapped_potential_density_integral_J": 4.704824264300246e+18,
+    "target_potential_J": 4.5812875066325023e+18,
+    "energy_density_transfer_defect_J": 3289119945713664.0,
+    "energy_reconstruction_defect_J": -1.606598704304302e+17,
+    "total_energy_change_J": -1.5737075048471552e+17
+  },
+  {
+    "mesh_cells": 1024,
+    "target_shape": [
+      33,
+      64
+    ],
+    "layout": "poles",
+    "remapper": "existing MeshToLatLonKNN(k=8); NOT conservative",
+    "mass_relative_change": 3.525982914986408e-07,
+    "tracer_inventory_relative_change": -3.108902904850398e-06,
+    "salt_inventory_relative_change": -1.7881623346529317e-07,
+    "tracer_range": [
+      0.19999999999999996,
+      1.0
+    ],
+    "constant_tracer_max_error": 1.6653345369377348e-16,
+    "source_kinetic_J": 9.800664407947678e+18,
+    "source_reconstructed_cell_kinetic_J": 9.835435032740448e+18,
+    "mapped_kinetic_density_integral_J": 9.7991040646634e+18,
+    "target_collocated_kinetic_J": 9.768564478615075e+18,
+    "target_face_kinetic_J": 9.761735955234154e+18,
+    "source_potential_J": 4.699755374220687e+18,
+    "mapped_potential_density_integral_J": 4.701604425063849e+18,
+    "target_potential_J": 4.5772309001150817e+18,
+    "energy_density_transfer_defect_J": 288707558885376.0,
+    "energy_reconstruction_defect_J": -1.617416343780137e+17,
+    "total_energy_change_J": -1.6145292681912934e+17
+  }
+]

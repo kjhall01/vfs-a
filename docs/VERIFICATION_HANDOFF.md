@@ -45,3 +45,7 @@ CPU float64 is the baseline. GPU, reduced precision, long-rollout gradients and
 coupled atmosphere–ocean evolution require separate qualification. See
 [portable regression](PORTABLE_REGRESSION.md), [bounded gradient limits](BOUNDED_GRADIENT_LIMITATION.md)
 and [contributing](../CONTRIBUTING.md) for checking instructions.
+
+The optional [polar and energy/tracer mapping audit](../validation/polar_energy/README.md) distinguishes analytic point/area references, ERA5 pole-input sensitivity, and
+nonconservative interpolation defects from nonlinear energy reconstruction.
+Full active thermodynamic mappings remain unqualified.

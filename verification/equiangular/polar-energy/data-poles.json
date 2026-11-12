@@ -1,0 +1,97 @@
+{
+  "input_sha256": "1a41214c0fe4d058c5c0a90fa8c4c2490605493f691cd7579fa1f93cafd94ae7",
+  "time": "2020-01-15T12:00:00.000000000",
+  "level_hPa": 250,
+  "radius_m": 6367500.0,
+  "pole_vectors": [
+    {
+      "latitude": 90.0,
+      "pole_cartesian_scatter_m_s": 0.0013117242534831893,
+      "adjacent_ring_mean_cartesian_speed_m_s": 10.315242830081123,
+      "pole_u_range_m_s": [
+        -0.0004253387451171875,
+        -0.0004253387451171875
+      ],
+      "pole_v_range_m_s": [
+        -0.001240849494934082,
+        -0.001240849494934082
+      ]
+    },
+    {
+      "latitude": -90.0,
+      "pole_cartesian_scatter_m_s": 0.0013117242534831893,
+      "adjacent_ring_mean_cartesian_speed_m_s": 5.133900526052538,
+      "pole_u_range_m_s": [
+        -0.0004253387451171875,
+        -0.0004253387451171875
+      ],
+      "pole_v_range_m_s": [
+        -0.001240849494934082,
+        -0.001240849494934082
+      ]
+    }
+  ],
+  "vfs_minus_spherical_fd_s_inverse": {
+    "original": {
+      "divergence": {
+        "global": {
+          "rms": 2.2822181566784022e-07,
+          "max": 9.626675154095328e-05
+        },
+        "last_nonpolar_ring": {
+          "rms": 5.222331696324757e-05,
+          "max": 9.626675154095328e-05
+        },
+        "above_75": {
+          "rms": 1.2251100881301147e-06,
+          "max": 9.626675154095328e-05
+        }
+      },
+      "curl": {
+        "global": {
+          "rms": 1.5354839700956978e-06,
+          "max": 0.00014354037537695524
+        },
+        "last_nonpolar_ring": {
+          "rms": 7.840275777941359e-05,
+          "max": 0.00014354037537695524
+        },
+        "above_75": {
+          "rms": 1.9190847704966497e-06,
+          "max": 0.00014354037537695524
+        }
+      }
+    },
+    "adjacent_ring_cartesian_mean_at_poles": {
+      "divergence": {
+        "global": {
+          "rms": 1.588588330590185e-08,
+          "max": 3.983433500963505e-06
+        },
+        "last_nonpolar_ring": {
+          "rms": 2.1808053820688343e-06,
+          "max": 3.983433500963505e-06
+        },
+        "above_75": {
+          "rms": 6.719534166715274e-08,
+          "max": 3.983433500963505e-06
+        }
+      },
+      "curl": {
+        "global": {
+          "rms": 1.4969887575678824e-06,
+          "max": 3.639277335772145e-05
+        },
+        "last_nonpolar_ring": {
+          "rms": 3.93096451101746e-06,
+          "max": 1.5173751743817205e-05
+        },
+        "above_75": {
+          "rms": 5.592895636002147e-07,
+          "max": 1.5173751743817205e-05
+        }
+      }
+    }
+  },
+  "warning": "Sensitivity only: neither corrected pole values nor finite differences are analytical truth."
+}
