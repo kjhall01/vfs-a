@@ -1532,3 +1532,14 @@ native work/TKE allocation and wet-cell column/domain depth consistency checks.
 There is no slope-normal traction or slope-area correction. Smooth along/across
 slope refinement and a varying-depth wind/TKE example are documented in
 [bathymetric drag qualification](../verification/ocean/BATHYMETRIC_DRAG.md).
+
+## Prescribed ocean radiation
+
+`OceanSurfaceHeating` accepts net shortwave and signed non-solar surface heat,
+using current layer thicknesses for two-band absorption. Bottom transmission is
+explicitly exported or deposited in the lowest water layer. Signed thermal
+inversion shares the existing JMD95/caloric machinery; legacy TKE heating is
+exactly preserved in pinned comparisons. Available standalone or in `TKEOcean`
+before vertical mixing. See [guide](../docs/OCEAN_RADIATION.md) and
+[qualification](../verification/ocean/RADIATION.md). Atmospheric flux calculation,
+freshwater exchange and separate surface TKE input remain absent.

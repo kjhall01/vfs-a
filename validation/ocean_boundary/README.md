@@ -29,3 +29,11 @@ Run `python validation/ocean_boundary/bathymetry.py` for varying-depth drag on
 32/128/512/2048-cell meshes. The reference uses analytic smooth vector speed
 with the same discrete interpolated thickness, isolating wind reconstruction
 error. It reports unchanged rest-pressure residuals separately.
+
+`radiation.py` compares analytic layer-integrated two-band absorption on
+1/4/16/64 layers for both bottom policies, and measures independent Hamiltonian
+energy increments. `examples/ocean_radiation.py` checks short combined evolution.
+
+`compare_heating.py --repository /path/to/vfs-a` loads the pinned pre-extraction
+TKE module from local git history and compares its outputs exactly with the
+installed candidate. It does not modify the checkout or install another wheel.

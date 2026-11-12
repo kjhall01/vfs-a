@@ -116,6 +116,9 @@ jobs:
           python -I validation/ocean_boundary/run.py
           python -I examples/ocean_boundary_stress.py --bathymetry
           python -I validation/ocean_boundary/bathymetry.py
+          python -I examples/ocean_radiation.py
+          python -I validation/ocean_boundary/radiation.py
+          python -I validation/ocean_boundary/compare_heating.py --repository "$GITHUB_WORKSPACE"
       - name: Held-Suarez pinned archive comparison
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_held_suarez_archive.py --archive-repo "$GITHUB_WORKSPACE" --report held-suarez.json

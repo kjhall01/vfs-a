@@ -1,0 +1,77 @@
+{
+  "scope": "CPU float64, 40 m column, 200 W/m2 shortwave and -50 W/m2 surface heat for 3600 s; exact analytic layer-average absorption, not a calibrated optical profile",
+  "results": [
+    {
+      "layers": 1,
+      "bottom": "export",
+      "relative_layer_flux_error": 0.0,
+      "net_water_heat_W_m2": 139.17317734107098,
+      "bottom_export_W_m2": 10.826822658929016,
+      "full_H_residual_J_kg": 7.655868525726322e-12,
+      "maximum_layer_H_residual_J_kg": 6.687889974047971e-12
+    },
+    {
+      "layers": 1,
+      "bottom": "absorb",
+      "relative_layer_flux_error": 0.0,
+      "net_water_heat_W_m2": 150.00000000000003,
+      "bottom_export_W_m2": 0.0,
+      "full_H_residual_J_kg": -2.1081059178289385e-11,
+      "maximum_layer_H_residual_J_kg": 2.5939098367052058e-11
+    },
+    {
+      "layers": 4,
+      "bottom": "export",
+      "relative_layer_flux_error": 4.1019374013149836e-17,
+      "net_water_heat_W_m2": 139.17317734107098,
+      "bottom_export_W_m2": 10.826822658929016,
+      "full_H_residual_J_kg": -1.1598186415764682e-11,
+      "maximum_layer_H_residual_J_kg": 6.947196639404543e-12
+    },
+    {
+      "layers": 4,
+      "bottom": "absorb",
+      "relative_layer_flux_error": 4.1019374013149836e-17,
+      "net_water_heat_W_m2": 150.00000000000003,
+      "bottom_export_W_m2": 0.0,
+      "full_H_residual_J_kg": -8.245022550628715e-12,
+      "maximum_layer_H_residual_J_kg": 1.1389970542470373e-11
+    },
+    {
+      "layers": 16,
+      "bottom": "export",
+      "relative_layer_flux_error": 4.237135232341029e-16,
+      "net_water_heat_W_m2": 139.17317734107098,
+      "bottom_export_W_m2": 10.826822658929016,
+      "full_H_residual_J_kg": 1.2378502118959874e-12,
+      "maximum_layer_H_residual_J_kg": 2.7635410475013912e-11
+    },
+    {
+      "layers": 16,
+      "bottom": "absorb",
+      "relative_layer_flux_error": 4.237135232341029e-16,
+      "net_water_heat_W_m2": 150.00000000000003,
+      "bottom_export_W_m2": 0.0,
+      "full_H_residual_J_kg": -1.8270042367983814e-12,
+      "maximum_layer_H_residual_J_kg": 2.7635410475013912e-11
+    },
+    {
+      "layers": 64,
+      "bottom": "export",
+      "relative_layer_flux_error": 5.0555109407302375e-16,
+      "net_water_heat_W_m2": 139.17317734107098,
+      "bottom_export_W_m2": 10.826822658929016,
+      "full_H_residual_J_kg": 1.2378502118959874e-12,
+      "maximum_layer_H_residual_J_kg": 3.5426158153666505e-11
+    },
+    {
+      "layers": 64,
+      "bottom": "absorb",
+      "relative_layer_flux_error": 5.0555109407302375e-16,
+      "net_water_heat_W_m2": 150.00000000000003,
+      "bottom_export_W_m2": 0.0,
+      "full_H_residual_J_kg": 4.591014077031953e-12,
+      "maximum_layer_H_residual_J_kg": 3.5426158153666505e-11
+    }
+  ]
+}

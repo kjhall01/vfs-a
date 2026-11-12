@@ -20,7 +20,7 @@ matching shape/dtype/device and rejects negative or nonfinite k. Exactly zero k
 is allowed, without a floor. Dry-cell k must be zero.
 
 `mix_with_report(state, dt)` runs vertical physics alone. `step_with_report` runs
-the existing checked dynamics, optional requested ALE, optional boundary stresses, then vertical physics.
+the existing checked dynamics, optional requested ALE, optional boundary stresses and surface heating, then vertical physics.
 This is first-order operator splitting, even though the dynamics uses SSPRK3.
 `closure=None` transports/remaps k without vertical production, mixing or decay.
 `remap_with_report` returns separate resolved-ocean and TKE energy ledgers.
