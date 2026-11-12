@@ -67,7 +67,9 @@ The installed wheel was tested outside the source checkout:
   curl/divergence/dual-transfer oracles and weighted skew symmetry.
 - A nonuniform-PV test checks zero work and velocity/thickness reverse-AD
   derivatives against finite differences.
-- Mesh save/load preserves the scheme and numerical rotation exactly.
+- Mesh save/load preserves the scheme and serialized geometry exactly;
+  reconstructed rotation agrees within floating-point roundoff. NumPy and Torch
+  evaluation of the derived Coriolis factor can differ by an ulp.
 - Dry IMEX, moist bounded stepping, moist centered IMEX and moist energy-work
   closure execute on corrected meshes.
 - Active stratified-ocean stepping and adaptive remapping execute with and

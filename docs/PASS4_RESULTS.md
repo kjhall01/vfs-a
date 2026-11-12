@@ -363,3 +363,48 @@ The variable-thickness uniform-PV defect falls to 2.93e-11 relative; energy-work
 closure remains at roundoff. Installed-wheel portable suite 840 passed/one CUDA
 skip; expanded correction tests 10 passed; both atmospheric fixture comparisons
 pass. See [complete scope and evidence](../verification/ocean/ROTATION_CORRECTION.md).
+## Equiangular diagnostic operators
+
+Added `vfs.geometry.EquiangularGrid`: exact-area integrals/means, face gradients,
+conservative divergence, matched scalar Laplacian, face inner products and an
+explicit collocated-wind adapter. Existing LatLonGrid behavior and dynamical-core
+operators are unchanged. The grid is global and cell-centered, without masks.
+
+Installed-wheel validation outside the checkout: 834 passed, one CUDA skip;
+corrected-Gibbs and dry-helper portable comparisons pass. Seven new tests cover
+geometry, cancellation, adjointness, dissipation, harmonic refinement, input
+validation and field-value autograd (including gradcheck). The example and guide
+snippet run; local guide links and diff whitespace checks pass. CPU float64 is
+tested; dtype movement is smoke-tested in float32. No GPU or model-rollout claim.
+
+The degree-one harmonic's dimensionless RMS Laplacian error decreases from
+0.00652093 at 16×32 to 0.000127905 at 128×256. Polar-row maximum errors converge
+approximately first order; see [the guide](EQUIANGULAR_GRID.md). A smooth
+northward-wind adapter check (v=cos(latitude), unit radius) has divergence RMS
+errors 0.0111116, 0.00278122 and 0.000695514 at 16×32, 32×64 and 64×128.
+
+## Equiangular curl and Voronoi identities
+
+The equiangular grid provides native dual-cell curl, polar-cap circulation,
+conservative dual-to-cell averaging and `curl_from_collocated` for wind/stress.
+Each polar row repeats one cap average with fractional area weights. The native
+curl-gradient and global Stokes identities are checked separately from accuracy
+of the collocated-data interpolation. Tilted solid-body rotation's cell-result
+RMS error falls from 0.0211032 to 0.00602573 to 0.00166804 on unit-radius grids
+16×32, 32×64 and 64×128. Axis-aligned native circulation matches exact dual-area
+averages, including caps, within roundoff.
+
+Direct Voronoi regression checks now cover curl-gradient, global circulation and
+curl adjoint identities on (cells, Lloyd iterations) = (16,0), (64,0), (64,5),
+(256,2), with batched three-level random fields. For dimensionless scalar input,
+maximum closed-loop residuals are 8.88e-16, 8.88e-16, 8.88e-16 and 1.33e-15.
+Existing source documented curl-gradient cancellation, but no direct test for
+that identity was found in the preceding suite. No production Voronoi/rotation
+operator changes are made. The separate balance investigation's limitations on
+PV and rotation consistency still apply; zero energy work does not prove those
+stronger properties.
+
+Validation: installed-wheel portable suite 842 passed, one CUDA skip; both
+corrected-Gibbs and dry-helper portable comparisons pass. The equiangular example
+and guide snippets execute. New curl tests include field-value gradcheck. CPU
+float64 only; no GPU or model-rollout qualification is inferred.

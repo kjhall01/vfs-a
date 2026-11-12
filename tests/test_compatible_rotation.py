@@ -56,8 +56,20 @@ def test_mesh_cache_roundtrip(tmp_path):
     m=grid();path=tmp_path/'mesh.nc';save_mesh_netcdf(m,path)
     other=load_mesh_netcdf(path)
     assert other.rotation_scheme=='compatible'
-    u=torch.randn(m.nEdges,2,dtype=torch.float64);h=torch.full((m.nCells,2),1000.,dtype=u.dtype)
-    torch.testing.assert_close(other.compatible_rotation(u,h,1e-4),m.compatible_rotation(u,h,1e-4),rtol=0,atol=0)
+    # Serialized geometry is lossless. Derived Coriolis factors use NumPy in
+    # construction and Torch in loading; sin(asin(z)) can differ by an ulp.
+    from vfs.geometry.mesh.grid import _FLOAT_BUFFERS, _INT_BUFFERS
+    for name in _FLOAT_BUFFERS + _INT_BUFFERS:
+        if hasattr(m, name):
+            torch.testing.assert_close(getattr(other,name),getattr(m,name),rtol=0,atol=0)
+    generator=torch.Generator().manual_seed(47)
+    u=torch.randn(m.nEdges,2,dtype=torch.float64,generator=generator)
+    h=torch.full((m.nCells,2),1000.,dtype=u.dtype)
+    expected=m.compatible_rotation(u,h,1e-4)
+    # Bound reduction/cancellation roundoff using the global acceleration scale.
+    eps=torch.finfo(u.dtype).eps
+    torch.testing.assert_close(other.compatible_rotation(u,h,1e-4),expected,
+                               rtol=16*eps,atol=16*eps*float(expected.abs().max()))
 
 
 def test_atmospheric_work_and_imex():
