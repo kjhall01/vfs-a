@@ -14,3 +14,6 @@ __all__ += ['OceanBoundaryStress', 'BoundaryStressReport']
 
 from .surface_heating import OceanSurfaceHeating, SurfaceHeatingReport
 __all__ += ['OceanSurfaceHeating', 'SurfaceHeatingReport']
+
+from .surface_exchange import OceanSurfaceFluxes, OceanSurfaceExchange, SurfaceExchangeReport
+__all__ += ['OceanSurfaceFluxes', 'OceanSurfaceExchange', 'SurfaceExchangeReport']

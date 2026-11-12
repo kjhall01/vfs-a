@@ -494,3 +494,17 @@ freshwater exchange is added.
 
 Radiation installed-wheel regression: 967 passed, one CUDA skip; corrected-Gibbs
 and dry-helper portable comparisons pass. All tests run outside the checkout.
+
+## Prescribed surface exchange
+
+Added an ocean-only operator for supplied freshwater, sensible/latent heat and
+water-carried energy/momentum fluxes. Native water/momentum updates retain salt
+and passive contents; a top-layer thermal adjustment closes the existing full
+Hamiltonian energy budget. All carrier reference conventions are explicit.
+Fifteen focused tests, manufactured-target recovery, constant-flux subdivision
+and combined radiation/stress/TKE evidence are recorded in
+[qualification](../verification/ocean/SURFACE_EXCHANGE.md). Atmospheric flux
+calculation, wetting/drying and advective TKE exchange remain absent.
+
+Prescribed-exchange installed-wheel regression: 982 passed, one CUDA skip;
+corrected-Gibbs and dry-helper portable comparisons pass outside checkout.

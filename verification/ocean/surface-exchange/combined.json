@@ -1,0 +1,13 @@
+{
+  "cells": 32,
+  "layers": 8,
+  "steps": 3,
+  "dt_s": 60.0,
+  "net_water_kg_m2": 0.1791,
+  "mass_residual_over_initial_mass": -1.2638661124657352e-16,
+  "salt_relative_change": -1.7907417170285532e-16,
+  "external_energy_J": 1.523761243656381e+19,
+  "exchange_energy_residual_J_kg": 2.6362867229062277e-12,
+  "combined_energy_minus_inputs_J_kg": -8.391821400916066e-12,
+  "min_tke": 0.00025068616101941733
+}

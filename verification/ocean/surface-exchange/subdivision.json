@@ -1,0 +1,41 @@
+{
+  "scope": "Isolated constant prescribed boundary fluxes, 3600 s; no dynamics or turbulence. Subdivision consistency, not a coupled temporal-convergence claim.",
+  "results": [
+    {
+      "substeps": 1,
+      "maximum_thickness_error_m": 0.0,
+      "maximum_salinity_error": 0.0,
+      "salt_content_exact": true,
+      "passive_content_exact": true,
+      "energy_residual_J_kg": 1.9041740126665806e-12,
+      "temperature_difference_from_single_step_C": 0.0
+    },
+    {
+      "substeps": 2,
+      "maximum_thickness_error_m": 1.7763568394002505e-15,
+      "maximum_salinity_error": 7.105427357601002e-15,
+      "salt_content_exact": true,
+      "passive_content_exact": true,
+      "energy_residual_J_kg": 8.322192326496916e-12,
+      "temperature_difference_from_single_step_C": 1.9539925233402755e-14
+    },
+    {
+      "substeps": 4,
+      "maximum_thickness_error_m": 1.7763568394002505e-15,
+      "maximum_salinity_error": 7.105427357601002e-15,
+      "salt_content_exact": true,
+      "passive_content_exact": true,
+      "energy_residual_J_kg": 1.9041740126665806e-12,
+      "temperature_difference_from_single_step_C": 2.1316282072803006e-14
+    },
+    {
+      "substeps": 8,
+      "maximum_thickness_error_m": 5.329070518200751e-15,
+      "maximum_salinity_error": 2.842170943040401e-14,
+      "salt_content_exact": true,
+      "passive_content_exact": true,
+      "energy_residual_J_kg": 1.9041740126665806e-12,
+      "temperature_difference_from_single_step_C": 2.4868995751603507e-14
+    }
+  ]
+}

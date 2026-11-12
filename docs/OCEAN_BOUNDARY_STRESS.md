@@ -22,7 +22,7 @@ object raises. `OceanBoundaryStress()` enables surface forcing with zero bottom
 drag; omitting stress means zero surface stress. Inactive coast edges receive
 neither stress nor drag. No mass, salt or tracer flux is introduced.
 `boundary_with_report` runs boundary physics alone. The full step order is
-resolved dynamics, optional ALE, boundary stress, optional
+resolved dynamics, optional ALE, prescribed water exchange, boundary stress, optional
 [surface heating](OCEAN_RADIATION.md), then TKE mixing/dissipation.
 This splitting is first order. See the [runnable example](../examples/ocean_boundary_stress.py); pass
 `--bathymetry` for a smooth varying-depth case.

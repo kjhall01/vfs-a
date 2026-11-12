@@ -116,6 +116,8 @@ jobs:
           python -I validation/ocean_boundary/run.py
           python -I examples/ocean_boundary_stress.py --bathymetry
           python -I validation/ocean_boundary/bathymetry.py
+          python -I examples/ocean_surface_fluxes.py
+          python -I validation/ocean_boundary/exchange.py
           python -I examples/ocean_radiation.py
           python -I validation/ocean_boundary/radiation.py
           python -I validation/ocean_boundary/compare_heating.py --repository "$GITHUB_WORKSPACE"

@@ -1,0 +1,12 @@
+{
+  "parent_commit": "9e3cf8b67121ffbe66a0cc767cae5a0edce0a1bb",
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "source_sha256": {
+    "vfs/ocean/stratified/surface_exchange.py": "173cb701ca210088f5d981e81c5a7217beda605efb2db40549b2eb6c6c0871c8",
+    "vfs/ocean/stratified/tke_model.py": "68b71bb471172772efaa830221bc8d1244958f325d34499d3fc172b6cdd27fc1",
+    "tests/ocean/test_surface_exchange.py": "a9c1827072a9247e398667747b04a0d38af4ed8fabd36ac0c78bbf9192f73d9b",
+    "validation/ocean_boundary/exchange.py": "c89b95148e4616fb2d7493ecbbbcf969e5b8e55195ae690417af8912e009e20b",
+    "examples/ocean_surface_fluxes.py": "1d50db43166822591a33b5ee9291a21d56350e21ce8c58c86771b57fd6b1f886"
+  }
+}

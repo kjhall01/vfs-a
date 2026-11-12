@@ -1543,3 +1543,14 @@ exactly preserved in pinned comparisons. Available standalone or in `TKEOcean`
 before vertical mixing. See [guide](../docs/OCEAN_RADIATION.md) and
 [qualification](../verification/ocean/RADIATION.md). Atmospheric flux calculation,
 freshwater exchange and separate surface TKE input remain absent.
+
+## Prescribed freshwater and surface heat exchange
+
+`OceanSurfaceExchange` applies tensor-only precipitation/evaporation,
+sensible/latent heat and explicit water-carried energy/momentum inputs.
+Top-layer thickness changes; salt/nonvolatile passive contents stay fixed.
+The top thermal solve closes actual column Hamiltonian increments. The TKE
+wrapper retains extensive TKE through this operation. No atmospheric bulk law
+or automatic water enthalpy conversion is supplied. See
+[guide](../docs/OCEAN_SURFACE_EXCHANGE.md) and
+[qualification](../verification/ocean/SURFACE_EXCHANGE.md).
