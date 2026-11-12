@@ -437,3 +437,12 @@ layouts through 720 latitude intervals and one ERA5 pole-input sensitivity case.
 An analogous mechanical Hamiltonian is evaluated on the target grid; inventory
 and energy defects of existing nonconservative KNN are recorded separately.
 Production operators, fixtures and tolerances are unchanged.
+
+## Optional ocean TKE
+
+[TKEOcean](../docs/OCEAN_TKE.md) composes the existing stratified ocean with
+a prescribed-length vertical closure and an explicit h*k state. Native shear
+loss, column buoyancy work and dissipative heat have separate energy ledgers.
+Original dynamics/defaults/fixtures remain unchanged. The column buoyancy
+allocation, timestep rejection, first-order splitting and absence of boundary
+forcing are explicit limits; see [qualification](../verification/ocean/TKE.md).

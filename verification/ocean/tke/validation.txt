@@ -1,0 +1,15 @@
+Base: main 5f6ad4a81a4bcb16fdbdfd8beb63c2ebc4fe8425
+Built and installed a noneditable wheel; tests executed outside checkout.
+CPU float64, Torch 2.15.0+cpu, OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1.
+python -I -m pytest --fixture-mode=portable -q
+919 passed, 1 skipped (CUDA), 1 existing warning in 167.75 seconds.
+Focused TKE tests: 17 passed in 11.33 seconds.
+Corrected-Gibbs portable comparison: pass (original fixture/tolerances).
+Dry-helper portable comparison: pass (original fixture/tolerances).
+examples/ocean_tke.py: completed; minimum k=0.00048810490422276643 m²/s².
+Offline campaign: completed, 4/16/32 layers, 20 mixing steps each;
+separate dynamics/ALE smoke and analytic two-box diffusion refinement.
+Installed implementation and driver hashes match recorded results.
+No original dynamics kernel, historical fixture or tolerance changed.
+All changed files <=131072 bytes. No new external runtime dependency.
+Hosted CI is separate from these local results.

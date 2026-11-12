@@ -1,0 +1,133 @@
+{
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "installed_source_hashes": {
+    "ocean/stratified/tke.py": "ed9c140b76c9cdcc46ffc369fd2ef15e2f2228ecc57c72429b030c90800484b5",
+    "ocean/stratified/tke_model.py": "00f4bf3750df16e7f30093337adc522b560ed16a77c3f360fb297d6ec29dcb23"
+  },
+  "driver_hash": "4357cad90d93d6cc0987551f29f94c40bd473092460f55b3a8ce1dd35b3f6803",
+  "columns": [
+    {
+      "layers": 4,
+      "dt_s": 10.0,
+      "steps": 20,
+      "scope": "vertical mixing only; no dynamics",
+      "energy_change_J_kg": 1.0268829302128536e-11,
+      "kinetic_change_J_kg": -0.00017019254128033726,
+      "tke_change_J_kg": -0.009502428231556788,
+      "min_specific_tke": 0.000486715350479325,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "entropy_change_J_kg_K": 0.00013837009203654515,
+      "max_column_energy_residual_J_kg": 2.407609263145468e-11,
+      "integrated_transfers_J_kg": {
+        "shear_production": 0.00017018256782899024,
+        "implicit_momentum_loss": 9.973451349174654e-09,
+        "buoyancy_work": 0.00015096318999212563,
+        "dissipated_heat": 0.009521657582844999,
+        "kinetic_residual": 5.624547096037739e-18,
+        "thermal_residual": 0.0,
+        "tke_inventory_residual": -1.6066835473827963e-18,
+        "entropy_change": 0.0001383700920625594,
+        "column_energy_residual": -7.985443812714754e-12,
+        "kinetic_column_exchange": 5.6249801216332145e-18,
+        "global_energy_residual": -7.985438187734632e-12
+      },
+      "combined_step": {
+        "tke_transport_residual_J_kg": -8.909417712126533e-19,
+        "remap_tke_change_J_kg": 0.0,
+        "remap_total_energy_change_J_kg": 1.0268829302128536e-11,
+        "min_remapped_tke": 0.009965050267600624
+      }
+    },
+    {
+      "layers": 16,
+      "dt_s": 10.0,
+      "steps": 20,
+      "scope": "vertical mixing only; no dynamics",
+      "energy_change_J_kg": 1.0268829302128534e-11,
+      "kinetic_change_J_kg": -0.00013523587429850842,
+      "tke_change_J_kg": -0.009509554050399122,
+      "min_specific_tke": 0.000477677690770266,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 3.133798004799968e-16,
+      "entropy_change_J_kg_K": 0.00011667103866580788,
+      "max_column_energy_residual_J_kg": 1.107928045770608e-11,
+      "integrated_transfers_J_kg": {
+        "shear_production": 0.00013521130046380777,
+        "implicit_momentum_loss": 2.4573834699370232e-08,
+        "buoyancy_work": 0.00015207497198921726,
+        "dissipated_heat": 0.009492714952708411,
+        "kinetic_residual": 3.020241436851133e-19,
+        "thermal_residual": 0.0,
+        "tke_inventory_residual": -2.2952622105468513e-19,
+        "entropy_change": 0.0001166710386097408,
+        "column_energy_residual": 4.470525371888481e-12,
+        "kinetic_column_exchange": 2.9255814105379293e-19,
+        "global_energy_residual": 4.470525664446622e-12
+      },
+      "combined_step": {
+        "tke_transport_residual_J_kg": -7.59467438116343e-19,
+        "remap_tke_change_J_kg": -7.650874035156171e-20,
+        "remap_total_energy_change_J_kg": -7.650874035156171e-20,
+        "min_remapped_tke": 0.009965003122688032
+      }
+    },
+    {
+      "layers": 32,
+      "dt_s": 10.0,
+      "steps": 20,
+      "scope": "vertical mixing only; no dynamics",
+      "energy_change_J_kg": 0.0,
+      "kinetic_change_J_kg": -0.00013019979782824233,
+      "tke_change_J_kg": -0.00951052201762359,
+      "min_specific_tke": 0.00047509136372143564,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 3.133798004799969e-16,
+      "entropy_change_J_kg_K": 0.00011354603671555746,
+      "max_column_energy_residual_J_kg": 8.575094875297592e-12,
+      "integrated_transfers_J_kg": {
+        "shear_production": 0.00013015798264639835,
+        "implicit_momentum_loss": 4.1815181857808684e-08,
+        "buoyancy_work": 0.0001518583916802528,
+        "dissipated_heat": 0.009488863423771594,
+        "kinetic_residual": 4.796171138414468e-18,
+        "thermal_residual": 0.0,
+        "tke_inventory_residual": -5.355611824609319e-19,
+        "entropy_change": 0.00011354603670979772,
+        "column_energy_residual": -5.0947169217174955e-12,
+        "kinetic_column_exchange": 4.798266384717965e-18,
+        "global_energy_residual": -5.0947121234511106e-12
+      },
+      "combined_step": {
+        "tke_transport_residual_J_kg": -6.782621908617496e-19,
+        "remap_tke_change_J_kg": 0.0,
+        "remap_total_energy_change_J_kg": 0.0,
+        "min_remapped_tke": 0.009964997770511859
+      }
+    }
+  ],
+  "diffusion_convergence": [
+    {
+      "steps": 4,
+      "max_error": 0.010134382911847872
+    },
+    {
+      "steps": 8,
+      "max_error": 0.005218151512122682
+    },
+    {
+      "steps": 16,
+      "max_error": 0.002648815502817814
+    },
+    {
+      "steps": 32,
+      "max_error": 0.0013346097605499985
+    },
+    {
+      "steps": 64,
+      "max_error": 0.0006698899195318742
+    }
+  ]
+}

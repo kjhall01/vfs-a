@@ -9,6 +9,7 @@
 | Atmospheric initialization and output | [Physical fields](PHYSICAL_FIELDS_API.md) |
 | Moist model and steppers | [Moist API](MOIST_MODULE_API.md) |
 | Stratified ocean and vertical remapping | [Ocean API](OCEAN_INTEGRATION.md) |
+| Optional prognostic ocean turbulence | [TKE closure](OCEAN_TKE.md) |
 | Explicit and implicit stepping | [Timestep paths](CURRENT_PATHS.md) |
 | Atmospheric thermal relaxation and drag | [Held–Suarez forcing](HELD_SUAREZ.md) |
 | Horizontal rotation | [Compatible rotation](COMPATIBLE_ROTATION.md) |
