@@ -1,0 +1,772 @@
+{
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "driver_sha256": "0c95359040e4ee9998ebac0ced9ea41538415b1a4074209bf7f5a7754a803a0a",
+  "scope": "instantaneous operators; synthetic prescribed f; no modified model rollout",
+  "cases": [
+    {
+      "label": "fib64-0",
+      "cells": 64,
+      "edges": 186,
+      "vertices": 124,
+      "generator_sha256": "cfcd979068af12445c6fbc0e6f5afcb2a43dd9b1b00cc02911b67368de2f1ca1",
+      "geometry": {
+        "true_kite_min_area": 814536097475.038,
+        "true_transfer_constant_max": 5.551115123125783e-16,
+        "true_transfer_mass_relative_max": 1.5543122344752192e-15,
+        "stored_transfer_constant_max": 0.3503979030137554,
+        "stored_transfer_mass_relative_max": 4.440892098500626e-16,
+        "stored_fraction_partition_max": 5.551115123125783e-16
+      },
+      "curl_grad_max_circulation": 8.881784197001252e-16,
+      "independent_raw_rebuild_relative": 9.213374207200624e-17,
+      "projection_change_relative": 5.026169472704516e-16,
+      "raw_vs_stored_corner_defect": 0.31745879869323246,
+      "raw_vs_shifted_corner_defect": 7.173815952583078e-16,
+      "index_only_vs_stored_corner_defect": 7.447757912891518e-16,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.33712037923961313,
+          "metric_skew_relative_frobenius": 1.0266727785562278e-15
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.33712037923961313,
+          "metric_skew_relative_frobenius": 1.2166654553364021e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.1556027130865736,
+          "metric_skew_relative_frobenius": 1.061550702387146e-15
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 2.019731442544554e-15,
+          "metric_skew_relative_frobenius": 3.1256029881933843e-15
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.278980558967045e-16,
+          "full_vs_rotation_curl_relative": 3.891843081878577e-16,
+          "expected_vorticity_tendency_rms_s2": 1.8128834228805665e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.08252570466564246,
+              "pv_relative_rate_per_second": 1.4960948194988064e-08,
+              "normalized_rotation_work": -9.704429199755802e-18
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.08252570466564244,
+              "pv_relative_rate_per_second": 1.496094819498806e-08,
+              "normalized_rotation_work": -7.137867940150688e-18
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.7063427111337731e-15,
+              "pv_relative_rate_per_second": 3.0934004147675003e-22,
+              "normalized_rotation_work": -1.940212376421256e-17
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.08252570466564244,
+              "pv_relative_rate_per_second": 1.496094819498806e-08,
+              "normalized_rotation_work": -1.741251156715632e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.9796101499733363e-15,
+              "pv_relative_rate_per_second": 3.5888024246527734e-22,
+              "normalized_rotation_work": -1.3306045859060381e-17
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.2677259021577674e-16,
+          "full_vs_rotation_curl_relative": 1.23808897114861e-15,
+          "expected_vorticity_tendency_rms_s2": 1.8249746328258914e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.08342270969540196,
+              "pv_relative_rate_per_second": 1.5072051393259815e-08,
+              "normalized_rotation_work": 2.7214518902172953e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.0829858375719904,
+              "pv_relative_rate_per_second": 1.5052326766860613e-08,
+              "normalized_rotation_work": -7.928077255034951e-05
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.006106140416957347,
+              "pv_relative_rate_per_second": 1.1476192413617404e-09,
+              "normalized_rotation_work": 2.2823486285837717e-19
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.0831168556985701,
+              "pv_relative_rate_per_second": 1.5035620516565062e-08,
+              "normalized_rotation_work": -1.349502776252727e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.0553834652707296e-15,
+              "pv_relative_rate_per_second": 3.731733396321413e-22,
+              "normalized_rotation_work": -3.252054962274659e-17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "fib64-20",
+      "cells": 64,
+      "edges": 186,
+      "vertices": 124,
+      "generator_sha256": "0033d7e75ac0408a6ee626243365618196c6f22e44a51821e7c628b9265ac727",
+      "geometry": {
+        "true_kite_min_area": 982803337977.0266,
+        "true_transfer_constant_max": 7.771561172376096e-16,
+        "true_transfer_mass_relative_max": 2.220446049250313e-15,
+        "stored_transfer_constant_max": 0.15880582128588805,
+        "stored_transfer_mass_relative_max": 4.440892098500626e-16,
+        "stored_fraction_partition_max": 4.440892098500626e-16
+      },
+      "curl_grad_max_circulation": 8.881784197001252e-16,
+      "independent_raw_rebuild_relative": 8.993766253258654e-17,
+      "projection_change_relative": 3.931885028608749e-16,
+      "raw_vs_stored_corner_defect": 0.20742737033521894,
+      "raw_vs_shifted_corner_defect": 6.078568615534876e-16,
+      "index_only_vs_stored_corner_defect": 6.182146061701781e-16,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.20526423641377253,
+          "metric_skew_relative_frobenius": 7.887998992209697e-16
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.20526423641377253,
+          "metric_skew_relative_frobenius": 1.180545147092008e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.08150730422322124,
+          "metric_skew_relative_frobenius": 7.916458983152723e-16
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 2.1902634363449057e-15,
+          "metric_skew_relative_frobenius": 3.2980365462536495e-15
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.2079591786140098e-16,
+          "full_vs_rotation_curl_relative": 3.9687973161891075e-16,
+          "expected_vorticity_tendency_rms_s2": 1.8040616177940208e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.05854818195389587,
+              "pv_relative_rate_per_second": 1.056245278546441e-08,
+              "normalized_rotation_work": -1.8899404880279103e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.05854818195389587,
+              "pv_relative_rate_per_second": 1.056245278546441e-08,
+              "normalized_rotation_work": -1.5291533545238597e-17
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.8175250581598047e-15,
+              "pv_relative_rate_per_second": 3.2789271968049487e-22,
+              "normalized_rotation_work": -1.1843251962972573e-17
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.05854818195389591,
+              "pv_relative_rate_per_second": 1.0562452785464414e-08,
+              "normalized_rotation_work": -3.170952322780583e-19
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.2142650181888e-15,
+              "pv_relative_rate_per_second": 3.994670530938393e-22,
+              "normalized_rotation_work": -4.131871720323344e-18
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.3047615583464608e-16,
+          "full_vs_rotation_curl_relative": 1.224019298432031e-15,
+          "expected_vorticity_tendency_rms_s2": 1.816589807591223e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.05769868791890478,
+              "pv_relative_rate_per_second": 1.0489759858942643e-08,
+              "normalized_rotation_work": -2.0649260209376683e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.05826443118934651,
+              "pv_relative_rate_per_second": 1.0599079054468859e-08,
+              "normalized_rotation_work": -3.735733647219305e-06
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.008231769972976944,
+              "pv_relative_rate_per_second": 1.5098039209972092e-09,
+              "normalized_rotation_work": -1.4591054756939452e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.05834428695252419,
+              "pv_relative_rate_per_second": 1.0625117267021274e-08,
+              "normalized_rotation_work": -3.463957181517568e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.1762992289417135e-15,
+              "pv_relative_rate_per_second": 3.820760178015957e-22,
+              "normalized_rotation_work": -3.581009705716514e-18
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "fib256-20",
+      "cells": 256,
+      "edges": 762,
+      "vertices": 508,
+      "generator_sha256": "5e758ad9d5807563facdd66b6653ed5a4b96d733c3933c2ce886131b87bddf2d",
+      "geometry": {
+        "true_kite_min_area": 247133948367.32718,
+        "true_transfer_constant_max": 1.5543122344752192e-15,
+        "true_transfer_mass_relative_max": 1.2212453270876722e-14,
+        "stored_transfer_constant_max": 0.18184621322427974,
+        "stored_transfer_mass_relative_max": 1.9984014443252818e-15,
+        "stored_fraction_partition_max": 1.9984014443252818e-15
+      },
+      "curl_grad_max_circulation": 8.881784197001252e-16,
+      "independent_raw_rebuild_relative": 9.148880706563625e-17,
+      "projection_change_relative": 1.2878516276847521e-15,
+      "raw_vs_stored_corner_defect": 0.2906438769229124,
+      "raw_vs_shifted_corner_defect": 1.775662939249816e-15,
+      "index_only_vs_stored_corner_defect": 1.8082597881158057e-15,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.28724470366731364,
+          "metric_skew_relative_frobenius": 2.6997002836375327e-15
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.28724470366731364,
+          "metric_skew_relative_frobenius": 1.1627309934845357e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.06769782115961426,
+          "metric_skew_relative_frobenius": 2.785511494147053e-15
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 9.711507255340294e-15,
+          "metric_skew_relative_frobenius": 1.507685674701437e-14
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.2403292501440404e-16,
+          "full_vs_rotation_curl_relative": 7.999452587778473e-16,
+          "expected_vorticity_tendency_rms_s2": 1.9154327604997722e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.07676301085939813,
+              "pv_relative_rate_per_second": 1.4703438579469095e-08,
+              "normalized_rotation_work": -1.5945968096907657e-18
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.0767630108593981,
+              "pv_relative_rate_per_second": 1.4703438579469088e-08,
+              "normalized_rotation_work": -1.371282133981987e-18
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.6573043607004397e-14,
+              "pv_relative_rate_per_second": 3.1744550666047534e-21,
+              "normalized_rotation_work": -2.7810295269441963e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.076763010859398,
+              "pv_relative_rate_per_second": 1.4703438579469071e-08,
+              "normalized_rotation_work": -6.319532934743381e-18
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.844911451780617e-14,
+              "pv_relative_rate_per_second": 3.5338038349617894e-21,
+              "normalized_rotation_work": -2.4171197256059627e-17
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.2748181240369554e-16,
+          "full_vs_rotation_curl_relative": 2.6810644013286826e-15,
+          "expected_vorticity_tendency_rms_s2": 1.931403135366556e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.07704891800587114,
+              "pv_relative_rate_per_second": 1.4727547294693606e-08,
+              "normalized_rotation_work": 3.5849660588382424e-18
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.07683727987288733,
+              "pv_relative_rate_per_second": 1.4739555447716717e-08,
+              "normalized_rotation_work": -4.8575306213257335e-05
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.005237016787283911,
+              "pv_relative_rate_per_second": 1.0280806878543872e-09,
+              "normalized_rotation_work": -8.417793693918273e-19
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.07715743654304351,
+              "pv_relative_rate_per_second": 1.4722449532464527e-08,
+              "normalized_rotation_work": 1.7603477714662094e-18
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.8378864371804403e-14,
+              "pv_relative_rate_per_second": 3.520981419904692e-21,
+              "normalized_rotation_work": -2.808739669784893e-17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "fib1024-20",
+      "cells": 1024,
+      "edges": 3066,
+      "vertices": 2044,
+      "generator_sha256": "30f370771af7e88767844350fcc5f3a381993f409f64b4a294694c8e0ba71c16",
+      "geometry": {
+        "true_kite_min_area": 60482226826.0768,
+        "true_transfer_constant_max": 5.218048215738236e-15,
+        "true_transfer_mass_relative_max": 8.193445921733655e-14,
+        "stored_transfer_constant_max": 0.22850453628635536,
+        "stored_transfer_mass_relative_max": 9.2148511043888e-15,
+        "stored_fraction_partition_max": 9.325873406851315e-15
+      },
+      "curl_grad_max_circulation": 1.3322676295501878e-15,
+      "independent_raw_rebuild_relative": 9.353071017352617e-17,
+      "projection_change_relative": 4.233601960267477e-15,
+      "raw_vs_stored_corner_defect": 0.2664856246390134,
+      "raw_vs_shifted_corner_defect": 5.824735512735331e-15,
+      "index_only_vs_stored_corner_defect": 5.912213425897641e-15,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.26440537012947324,
+          "metric_skew_relative_frobenius": 8.615021764136252e-15
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.2644053701294733,
+          "metric_skew_relative_frobenius": 1.2055536849561179e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.049098435671640045,
+          "metric_skew_relative_frobenius": 8.829256997448472e-15
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 5.0028727193643294e-14,
+          "metric_skew_relative_frobenius": 7.612384289652571e-14
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.2374470515315634e-16,
+          "full_vs_rotation_curl_relative": 1.5444082817574049e-15,
+          "expected_vorticity_tendency_rms_s2": 1.942884175894249e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.04415097066126185,
+              "pv_relative_rate_per_second": 8.578022224813689e-09,
+              "normalized_rotation_work": -1.2870670677890144e-19
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.04415097066126193,
+              "pv_relative_rate_per_second": 8.578022224813706e-09,
+              "normalized_rotation_work": 1.7689651263768356e-18
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.5310831059434556e-13,
+              "pv_relative_rate_per_second": 2.974717138516558e-20,
+              "normalized_rotation_work": -1.319665352719982e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.0441509706612619,
+              "pv_relative_rate_per_second": 8.578022224813697e-09,
+              "normalized_rotation_work": 1.3139559781473334e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.7688356077525392e-13,
+              "pv_relative_rate_per_second": 3.436642712060694e-20,
+              "normalized_rotation_work": -4.1985409015713954e-17
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.2904936296074803e-16,
+          "full_vs_rotation_curl_relative": 4.691202963213538e-15,
+          "expected_vorticity_tendency_rms_s2": 1.9600371454381632e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.04476835754598446,
+              "pv_relative_rate_per_second": 8.558902465766293e-09,
+              "normalized_rotation_work": 1.0338270458488621e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.0444675025974644,
+              "pv_relative_rate_per_second": 8.586921298416446e-09,
+              "normalized_rotation_work": -1.717811141299657e-05
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.0037679425167959197,
+              "pv_relative_rate_per_second": 7.630893533162278e-10,
+              "normalized_rotation_work": -4.564094577269969e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.04456811047033467,
+              "pv_relative_rate_per_second": 8.53485382443673e-09,
+              "normalized_rotation_work": -6.070176708818018e-18
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 1.7722173870729355e-13,
+              "pv_relative_rate_per_second": 3.4347464673671567e-20,
+              "normalized_rotation_work": -5.820601721576707e-17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "fib4096-20",
+      "cells": 4096,
+      "edges": 12282,
+      "vertices": 8188,
+      "generator_sha256": "264d14839cd608f55bca7bd4d2dcac63445d47573cfd2fbd35cac38a719be8e1",
+      "geometry": {
+        "true_kite_min_area": 14532103727.365768,
+        "true_transfer_constant_max": 2.0650148258027912e-14,
+        "true_transfer_mass_relative_max": 5.082601006733967e-13,
+        "stored_transfer_constant_max": 0.21790495498798101,
+        "stored_transfer_mass_relative_max": 5.3179682879545e-14,
+        "stored_fraction_partition_max": 5.306866057708248e-14
+      },
+      "curl_grad_max_circulation": 1.3322676295501878e-15,
+      "independent_raw_rebuild_relative": 8.962174302388164e-17,
+      "projection_change_relative": 1.661135751722668e-14,
+      "raw_vs_stored_corner_defect": 0.47836437568150697,
+      "raw_vs_shifted_corner_defect": 2.2159887532496215e-14,
+      "index_only_vs_stored_corner_defect": 2.2920475542985464e-14,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.4772403659725286,
+          "metric_skew_relative_frobenius": 3.46619675593843e-14
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.4772403659725287,
+          "metric_skew_relative_frobenius": 1.2352193733606867e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.03118739544473389,
+          "metric_skew_relative_frobenius": 3.685554409280706e-14
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 3.1821525410012757e-13,
+          "metric_skew_relative_frobenius": 5.077171075806412e-13
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.2282264038051708e-16,
+          "full_vs_rotation_curl_relative": 3.4844111423105447e-15,
+          "expected_vorticity_tendency_rms_s2": 1.951216822981198e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.06047341938766299,
+              "pv_relative_rate_per_second": 1.1799675325240537e-08,
+              "normalized_rotation_work": 5.761244733777895e-18
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.06047341938766296,
+              "pv_relative_rate_per_second": 1.1799675325240529e-08,
+              "normalized_rotation_work": 1.4005058397472294e-18
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.114245172824085e-12,
+              "pv_relative_rate_per_second": 4.125350749121145e-19,
+              "normalized_rotation_work": 6.707027025651114e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.060473419387663124,
+              "pv_relative_rate_per_second": 1.1799675325240562e-08,
+              "normalized_rotation_work": 8.289736160301364e-18
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.467161936443738e-12,
+              "pv_relative_rate_per_second": 4.813967875407892e-19,
+              "normalized_rotation_work": -2.3959233190325664e-16
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.2832119188420186e-16,
+          "full_vs_rotation_curl_relative": 1.0190167149387033e-14,
+          "expected_vorticity_tendency_rms_s2": 1.9686594498825275e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.06065837148700129,
+              "pv_relative_rate_per_second": 1.1784363817509443e-08,
+              "normalized_rotation_work": 1.2675757050226317e-19
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.060468410711428056,
+              "pv_relative_rate_per_second": 1.1804573961584202e-08,
+              "normalized_rotation_work": -1.3254063894875444e-06
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.004178285729801765,
+              "pv_relative_rate_per_second": 8.374736920797969e-10,
+              "normalized_rotation_work": -3.920991657147513e-18
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.06054450602970803,
+              "pv_relative_rate_per_second": 1.177460036699065e-08,
+              "normalized_rotation_work": 1.1748538100605478e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 2.475013546431666e-12,
+              "pv_relative_rate_per_second": 4.813919841019395e-19,
+              "normalized_rotation_work": -1.3855331318047018e-16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "icosa-f4",
+      "cells": 162,
+      "edges": 480,
+      "vertices": 320,
+      "generator_sha256": "119483f65b56a242fb95e3ab7c950d8f43d0742b3b0f281fb4783cb7cf5f79c5",
+      "geometry": {
+        "true_kite_min_area": 388762437955.52734,
+        "true_transfer_constant_max": 1.3322676295501878e-15,
+        "true_transfer_mass_relative_max": 3.774758283725532e-15,
+        "stored_transfer_constant_max": 0.08494073443664751,
+        "stored_transfer_mass_relative_max": 8.881784197001252e-16,
+        "stored_fraction_partition_max": 8.881784197001252e-16
+      },
+      "curl_grad_max_circulation": 6.661338147750939e-16,
+      "independent_raw_rebuild_relative": 9.25110314320024e-17,
+      "projection_change_relative": 6.398130040433871e-16,
+      "raw_vs_stored_corner_defect": 0.07742049579585644,
+      "raw_vs_shifted_corner_defect": 9.171133074919203e-16,
+      "index_only_vs_stored_corner_defect": 9.198953591698352e-16,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.11959560835401323,
+          "metric_skew_relative_frobenius": 1.2961253225315997e-15
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.11959560835401324,
+          "metric_skew_relative_frobenius": 9.225424904805728e-17
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.0771418707189856,
+          "metric_skew_relative_frobenius": 1.298410527451308e-15
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 4.551106256399691e-15,
+          "metric_skew_relative_frobenius": 7.074714179378035e-15
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.258294144168008e-16,
+          "full_vs_rotation_curl_relative": 6.656554730481208e-16,
+          "expected_vorticity_tendency_rms_s2": 1.8913935588485054e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.05586185558413464,
+              "pv_relative_rate_per_second": 1.0565675383715768e-08,
+              "normalized_rotation_work": 2.153981880364124e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.055861855584134715,
+              "pv_relative_rate_per_second": 1.0565675383715784e-08,
+              "normalized_rotation_work": 0.0
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 6.435374231321339e-15,
+              "pv_relative_rate_per_second": 1.217182536990083e-21,
+              "normalized_rotation_work": -2.1519680399816587e-17
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.05586185558413478,
+              "pv_relative_rate_per_second": 1.0565675383715796e-08,
+              "normalized_rotation_work": 2.1539818803641238e-17
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 6.527430773473918e-15,
+              "pv_relative_rate_per_second": 1.2345940520778084e-21,
+              "normalized_rotation_work": 0.0
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.312650351950746e-16,
+          "full_vs_rotation_curl_relative": 2.269923071234855e-15,
+          "expected_vorticity_tendency_rms_s2": 1.9065976725677976e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.055978948134165686,
+              "pv_relative_rate_per_second": 1.057131130294152e-08,
+              "normalized_rotation_work": 0.0
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.055922408802001285,
+              "pv_relative_rate_per_second": 1.0573723032023284e-08,
+              "normalized_rotation_work": -6.318297994014104e-05
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.0036169818627844554,
+              "pv_relative_rate_per_second": 7.013300309689437e-10,
+              "normalized_rotation_work": 2.1193426788010707e-17
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.05590322511009515,
+              "pv_relative_rate_per_second": 1.0548588065200053e-08,
+              "normalized_rotation_work": 0.0
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 6.488876453215016e-15,
+              "pv_relative_rate_per_second": 1.2393318990297592e-21,
+              "normalized_rotation_work": -4.238667013396924e-17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "label": "icosa-f8",
+      "cells": 642,
+      "edges": 1920,
+      "vertices": 1280,
+      "generator_sha256": "5c84f96ec405751bef05fa163897e6590969d0133afe84205aa95486447feac3",
+      "geometry": {
+        "true_kite_min_area": 85433079940.201,
+        "true_transfer_constant_max": 2.886579864025407e-15,
+        "true_transfer_mass_relative_max": 2.964295475749168e-14,
+        "stored_transfer_constant_max": 0.049720874400718706,
+        "stored_transfer_mass_relative_max": 3.219646771412954e-15,
+        "stored_fraction_partition_max": 3.219646771412954e-15
+      },
+      "curl_grad_max_circulation": 8.881784197001252e-16,
+      "independent_raw_rebuild_relative": 9.263713826969878e-17,
+      "projection_change_relative": 2.239250955109315e-15,
+      "raw_vs_stored_corner_defect": 0.0726644894443954,
+      "raw_vs_shifted_corner_defect": 3.0922993403951088e-15,
+      "index_only_vs_stored_corner_defect": 3.097560588358529e-15,
+      "operators": {
+        "raw_port": {
+          "curl_div_relative_frobenius": 0.09392244833754272,
+          "metric_skew_relative_frobenius": 4.620944557728819e-15
+        },
+        "stored_skew": {
+          "curl_div_relative_frobenius": 0.09392244833754274,
+          "metric_skew_relative_frobenius": 1.0633427970709588e-16
+        },
+        "index_only_ablation": {
+          "curl_div_relative_frobenius": 0.0435111296926841,
+          "metric_skew_relative_frobenius": 4.621823254656401e-15
+        },
+        "index_and_kite_ablation": {
+          "curl_div_relative_frobenius": 2.883804759016196e-14,
+          "metric_skew_relative_frobenius": 3.653018924595952e-14
+        }
+      },
+      "uniform_pv": [
+        {
+          "thickness_amplitude": 0.0,
+          "initial_pv_relative_max": 0.0,
+          "production_pairing_relative_error": 1.2116866217529706e-16,
+          "full_vs_rotation_curl_relative": 1.3670759858649849e-15,
+          "expected_vorticity_tendency_rms_s2": 1.9377124620757706e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.026008406940221017,
+              "pv_relative_rate_per_second": 5.039681424680423e-09,
+              "normalized_rotation_work": 0.0
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.02600840694022107,
+              "pv_relative_rate_per_second": 5.039681424680433e-09,
+              "normalized_rotation_work": -2.1117887901766144e-17
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 6.234982846742109e-14,
+              "pv_relative_rate_per_second": 1.2081603962960852e-20,
+              "normalized_rotation_work": 1.0555261042080531e-17
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.02600840694022096,
+              "pv_relative_rate_per_second": 5.03968142468041e-09,
+              "normalized_rotation_work": 0.0
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 7.459615807705094e-14,
+              "pv_relative_rate_per_second": 1.445459051288758e-20,
+              "normalized_rotation_work": 4.2221044168322124e-17
+            }
+          }
+        },
+        {
+          "thickness_amplitude": 0.2,
+          "initial_pv_relative_max": 2.220446049250313e-16,
+          "production_pairing_relative_error": 1.3018797111755247e-16,
+          "full_vs_rotation_curl_relative": 3.974366929834621e-15,
+          "expected_vorticity_tendency_rms_s2": 1.954627839105041e-11,
+          "variants": {
+            "production": {
+              "relative_vorticity_tendency_defect": 0.02610919856273606,
+              "pv_relative_rate_per_second": 5.043687787875772e-09,
+              "normalized_rotation_work": 1.0394091624406472e-17
+            },
+            "unpaired_absolute_vorticity": {
+              "relative_vorticity_tendency_defect": 0.02606309796068536,
+              "pv_relative_rate_per_second": 5.0471954177294334e-09,
+              "normalized_rotation_work": -1.6738986811380224e-05
+            },
+            "paired_absolute_vorticity_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 0.002227694348896909,
+              "pv_relative_rate_per_second": 4.4197394528660637e-10,
+              "normalized_rotation_work": 0.0
+            },
+            "pv_flux_stored_geometry": {
+              "relative_vorticity_tendency_defect": 0.026029535577218068,
+              "pv_relative_rate_per_second": 5.029548878086508e-09,
+              "normalized_rotation_work": 0.0
+            },
+            "pv_flux_compatible_geometry": {
+              "relative_vorticity_tendency_defect": 7.46259660989672e-14,
+              "pv_relative_rate_per_second": 1.44470930616684e-20,
+              "normalized_rotation_work": 3.1171698570943623e-17
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

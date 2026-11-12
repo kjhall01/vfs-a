@@ -6,6 +6,11 @@ ocean API is available on main. Run `examples/ocean_stratified.py` for explicit
 stepping and adaptive remapping. See [ocean scope](../docs/OCEAN_INTEGRATION.md)
 for feasibility constraints and outstanding qualification.
 
+The [rotation/PV audit](../verification/ocean/ROTATION_PV_AUDIT.md) identifies
+shared corner-association/intersection inconsistencies and a separate variable-
+thickness PV-flux mismatch. It includes the recovered 16,384-cell atmosphere
+mesh. Production operators remain unchanged; corrections require separate review.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

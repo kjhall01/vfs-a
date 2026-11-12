@@ -14,6 +14,7 @@ adaptive thermal ALE remapper. See [the API](../../docs/OCEAN_INTEGRATION.md) an
 | Carrier and tracer admissibility | [Outflow restriction](TRANSPORT_ADMISSIBILITY.md), [bounded transport](BOUNDED_TRANSPORT.md) |
 | Sharp fronts | [Front measurements](SHARP_FRONT.md); active local bounds remain conditional on work budget |
 | Waves and balance | [Qualification campaign](QUALIFICATION_CAMPAIGN.md), [rotation diagnosis](ROTATING_BALANCE.md) |
+| Rotation/PV compatibility | [Operator and uniform-PV audit](ROTATION_PV_AUDIT.md); geometric and variable-thickness inconsistencies identified |
 | Adaptive vertical remap | [Energy/entropy constraints and short waves](ADAPTIVE_THERMAL_ALE.md) |
 | Remap alternatives and resolution sensitivity | [Native entropy](ENTROPY_ALE.md), [potential enthalpy](ENTHALPY_ALE.md), [uniform thermal correction](HAMILTONIAN_ALE.md) |
 | Installed API regression | [Source provenance](integration-provenance.json), [migration tests](../../tests/ocean/test_stratified_integration.py) |

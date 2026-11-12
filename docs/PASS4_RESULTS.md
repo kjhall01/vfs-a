@@ -313,3 +313,26 @@ source hashes are retained. This is API integration, not new physics qualificati
 The README and current guides describe both components, their public APIs and
 verification limits. Historical numerical reports remain separate and unchanged.
 This documentation update changes no runtime code, fixtures or tolerances.
+
+## Rotation/PV diagnostic audit
+
+The read-only `tools/audit_rotation_pv.py` assembles independent circulation,
+divergence and true primal/dual area transfers. Seven generated meshes and the
+recovered 16,384-cell atmosphere mesh show a rotation compatibility defect. The
+fine-mesh operator norm defect is 0.09803; a smooth synthetic uniform-PV test has
+about 0.027 relative vorticity-tendency mismatch. Index/intersection ablations
+reduce the geometric defect to floating-point geometric residuals, while a
+separate variable-thickness absolute-vorticity pairing discrepancy remains.
+A compatible constant-PV mass-flux comparison removes that residual without
+losing zero work. These are diagnostic alternatives, not runtime replacements.
+
+See [definitions, results and limits](../verification/ocean/ROTATION_PV_AUDIT.md).
+Production sources, fixtures and tolerances are unchanged. The frozen mesh is
+not uploaded because it exceeds 128 KiB; its input hash is preserved. New tests
+check independent geometry partitions, public/sparse operator agreement, path
+reconstruction, corruption sensitivity, production pairing and buffer restoration.
+
+Installed-wheel validation outside the checkout: 831 passed, one CUDA skip;
+corrected-Gibbs and dry-helper portable comparisons pass. Four focused audit
+tests pass. Relevant installed source hashes match the base tree. CPU float64
+only; no new time integration, GPU, gradient or physical-flow qualification.
