@@ -1,7 +1,8 @@
 # Ocean boundary stress
 
 `OceanBoundaryStress` adds prescribed surface stress and optional stationary
-flat-bottom quadratic drag to `TKEOcean`. Stress is an edge-normal tensor
+horizontal quadratic bottom drag over varying bathymetry to `TKEOcean`.
+Stress is an edge-normal tensor
 `[nEdges]` in Pa, with the state's dtype/device. It is a force on the ocean;
 a wind speed or an atmospheric bulk drag law is not implied.
 
@@ -22,7 +23,8 @@ drag; omitting stress means zero surface stress. Inactive coast edges receive
 neither stress nor drag. No mass, salt or tracer flux is introduced.
 `boundary_with_report` runs boundary physics alone. The full step order is
 resolved dynamics, optional ALE, boundary stress, then TKE mixing/dissipation.
-This splitting is first order. See the [runnable example](../examples/ocean_boundary_stress.py).
+This splitting is first order. See the [runnable example](../examples/ocean_boundary_stress.py); pass
+`--bathymetry` for a smooth varying-depth case.
 
 ## Momentum and energy
 
@@ -76,10 +78,13 @@ subtracting the large thermal background.
 
 ## Scope
 
-- Bottom drag requires a flat stationary bed and consistent column/domain
-  depths. Sloping-bottom tangential projection and topographic form drag are
-  deferred. The lowest layer's current is not forced to zero: drag represents
-  the unresolved velocity gradient to the stationary seabed.
+- Bathymetry may vary; column and optional domain depths must agree in wet
+  cells. Drag acts on the local lowest layer using its interpolated thickness.
+  Stress and work are per horizontal area. There is no seabed-normal projection
+  or sloping-area multiplier; this is a horizontal hydrostatic drag closure.
+  Explicit slope-aware traction and unresolved topographic form drag are deferred.
+  The lowest layer's current is not forced to zero: drag represents the unresolved
+  velocity gradient to the stationary seabed.
 - Cd is a prescribed nonnegative constant, not a roughness or stability model.
   The example's 0.0025 is a starting choice, not a VFS calibration.
 - No separate surface TKE flux, wave breaking, Langmuir production, atmospheric
@@ -93,3 +98,6 @@ subtracting the large thermal background.
 
 [Qualification](../verification/ocean/BOUNDARY_STRESS.md) distinguishes independent
 constant-viscosity column references from spherical evolving-TKE smoke tests.
+
+[Bathymetry qualification](../verification/ocean/BATHYMETRIC_DRAG.md) records
+along/across-slope reconstruction refinement, rest and coast checks.

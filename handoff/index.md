@@ -1524,3 +1524,11 @@ quadratic drag to `TKEOcean`. Wind work is external; all native drag KE loss goe
 to bottom-layer TKE before mixing/dissipation. No surface TKE flux or sloping-bed
 stress is implemented. See [API](../docs/OCEAN_BOUNDARY_STRESS.md) and
 [qualification](../verification/ocean/BOUNDARY_STRESS.md) for scope and evidence.
+
+## Bottom drag over varying depth
+
+Horizontal bottom stress now accepts stationary varying bathymetry, retaining
+native work/TKE allocation and wet-cell column/domain depth consistency checks.
+There is no slope-normal traction or slope-area correction. Smooth along/across
+slope refinement and a varying-depth wind/TKE example are documented in
+[bathymetric drag qualification](../verification/ocean/BATHYMETRIC_DRAG.md).

@@ -1,0 +1,117 @@
+{
+  "scope": "Horizontal stress per horizontal area; analytic vector-speed comparison at shared discrete thickness. Rest-pressure errors belong to unchanged dynamics. No slope-normal traction or form drag.",
+  "results": [
+    {
+      "cells": 32,
+      "direction": "along",
+      "relative_drag_increment_error": 0.0061907030812767905,
+      "energy_residual_over_drag": 1.420757675344615e-18,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 32,
+      "direction": "across",
+      "relative_drag_increment_error": 0.01350679671084218,
+      "energy_residual_over_drag": 9.535439903468667e-18,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 32,
+      "rest_temperature": 10.0,
+      "pressure_rms_m_s2": 1.687820452203722e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 32,
+      "rest_temperature": 12.0,
+      "pressure_rms_m_s2": 1.6762025421554366e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 128,
+      "direction": "along",
+      "relative_drag_increment_error": 0.0019066887646436712,
+      "energy_residual_over_drag": 9.459977174912936e-19,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 128,
+      "direction": "across",
+      "relative_drag_increment_error": 0.00709800584167601,
+      "energy_residual_over_drag": 2.1258623318656285e-18,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 128,
+      "rest_temperature": 10.0,
+      "pressure_rms_m_s2": 4.917415405433689e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 128,
+      "rest_temperature": 12.0,
+      "pressure_rms_m_s2": 4.9326384870326636e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 512,
+      "direction": "along",
+      "relative_drag_increment_error": 0.0006655304092627624,
+      "energy_residual_over_drag": 9.569705497089059e-19,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 512,
+      "direction": "across",
+      "relative_drag_increment_error": 0.0032927511120009753,
+      "energy_residual_over_drag": -1.2009887780534737e-18,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 512,
+      "rest_temperature": 10.0,
+      "pressure_rms_m_s2": 8.421631076022788e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 512,
+      "rest_temperature": 12.0,
+      "pressure_rms_m_s2": 8.58179917028149e-20,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 2048,
+      "direction": "along",
+      "relative_drag_increment_error": 0.00021240487306658053,
+      "energy_residual_over_drag": -5.3947533121268537e-20,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 2048,
+      "direction": "across",
+      "relative_drag_increment_error": 0.0016320332000383559,
+      "energy_residual_over_drag": -3.0911351944981654e-19,
+      "min_tke": 0.0
+    },
+    {
+      "cells": 2048,
+      "rest_temperature": 10.0,
+      "pressure_rms_m_s2": 1.7235849816541598e-19,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    },
+    {
+      "cells": 2048,
+      "rest_temperature": 12.0,
+      "pressure_rms_m_s2": 1.7549287890201148e-19,
+      "boundary_max_velocity_change": 0.0,
+      "boundary_tke_gain_J": 0.0
+    }
+  ]
+}

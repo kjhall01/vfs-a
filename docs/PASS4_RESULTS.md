@@ -467,3 +467,16 @@ sloping-bed stresses remain deferred. See [qualification](../verification/ocean/
 Boundary-stress installed-wheel regression: 941 passed, one CUDA skip; corrected
 Gibbs and dry-helper portable comparisons pass. Fifteen boundary tests and both
 new runnable diagnostics pass on CPU float64.
+
+## Bottom drag over varying depth
+
+Removed the constant-depth restriction from horizontal bottom stress. Equations,
+flat-bed numerical expressions and KE-to-TKE allocation are unchanged. Wet-cell
+column/domain depth consistency remains required. Nine additional boundary
+regressions, a varying-depth example and 32–2048-cell reconstruction refinement
+separate boundary work from existing rest-pressure errors. See
+[qualification](../verification/ocean/BATHYMETRIC_DRAG.md). Explicit slope-normal
+traction, surface TKE injection and topographic form drag remain absent.
+
+Varying-depth drag regression: 950 passed, one CUDA skip on the installed wheel
+outside checkout; corrected-Gibbs and dry-helper portable comparisons pass.

@@ -6,12 +6,14 @@ from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean,TKEClosure,OceanBoundaryStress
 
 
-def run():
+def run(*, bathymetry=False):
     mesh=VoronoiMesh(n_cells=32,lloyd_iters=2,rotation_scheme='compatible')
-    ocean=StratifiedOcean(mesh,OceanColumn(16,total_depth=100.))
+    depth=100.+40.*mesh.cell_xyz[:,2:3] if bathymetry else torch.full((mesh.nCells,1),100.,dtype=torch.float64)
+    column=OceanColumn(16,total_depth=depth,rest_thickness=torch.full((16,),100./16))
+    ocean=StratifiedOcean(mesh,column)
     model=TKEOcean(ocean,closure=TKEClosure(2.),
         boundary=OceanBoundaryStress(bottom_drag_coefficient=.0025))
-    h=torch.full((mesh.nCells,16),100./16,dtype=torch.float64)
+    h=(depth/16).expand(mesh.nCells,16).clone()
     axis=mesh.edge_xyz.new_tensor([0.,0.,1.]).expand_as(mesh.edge_xyz)
     # Smooth eastward forcing, vanishing at the poles; native edge-normal Pa.
     east=torch.linalg.cross(axis,mesh.edge_xyz)
@@ -28,9 +30,14 @@ def run():
         residual+=float(report.boundary.energy_residual)
     new=model.budgets(state)
     mass=float((ocean.energy.mass_area(state.ocean)*h).sum())
-    return dict(cells=32,layers=16,steps=5,dt_s=10.,surface_work_J=work,
+    return dict(cells=32,layers=16,steps=5,dt_s=10.,bathymetry=bathymetry,
+        min_depth_m=float(depth.min()),max_depth_m=float(depth.max()),surface_work_J=work,
         drag_to_tke_J=drag,boundary_energy_residual_J=residual,
         full_step_energy_minus_wind_J_kg=float((new['total']-old['total']-work)/mass),
         min_tke_m2_s2=float(state.specific_tke().min()))
 
-if __name__=='__main__':print(json.dumps(run(),indent=2))
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--bathymetry',action='store_true',help='Use a smooth 60–140 m depth profile')
+    print(json.dumps(run(bathymetry=parser.parse_args().bathymetry),indent=2))
