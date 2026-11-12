@@ -7,6 +7,7 @@ from .equations import EntropyState
 from .tke import TKEClosure
 from .boundary import OceanBoundaryStress
 from .surface_heating import OceanSurfaceHeating
+from .surface_exchange import OceanSurfaceExchange
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,7 @@ class TKEStepReport:
     tke_transport_residual: torch.Tensor
     boundary: object = None
     heating: object = None
+    exchange: object = None
 
 
 @dataclass(frozen=True)
@@ -38,12 +40,12 @@ class TKERemapReport:
 class TKEOcean:
     """Optional composition; the original StratifiedOcean and its states stay intact.
 
-    First-order splitting: dynamics, requested ALE, boundary stresses, surface heating, vertical TKE
+    First-order splitting: dynamics, requested ALE, water exchange, boundary stresses, surface heating, vertical TKE
     physics. closure=None disables vertical mixing/decay; boundary drag may still
     produce TKE when explicitly configured.
     Existing ocean SSPRK3 energy error is not corrected by the closure.
     """
-    def __init__(self, ocean, *, closure=None, boundary=None, heating=None):
+    def __init__(self, ocean, *, closure=None, boundary=None, heating=None, exchange=None):
         if not isinstance(ocean, StratifiedOcean):
             raise TypeError('TKEOcean requires a StratifiedOcean')
         if closure is not None and not isinstance(closure, TKEClosure):
@@ -54,6 +56,9 @@ class TKEOcean:
             raise TypeError("heating must be OceanSurfaceHeating or None")
         self.ocean, self.closure, self.boundary = ocean, closure, boundary
         self.heating = heating
+        if exchange is not None and not isinstance(exchange, OceanSurfaceExchange):
+            raise TypeError("exchange must be OceanSurfaceExchange or None")
+        self.exchange = exchange
 
     def check_state(self, state):
         if not isinstance(state, TKEState):
@@ -137,18 +142,37 @@ class TKEOcean:
             shortwave=shortwave, surface_heat=surface_heat)
         return TKEState(resolved, state.tke_h), report
 
-    def step_with_report(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None):
+    def exchange_with_report(self, state, dt, *, surface_fluxes=None):
+        """Prescribed water/heat exchange; extensive TKE content is retained.
+
+        No unresolved energy is carried through the boundary in this version.
+        Water energy flux therefore refers to the resolved Hamiltonian only.
+        """
+        self.check_state(state)
+        if not math.isfinite(float(dt)) or float(dt) <= 0:
+            raise ValueError('dt must be finite and positive')
+        if surface_fluxes is None:
+            return state, None
+        if self.exchange is None:
+            raise ValueError('surface_fluxes requires an explicit OceanSurfaceExchange')
+        resolved, report = self.exchange.apply(self.ocean, state.ocean, dt, surface_fluxes)
+        result = TKEState(resolved, state.tke_h)
+        self.check_state(result)
+        return result, report
+
+    def step_with_report(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None, surface_fluxes=None):
         self.check_state(state)
         packed, report = self.ocean.step_with_report(self._pack(state), dt, target_h=target_h)
         transported = self._unpack(packed, state)
-        forced, boundary = self.boundary_with_report(transported, dt, surface_stress=surface_stress)
+        exchanged, exchange = self.exchange_with_report(transported, dt, surface_fluxes=surface_fluxes)
+        forced, boundary = self.boundary_with_report(exchanged, dt, surface_stress=surface_stress)
         heated, heating = self.heat_with_report(forced, dt, shortwave=shortwave, surface_heat=surface_heat)
         end, mixing = self.mix_with_report(heated, dt)
         transport_residual = (self.ocean.energy.mass_area(state.ocean)*(transported.tke_h-state.tke_h)).sum()
-        return end, TKEStepReport(report, mixing, transport_residual, boundary, heating)
+        return end, TKEStepReport(report, mixing, transport_residual, boundary, heating, exchange)
 
-    def step(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None):
-        return self.step_with_report(state, dt, target_h=target_h, surface_stress=surface_stress, shortwave=shortwave, surface_heat=surface_heat)[0]
+    def step(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None, surface_fluxes=None):
+        return self.step_with_report(state, dt, target_h=target_h, surface_stress=surface_stress, shortwave=shortwave, surface_heat=surface_heat, surface_fluxes=surface_fluxes)[0]
 
     def remap_with_report(self, state, target_h):
         self.check_state(state)

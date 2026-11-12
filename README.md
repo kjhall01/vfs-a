@@ -70,6 +70,8 @@ or timestep recommendations for other resolutions.
   [ocean TKE closure](docs/OCEAN_TKE.md) supports
   [wind stress and bottom drag](docs/OCEAN_BOUNDARY_STRESS.md), and
   [prescribed radiation/heating](docs/OCEAN_RADIATION.md).
+  [Prescribed surface exchange](docs/OCEAN_SURFACE_EXCHANGE.md) updates water,
+  momentum and energy from supplied fluxes.
 
 ## Documentation
 

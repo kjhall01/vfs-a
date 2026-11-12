@@ -37,3 +37,7 @@ energy increments. `examples/ocean_radiation.py` checks short combined evolution
 `compare_heating.py --repository /path/to/vfs-a` loads the pinned pre-extraction
 TKE module from local git history and compares its outputs exactly with the
 installed candidate. It does not modify the checkout or install another wheel.
+
+`exchange.py` checks closed mass/salinity targets and constant-flux subdivision
+consistency for the prescribed freshwater/energy operator. The combined example
+`examples/ocean_surface_fluxes.py` also exercises radiation, stress and TKE.

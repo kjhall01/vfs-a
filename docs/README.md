@@ -9,6 +9,7 @@
 | Atmospheric initialization and output | [Physical fields](PHYSICAL_FIELDS_API.md) |
 | Moist model and steppers | [Moist API](MOIST_MODULE_API.md) |
 | Stratified ocean and vertical remapping | [Ocean API](OCEAN_INTEGRATION.md) |
+| Prescribed ocean freshwater and heat exchange | [Surface exchange](OCEAN_SURFACE_EXCHANGE.md) |
 | Ocean radiation and prescribed heating | [Surface heating](OCEAN_RADIATION.md) |
 | Ocean wind stress and bottom drag | [Boundary stress](OCEAN_BOUNDARY_STRESS.md) |
 | Optional prognostic ocean turbulence | [TKE closure](OCEAN_TKE.md) |

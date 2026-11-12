@@ -69,8 +69,8 @@ Cooling can decrease ocean entropy: the ocean is exchanging energy with an
 external reservoir. There is no imposed entropy-nondecrease check on this
 external flux. Out-of-domain temperatures or failed energy checks reject without
 clipping or input mutation. No latent mass loss, precipitation or salinity
-change accompanies a supplied heat flux; those require a future freshwater
-exchange operator.
+change accompanies a supplied heat flux; use the separate
+[prescribed surface exchange](OCEAN_SURFACE_EXCHANGE.md) operator.
 
 `SurfaceHeatingReport` energies are joules: surface input, incident shortwave,
 bottom transmission/export/absorption, deposited layer heat, and global
@@ -92,7 +92,8 @@ print(report.heating.external_heat)
 ```
 
 `heat_with_report` applies only heating to a TKE state and leaves TKE unchanged.
-The full step order is dynamics, optional ALE, boundary stress, surface heating,
+The full step order is dynamics, optional ALE, prescribed water exchange,
+boundary stress, surface heating,
 then vertical TKE physics. Splitting remains first order. Existing unforced
 constructors/defaults are unchanged; passing heat fluxes without configuring
 heating raises. Heating changes stratification, which can affect subsequent
