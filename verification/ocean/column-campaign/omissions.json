@@ -1,0 +1,37 @@
+[
+  {
+    "file": "wind-16-150-momentum_control.json",
+    "bytes": 168299,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "wind-16-300-momentum_control.json",
+    "bytes": 168313,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "wind-32-150-momentum_control.json",
+    "bytes": 323329,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "wind-32-300-momentum_control.json",
+    "bytes": 322964,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "wind-64-150-momentum_control.json",
+    "bytes": 633416,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "wind-64-300-momentum_control.json",
+    "bytes": 633447,
+    "reason": "raw hourly profiles exceed 128 KiB; omitted"
+  },
+  {
+    "file": "campaign.png",
+    "bytes": 150903,
+    "reason": "generated figure exceeds 128 KiB; omitted"
+  }
+]

@@ -1,0 +1,998 @@
+[
+  {
+    "layers": 16,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.5819445899978746,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-16-150-active.json",
+    "raw_sha256": "79f25559e6c529f9950642e3661335098ccc6765afc834f01738d90930caaadb"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.6019985120001365,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-16-300-active.json",
+    "raw_sha256": "dad6afc59e800a3eb45ef227ecb6023648b324a380e2e036b32c3b539584b32d"
+  },
+  {
+    "layers": 32,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.4765270400021109,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-32-150-active.json",
+    "raw_sha256": "2ec787f28c0c501d86e954af32fb57bda24bbc5d5ea89c55df35949cb42459e2"
+  },
+  {
+    "layers": 32,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.4844960219998029,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-32-300-active.json",
+    "raw_sha256": "e439aa61a96edce04c46707ef98e5a5d647734c46c51d63214a701c3b6dd464a"
+  },
+  {
+    "layers": 64,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.9245580969945877,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-64-150-active.json",
+    "raw_sha256": "0a2053c5ceb4e62d988b3c0160efa12871d754a73ddc537158aac771c6a36f01"
+  },
+  {
+    "layers": 64,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.7960073560025194,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "cooling-64-300-active.json",
+    "raw_sha256": "d1ee6982254f9fd733f7f364c25b3abca93c8ed3e3bc03c6ee52b4a2f9e37ed6"
+  },
+  {
+    "layers": 16,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 1.0142078250064515,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-16-150-active.json",
+    "raw_sha256": "2c0ad36d5c577dec041db564dc15aabca5ef607bb9cb5ef721c1b169ecd860aa"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 1.448443496999971,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-16-300-active.json",
+    "raw_sha256": "315038805dccaa22f3e9167ab9ec475e1ab7dc96f91724491fc43ac43f8f7cd1"
+  },
+  {
+    "layers": 32,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.730330350001168,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-32-150-active.json",
+    "raw_sha256": "ac1ece2e20174d37ef0d26b8ca1d2b6d6b8dde9b35770bf259818b4e2171fdc1"
+  },
+  {
+    "layers": 32,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 1.1725024749976,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-32-300-active.json",
+    "raw_sha256": "9c2aa685efce04cd9ca22698e026f3f97326de65cd7e629b81c029df0e899403"
+  },
+  {
+    "layers": 64,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.7180789260019083,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-64-150-active.json",
+    "raw_sha256": "b35dbd6c42d7d9d6564a96bbfac000db5f5e04f985daa3201b107582fff0eff1"
+  },
+  {
+    "layers": 64,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.546188259999326,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": null,
+    "raw_file": "rain_heating-64-300-active.json",
+    "raw_sha256": "b752189087e633b2b60b0384ef2af309be4afc8d572523cd6aeca8af22d7f904"
+  },
+  {
+    "layers": 32,
+    "dt_s": 3.0,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0625,
+    "scenario": "wind",
+    "seed_tke": 0.001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 225.0,
+      "attempt_dt_s": 3.0,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 37.31655146000412,
+    "external_energy_J_m2": 0.07667702521355682,
+    "energy_error_J_kg": 2.8992598877231048e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.021949367507240535,
+      -0.0002469408023594575
+    ],
+    "analytic_wind_transport": [
+      0.021949367424930363,
+      -0.00024694080143340376
+    ],
+    "raw_file": "seed-0.001.json",
+    "raw_sha256": "01db38f9ffe1b0090c4fe69a9b75079db8efdb33b0ae6144a35efc475398fe2e",
+    "transport_relative_error": 3.7500020504825585e-09
+  },
+  {
+    "layers": 32,
+    "dt_s": 3.0,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0925,
+    "scenario": "wind",
+    "seed_tke": 0.01,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 333.0,
+      "attempt_dt_s": 3.0,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 56.830967374000465,
+    "external_energy_J_m2": 0.16249526708639944,
+    "energy_error_J_kg": -5.928415329921434e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.032481801099090116,
+      -0.0005408719698501469
+    ],
+    "analytic_wind_transport": [
+      0.03248180097728319,
+      -0.0005408719678218346
+    ],
+    "raw_file": "seed-0.01.json",
+    "raw_sha256": "971ec8058c297d66c6b8c248dbb4713ad92ebd45e0f2a0243f6f4bd614265bcb",
+    "transport_relative_error": 3.75000531530812e-09
+  },
+  {
+    "layers": 16,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.5099912880032207,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-16-150-active.json",
+    "raw_sha256": "e3491f7dd53a3fbd8a52053cc0bdb165b712ece1a76b7e6c3520dffd2a1dafb9"
+  },
+  {
+    "layers": 16,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 387.1958565660025,
+    "external_energy_J_m2": 789.538644131031,
+    "energy_error_J_kg": -2.608027946224888e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756181519530569,
+      -0.9744087399947191
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-16-150-momentum_control.json",
+    "raw_sha256": "5cc371469081d00d6db43776818c1d335a5d9d78aae677599978a08e3c1a8d1e",
+    "transport_relative_error": 9.375061556235865e-06
+  },
+  {
+    "layers": 16,
+    "dt_s": 3,
+    "requested_hours": 48.0,
+    "completed_hours": 0.03,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 108.0,
+      "attempt_dt_s": 3,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 25.092625929995847,
+    "external_energy_J_m2": 0.00908878001528368,
+    "energy_error_J_kg": 1.6034816592146344e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.010536380575340171,
+      -5.689700814683121e-05
+    ],
+    "analytic_wind_transport": [
+      0.01053638053582872,
+      -5.689700793349959e-05
+    ],
+    "raw_file": "wind-16-3-active.json",
+    "raw_sha256": "9fe5eabe4eef493878f4cc340790fe94cef65d58f7018ef4c8e56c73895a6768",
+    "transport_relative_error": 3.750002298574895e-09
+  },
+  {
+    "layers": 16,
+    "dt_s": 30,
+    "requested_hours": 48.0,
+    "completed_hours": 0.025,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 90.0,
+      "attempt_dt_s": 30,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 1.6972772980006994,
+    "external_energy_J_m2": 0.006313631872127549,
+    "energy_error_J_kg": -1.23080178983449e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.008780372561412095,
+      -3.951194323233129e-05
+    ],
+    "analytic_wind_transport": [
+      0.008780369268772757,
+      -3.9511928415401675e-05
+    ],
+    "raw_file": "wind-16-30-active.json",
+    "raw_sha256": "9cfb3fe528a30364d7ad2e961f1a8a35424378d3770e3eb52907554a45d8e7f9",
+    "transport_relative_error": 3.7500009820335053e-07
+  },
+  {
+    "layers": 16,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.5913668119974318,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-16-300-active.json",
+    "raw_sha256": "c69beced94da94e2e64bbb5bcc4c5dd04065015ab4c48f712f5d2388bc4a2965"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 162.32089987899963,
+    "external_energy_J_m2": 760.669030584578,
+    "energy_error_J_kg": -1.2413048574583116e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756455918566252,
+      -0.9744361458828645
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-16-300-momentum_control.json",
+    "raw_sha256": "be4f49748d0abe40ec5049bec9b5ebcf7de6f0e0058bf505944c64ea88c4b884",
+    "transport_relative_error": 3.750098439497837e-05
+  },
+  {
+    "layers": 32,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.6998283599969,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-32-150-active.json",
+    "raw_sha256": "e598c00cf5f32e0d6c721c8f9faa41a75f5fda933dce1520401ad76a175ffe23"
+  },
+  {
+    "layers": 32,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 347.25513541399414,
+    "external_energy_J_m2": 1511.0700047891528,
+    "energy_error_J_kg": -2.385039824286828e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756181519530605,
+      -0.9744087399947216
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-32-150-momentum_control.json",
+    "raw_sha256": "b37afccb83276c94f8d8523426e7e48fc96c839f92987cca00dd50656d863b74",
+    "transport_relative_error": 9.375061559310667e-06
+  },
+  {
+    "layers": 32,
+    "dt_s": 3,
+    "requested_hours": 48.0,
+    "completed_hours": 0.025833333333333333,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 93.0,
+      "attempt_dt_s": 3,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 14.787369240999396,
+    "external_energy_J_m2": 0.013422191593184462,
+    "energy_error_J_kg": 1.685936146256973e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.009073039976540737,
+      -4.2189939975345165e-05
+    ],
+    "analytic_wind_transport": [
+      0.00907303994251682,
+      -4.218993981708872e-05
+    ],
+    "raw_file": "wind-32-3-active.json",
+    "raw_sha256": "1055cb41463021864c51f2a8ad0de7fe951083ca73f2fbb8ecbe6e76b3d6aae9",
+    "transport_relative_error": 3.750001960166101e-09
+  },
+  {
+    "layers": 32,
+    "dt_s": 30,
+    "requested_hours": 48.0,
+    "completed_hours": 0.016666666666666666,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 60.0,
+      "attempt_dt_s": 30,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 2.3900191459979396,
+    "external_energy_J_m2": 0.00560244541272267,
+    "energy_error_J_kg": -5.487591730312942e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.7745542656518954e-16,
+    "transport": [
+      0.005853625609806723,
+      -1.7560929512240314e-05
+    ],
+    "analytic_wind_transport": [
+      0.0058536234146973655,
+      -1.7560922926874967e-05
+    ],
+    "raw_file": "wind-32-30-active.json",
+    "raw_sha256": "5e9d8108c5f4ec290ab7cff89223d2e11b7b0342503095758b5f1d7de8ced769",
+    "transport_relative_error": 3.750000985450277e-07
+  },
+  {
+    "layers": 32,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.768421861997922,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-32-300-active.json",
+    "raw_sha256": "555f3853a546d1699775e393621635ad9906e8b5e140896e62689b24b3287be7"
+  },
+  {
+    "layers": 32,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 131.38772158999927,
+    "external_energy_J_m2": 1587.715591366789,
+    "energy_error_J_kg": -1.2275232664961084e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756455918566249,
+      -0.9744361458828631
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-32-300-momentum_control.json",
+    "raw_sha256": "ac8c93a767ce1082809ab7f2912455d193886ec0b0754273916bc02a0ac347f1",
+    "transport_relative_error": 3.750098439406777e-05
+  },
+  {
+    "layers": 64,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 150,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.3807652870018501,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-64-150-active.json",
+    "raw_sha256": "a0016f6d1abcaa44c35eb160ef03b513ecc1758983db950e07d690089bc5cae3"
+  },
+  {
+    "layers": 64,
+    "dt_s": 150,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 307.2170255279998,
+    "external_energy_J_m2": 1897.639574999465,
+    "energy_error_J_kg": -2.6051092279930146e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756181519530618,
+      -0.9744087399947241
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-64-150-momentum_control.json",
+    "raw_sha256": "52e85ed2455c9c8a4269e3198971b41cbdc091ad6ae72433ce2fa8b464b5180c",
+    "transport_relative_error": 9.375061561302977e-06
+  },
+  {
+    "layers": 64,
+    "dt_s": 3,
+    "requested_hours": 48.0,
+    "completed_hours": 0.025833333333333333,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 93.0,
+      "attempt_dt_s": 3,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 13.007708376004302,
+    "external_energy_J_m2": 0.02638812112054254,
+    "energy_error_J_kg": 9.764768144410049e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017299387753633e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.009073039976540739,
+      -4.218993997534517e-05
+    ],
+    "analytic_wind_transport": [
+      0.00907303994251682,
+      -4.218993981708872e-05
+    ],
+    "raw_file": "wind-64-3-active.json",
+    "raw_sha256": "287f9e9481e8f225eae7ed4ae759e49a9b147b31230d7bab7ada1331de74e4b9",
+    "transport_relative_error": 3.750002151360837e-09
+  },
+  {
+    "layers": 64,
+    "dt_s": 30,
+    "requested_hours": 48.0,
+    "completed_hours": 0.016666666666666666,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 60.0,
+      "attempt_dt_s": 30,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 1.1667294810031308,
+    "external_energy_J_m2": 0.011107292378067304,
+    "energy_error_J_kg": 1.486684061359455e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017299387753633e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.005853625609806723,
+      -1.756092951224031e-05
+    ],
+    "analytic_wind_transport": [
+      0.0058536234146973655,
+      -1.7560922926874967e-05
+    ],
+    "raw_file": "wind-64-30-active.json",
+    "raw_sha256": "3fec9b5c15b5ac644fdd8248f3d23f66468b194fcf666d9353ab281a06f41283",
+    "transport_relative_error": 3.750000985450259e-07
+  },
+  {
+    "layers": 64,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 0.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 0.0,
+      "attempt_dt_s": 300,
+      "message": "local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing"
+    },
+    "wall_s": 0.26379843600443564,
+    "external_energy_J_m2": 0.0,
+    "energy_error_J_kg": 0.0,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.0,
+      0.0
+    ],
+    "analytic_wind_transport": [
+      0.0,
+      0.0
+    ],
+    "raw_file": "wind-64-300-active.json",
+    "raw_sha256": "59cfd9630f5d64a3b3892f05e42d789f82b3b2971aae6150aaadafaf69e8a756"
+  },
+  {
+    "layers": 64,
+    "dt_s": 300,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": false,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 221.96580946800532,
+    "external_energy_J_m2": 2095.392521217036,
+    "energy_error_J_kg": -1.2777158678168568e-09,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756455918566188,
+      -0.9744361458828653
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "raw_file": "wind-64-300-momentum_control.json",
+    "raw_sha256": "7af2990fbe1c16ce248fcd90b518a0520522fe7984c25c7409f19fa5fed9afdc",
+    "transport_relative_error": 3.7500984392072424e-05
+  }
+]

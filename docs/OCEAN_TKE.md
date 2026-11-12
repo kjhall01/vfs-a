@@ -5,6 +5,11 @@ vertical turbulence closure. The original ocean state, dynamics, remapper and
 defaults are unchanged. This is an experimental prescribed-mixing-length closure,
 not a calibrated mixed-layer model or a GOTM implementation.
 
+The [forced-column campaign](../verification/ocean/COLUMN_CAMPAIGN.md) finds that
+active scalar mixing exhausts a local TKE reservoir and rejects within minutes
+in the tested stratified wind-driven columns. Sustained mixed-layer evolution
+is not qualified. Momentum/TKE-only controls complete 48 hours with closed budgets.
+
 ```python
 from vfs.ocean.stratified import TKEOcean, TKEClosure
 
