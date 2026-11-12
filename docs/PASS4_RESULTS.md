@@ -351,3 +351,15 @@ Six focused audit tests pass against the installed wheel, including independent
 dense pairing, production equality and unchanged geometry buffers. No full-suite
 rerun is claimed for this diagnostic-only follow-up; the preceding audit suite
 result remains separately recorded. Oversized mesh input is omitted.
+
+## Compatible runtime rotation
+
+The explicit mesh scheme `compatible` implements true kite intersections,
+exit-vertex-consistent path weights, dual carrier transfer and PV-times-flux
+rotation in atmosphere/ocean consumers. Historical default outputs and all
+fixtures/tolerances remain unchanged. On the recovered 16,384-cell mesh, initial
+JW-A RMS acceleration improves 23.6%; ten-minute wind-change RMS improves 20.2%.
+The variable-thickness uniform-PV defect falls to 2.93e-11 relative; energy-work
+closure remains at roundoff. Installed-wheel portable suite 840 passed/one CUDA
+skip; expanded correction tests 10 passed; both atmospheric fixture comparisons
+pass. See [complete scope and evidence](../verification/ocean/ROTATION_CORRECTION.md).

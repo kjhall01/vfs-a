@@ -13,6 +13,12 @@ mesh. The [JW-A initial-balance check](../verification/ocean/JWA_ROTATION_BALANC
 shows 23.6% lower momentum RMS for the geometric comparison with energy closure
 retained. Production operators remain unchanged; corrections require separate review.
 
+The explicit `rotation_scheme="compatible"` mesh option supplies the corrected
+geometry and PV/carrier-flux rotation to dry/moist atmosphere and active ocean.
+See [usage](../docs/COMPATIBLE_ROTATION.md) and
+[validation](../verification/ocean/ROTATION_CORRECTION.md). Historical defaults
+remain reproducible; long-run and coastal PV behavior remain unqualified.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

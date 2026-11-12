@@ -286,29 +286,34 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
                 )
             )
 
-        # 4. Fixed-vorticity skew transpose in the diagonal kinetic-energy metric.
-        # Vorticity is 1/s on vertex layers, averaged to edge layers; the metric
-        # is edge_area*dp_edge/gravity (kg). Skew pairing cancels rotational work.
-        vorticity = (
-            mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
-        )
-        vertices = mesh.verticesOnEdge
-        edge_vorticity = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
-        indices = mesh.safe_rotation_stencil
-        coefficients = (
-            -0.5
-            * (edge_vorticity[:, None, :] + edge_vorticity[indices])
-            * mesh.rotation_weights_masked[:, :, None]
-        )
-        metric_diagonal = edge_area * dp_edge / self.gravity
-        transpose_rotation = torch.zeros_like(u).scatter_add(
-            0,
-            indices.reshape(-1, 1).expand(-1, u.shape[1]),
-            (coefficients * (metric_diagonal * u)[:, None, :]).reshape(-1, u.shape[1]),
-        )
-        rotation_covector = 0.5 * (
-            metric_diagonal * (coefficients * u[indices]).sum(1) - transpose_rotation
-        )
+        if mesh.rotation_scheme == "compatible":
+            metric_diagonal = edge_area * dp_edge / self.gravity
+            rotation_covector = metric_diagonal * mesh.compatible_rotation(
+                u, transport["dp"], self.rotation_rate)
+        else:
+            # 4. Fixed-vorticity skew transpose in the diagonal kinetic-energy metric.
+            # Vorticity is 1/s on vertex layers, averaged to edge layers; the metric
+            # is edge_area*dp_edge/gravity (kg). Skew pairing cancels rotational work.
+            vorticity = (
+                mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
+            )
+            vertices = mesh.verticesOnEdge
+            edge_vorticity = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
+            indices = mesh.safe_rotation_stencil
+            coefficients = (
+                -0.5
+                * (edge_vorticity[:, None, :] + edge_vorticity[indices])
+                * mesh.rotation_weights_masked[:, :, None]
+            )
+            metric_diagonal = edge_area * dp_edge / self.gravity
+            transpose_rotation = torch.zeros_like(u).scatter_add(
+                0,
+                indices.reshape(-1, 1).expand(-1, u.shape[1]),
+                (coefficients * (metric_diagonal * u)[:, None, :]).reshape(-1, u.shape[1]),
+            )
+            rotation_covector = 0.5 * (
+                metric_diagonal * (coefficients * u[indices]).sum(1) - transpose_rotation
+            )
 
         # 5. Centered vertical velocity exchange and time-dependent mass metric.
         # Keep the metric-rate correction: layer mass changes during transport.
