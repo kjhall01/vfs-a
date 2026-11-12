@@ -1,6 +1,7 @@
 """Core exports with optional compatibility names loaded only on request."""
 
 from .mesh import VoronoiMesh
+from .equiangular import EquiangularGrid
 from vfs.atmosphere.column import CharneyPhillipsColumn
 from vfs.atmosphere.column import make_hybrid_coefficients
 
@@ -17,7 +18,7 @@ _COMPAT_EXPORTS = {
     "MeshToLatLonKNN": (".regrid", "MeshToLatLonKNN"),
 }
 
-__all__ = ["VoronoiMesh", "CharneyPhillipsColumn", "make_hybrid_coefficients"]
+__all__ = ["EquiangularGrid", "VoronoiMesh", "CharneyPhillipsColumn", "make_hybrid_coefficients"]
 
 
 def __getattr__(name):

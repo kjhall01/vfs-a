@@ -76,3 +76,5 @@ or timestep recommendations for other resolutions.
 - [Atmospheric initialization](docs/PHYSICAL_FIELDS_API.md) and [moist API](docs/MOIST_MODULE_API.md)
 - [Stratified ocean API](docs/OCEAN_INTEGRATION.md)
 - [Verification](verification/README.md) and [ocean measurements](verification/ocean/README.md)
+
+- [Equiangular grid diagnostics and operators](docs/EQUIANGULAR_GRID.md)
