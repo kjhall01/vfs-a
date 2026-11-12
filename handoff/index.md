@@ -1499,3 +1499,12 @@ ERA5 data. See `validation/equiangular_wb2/README.md` for reference conventions.
 The optional [polar and energy/tracer mapping audit](../validation/polar_energy/README.md) distinguishes analytic point/area references, ERA5 pole-input sensitivity, and
 nonconservative interpolation defects from nonlinear energy reconstruction.
 Full active thermodynamic mappings remain unqualified.
+
+## Optional ocean TKE
+
+[TKEOcean](../docs/OCEAN_TKE.md) composes the existing stratified ocean with
+a prescribed-length vertical closure and an explicit h*k state. Native shear
+loss, column buoyancy work and dissipative heat have separate energy ledgers.
+Original dynamics/defaults/fixtures remain unchanged. The column buoyancy
+allocation, timestep rejection, first-order splitting and absence of boundary
+forcing are explicit limits; see [qualification](../verification/ocean/TKE.md).

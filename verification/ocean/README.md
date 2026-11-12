@@ -52,3 +52,7 @@ masks, stage ledgers and remap reports. Legacy reference comparisons are separat
 from active-model qualification. See [test setup](../../CONTRIBUTING.md) and
 [verification conventions](../README.md). Numerical artifacts and dated reports
 retain their original source hashes and measurements.
+
+[Optional prognostic TKE](TKE.md): native shear-work transfer, buoyancy energy
+exchange, dissipation heating, transport/ALE and selected derivative checks.
+No calibrated mixed-layer or wind-forced ocean qualification.

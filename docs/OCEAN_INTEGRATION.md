@@ -63,7 +63,9 @@ long-backward, performance and long climate integrations are unqualified.
   -2.5 to 40 C ITS-90 after scale conversion. Invalid stages reject, without floors
   or automatic timestep reduction. Zero passives and absent passives are allowed.
 - No surface forcing, vertical physical mixing, convection, open boundaries,
-  wetting/drying, TKE/EKE or atmospheric coupling in this facade.
+  wetting/drying, TKE/EKE or atmospheric coupling in this facade. The separate
+  optional [TKEOcean composition](OCEAN_TKE.md) adds prognostic TKE, vertical
+  mixing and energy-accounted dissipation with explicit qualification limits.
 - Semidiscrete work closure does not imply exact SSPRK3 energy conservation.
   Remapping corrects only its own energy change, not timestep drift.
 - Sharp-front active local bounds are conditional on the kinetic-work budget;
