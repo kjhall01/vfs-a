@@ -1,0 +1,13 @@
+{
+  "cells": 32,
+  "layers": 16,
+  "dt_s": 60.0,
+  "steps": 5,
+  "net_water_heating_J": 2.1226220287361864e+19,
+  "bottom_export_J": 1.7266809485786122e+18,
+  "heating_residual_J_kg": 4.74427159195344e-12,
+  "full_step_energy_minus_heat_J_kg": -1.3151962639019568e-11,
+  "min_tke": 0.00014108215248017473,
+  "min_temperature_C": 12.000026997213775,
+  "max_temperature_C": 12.002527414963124
+}

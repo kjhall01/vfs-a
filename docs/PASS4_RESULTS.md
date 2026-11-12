@@ -480,3 +480,17 @@ traction, surface TKE injection and topographic form drag remain absent.
 
 Varying-depth drag regression: 950 passed, one CUDA skip on the installed wheel
 outside checkout; corrected-Gibbs and dry-helper portable comparisons pass.
+
+## Prescribed ocean radiation
+
+Added signed surface heat and conservative two-band sunlight absorption with
+explicit bottom export/absorption. Layer entropy changes match the existing
+Hamiltonian energy increment at fixed mass/salt/velocity. The shared heating
+extraction preserves the previous TKE path exactly across 28 tensor comparisons.
+Analytic 1/4/16/64-layer absorption, signed cooling, smooth derivatives and a
+short radiation/TKE example are recorded in
+[qualification](../verification/ocean/RADIATION.md). No atmospheric radiation or
+freshwater exchange is added.
+
+Radiation installed-wheel regression: 967 passed, one CUDA skip; corrected-Gibbs
+and dry-helper portable comparisons pass. All tests run outside the checkout.

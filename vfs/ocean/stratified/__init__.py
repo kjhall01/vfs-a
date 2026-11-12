@@ -11,3 +11,6 @@ __all__ += ['TKEClosure', 'TKEReport', 'TKEOcean', 'TKEState', 'TKEStepReport', 
 
 from .boundary import OceanBoundaryStress, BoundaryStressReport
 __all__ += ['OceanBoundaryStress', 'BoundaryStressReport']
+
+from .surface_heating import OceanSurfaceHeating, SurfaceHeatingReport
+__all__ += ['OceanSurfaceHeating', 'SurfaceHeatingReport']

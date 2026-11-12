@@ -68,7 +68,8 @@ or timestep recommendations for other resolutions.
   runs are not generally qualified. No coupled atmosphere–ocean driver or
   horizontal EKE closure is provided. An optional prescribed-length
   [ocean TKE closure](docs/OCEAN_TKE.md) supports
-  [wind stress and bottom drag](docs/OCEAN_BOUNDARY_STRESS.md).
+  [wind stress and bottom drag](docs/OCEAN_BOUNDARY_STRESS.md), and
+  [prescribed radiation/heating](docs/OCEAN_RADIATION.md).
 
 ## Documentation
 
