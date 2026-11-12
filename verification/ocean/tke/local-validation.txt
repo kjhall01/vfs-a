@@ -1,0 +1,17 @@
+Parent: 17c3c8bd0d0a4ca52bb34f074bec6a4ad1b37852 (#51).
+Noneditable installed wheel, tests outside checkout, CPU float64.
+Torch 2.15.0+cpu; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1.
+python -I -m pytest --fixture-mode=portable -q:
+926 passed, 1 skipped (CUDA), 1 existing warning in 195.37 seconds.
+Focused ocean TKE tests: 24 passed in 18.18 seconds.
+Final installed-wheel corrected-Gibbs portable comparison: pass.
+Final installed-wheel dry-helper portable comparison: pass.
+No existing fixture or tolerance changed.
+Public example completed: minimum k=0.0004958154831543455 m²/s²;
+combined energy difference prints 0 at full-H floating-point resolution.
+Local pair campaign and repeated 4/16/32-layer mixing campaign completed.
+Implementation hashes match both recorded result files.
+No atmosphere/dynamics/ALE/momentum/TKE-diffusion/decay algorithm changes.
+Scalar mixing is now a split adjacent-pair operator, first order in time.
+Original #51 evidence remains unchanged. Every changed file <=128 KiB.
+Hosted CI is separate from these local results.

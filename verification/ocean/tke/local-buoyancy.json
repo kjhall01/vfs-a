@@ -1,0 +1,38 @@
+{
+  "dtype": "float64",
+  "device": "cpu",
+  "torch": "2.15.0+cpu",
+  "max_layer_budget_residual_J_kg": 0.0,
+  "interface_work_J_kg_column": 5.464758588747361e-06,
+  "upper_fraction": 0.25,
+  "lower_fraction": 0.75,
+  "remote_tke_unchanged": true,
+  "remote_entropy_unchanged": true,
+  "potential_enthalpy_inventory_error_J_kg": 6.5483618527650835e-12,
+  "salt_inventory_error": 0.0,
+  "remote_funding_rejected": true,
+  "pair_refinement": [
+    {
+      "steps": 1,
+      "max_enthalpy_error_J_kg": 0.13104832881799666
+    },
+    {
+      "steps": 2,
+      "max_enthalpy_error_J_kg": 0.0656686055008322
+    },
+    {
+      "steps": 4,
+      "max_enthalpy_error_J_kg": 0.032870547685888596
+    },
+    {
+      "steps": 8,
+      "max_enthalpy_error_J_kg": 0.01644435194612015
+    },
+    {
+      "steps": 16,
+      "max_enthalpy_error_J_kg": 0.00822444762889063
+    }
+  ],
+  "source_hash": "0cd0a705b67791b551ebb9720818c6ffc97493a323950b62f667c109e08c3f21",
+  "driver_hash": "9142a80d4b14690973dd572b55e23481bb50cbafbfcf89f77b27575239156b51"
+}
