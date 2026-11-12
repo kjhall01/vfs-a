@@ -1,0 +1,16 @@
+{
+  "parent": "2e91f23b1f22e18de5f1f013c20fb46c10c9bc65",
+  "python": "3.12.14",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "source_sha256": {
+    "vfs/geometry/mesh/grid.py": "0a4d173391f1ebe80a20eefa900ea6dc2570de950eef02b9b0a334a00219cc72",
+    "vfs/geometry/mesh/rotation.py": "2e1de7e7c130acbd2ebc060aa947b3b0f9a87e9747da0d836bcbfc94cd7b9726",
+    "vfs/atmosphere/conservative.py": "e686f56e320ced983c6c1ef77477285b2250ebc15191987a938613eb4db6d811",
+    "vfs/atmosphere/moist_conservative.py": "3e79dbe3c7d6a2d28f7a4722151946630a924558e68b33c9b7a9d95c98020635",
+    "vfs/ocean/conservative.py": "156e57c258e5d6717b5f48402b04c9964eb7ee348302621c9b8db81018dd842d",
+    "tools/qualify_rotation_correction.py": "890420799e8451b8c3441d1f862fd2508d856205eb25069f4bcb8368d0cb3de1",
+    "tests/test_compatible_rotation.py": "9650fd02741a16cbb2c98e45a43028144f6c2c5ce10372a3468ddab9df062ef8"
+  }
+}

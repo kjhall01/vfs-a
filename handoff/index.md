@@ -16,6 +16,12 @@ The [equiangular grid](../docs/EQUIANGULAR_GRID.md) provides global integrals,
 matched C-grid grad/div/curl/scalar Laplacian and collocated wind/stress adapters.
 It is a diagnostics grid, not a dynamical-core mesh.
 
+The explicit `rotation_scheme="compatible"` mesh option supplies the corrected
+geometry and PV/carrier-flux rotation to dry/moist atmosphere and active ocean.
+See [usage](../docs/COMPATIBLE_ROTATION.md) and
+[validation](../verification/ocean/ROTATION_CORRECTION.md). Historical defaults
+remain reproducible; long-run and coastal PV behavior remain unqualified.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

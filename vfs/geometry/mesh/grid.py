@@ -591,6 +591,13 @@ def _great_circle_tangent(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     return tangent / np.clip(norm_t, 1e-15, None)
 
 
+def _signed_spherical_triangle_area(a, b, c):
+    """Oriented spherical excess; signs preserve primal/dual partitions."""
+    triple = np.sum(a * np.cross(b, c), axis=-1)
+    denom = 1.0 + np.sum(a*b, axis=-1) + np.sum(b*c, axis=-1) + np.sum(c*a, axis=-1)
+    return 2.0 * np.arctan2(triple, denom)
+
+
 def _spherical_triangle_area_batch(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> np.ndarray:
     """Spherical excess area for batches of unit-sphere triangles."""
     triple = np.sum(a * np.cross(b, c), axis=-1)
@@ -622,6 +629,7 @@ def _build_exact_thuburn_edge_operator_numpy(
     cell_area_unit: np.ndarray,
     dc_edge: np.ndarray,
     dv_edge: np.ndarray,
+    compatible: bool = False,
 ) -> dict[str, np.ndarray]:
     """
     Build the exact-Thuburn tangential and raw-rotation edge operators.
@@ -669,10 +677,22 @@ def _build_exact_thuburn_edge_operator_numpy(
         prev_edge_xyz = edge_xyz[ring_edges]
         next_edge_xyz = edge_xyz[np.roll(ring_edges, -1)]
 
-        local_corner_area = (
-            _spherical_triangle_area_batch(center, prev_edge_xyz, vtx)
-            + _spherical_triangle_area_batch(center, vtx, next_edge_xyz)
-        )
+        if compatible:
+            # Primal/dual crossings are generator midpoints, not midpoints of
+            # the Voronoi faces. Oriented pieces partition the dual triangles.
+            pair = cells_on_edge[ring_edges]
+            crossing = _unit_midpoint(cell_xyz[pair[:, 0]], cell_xyz[pair[:, 1]])
+            local_corner_area = (
+                _signed_spherical_triangle_area(center, crossing, vtx)
+                + _signed_spherical_triangle_area(center, vtx, np.roll(crossing, -1, axis=0))
+            )
+            if np.any(local_corner_area < 0):
+                raise ValueError("compatible rotation requires nonnegative primal/dual kite areas")
+        else:
+            local_corner_area = (
+                _spherical_triangle_area_batch(center, prev_edge_xyz, vtx)
+                + _spherical_triangle_area_batch(center, vtx, next_edge_xyz)
+            )
 
         corner_area[ci, :ne] = local_corner_area
         corner_fraction[ci, :ne] = local_corner_area / max(float(cell_area_unit[ci]), 1.0e-30)
@@ -761,7 +781,10 @@ def _build_exact_thuburn_edge_operator_numpy(
                 path_sum = 0.0
                 vertex_local = (source_local + 1) % ne
                 while True:
-                    path_sum += float(corner_fraction[ci, vertex_local])
+                    # vertices_on_cell[k] is the exit of edge k. The path
+                    # traversal slot therefore uses the preceding corner.
+                    corner = (vertex_local - 1) % ne if compatible else vertex_local
+                    path_sum += float(corner_fraction[ci, corner])
                     if vertex_local == target_local:
                         break
                     vertex_local = (vertex_local + 1) % ne
@@ -821,7 +844,7 @@ def _build_exact_thuburn_edge_operator_numpy(
         "rotation_row_abs_sum": row_abs_sum,
     }
 
-def _compute_geometry(topo: dict, radius: float) -> dict:
+def _compute_geometry(topo: dict, radius: float, *, rotation_scheme="legacy") -> dict:
     """
     Compute all metric geometry from topology + radius.
 
@@ -904,7 +927,7 @@ def _compute_geometry(topo: dict, radius: float) -> dict:
 
     cell_area_unit = cell_area / (radius ** 2)
 
-    thuburn = _build_exact_thuburn_edge_operator_numpy(
+    thuburn_args = dict(
         cell_xyz=cell_xyz,
         vertex_xyz=vertex_xyz,
         edge_xyz=edge_xyz,
@@ -923,8 +946,13 @@ def _compute_geometry(topo: dict, radius: float) -> dict:
         dv_edge=dv_edge,
     )
 
+    thuburn = _build_exact_thuburn_edge_operator_numpy(**thuburn_args)
     tan_stencil = thuburn["tan_stencil"]
     tan_weights = thuburn["tan_weights"]
+    if rotation_scheme == "compatible":
+        # Preserve the independent tangential KE reconstruction. Only rotation
+        # and its dual-mass geometry change in this scheme.
+        thuburn = _build_exact_thuburn_edge_operator_numpy(**thuburn_args, compatible=True)
     rotation_stencil = thuburn["rotation_stencil"]
     rotation_weights = thuburn["rotation_weights"]
 
@@ -1048,6 +1076,8 @@ class VoronoiMesh(nn.Module):
     cell_wind_vector(u_e) edge   → (nCells, 3) Cartesian cell-center wind vector
     """
 
+    rotation_scheme = "legacy"  # Also applies to older cache loaders.
+
     def __init__(
         self,
         n_cells: int = 1024,
@@ -1056,8 +1086,13 @@ class VoronoiMesh(nn.Module):
         verbose: bool = False,
         generator_xyz: torch.Tensor | np.ndarray | None = None,
         delaunay_triangles: torch.Tensor | np.ndarray | None = None,
+        rotation_scheme: str = "legacy",
     ) -> None:
         super().__init__()
+
+        if rotation_scheme not in ("legacy", "compatible"):
+            raise ValueError("rotation_scheme must be 'legacy' or 'compatible'")
+        self.rotation_scheme = rotation_scheme
 
         # --- Generate and relax generator positions ---
         if generator_xyz is None:
@@ -1107,7 +1142,7 @@ class VoronoiMesh(nn.Module):
         # --- Compute geometry ---
         if verbose:
             print("Computing geometry...")
-        geom = _compute_geometry(topo, radius)
+        geom = _compute_geometry(topo, radius, rotation_scheme=rotation_scheme)
 
         # --- Store scalar attributes ---
         self.nCells: int = topo["nCells"]
@@ -1198,6 +1233,9 @@ class VoronoiMesh(nn.Module):
             torch.as_tensor(geom["rotation_stencil"] >= 0),
         )
         self._reg_f("rotation_skew_defect_max", geom["rotation_skew_defect_max"])
+
+        from .rotation import initialize_dual_transfer
+        initialize_dual_transfer(self)
 
         if verbose:
             self._print_quality_summary()
@@ -1508,6 +1546,16 @@ class VoronoiMesh(nn.Module):
         if mode != "div_curl":
             raise ValueError(f"vector_laplacian_edge mode must be 'div_curl', got {mode!r}")
         return self._grad_values(self._div_values(u_e)) - self._curl_adjoint_values(self._curl_values(u_e))
+
+    def cell_to_dual(self, value: torch.Tensor) -> torch.Tensor:
+        """Geometric area transfer [cell, layer] -> [vertex, layer]."""
+        from .rotation import cell_to_dual
+        return cell_to_dual(self, value)
+
+    def compatible_rotation(self, u, thickness, rotation_rate):
+        """PV-times-mass-flux rotation for the compatible geometry scheme."""
+        from .rotation import compatible_rotation
+        return compatible_rotation(self, u, thickness, rotation_rate)
 
     def trisk_pv_flux_rotation(self, u_e: Field | torch.Tensor, rotation_rate: float) -> Field | torch.Tensor:
         """
@@ -1958,6 +2006,8 @@ def _rebuild_derived_buffers(mesh: VoronoiMesh) -> None:
       - safe_* / valid_* index arrays from padded stencil/connectivity arrays.
       - cell wind reconstruction weights from geometry/connectivity.
     """
+    from .rotation import initialize_dual_transfer
+    initialize_dual_transfer(mesh)
     mesh.register_buffer(
         "safe_edges_on_cell",
         torch.where(
@@ -2144,6 +2194,7 @@ def _save_mesh(mesh: VoronoiMesh, path) -> None:
             "nVertices": mesh.nVertices,
             "maxEdges": mesh.maxEdges,
             "radius": mesh.radius,
+            "rotation_scheme": mesh.rotation_scheme,
             "mesh_schema_version": 2,
             "mesh_operator_version": MESH_OPERATOR_VERSION,
             "exact_thuburn_version": EXACT_THUBURN_VERSION,
@@ -2214,6 +2265,9 @@ def _load_mesh(path, *, allow_legacy_thuburn: bool = False) -> "VoronoiMesh":
     mesh.nVertices = int(ds.attrs["nVertices"])
     mesh.maxEdges = int(ds.attrs["maxEdges"])
     mesh.radius = float(ds.attrs["radius"])
+    mesh.rotation_scheme = str(ds.attrs.get("rotation_scheme", "legacy"))
+    if mesh.rotation_scheme not in ("legacy", "compatible"):
+        raise ValueError("unknown cached rotation_scheme")
 
     missing_float = []
     missing_int = []

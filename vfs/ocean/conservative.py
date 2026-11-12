@@ -59,6 +59,9 @@ class ConstantDensityDynamics(nn.Module):
         """
         mesh = state.mesh
         u = self.energy.velocity(state)
+        if mesh.rotation_scheme == "compatible":
+            acceleration = mesh.compatible_rotation(u, state.h, self.rotation_rate)
+            return acceleration if self.domain is None else self.domain.apply_edge(acceleration)
         metric = self.energy.metric(state)
         absolute_vorticity = mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
         v0,v1 = mesh.verticesOnEdge[:,0],mesh.verticesOnEdge[:,1]

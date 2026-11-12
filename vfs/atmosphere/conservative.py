@@ -200,20 +200,25 @@ class DryHydrostaticConservativeDynamics(DryEnergy, torch.nn.Module):
         grad_div = grad_prefix - (gp + (grad_prefix * delta_B).sum(-1, keepdim=True))
         pressure_covector = -dp_edge * (horizontal_adjoint + divergence_transpose(grad_div))
 
-        # Fixed-vorticity skew transpose in the actual diagonal KE metric.
-        vorticity = mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
-        vertices = mesh.verticesOnEdge
-        q_edge = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
-        indices = mesh.safe_rotation_stencil
-        coefficients = -0.5 * (q_edge[:, None, :] + q_edge[indices]) * mesh.rotation_weights_masked[:, :, None]
-        metric_diagonal = edge_area * dp_edge / self.gravity
-        transpose_rotation = torch.zeros_like(u).scatter_add(
-            0, indices.reshape(-1, 1).expand(-1, u.shape[1]),
-            (coefficients * (metric_diagonal * u)[:, None, :]).reshape(-1, u.shape[1]),
-        )
-        rotation_covector = 0.5 * (
-            metric_diagonal * (coefficients * u[indices]).sum(1) - transpose_rotation
-        )
+        if mesh.rotation_scheme == "compatible":
+            metric_diagonal = edge_area * dp_edge / self.gravity
+            rotation_covector = metric_diagonal * mesh.compatible_rotation(
+                u, dp, self.rotation_rate)
+        else:
+            # Fixed-vorticity skew transpose in the actual diagonal KE metric.
+            vorticity = mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
+            vertices = mesh.verticesOnEdge
+            q_edge = 0.5 * (vorticity[vertices[:, 0]] + vorticity[vertices[:, 1]])
+            indices = mesh.safe_rotation_stencil
+            coefficients = -0.5 * (q_edge[:, None, :] + q_edge[indices]) * mesh.rotation_weights_masked[:, :, None]
+            metric_diagonal = edge_area * dp_edge / self.gravity
+            transpose_rotation = torch.zeros_like(u).scatter_add(
+                0, indices.reshape(-1, 1).expand(-1, u.shape[1]),
+                (coefficients * (metric_diagonal * u)[:, None, :]).reshape(-1, u.shape[1]),
+            )
+            rotation_covector = 0.5 * (
+                metric_diagonal * (coefficients * u[indices]).sum(1) - transpose_rotation
+            )
 
         # Centered vertical exchange and the time-dependent metric correction.
         mu_edge = state.cell_to_edge(mu)

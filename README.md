@@ -77,4 +77,5 @@ or timestep recommendations for other resolutions.
 - [Stratified ocean API](docs/OCEAN_INTEGRATION.md)
 - [Verification](verification/README.md) and [ocean measurements](verification/ocean/README.md)
 
+- [Compatible atmosphere/ocean rotation](docs/COMPATIBLE_ROTATION.md)
 - [Equiangular grid diagnostics and operators](docs/EQUIANGULAR_GRID.md)
