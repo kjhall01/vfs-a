@@ -1,0 +1,65 @@
+{
+  "scope": "Shared wind/drag/diffusion kernels; independent constant-viscosity f-plane references, not evolving-TKE spherical Ekman qualification",
+  "rho0": 1025.0,
+  "viscosity": 0.01,
+  "coriolis": 0.0001,
+  "depth": 200.0,
+  "stress": 0.1,
+  "steady": [
+    {
+      "layers": 16,
+      "relative_profile_error": 0.0533112298738457,
+      "transport_real": -3.903127820947816e-16,
+      "transport_imag": -0.9756097560975608
+    },
+    {
+      "layers": 32,
+      "relative_profile_error": 0.015539594384389843,
+      "transport_real": 8.476292584491674e-14,
+      "transport_imag": -0.9756097560975612
+    },
+    {
+      "layers": 64,
+      "relative_profile_error": 0.00402333157190847,
+      "transport_real": 1.4818875293531875e-13,
+      "transport_imag": -0.9756097560975612
+    },
+    {
+      "layers": 128,
+      "relative_profile_error": 0.0010144045008981181,
+      "transport_real": 2.5609482118488583e-13,
+      "transport_imag": -0.9756097560975606
+    }
+  ],
+  "transient": [
+    {
+      "dt": 600.0,
+      "relative_profile_error": 0.03375793774343368,
+      "work_J_m2": 139.32501572900728,
+      "diffusive_loss_J_m2": 75.30642021401403,
+      "energy_residual_J_m2": 5.684341886080802e-14
+    },
+    {
+      "dt": 300.0,
+      "relative_profile_error": 0.01690645751268899,
+      "work_J_m2": 137.4153463426533,
+      "diffusive_loss_J_m2": 73.13557463045603,
+      "energy_residual_J_m2": 1.1368683772161603e-13
+    },
+    {
+      "dt": 150.0,
+      "relative_profile_error": 0.0084602461792937,
+      "work_J_m2": 136.46764975571034,
+      "diffusive_loss_J_m2": 72.05221261427297,
+      "energy_residual_J_m2": -1.1368683772161603e-13
+    },
+    {
+      "dt": 75.0,
+      "relative_profile_error": 0.004231895793129235,
+      "work_J_m2": 135.9955453841718,
+      "diffusive_loss_J_m2": 71.51099331255446,
+      "energy_residual_J_m2": 4.547473508864641e-13
+    }
+  ],
+  "drag_relative_error": 1.5515372975659386e-15
+}

@@ -1,0 +1,11 @@
+{
+  "cells": 32,
+  "layers": 16,
+  "steps": 5,
+  "dt_s": 10.0,
+  "surface_work_J": 168788012583431.75,
+  "drag_to_tke_J": 38182223998873.18,
+  "boundary_energy_residual_J": -0.3104801177978517,
+  "full_step_energy_minus_wind_J_kg": 8.493483618579842e-12,
+  "min_tke_m2_s2": 0.0006135115775525455
+}

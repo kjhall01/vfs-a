@@ -454,3 +454,16 @@ energy ledger. Each interface charges only adjacent TKE reservoirs; geometric
 half-layer weights replace the column-wide allocation. The interface energy
 transport is reported separately from mixing work. Original #51 evidence is
 preserved; see [local qualification](../verification/ocean/LOCAL_TKE_BUOYANCY.md).
+
+## Ocean boundary stress
+
+Optional prescribed surface stress and flat stationary bottom drag now compose
+with per-layer TKE. Native impulse/work and drag-to-TKE ledgers close independently
+of the large thermal background. Independent constant-viscosity Ekman references
+show spatial convergence and first-order split startup convergence; a short
+spherical evolving-TKE run checks integration. Separate surface TKE input and
+sloping-bed stresses remain deferred. See [qualification](../verification/ocean/BOUNDARY_STRESS.md).
+
+Boundary-stress installed-wheel regression: 941 passed, one CUDA skip; corrected
+Gibbs and dry-helper portable comparisons pass. Fifteen boundary tests and both
+new runnable diagnostics pass on CPU float64.
