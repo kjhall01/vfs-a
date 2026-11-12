@@ -1,0 +1,14 @@
+{
+  "cells": 32,
+  "layers": 16,
+  "steps": 5,
+  "dt_s": 10.0,
+  "bathymetry": true,
+  "min_depth_m": 61.36211420558659,
+  "max_depth_m": 138.63788579441342,
+  "surface_work_J": 168808031906424.9,
+  "drag_to_tke_J": 38180244099340.75,
+  "boundary_energy_residual_J": -0.14836692810058605,
+  "full_step_energy_minus_wind_J_kg": 5.526871572975417e-12,
+  "min_tke_m2_s2": 0.0006135115775525452
+}

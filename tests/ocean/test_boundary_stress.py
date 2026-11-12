@@ -99,14 +99,14 @@ def test_defaults(mesh):
 def test_invalid_drag(cd):
     with pytest.raises(ValueError):OceanBoundaryStress(cd)
 
-def test_invalid_inputs_and_slope(mesh):
+def test_invalid_inputs(mesh):
     m,s=case(mesh)
     for stress in [torch.zeros(mesh.nEdges,1,dtype=s.tke_h.dtype),torch.zeros(mesh.nEdges,dtype=torch.float32),torch.full((mesh.nEdges,),float('nan'),dtype=s.tke_h.dtype)]:
         with pytest.raises(ValueError):m.boundary_with_report(s,1.,surface_stress=stress)
     for dt in [-1.,0.,float('nan')]:
         with pytest.raises(ValueError):m.boundary_with_report(s,dt)
     m,s=case(mesh,depth=100.+mesh.cell_xyz[:,:1])
-    with pytest.raises(ValueError,match='flat'):m.boundary_with_report(s,1.)
+    m.boundary_with_report(s,1.)
     m.boundary=OceanBoundaryStress()
     m.boundary_with_report(s,1.,surface_stress=torch.zeros(mesh.nEdges,dtype=s.tke_h.dtype))
 
@@ -138,3 +138,78 @@ def test_quadratic_drag_exact():
     for _ in range(100):u=drag_velocity(u,u.norm(),20.,.0025,10.)
     exact=initial/(1+1000*.0025*initial.norm()/20.)
     torch.testing.assert_close(u,exact,rtol=5e-15,atol=0)
+
+
+def bathymetric_case(mesh, *, direction='along', coast=False, seamount=False):
+    depth=100.-30.*torch.exp((mesh.cell_xyz[:,:1]-1.)/.1) if seamount else 100.+40.*mesh.cell_xyz[:,2:3]
+    wet=mesh.cell_xyz[:,0]>0 if coast else torch.ones(mesh.nCells,dtype=torch.bool)
+    domain=OceanDomain(mesh,wet,depth=depth)
+    m,_=case(mesh,depth=depth,domain=domain)
+    h=depth*hfractions(depth)
+    axis=mesh.edge_xyz.new_tensor([0.,0.,1.]).expand_as(mesh.edge_xyz)
+    vector=torch.linalg.cross(axis,mesh.edge_xyz) if direction=='along' else axis-mesh.edge_xyz[:,2:3]*mesh.edge_xyz
+    u=domain.apply_edge(.3*(vector*mesh.edge_normal).sum(-1)[:,None].expand(mesh.nEdges,4))
+    resolved=m.ocean.state(u_e=u,h=h,temperature=torch.full_like(h,10.),salinity=torch.full_like(h,35.),tracer=torch.ones(*h.shape,1,dtype=h.dtype))
+    return m,m.state(resolved,tke=torch.zeros_like(h))
+
+
+def hfractions(tensor):
+    return tensor.new_tensor([.1,.2,.3,.4])
+
+
+@pytest.mark.parametrize('direction',['along','across'])
+@pytest.mark.parametrize('coast',[False,True])
+def test_bathymetric_drag_energy_and_locality(mesh,direction,coast):
+    m,s=bathymetric_case(mesh,direction=direction,coast=coast)
+    out,r=m.boundary_with_report(s,100.)
+    ledger(m,s,out,r)
+    assert r.bottom_ke_loss.sum()>0
+    assert torch.equal(out.ocean.tracer_h,s.ocean.tracer_h)
+    assert torch.equal(out.tke_h[:,:-1],s.tke_h[:,:-1])
+    assert out.tke_h[~m.ocean.domain.wet_cell].count_nonzero()==0
+    from vfs.ocean.stratified.energy_columns import column_terms
+    a,_=column_terms(m.ocean.energy,s.ocean.physical_state(m.ocean.reference))
+    b,_=column_terms(m.ocean.energy,out.ocean.physical_state(m.ocean.reference))
+    residual=b['kinetic']-a['kinetic']+(m.ocean.energy.mass_area(s.ocean)*out.tke_h).sum(-1)
+    assert float((residual.abs()/a['kinetic'].abs().clamp_min(1)).max())<3e-15
+
+
+@pytest.mark.parametrize('seamount',[False,True])
+def test_rest_over_bathymetry(mesh,seamount):
+    m,s=bathymetric_case(mesh,seamount=seamount)
+    s=replace(s,ocean=replace(s.ocean,u_e=s.ocean.u_e*0))
+    out,r=m.boundary_with_report(s,100.)
+    for field in ('u_e','h','entropy_h','salt_h','tracer_h'):
+        assert torch.equal(getattr(out.ocean,field),getattr(s.ocean,field))
+    assert torch.equal(out.tke_h,s.tke_h)
+    assert r.bottom_ke_loss.count_nonzero()==0
+
+
+def test_conflicting_depths_reject_without_mutation(mesh):
+    depth=100.+40.*mesh.cell_xyz[:,2:3]
+    domain=OceanDomain(mesh,torch.ones(mesh.nCells,dtype=torch.bool),depth=depth+1.)
+    m,s=case(mesh,depth=depth,domain=domain)
+    saved=s.ocean.u_e.clone()
+    with pytest.raises(ValueError,match='consistent'):m.boundary_with_report(s,1.)
+    assert torch.equal(s.ocean.u_e,saved) and s.tke_h.count_nonzero()==0
+
+
+def test_flat_formula_unchanged(mesh):
+    m,s=case(mesh)
+    out,r=m.boundary_with_report(s,10.)
+    expected=s.ocean.u_e[:,-1]/(1+10*.0025*bottom_speed(mesh,s.ocean.u_e[:,-1])/25.)
+    assert torch.equal(out.ocean.u_e[:,-1],expected)
+
+
+def test_bathymetric_combined_step(mesh):
+    m,s=bathymetric_case(mesh)
+    m.closure=TKEClosure(2.,mix_scalars=False)
+    old=m.budgets(s)
+    out,r=m.step_with_report(s,1.)
+    new=m.budgets(out)
+    assert r.boundary.bottom_ke_loss.sum()>0
+    assert (out.tke_h>=0).all()
+    for name in ('volume','salt','tracers'):
+        torch.testing.assert_close(new[name],old[name],rtol=3e-15,atol=0)
+    mass=(m.ocean.energy.mass_area(s.ocean)*s.ocean.h).sum()
+    assert float((new['total']-old['total']).abs()/mass)<1e-8

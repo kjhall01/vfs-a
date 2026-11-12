@@ -1,0 +1,11 @@
+{
+  "parent_commit": "bd0e6a2af71504765c289c1f9b020d1a1cab09d4",
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "source_sha256": {
+    "vfs/ocean/stratified/boundary.py": "94ae29bdf1f01c3128e3bebc4cfbd0efba7394fcb7f4c6174d65e30d25a841c2",
+    "tests/ocean/test_boundary_stress.py": "ffa16e69bbcec3e1de26f49b56349146c8336dd13cce42dd49f873d19c1f40ba",
+    "validation/ocean_boundary/bathymetry.py": "53dc2b49931c07475cc4cfa0c957bfb2133ad3cf2610d0ae5e8f20268f4a9fde",
+    "examples/ocean_boundary_stress.py": "bf7f5839e318705c118c5df492f797e92556e041a37c6390691e82c99b38b1a1"
+  }
+}

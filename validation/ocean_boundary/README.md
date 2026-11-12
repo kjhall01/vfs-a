@@ -24,3 +24,8 @@ This test harness is not a new grid or a replacement for the spherical rotation
 operator, and does not validate evolving-TKE entrainment or bottom Ekman layers.
 The separate `examples/ocean_boundary_stress.py` exercises actual spherical
 resolved dynamics, surface stress, bottom drag and per-layer TKE together.
+
+Run `python validation/ocean_boundary/bathymetry.py` for varying-depth drag on
+32/128/512/2048-cell meshes. The reference uses analytic smooth vector speed
+with the same discrete interpolated thickness, isolating wind reconstruction
+error. It reports unchanged rest-pressure residuals separately.

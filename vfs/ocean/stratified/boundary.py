@@ -1,4 +1,4 @@
-"""Prescribed surface stress and stationary flat-bed drag for the TKE ocean.
+"""Prescribed surface stress and stationary-bed horizontal drag for the TKE ocean.
 
 Stress is edge-normal force per horizontal area [Pa]. Native kinetic metric
 weights turn it into an impulse/work ledger. No atmospheric bulk law, heat or
@@ -56,7 +56,9 @@ class BoundaryStressReport:
 class OceanBoundaryStress:
     """Optional forcing with constant dimensionless Cd (zero disables drag).
 
-    Prescribed wind stress acts first; flat-bed quadratic drag acts second.
+    Prescribed wind stress acts first; horizontal bottom drag acts second.
+    Bathymetry may vary. Stress is per horizontal area on the local bottom
+    layer; there is no seabed-normal projection or sloping-area multiplier.
     All drag-related resolved KE loss becomes bottom-layer TKE. Boundary work
     is first-order split from dynamics/mixing. No surface TKE input is added.
     """
@@ -94,13 +96,10 @@ class OceanBoundaryStress:
         if cd > 0:
             depth=ocean.column.total_depth_like(h)[:, 0]
             wet_depth=depth[wet[:, 0]]
-            # No hidden application of a flat horizontal drag law on slopes.
-            if not torch.equal(wet_depth, wet_depth[:1].expand_as(wet_depth)):
-                raise ValueError('bottom drag currently requires a flat stationary bed')
             if ocean.domain is not None and ocean.domain.depth is not None:
                 domain_depth=ocean.domain.depth[:, 0][wet[:, 0]]
                 if not torch.equal(domain_depth, wet_depth):
-                    raise ValueError('bottom drag requires consistent flat column/domain depth')
+                    raise ValueError('bottom drag requires consistent column/domain depth')
         energy=ocean.energy.base.mechanical
         metric=energy.metric(physical)
         he=mesh.cell_to_edge(h)
