@@ -446,3 +446,11 @@ loss, column buoyancy work and dissipative heat have separate energy ledgers.
 Original dynamics/defaults/fixtures remain unchanged. The column buoyancy
 allocation, timestep rejection, first-order splitting and absence of boundary
 forcing are explicit limits; see [qualification](../verification/ocean/TKE.md).
+
+## Local ocean buoyancy work
+
+The TKE scalar exchange now uses adjacent-layer pair solves with a per-layer
+energy ledger. Each interface charges only adjacent TKE reservoirs; geometric
+half-layer weights replace the column-wide allocation. The interface energy
+transport is reported separately from mixing work. Original #51 evidence is
+preserved; see [local qualification](../verification/ocean/LOCAL_TKE_BUOYANCY.md).

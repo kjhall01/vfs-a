@@ -56,3 +56,6 @@ retain their original source hashes and measurements.
 [Optional prognostic TKE](TKE.md): native shear-work transfer, buoyancy energy
 exchange, dissipation heating, transport/ALE and selected derivative checks.
 No calibrated mixed-layer or wind-forced ocean qualification.
+
+[Local buoyancy-work qualification](LOCAL_TKE_BUOYANCY.md) supersedes the initial
+column-funded scalar mixing with adjacent-pair budgets and geometric layer debits.

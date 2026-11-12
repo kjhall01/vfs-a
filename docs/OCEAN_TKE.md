@@ -84,20 +84,61 @@ The local energy residual subtracts this known exchange; the independent global
 energy residual does not. A shared-edge model does not imply isolated energy
 budgets for every cell column.
 
-**Buoyancy mixing.** A closed diffusion solve conserves potential enthalpy and
-salt contents, with temperature recovered from the caloric reference. The change
-in full thermodynamic Hamiltonian (dynamic enthalpy plus reference thermal energy)
-is debited from column TKE. Stable thermal stratification consumes TKE in the
-tested cases; unstable stratification releases it. The debit includes numerical
-caloric inversion residuals, rather than assuming h0 inversion is exact.
+**Buoyancy mixing.** Scalar mixing uses disjoint adjacent-layer exchanges:
+even interfaces for half a step, odd interfaces for a full step, then even
+interfaces for half a step. Each pair uses backward Euler with the frozen
+diffusivity. This replaces the whole-column implicit scalar solve; momentum
+and TKE diffusion retain their existing whole-column tridiagonal solves.
+Symmetric ordering reduces directional splitting bias but does not make
+backward Euler second order.
 
-A positive column cost is drawn proportionally from layer TKE; a release is
-allocated by layer mass. This is an explicit column allocation policy, **not a
-local layerwise -K_h N² production law**. It permits different layers in a column
-to share their energy budget. There is no inter-column funding. If the cost
-exceeds available TKE, the step rejects without mutating its input; reduce dt.
-This limitation matters before using the closure for entrainment or mixed-layer
-science. No alternate allocation or timestep is silently substituted.
+For a scalar q (potential enthalpy, salinity or a passive), the integrated
+transfer into the upper layer a from lower layer b is
+
+\[
+Q=\frac{\Delta t\,G(q_b-q_a)}
+        {1+\Delta t\,G(1/h_a+1/h_b)},\qquad
+h_a q'_a=h_aq_a+Q,\quad h_b q'_b=h_bq_b-Q.
+\]
+
+Every pair conserves potential enthalpy and salt to solver/inversion roundoff.
+The enthalpy-to-entropy conversion uses an increment relative to the same
+zero-increment round trip. Uniform fields therefore remain exact without
+branching on temperature/salinity gradients or erasing their linear response.
+Let delta E_a and delta E_b be its actual changes in dynamic enthalpy plus
+reference thermal energy. The interface mixing work is W=delta E_a+delta E_b.
+A positive W consumes TKE; a negative W produces it. With
+alpha=h_a/(h_a+h_b), the upper/lower layer TKE changes are -alpha W and
+-(1-alpha)W. These weights partition the interface control volume by the
+adjacent half-layer thicknesses; they never depend on remote available TKE.
+
+The remaining thermodynamic energy transported upward across the interface is
+F=delta E_a-alpha W. Thus each layer closes separately:
+
+\[
+\Delta(E_a+K_{t,a})=F,\qquad
+\Delta(E_b+K_{t,b})=-F.
+\]
+
+This distinction prevents the much larger heat transfer between layers from
+being mistaken for a TKE production or destruction term. The calculation uses
+JMD95/caloric finite energy differences, not an imposed N² approximation.
+Caloric inversion roundoff remains included in the measured work; relative
+accuracy of vanishing buoyancy work is not guaranteed.
+
+Each participating layer must afford its own debit **before** subsequent TKE
+diffusion. A positive column total does not authorize borrowing from distant
+layers. A locally exhausted step rejects without input mutation or clipping.
+Reducing dt can help when the local reservoir is positive; an exactly empty
+reservoir at a costly interface may require physical TKE transport/production
+or a future local flux limiter. There is no silent fallback to column funding.
+Stable and unstable interfaces cannot cancel their costs in a column-wide net
+before the local checks. Successive local exchanges and later explicit TKE
+diffusion can, of course, physically move or generate energy.
+
+Each pair also checks entropy nondecrease within floating-point tolerance.
+The production distribution is a specified local geometric choice; it is not
+a claim that the length-scale closure has been calibrated for entrainment.
 
 **Dissipation.** Following production and vertical TKE diffusion, the local decay
 has the exact fixed-L solution
@@ -115,7 +156,10 @@ Thermal-domain failures and column entropy decreases beyond roundoff reject.
 
 The report contains shear, implicit damping, column buoyancy work, heat,
 kinetic/thermal/TKE-transport residuals, entropy changes, shared-edge column
-exchanges and independent column/global energy residuals. Transfers are joules, entropy changes J/K. Energy checks permit
+exchanges and independent column/global energy residuals. It also reports
+interface mixing work, layer debits, upward interface energy transfer and the
+layerwise buoyancy budget residual. `buoyancy_work` remains the column sum
+for compatibility; the new interface arrays have nlayer-1 entries. Transfers are joules, entropy changes J/K. Energy checks permit
 floating-point error scaled by the thermal background; they do not certify
 relative accuracy for arbitrarily tiny TKE. Existing SSPRK3 energy drift is
 reported separately and is not repaired by this closure.
@@ -140,6 +184,6 @@ reported separately and is not repaired by this closure.
 
 The standard one-equation structure is described in the
 [GOTM scientific manual](https://gotm.net/manual/stable/pdf/a4.pdf).
-The finite-step transfers and column buoyancy allocation above are specific to
-this implementation. [Qualification results](../verification/ocean/TKE.md)
+The finite-step transfers and adjacent-layer buoyancy allocation above are specific to
+this implementation. [Local qualification results](../verification/ocean/LOCAL_TKE_BUOYANCY.md)
 separate budget evidence from physical-validation gaps.

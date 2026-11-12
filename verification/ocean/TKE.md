@@ -1,4 +1,8 @@
-# Ocean TKE qualification
+# Initial ocean TKE qualification
+
+Historical evidence for the first column-allocation implementation in #51.
+The [local interface version](LOCAL_TKE_BUOYANCY.md) supersedes that allocation;
+these original measurements and source hashes remain unchanged.
 
 The optional [TKE API](../../docs/OCEAN_TKE.md) adds a prognostic h*k reservoir
 without changing existing ocean or atmospheric kernels. These checks establish

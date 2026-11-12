@@ -214,3 +214,106 @@ def test_unequal_neighbor_thickness_matches_column_hamiltonian(mesh):
     assert float(((residual-r.kinetic_column_exchange).abs()/(mass*h).sum(-1)).max())<1e-8
     assert float(r.kinetic_column_exchange.abs().sum())>0
     assert float(r.kinetic_column_exchange.sum().abs()/mean_mass(m,s))<1e-16
+
+
+def local_pair(mesh):
+    m,s=case(mesh,closure=TKEClosure(2.,c_epsilon=0.))
+    s=replace(s,ocean=replace(s.ocean,u_e=torch.zeros_like(s.ocean.u_e)))
+    mass=m.ocean.energy.mass_area(s.ocean)
+    g=torch.zeros(mesh.nCells,3,dtype=s.tke_h.dtype)
+    g[:,0]=.001
+    return m,s,mass*s.tke_h,g
+
+
+def test_local_pair_cannot_spend_remote_tke(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    # Plenty of energy in layers 2/3 cannot finance the isolated 0/1 interface.
+    reservoir=reservoir*s.tke_h.new_tensor([0.,0.,1e6,1e6])
+    saved=reservoir.clone()
+    with pytest.raises(ValueError,match='adjacent layer'):
+        m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    assert torch.equal(reservoir,saved)
+
+
+def test_isolated_pair_layer_budget_and_untouched_remote_layers(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    end,r,w,lw,flux,residual=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    assert torch.equal(r[:,2:],reservoir[:,2:])
+    for key in ['entropy_h','salt_h','tracer_h']:
+        assert torch.equal(getattr(end,key)[:,2:],getattr(s.ocean,key)[:,2:])
+    assert torch.equal(w[:,1:],torch.zeros_like(w[:,1:]))
+    torch.testing.assert_close(lw[:,0],lw[:,1],rtol=0,atol=0)
+    mass=m.ocean.energy.mass_area(s.ocean)*s.ocean.h
+    a,ar=m.closure._thermal_parts(m.ocean,s.ocean.physical_state(m.ocean.reference))
+    b,br=m.closure._thermal_parts(m.ocean,end.physical_state(m.ocean.reference))
+    actual=mass*((b-a)+(br['h0']-ar['h0']))+(r-reservoir)
+    zero=torch.zeros_like(actual[:,:1]);transport=torch.cat((flux,zero),-1)-torch.cat((zero,flux),-1)
+    torch.testing.assert_close(actual,transport,rtol=2e-14,atol=10.)
+    assert float((residual.abs()/mass).max())<1e-12
+    # Transferred heat is much larger than the actual buoyancy mixing work.
+    assert flux.abs().sum()>100*w.abs().sum()
+
+
+def test_nonlocal_reservoir_does_not_change_local_work(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    a=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    b=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir*s.tke_h.new_tensor([1.,1.,100.,100.]),g,10.)
+    assert torch.equal(a[2],b[2])
+    assert torch.equal(a[1][:,:2],b[1][:,:2])
+
+
+def test_local_buoyancy_matches_independent_instantaneous_work(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    energy=m.ocean.energy;p=s.ocean.physical_state(energy.reference)
+    node,weights=energy.base._quadrature(p.h)
+    z=energy.base.height(p)[...,None]+p.h[...,None]*(node-.5)
+    _,pt,ps,_=energy.base.parcel_potential(p.temperature()[...,None],p.salinity()[...,None],z)
+    ref=energy.reference.evaluate(p.salinity(),p.temperature())
+    # d(psi+h0)/dh0 at fixed SP; d(psi+h0)/dSP at fixed h0.
+    eh=1+(pt*weights).sum(-1)/ref['h_theta']
+    es=(ps*weights).sum(-1)-(eh-1)*ref['h_s']
+    rate=energy.mass_area(s.ocean)*g*((eh[:,:-1]-eh[:,1:])*(ref['h0'][:,1:]-ref['h0'][:,:-1])+
+         (es[:,:-1]-es[:,1:])*(p.salinity()[:,1:]-p.salinity()[:,:-1]))
+    # One second resolves the tiny buoyancy work above caloric inversion roundoff.
+    measured=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,1.)[2]
+    torch.testing.assert_close(measured[:,0],rate[:,0],rtol=1e-4,atol=0)
+
+
+def test_rest_uniform_scalars_no_spurious_buoyancy(mesh):
+    m,s=case(mesh,closure=TKEClosure(2.,c_epsilon=0.),thermal=12.)
+    s=replace(s,ocean=replace(s.ocean,u_e=torch.zeros_like(s.ocean.u_e)))
+    out,r=m.mix_with_report(s,10.)
+    assert torch.equal(out.ocean.entropy_h,s.ocean.entropy_h)
+    assert r.buoyancy_interface_work.count_nonzero()==0
+    assert torch.equal(out.tke_h,s.tke_h)
+
+
+def test_unequal_layers_use_geometric_interface_work_weights(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    p=s.ocean.physical_state(m.ocean.reference)
+    h=s.ocean.h*s.tke_h.new_tensor([.5,1.5,1.,1.])
+    p=p.with_tensors(p.u_e,h,h*p.temperature(),h*p.salinity(),None)
+    state=m.ocean.from_temperature(p)
+    reservoir=m.ocean.energy.mass_area(state)*h*.01
+    _,_,w,lw,_,res=m.closure._mix_adjacent(m.ocean,state,reservoir,g,10.)
+    torch.testing.assert_close(lw[:,0],.25*w[:,0],rtol=2e-15,atol=0)
+    torch.testing.assert_close(lw[:,1],.75*w[:,0],rtol=2e-15,atol=0)
+    assert float((res.abs()/(m.ocean.energy.mass_area(state)*h)).max())<1e-12
+
+
+def test_uniform_scalar_state_retains_linearized_mixing_response(mesh):
+    m,s=case(mesh,closure=TKEClosure(2.,c_epsilon=0.),thermal=12.)
+    g=torch.zeros(mesh.nCells,3,dtype=s.tke_h.dtype);g[:,0]=.1
+    reservoir=m.ocean.energy.mass_area(s.ocean)*s.tke_h
+    physical=s.ocean.physical_state(m.ocean.reference)
+    direction=s.tke_h.new_tensor([1.,-1.,0.,0.])
+    def loss(a):
+        p=physical.with_tensors(physical.u_e,physical.h,
+            physical.h*(physical.temperature()+a*direction),physical.salt_h,physical.tracer_h)
+        state=m.ocean.from_temperature(p)
+        end,*_=m.closure._mix_adjacent(m.ocean,state,reservoir,g,10.)
+        return end.entropy_h[:,0].mean()
+    a=torch.tensor(0.,dtype=s.tke_h.dtype,requires_grad=True)
+    actual=torch.autograd.grad(loss(a),a)[0]
+    step=1e-4;expected=(loss(a.detach()+step)-loss(a.detach()-step))/(2*step)
+    torch.testing.assert_close(actual,expected,rtol=2e-7,atol=1e-7)
