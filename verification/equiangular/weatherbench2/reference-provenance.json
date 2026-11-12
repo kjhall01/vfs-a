@@ -1,0 +1,10 @@
+{
+  "derived_variables.py": {
+    "url": "https://raw.githubusercontent.com/google-research/weatherbench2/1f1ff39b954fdb79c96e11ad9750212eb7dd14eb/weatherbench2/derived_variables.py",
+    "sha256": "07136ea030742310c46e315bc18b494b375fd7fced695d0f1bc1f1b601a70031"
+  },
+  "schema.py": {
+    "url": "https://raw.githubusercontent.com/google-research/weatherbench2/1f1ff39b954fdb79c96e11ad9750212eb7dd14eb/weatherbench2/schema.py",
+    "sha256": "b96dc283a5b0d80bad362aecb201b2b9949062c2695dfb8aab280ff758f7ed69"
+  }
+}

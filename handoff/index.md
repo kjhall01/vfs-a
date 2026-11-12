@@ -1486,3 +1486,12 @@ passes; no GitHub operation or public release occurred here.
 User priorities: teachable, hackable, inspectable, object-oriented, research QOL;
 geometry/meshes, dry and moist atmosphere, explicit/implicit methods, tensor
 conservation diagnostics and explicit I/O. No column-physics integration now.
+
+## Optional equiangular real-data validation
+
+`validation/equiangular_wb2/run.py` reads explicitly selected local or WB2 fields.
+It checks regional budgets and ordering invariance, compares against independent
+spherical finite differences and WB2 formula replay, and reports coarse-scale
+sensitivity. Cloud and plotting dependencies remain outside the package. Offline
+tests use synthetic data; hosted CI copies the validation code but downloads no
+ERA5 data. See `validation/equiangular_wb2/README.md` for reference conventions.

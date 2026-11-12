@@ -68,3 +68,7 @@ CPU float64 is the measured scope. GPU/compile performance, masked coastlines,
 regional boundaries, arbitrary cell bounds, ellipsoidal metrics and derivative
 accuracy on noisy observational products remain outside this qualification.
 The existing portable fixtures are retained, without changed tolerances.
+
+The optional [WeatherBench2/local-data campaign](../validation/equiangular_wb2/README.md)
+adds real-data comparisons, regional budgets, coordinate invariance, and
+common-scale diagnostics. It does not add package or ordinary-test network access.

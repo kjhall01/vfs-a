@@ -38,7 +38,7 @@ jobs:
           python -m pip install 'gsw==3.6.23'
           python -m pip check
           mkdir -p "$RUNNER_TEMP/vfs-check"
-          cp -R tests tools examples "$RUNNER_TEMP/vfs-check/"
+          cp -R tests tools examples validation "$RUNNER_TEMP/vfs-check/"
       - name: Verify installed import and record CPU/backend environment
         working-directory: ${{ runner.temp }}/vfs-check
         run: |

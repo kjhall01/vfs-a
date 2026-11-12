@@ -1,0 +1,87 @@
+{
+  "source": "https://storage.googleapis.com/weatherbench2/datasets/era5/1959-2023_01_10-wb13-6h-1440x721_with_derived_variables.zarr",
+  "radius_m": 6367500.0,
+  "shape": [
+    721,
+    1440
+  ],
+  "versions": {
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.5.4",
+    "xarray": "2026.9.0"
+  },
+  "coordinate_hashes": {
+    "latitude": "c8ab9d172d7feec0a6c49a35b9fa508e9f372c0205557b0408f02d7c5db8e01f",
+    "longitude": "2e5e32511469e7e93c2eef868e77cdf828a1108d72a74f119a2395b9247cf2bf"
+  },
+  "script_sha256": "cd515e2998d1c082f498e4764d5778bdb09e99dcfc06f9d1f71061768d06c486",
+  "operator_sha256": "c03f3cce96dfd36dd14746093462787b1e457751064c6a4fe8e8dfd12c44c0d7",
+  "reference_warning": "WB2 fields are comparison products, not exact spherical truth. Current WB2 source omits curvature terms and uses nonperiodic longitude differences; archive derivation version is not assumed.",
+  "cases": [
+    {
+      "time": "2020-01-15T12:00:00",
+      "level_hpa": 250,
+      "metrics_file": "case-01.json",
+      "plot_file": "case-01.webp",
+      "latitude_plot_file": "case-01-latitude.webp",
+      "latitude_csv_file": "case-01.csv"
+    },
+    {
+      "time": "2020-01-15T12:00:00",
+      "level_hpa": 500,
+      "metrics_file": "case-02.json",
+      "plot_file": "case-02.webp",
+      "latitude_plot_file": "case-02-latitude.webp",
+      "latitude_csv_file": "case-02.csv"
+    },
+    {
+      "time": "2020-04-15T12:00:00",
+      "level_hpa": 250,
+      "metrics_file": "case-03.json",
+      "plot_file": "case-03.webp",
+      "latitude_plot_file": "case-03-latitude.webp",
+      "latitude_csv_file": "case-03.csv"
+    },
+    {
+      "time": "2020-04-15T12:00:00",
+      "level_hpa": 500,
+      "metrics_file": "case-04.json",
+      "plot_file": "case-04.webp",
+      "latitude_plot_file": "case-04-latitude.webp",
+      "latitude_csv_file": "case-04.csv"
+    },
+    {
+      "time": "2020-07-15T12:00:00",
+      "level_hpa": 250,
+      "metrics_file": "case-05.json",
+      "plot_file": "case-05.webp",
+      "latitude_plot_file": "case-05-latitude.webp",
+      "latitude_csv_file": "case-05.csv"
+    },
+    {
+      "time": "2020-07-15T12:00:00",
+      "level_hpa": 500,
+      "metrics_file": "case-06.json",
+      "plot_file": "case-06.webp",
+      "latitude_plot_file": "case-06-latitude.webp",
+      "latitude_csv_file": "case-06.csv"
+    },
+    {
+      "time": "2020-10-15T12:00:00",
+      "level_hpa": 250,
+      "metrics_file": "case-07.json",
+      "plot_file": "case-07.webp",
+      "latitude_plot_file": "case-07-latitude.webp",
+      "latitude_csv_file": "case-07.csv"
+    },
+    {
+      "time": "2020-10-15T12:00:00",
+      "level_hpa": 500,
+      "metrics_file": "case-08.json",
+      "plot_file": "case-08.webp",
+      "latitude_plot_file": "case-08-latitude.webp",
+      "latitude_csv_file": "case-08.csv"
+    }
+  ]
+}

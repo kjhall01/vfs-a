@@ -420,3 +420,12 @@ example provides divergence and wind/stress curl without spatial regridding.
 See [qualification](EQUIANGULAR_VALIDATION.md) for analytic vector refinement,
 polar error limits and CPU float64 structural/field-derivative checks. Dycore
 sources, fixtures and historical tolerances are unchanged.
+
+## Equiangular real-data diagnostics
+
+The optional [WB2 campaign](../validation/equiangular_wb2/README.md) measures
+vorticity/divergence agreement, regional circulation/flux closure, geographic
+ordering invariance, scalar identities and coarse-scale sensitivity. It keeps
+WB2 archive comparisons separate from full spherical finite differences because
+the inspected WB2 formulas omit spherical curvature terms. Package dependencies,
+dycore code and fixture tolerances are unchanged. Ordinary CI stays offline.
