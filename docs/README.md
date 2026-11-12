@@ -11,6 +11,7 @@
 | Stratified ocean and vertical remapping | [Ocean API](OCEAN_INTEGRATION.md) |
 | Explicit and implicit stepping | [Timestep paths](CURRENT_PATHS.md) |
 | Atmospheric thermal relaxation and drag | [Held–Suarez forcing](HELD_SUAREZ.md) |
+| Latitude–longitude diagnostics | [Equiangular grid](EQUIANGULAR_GRID.md) |
 | Modules and dependencies | [Package structure](PACKAGE_OWNERSHIP.md) |
 | Bounded moist numerical operations | [Step reading guide](BOUNDED_MOIST_READING_GUIDE.md) |
 
