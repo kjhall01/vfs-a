@@ -1,0 +1,994 @@
+{
+  "scope": "CPU float64, analytic point-value references; polar values of FV diagnostics are cap averages",
+  "torch": "2.15.0+cpu",
+  "results": [
+    {
+      "nlat": 16,
+      "nlon": 32,
+      "layout": "center",
+      "mode": "axial",
+      "div": {
+        "rms": 0.011111602866128832,
+        "polar_max": 0.019122195469995606,
+        "polar_band_max": 0.019122195469995606,
+        "interior_max": 0.018387340221933002,
+        "global_integral": -8.881784197001252e-16
+      },
+      "curl": {
+        "rms": 0.016614887028479262,
+        "polar_max": 0.02745349431468469,
+        "polar_band_max": 0.02745349431468469,
+        "interior_max": 0.027558821893965968,
+        "global_integral": 1.7763568394002505e-15
+      },
+      "stress_curl": {
+        "rms": 0.0016614887028479342,
+        "polar_max": 0.0027453494314684523,
+        "polar_band_max": 0.0027453494314684523,
+        "interior_max": 0.0027558821893966245,
+        "global_integral": 0.0
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 32,
+      "nlon": 64,
+      "layout": "center",
+      "mode": "axial",
+      "div": {
+        "rms": 0.00278121829778069,
+        "polar_max": 0.004809473120178431,
+        "polar_band_max": 0.004809473120178431,
+        "interior_max": 0.004763155264929653,
+        "global_integral": -1.1102230246251565e-16
+      },
+      "curl": {
+        "rms": 0.004168532061428579,
+        "polar_max": 0.006911443078509105,
+        "polar_band_max": 0.007143297675711313,
+        "interior_max": 0.007143297675711313,
+        "global_integral": -8.881784197001252e-16
+      },
+      "stress_curl": {
+        "rms": 0.00041685320614285844,
+        "polar_max": 0.0006911443078508883,
+        "polar_band_max": 0.0007143297675711036,
+        "interior_max": 0.0007143297675711036,
+        "global_integral": 2.3592239273284576e-16
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 64,
+      "nlon": 128,
+      "layout": "center",
+      "mode": "axial",
+      "div": {
+        "rms": 0.0006955135444859927,
+        "polar_max": 0.001204181008731764,
+        "polar_band_max": 0.001204181008731764,
+        "interior_max": 0.0012012800312184435,
+        "global_integral": 0.0
+      },
+      "curl": {
+        "rms": 0.0010430641510899836,
+        "polar_max": 0.001730874163823115,
+        "polar_band_max": 0.0018018295824706598,
+        "interior_max": 0.0018018295824706598,
+        "global_integral": 0.0
+      },
+      "stress_curl": {
+        "rms": 0.00010430641510900027,
+        "polar_max": 0.00017308741638236147,
+        "polar_band_max": 0.0001801829582471215,
+        "interior_max": 0.0001801829582471215,
+        "global_integral": -2.220446049250313e-16
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 128,
+      "nlon": 256,
+      "layout": "center",
+      "mode": "axial",
+      "div": {
+        "rms": 0.00017389147193851552,
+        "polar_max": 0.0003011586252028575,
+        "polar_band_max": 0.0003011586252028575,
+        "interior_max": 0.000300977218734122,
+        "global_integral": 1.1102230246251565e-16
+      },
+      "curl": {
+        "rms": 0.0002608243193666255,
+        "polar_max": 0.0004329070197985896,
+        "polar_band_max": 0.0004514601620366765,
+        "interior_max": 0.0004514601620366765,
+        "global_integral": -3.3306690738754696e-16
+      },
+      "stress_curl": {
+        "rms": 2.6082431936660862e-05,
+        "polar_max": 4.3290701979809e-05,
+        "polar_band_max": 4.51460162036732e-05,
+        "interior_max": 4.51460162036732e-05,
+        "global_integral": -4.163336342344337e-17
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 16,
+      "nlon": 32,
+      "layout": "center",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.010858706327078653,
+        "polar_max": 0.06780956695972962,
+        "polar_band_max": 0.06780956695972962,
+        "interior_max": 0.019271262387976273,
+        "global_integral": -1.984089975648473e-17
+      },
+      "curl": {
+        "rms": 0.0211032035046825,
+        "polar_max": 0.1288889881721571,
+        "polar_band_max": 0.1288889881721571,
+        "interior_max": 0.0538930671826815,
+        "global_integral": -1.3215744247239246e-16
+      },
+      "stress_curl": {
+        "rms": 0.0021103203504682527,
+        "polar_max": 0.012888898817215975,
+        "polar_band_max": 0.012888898817215975,
+        "interior_max": 0.005389306718268261,
+        "global_integral": -2.2947541481238656e-18
+      },
+      "rotational_div": {
+        "rms": 0.006164587956860951,
+        "polar_max": 0.048890290560097346,
+        "polar_band_max": 0.048890290560097346,
+        "interior_max": 0.0158738288170502,
+        "global_integral": -1.9481757786848908e-20
+      },
+      "irrotational_curl": {
+        "rms": 7.928822255683768e-16,
+        "polar_max": 4.689272502066107e-15,
+        "polar_band_max": 4.689272502066107e-15,
+        "interior_max": 4.238959013707881e-15,
+        "global_integral": -6.702236206467581e-32
+      }
+    },
+    {
+      "nlat": 32,
+      "nlon": 64,
+      "layout": "center",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.0029013588221541093,
+        "polar_max": 0.0345081050500609,
+        "polar_band_max": 0.0345081050500609,
+        "interior_max": 0.011040175625650767,
+        "global_integral": 2.482822974991805e-17
+      },
+      "curl": {
+        "rms": 0.006025725982594705,
+        "polar_max": 0.06672695879270393,
+        "polar_band_max": 0.06672695879270393,
+        "interior_max": 0.03201551079859344,
+        "global_integral": -6.104755258099996e-17
+      },
+      "stress_curl": {
+        "rms": 0.0006025725982594691,
+        "polar_max": 0.006672695879270404,
+        "polar_band_max": 0.006672695879270404,
+        "interior_max": 0.0032015510798596644,
+        "global_integral": -1.0795331926257372e-18
+      },
+      "rotational_div": {
+        "rms": 0.001698306657652591,
+        "polar_max": 0.024519052218549112,
+        "polar_band_max": 0.024519052218549112,
+        "interior_max": 0.008120374663099974,
+        "global_integral": 2.4352197233561135e-21
+      },
+      "irrotational_curl": {
+        "rms": 1.6565561908252845e-15,
+        "polar_max": 2.4539729379476768e-14,
+        "polar_band_max": 2.4539729379476768e-14,
+        "interior_max": 2.29398914891259e-14,
+        "global_integral": 9.55261252416069e-32
+      }
+    },
+    {
+      "nlat": 64,
+      "nlon": 128,
+      "layout": "center",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.0007679561451956438,
+        "polar_max": 0.017329752701110673,
+        "polar_band_max": 0.017329752701110673,
+        "interior_max": 0.005718569816558855,
+        "global_integral": -1.437499614785273e-17
+      },
+      "curl": {
+        "rms": 0.001668042814638005,
+        "polar_max": 0.033651379156257634,
+        "polar_band_max": 0.033651379156257634,
+        "interior_max": 0.01665627702675951,
+        "global_integral": 7.13625258061748e-18
+      },
+      "stress_curl": {
+        "rms": 0.00016680428146380127,
+        "polar_max": 0.003365137915621527,
+        "polar_band_max": 0.003365137915621527,
+        "interior_max": 0.0016656277026718559,
+        "global_integral": -1.9196413562742615e-18
+      },
+      "rotational_div": {
+        "rms": 0.0004602390227085205,
+        "polar_max": 0.012268766143577402,
+        "polar_band_max": 0.012268766143577402,
+        "interior_max": 0.004083015317539778,
+        "global_integral": -5.893661864440322e-23
+      },
+      "irrotational_curl": {
+        "rms": 4.019764019298132e-15,
+        "polar_max": 8.838585458367945e-14,
+        "polar_band_max": 8.838585458367945e-14,
+        "interior_max": 8.373613266238448e-14,
+        "global_integral": -8.628166150854817e-31
+      }
+    },
+    {
+      "nlat": 128,
+      "nlon": 256,
+      "layout": "center",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.00020199807092146434,
+        "polar_max": 0.00867434779734656,
+        "polar_band_max": 0.00867434779734656,
+        "interior_max": 0.0028841912454991847,
+        "global_integral": -5.726260360794291e-18
+      },
+      "curl": {
+        "rms": 0.0004533718178874211,
+        "polar_max": 0.01686175846009504,
+        "polar_band_max": 0.01686175846009504,
+        "interior_max": 0.008409673950692628,
+        "global_integral": -4.0826988057657276e-19
+      },
+      "stress_curl": {
+        "rms": 4.533718178874192e-05,
+        "polar_max": 0.0016861758460131131,
+        "polar_band_max": 0.0016861758460131131,
+        "interior_max": 0.0008409673950742092,
+        "global_integral": -1.7297008352973851e-18
+      },
+      "rotational_div": {
+        "rms": 0.00012331211348024564,
+        "polar_max": 0.006135538128301254,
+        "polar_band_max": 0.006135538128301254,
+        "interior_max": 0.00204435791828098,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 7.8765304189694e-15,
+        "polar_max": 4.5137223108445255e-13,
+        "polar_band_max": 4.5137223108445255e-13,
+        "interior_max": 4.2834400313158317e-13,
+        "global_integral": -8.011868568650901e-32
+      }
+    },
+    {
+      "nlat": 16,
+      "nlon": 32,
+      "layout": "center",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.04631373780965624,
+        "polar_max": 0.32216913139640546,
+        "polar_band_max": 0.32216913139640546,
+        "interior_max": 0.06621991428212581,
+        "global_integral": -2.946319403729358e-17
+      },
+      "curl": {
+        "rms": 0.06425968215590748,
+        "polar_max": 0.3279139835116872,
+        "polar_band_max": 0.3279139835116872,
+        "interior_max": 0.10962861061665796,
+        "global_integral": 1.1232334506949826e-16
+      },
+      "stress_curl": {
+        "rms": 0.006425968215590756,
+        "polar_max": 0.032791398351168385,
+        "polar_band_max": 0.032791398351168385,
+        "interior_max": 0.01096286106166583,
+        "global_integral": 1.8419578470992015e-17
+      },
+      "rotational_div": {
+        "rms": 0.005810338355377349,
+        "polar_max": 0.04795087733598273,
+        "polar_band_max": 0.04795087733598273,
+        "interior_max": 0.013726092322548388,
+        "global_integral": 3.496552006265752e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.007764946191539387,
+        "polar_max": 0.033931192143192845,
+        "polar_band_max": 0.033931192143192845,
+        "interior_max": 0.029236482665294536,
+        "global_integral": 7.022570584184356e-18
+      }
+    },
+    {
+      "nlat": 32,
+      "nlon": 64,
+      "layout": "center",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.012735510309166725,
+        "polar_max": 0.1702673344913801,
+        "polar_band_max": 0.1702673344913801,
+        "interior_max": 0.05024795158244433,
+        "global_integral": -4.8734887653223424e-17
+      },
+      "curl": {
+        "rms": 0.01781843864278664,
+        "polar_max": 0.17983061844335663,
+        "polar_band_max": 0.17983061844335663,
+        "interior_max": 0.07355131845820007,
+        "global_integral": -3.229355463054383e-17
+      },
+      "stress_curl": {
+        "rms": 0.0017818438642786753,
+        "polar_max": 0.01798306184433557,
+        "polar_band_max": 0.01798306184433557,
+        "interior_max": 0.007355131845820345,
+        "global_integral": -1.6505760466230127e-18
+      },
+      "rotational_div": {
+        "rms": 0.001623356286190542,
+        "polar_max": 0.024400986280331632,
+        "polar_band_max": 0.024400986280331632,
+        "interior_max": 0.007846278002716561,
+        "global_integral": -4.1423484540981516e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.0024218121127509906,
+        "polar_max": 0.018043194557347066,
+        "polar_band_max": 0.018043194557347066,
+        "interior_max": 0.016676441358188313,
+        "global_integral": 9.970027775436344e-18
+      }
+    },
+    {
+      "nlat": 64,
+      "nlon": 128,
+      "layout": "center",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.0034300284325613113,
+        "polar_max": 0.08638459401676268,
+        "polar_band_max": 0.08638459401676268,
+        "interior_max": 0.027967756570327185,
+        "global_integral": -6.678007756152904e-18
+      },
+      "curl": {
+        "rms": 0.004823849339582241,
+        "polar_max": 0.09184954295691716,
+        "polar_band_max": 0.09184954295691716,
+        "interior_max": 0.0412879357549808,
+        "global_integral": -5.3515541607526695e-18
+      },
+      "stress_curl": {
+        "rms": 0.00048238493395823273,
+        "polar_max": 0.00918495429569054,
+        "polar_band_max": 0.00918495429569054,
+        "interior_max": 0.004128793575495934,
+        "global_integral": 3.2619238798763106e-18
+      },
+      "rotational_div": {
+        "rms": 0.00044336326448360836,
+        "polar_max": 0.012253987877168424,
+        "polar_band_max": 0.012253987877168424,
+        "interior_max": 0.004048576216722647,
+        "global_integral": -1.8708759572369635e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.0007034828760530094,
+        "polar_max": 0.009158186120239147,
+        "polar_band_max": 0.009158186120239147,
+        "interior_max": 0.008603437135813161,
+        "global_integral": 1.4631145859419577e-18
+      }
+    },
+    {
+      "nlat": 128,
+      "nlon": 256,
+      "layout": "center",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.000913557902243419,
+        "polar_max": 0.04333821889673167,
+        "polar_band_max": 0.04333821889673167,
+        "interior_max": 0.014342338614598021,
+        "global_integral": 6.114836725347201e-18
+      },
+      "curl": {
+        "rms": 0.0012891255867802747,
+        "polar_max": 0.04616778304638587,
+        "polar_band_max": 0.04616778304638587,
+        "interior_max": 0.021217477591418926,
+        "global_integral": -3.749285461902754e-18
+      },
+      "stress_curl": {
+        "rms": 0.0001289125586780353,
+        "polar_max": 0.004616778304647164,
+        "polar_band_max": 0.004616778304647164,
+        "interior_max": 0.002121747759140185,
+        "global_integral": -1.1621556734125018e-19
+      },
+      "rotational_div": {
+        "rms": 0.00011940925921340438,
+        "polar_max": 0.0061336902189032,
+        "polar_band_max": 0.0061336902189032,
+        "interior_max": 0.0020400474899035137,
+        "global_integral": -1.9652640635199234e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.0001971032626481678,
+        "polar_max": 0.004596226071145176,
+        "polar_band_max": 0.004596226071145176,
+        "interior_max": 0.00433512200306676,
+        "global_integral": 1.4878726574376439e-18
+      }
+    },
+    {
+      "nlat": 17,
+      "nlon": 32,
+      "layout": "pole",
+      "mode": "axial",
+      "div": {
+        "rms": 0.011076230651511993,
+        "polar_max": 0.014422633126170536,
+        "polar_band_max": 0.018845514147585618,
+        "interior_max": 0.018845514147585618,
+        "global_integral": -5.134781488891349e-16
+      },
+      "curl": {
+        "rms": 0.01658675091682881,
+        "polar_max": 0.019214719596770014,
+        "polar_band_max": 0.028245529893118793,
+        "interior_max": 0.028245529893118793,
+        "global_integral": -1.8735013540549517e-16
+      },
+      "stress_curl": {
+        "rms": 0.0016586750916828892,
+        "polar_max": 0.0019214719596770125,
+        "polar_band_max": 0.0028245529893118904,
+        "interior_max": 0.0028245529893118904,
+        "global_integral": 3.469446951953614e-18
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 33,
+      "nlon": 64,
+      "layout": "pole",
+      "mode": "axial",
+      "div": {
+        "rms": 0.0027790157637574754,
+        "polar_max": 0.0036121804587041506,
+        "polar_band_max": 0.0047920864705768285,
+        "interior_max": 0.0047920864705768285,
+        "global_integral": -4.0766001685454967e-16
+      },
+      "curl": {
+        "rms": 0.004166796147328237,
+        "polar_max": 0.00481527332778775,
+        "polar_band_max": 0.0071866857667211015,
+        "interior_max": 0.0071866857667211015,
+        "global_integral": -2.5968810435372802e-15
+      },
+      "stress_curl": {
+        "rms": 0.0004166796147328325,
+        "polar_max": 0.0004815273327787861,
+        "polar_band_max": 0.0007186685766721324,
+        "interior_max": 0.0007186685766721324,
+        "global_integral": 6.223320470066795e-17
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 65,
+      "nlon": 128,
+      "layout": "pole",
+      "mode": "axial",
+      "div": {
+        "rms": 0.0006953760131606951,
+        "polar_max": 0.0009034532010063767,
+        "polar_band_max": 0.0012030928691049159,
+        "interior_max": 0.0012030928691049159,
+        "global_integral": 2.190088388420719e-16
+      },
+      "curl": {
+        "rms": 0.0010429560072130204,
+        "polar_max": 0.0012045437947985072,
+        "polar_band_max": 0.0018045487026798757,
+        "interior_max": 0.0018045487026798757,
+        "global_integral": 1.2802259252708836e-15
+      },
+      "stress_curl": {
+        "rms": 0.00010429560072130438,
+        "polar_max": 0.00012045437947980075,
+        "polar_band_max": 0.00018045487026799312,
+        "interior_max": 0.00018045487026799312,
+        "global_integral": -5.2583805365546965e-18
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 129,
+      "nlon": 256,
+      "layout": "pole",
+      "mode": "axial",
+      "div": {
+        "rms": 0.00017388287820985666,
+        "polar_max": 0.00022588881375518177,
+        "polar_band_max": 0.000301090593351816,
+        "interior_max": 0.000301090593351816,
+        "global_integral": -1.6306400674181987e-16
+      },
+      "curl": {
+        "rms": 0.0002608175658460998,
+        "polar_max": 0.000301181303601572,
+        "polar_band_max": 0.0004516302222647983,
+        "interior_max": 0.0004516302222647983,
+        "global_integral": -1.2153906353562505e-16
+      },
+      "stress_curl": {
+        "rms": 2.608175658460988e-05,
+        "polar_max": 3.0118130360162754e-05,
+        "polar_band_max": 4.516302222645763e-05,
+        "interior_max": 4.516302222645763e-05,
+        "global_integral": 3.504683522559393e-17
+      },
+      "rotational_div": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      },
+      "irrotational_curl": {
+        "rms": 0.0,
+        "polar_max": 0.0,
+        "polar_band_max": 0.0,
+        "interior_max": 0.0,
+        "global_integral": 0.0
+      }
+    },
+    {
+      "nlat": 17,
+      "nlon": 32,
+      "layout": "pole",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.009298306400566059,
+        "polar_max": 6.524227018256499e-16,
+        "polar_band_max": 0.03183595039341314,
+        "interior_max": 0.03183595039341314,
+        "global_integral": 3.8094778568760214e-17
+      },
+      "curl": {
+        "rms": 0.020221400943393912,
+        "polar_max": 5.070311904953438e-16,
+        "polar_band_max": 0.09660454284428527,
+        "interior_max": 0.09660454284428527,
+        "global_integral": -7.031446597293384e-17
+      },
+      "stress_curl": {
+        "rms": 0.0020221400943393935,
+        "polar_max": 4.3315636496761266e-17,
+        "polar_band_max": 0.0096604542844285,
+        "interior_max": 0.0096604542844285,
+        "global_integral": -4.449681676360447e-18
+      },
+      "rotational_div": {
+        "rms": 0.004690690684169262,
+        "polar_max": 4.910884930201166e-16,
+        "polar_band_max": 0.02420801376624566,
+        "interior_max": 0.02420801376624566,
+        "global_integral": -1.193567644339654e-19
+      },
+      "irrotational_curl": {
+        "rms": 9.354065667714469e-16,
+        "polar_max": 2.2989859598736454e-16,
+        "polar_band_max": 8.708103743990398e-15,
+        "interior_max": 8.708103743990398e-15,
+        "global_integral": 5.161492250957792e-32
+      }
+    },
+    {
+      "nlat": 33,
+      "nlon": 64,
+      "layout": "pole",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.002533234882088956,
+        "polar_max": 2.0098438217775013e-15,
+        "polar_band_max": 0.016993381170009314,
+        "interior_max": 0.016993381170009314,
+        "global_integral": -5.5646457922664054e-18
+      },
+      "curl": {
+        "rms": 0.005839006761907598,
+        "polar_max": 8.752804583800453e-16,
+        "polar_band_max": 0.051944922600387855,
+        "interior_max": 0.051944922600387855,
+        "global_integral": 6.009947560513878e-17
+      },
+      "stress_curl": {
+        "rms": 0.0005839006761907583,
+        "polar_max": 1.3246416012938187e-16,
+        "polar_band_max": 0.005194492260039405,
+        "interior_max": 0.005194492260039405,
+        "global_integral": -6.169119264593439e-18
+      },
+      "rotational_div": {
+        "rms": 0.0013710114898613929,
+        "polar_max": 8.049116928532385e-16,
+        "polar_band_max": 0.012229938388244623,
+        "interior_max": 0.012229938388244623,
+        "global_integral": 1.239791705453087e-20
+      },
+      "irrotational_curl": {
+        "rms": 1.7510921418862548e-15,
+        "polar_max": 4.999006121244831e-16,
+        "polar_band_max": 4.563363694051721e-14,
+        "interior_max": 4.563363694051721e-14,
+        "global_integral": -1.0014835710813626e-31
+      }
+    },
+    {
+      "nlat": 65,
+      "nlon": 128,
+      "layout": "pole",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.0006813035505987271,
+        "polar_max": 3.120066846402658e-15,
+        "polar_band_max": 0.008632227572081,
+        "interior_max": 0.008632227572081,
+        "global_integral": -1.4194542308247547e-17
+      },
+      "curl": {
+        "rms": 0.0016263213044116348,
+        "polar_max": 9.413083706844126e-16,
+        "polar_band_max": 0.02643442042512953,
+        "interior_max": 0.02643442042512953,
+        "global_integral": 3.0311412495986705e-17
+      },
+      "stress_curl": {
+        "rms": 0.00016263213044116225,
+        "polar_max": 1.0844908200882794e-16,
+        "polar_band_max": 0.002643442042512179,
+        "interior_max": 0.002643442042512179,
+        "global_integral": 2.380737477642219e-18
+      },
+      "rotational_div": {
+        "rms": 0.00038595615050652956,
+        "polar_max": 8.36136715420821e-16,
+        "polar_band_max": 0.006130686278761648,
+        "interior_max": 0.006130686278761648,
+        "global_integral": -1.0321693588070976e-22
+      },
+      "irrotational_curl": {
+        "rms": 4.428957541056503e-15,
+        "polar_max": 6.974696031733361e-16,
+        "polar_band_max": 1.1923780374331915e-13,
+        "interior_max": 1.1923780374331915e-13,
+        "global_integral": 1.5234105860103036e-31
+      }
+    },
+    {
+      "nlat": 129,
+      "nlon": 256,
+      "layout": "pole",
+      "mode": "tilted",
+      "div": {
+        "rms": 0.00018150986200189396,
+        "polar_max": 4.008245266102783e-15,
+        "polar_band_max": 0.0043330907720138465,
+        "interior_max": 0.0043330907720138465,
+        "global_integral": 2.5834152056744885e-18
+      },
+      "curl": {
+        "rms": 0.00044381490917562227,
+        "polar_max": 1.4061329470832605e-15,
+        "polar_band_max": 0.013275163739603399,
+        "interior_max": 0.013275163739603399,
+        "global_integral": -2.4128427655376752e-17
+      },
+      "stress_curl": {
+        "rms": 4.438149091756237e-05,
+        "polar_max": 2.1072322819210119e-16,
+        "polar_band_max": 0.0013275163739532954,
+        "interior_max": 0.0013275163739532954,
+        "global_integral": 2.3335192174828555e-19
+      },
+      "rotational_div": {
+        "rms": 0.00010618916585182202,
+        "polar_max": 1.106753577673203e-15,
+        "polar_band_max": 0.003067307017140703,
+        "interior_max": 0.003067307017140703,
+        "global_integral": 3.4262293710648926e-31
+      },
+      "irrotational_curl": {
+        "rms": 8.533962194200409e-15,
+        "polar_max": 1.8485979956899919e-16,
+        "polar_band_max": 6.24635641519255e-13,
+        "interior_max": 6.24635641519255e-13,
+        "global_integral": -2.1858101162579885e-31
+      }
+    },
+    {
+      "nlat": 17,
+      "nlon": 32,
+      "layout": "pole",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.03738651983268675,
+        "polar_max": 1.3145530576275425e-15,
+        "polar_band_max": 0.13256740357138375,
+        "interior_max": 0.13256740357138375,
+        "global_integral": 2.429262351056668e-17
+      },
+      "curl": {
+        "rms": 0.06083278201370432,
+        "polar_max": 7.180250223260181e-16,
+        "polar_band_max": 0.2018742643385949,
+        "interior_max": 0.2018742643385949,
+        "global_integral": 1.3218176148864146e-16
+      },
+      "stress_curl": {
+        "rms": 0.0060832782013704465,
+        "polar_max": 8.392930353185218e-17,
+        "polar_band_max": 0.020187426433859526,
+        "interior_max": 0.020187426433859526,
+        "global_integral": 7.866979136794594e-20
+      },
+      "rotational_div": {
+        "rms": 0.0042521903372979885,
+        "polar_max": 7.550327986807987e-17,
+        "polar_band_max": 0.02269364549939044,
+        "interior_max": 0.02269364549939044,
+        "global_integral": -3.08227358453962e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.009336657043155762,
+        "polar_max": 2.2602904790891554e-16,
+        "polar_band_max": 0.05309607829374627,
+        "interior_max": 0.05309607829374627,
+        "global_integral": -7.241667274074197e-19
+      }
+    },
+    {
+      "nlat": 33,
+      "nlon": 64,
+      "layout": "pole",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.010620557168060617,
+        "polar_max": 2.254773181606972e-15,
+        "polar_band_max": 0.08142656219596978,
+        "interior_max": 0.08142656219596978,
+        "global_integral": -6.886152411093911e-18
+      },
+      "curl": {
+        "rms": 0.01704346860780652,
+        "polar_max": 1.3252324490265247e-15,
+        "polar_band_max": 0.12545866409570694,
+        "interior_max": 0.12545866409570694,
+        "global_integral": 7.614873967752635e-17
+      },
+      "stress_curl": {
+        "rms": 0.0017043468607806634,
+        "polar_max": 1.2433616324767134e-16,
+        "polar_band_max": 0.012545866409570207,
+        "interior_max": 0.012545866409570207,
+        "global_integral": 5.8050316756983e-18
+      },
+      "rotational_div": {
+        "rms": 0.0012789647120409965,
+        "polar_max": 5.065392549852277e-16,
+        "polar_band_max": 0.012038463609317665,
+        "interior_max": 0.012038463609317665,
+        "global_integral": -1.5260893062550874e-17
+      },
+      "irrotational_curl": {
+        "rms": 0.0027672313035423455,
+        "polar_max": 2.484584803522094e-16,
+        "polar_band_max": 0.028104127258151555,
+        "interior_max": 0.028104127258151555,
+        "global_integral": 9.072537294518255e-20
+      }
+    },
+    {
+      "nlat": 65,
+      "nlon": 128,
+      "layout": "pole",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.0029385758294316307,
+        "polar_max": 1.8106839717569093e-15,
+        "polar_band_max": 0.04272617320261762,
+        "interior_max": 0.04272617320261762,
+        "global_integral": -2.6874915388179083e-17
+      },
+      "curl": {
+        "rms": 0.004645275687936764,
+        "polar_max": 1.200603409299316e-15,
+        "polar_band_max": 0.06591330235056586,
+        "interior_max": 0.06591330235056586,
+        "global_integral": -2.079084240820251e-17
+      },
+      "stress_curl": {
+        "rms": 0.0004645275687936861,
+        "polar_max": 1.5738400071774512e-16,
+        "polar_band_max": 0.0065913302350596205,
+        "interior_max": 0.0065913302350596205,
+        "global_integral": 6.892098557192008e-19
+      },
+      "rotational_div": {
+        "rms": 0.0003657758958239466,
+        "polar_max": 5.204170427930421e-16,
+        "polar_band_max": 0.006106683559400936,
+        "interior_max": 0.006106683559400936,
+        "global_integral": -4.2057067149763554e-19
+      },
+      "irrotational_curl": {
+        "rms": 0.0007801983572310683,
+        "polar_max": 3.505699962096098e-17,
+        "polar_band_max": 0.014250609838647118,
+        "interior_max": 0.014250609838647118,
+        "global_integral": 1.3055011091597687e-20
+      }
+    },
+    {
+      "nlat": 129,
+      "nlon": 256,
+      "layout": "pole",
+      "mode": "degree2",
+      "div": {
+        "rms": 0.0007989397485216386,
+        "polar_max": 4.586241533319801e-15,
+        "polar_band_max": 0.021610731467847005,
+        "interior_max": 0.021610731467847005,
+        "global_integral": -6.022121581250839e-19
+      },
+      "curl": {
+        "rms": 0.0012474488340878576,
+        "polar_max": 1.5985056066014961e-15,
+        "polar_band_max": 0.033364454577864355,
+        "interior_max": 0.033364454577864355,
+        "global_integral": -2.4001116849355307e-18
+      },
+      "stress_curl": {
+        "rms": 0.00012474488340879418,
+        "polar_max": 1.6306250959613795e-16,
+        "polar_band_max": 0.0033364454578018437,
+        "interior_max": 0.0033364454578018437,
+        "global_integral": -1.6017974617028128e-18
+      },
+      "rotational_div": {
+        "rms": 0.00010163692704377726,
+        "polar_max": 2.0573820425084932e-15,
+        "polar_band_max": 0.003064304538530701,
+        "interior_max": 0.003064304538530701,
+        "global_integral": -2.0982444352086575e-18
+      },
+      "irrotational_curl": {
+        "rms": 0.00021445688592961566,
+        "polar_max": 2.1876023467205276e-16,
+        "polar_band_max": 0.007150250481724567,
+        "interior_max": 0.007150250481724567,
+        "global_integral": 2.8629587247695865e-21
+      }
+    }
+  ],
+  "source_sha256": {
+    "vfs/geometry/equiangular.py": "c03f3cce96dfd36dd14746093462787b1e457751064c6a4fe8e8dfd12c44c0d7",
+    "tools/qualify_equiangular.py": "3c9e1374000be1adb985d3da2ba3e521f6efcec94a11f6263a4aae0ebb63aac8"
+  }
+}

@@ -26,3 +26,6 @@ installed-wheel test commands.
 
 Dated results, proposals and source provenance are indexed in [historical records](HISTORY.md).
 They describe particular configurations; the guides above describe the package API.
+
+The [equiangular dataset qualification](EQUIANGULAR_VALIDATION.md) covers
+cell-centered and pole-sampled coordinates, vector diagnostics and polar errors.

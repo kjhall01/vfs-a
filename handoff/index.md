@@ -11,10 +11,12 @@ shared corner-association/intersection inconsistencies and a separate variable-
 thickness PV-flux mismatch. It includes the recovered 16,384-cell atmosphere
 mesh. The [JW-A initial-balance check](../verification/ocean/JWA_ROTATION_BALANCE.md)
 shows 23.6% lower momentum RMS for the geometric comparison with energy closure
-retained. Production operators remain unchanged; corrections require separate review.
+retained. The explicit compatible rotation option below implements the correction.
 The [equiangular grid](../docs/EQUIANGULAR_GRID.md) provides global integrals,
 matched C-grid grad/div/curl/scalar Laplacian and collocated wind/stress adapters.
-It is a diagnostics grid, not a dynamical-core mesh.
+It is a diagnostics grid, not a dynamical-core mesh. `from_coordinates` supports
+centered and ERA5-style pole-sampled global layouts while retaining array order.
+See [dataset diagnostic qualification](../docs/EQUIANGULAR_VALIDATION.md).
 
 The explicit `rotation_scheme="compatible"` mesh option supplies the corrected
 geometry and PV/carrier-flux rotation to dry/moist atmosphere and active ocean.

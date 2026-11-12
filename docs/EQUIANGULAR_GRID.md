@@ -2,8 +2,9 @@
 
 `vfs.geometry.EquiangularGrid(nlat, nlon, radius=6.371e6)` provides global
 latitude–longitude geometry, area integrals and matched finite-volume operators.
-It reuses `LatLonGrid` coordinates and areas and can be passed to its remapping
-helpers. It is not a replacement mesh for the atmospheric or ocean dynamical cores.
+It implements the `LatLonGrid` coordinate interface. It is not a replacement
+mesh for the atmospheric or ocean dynamical cores. Dataset-layout support here
+does not extend the supported layouts of the separate remapping helpers.
 
 ```python
 import torch
@@ -24,7 +25,7 @@ Fields must match the grid's dtype/device; move the grid explicitly with `.to()`
 
 | Quantity | Trailing shape | Convention |
 | --- | --- | --- |
-| Cell scalar | `(nlat, nlon)` | South to north, longitude increasing from 0° |
+| Cell scalar | `(nlat, nlon)` | Input latitude order; eastward periodic longitude order |
 | East face component | `(nlat, nlon)` | Index j is the face between cells j and j+1, periodic |
 | North face component | `(nlat+1, nlon)` | Interior index i lies between rows i−1 and i; endpoints at poles |
 | Native curl | `(nlat+1, nlon)` | Interior latitude boundary i, longitude boundary j+1; repeated cap values at poles |
@@ -65,15 +66,15 @@ energy-preserving reconstruction or conservative transfer between grids.
 
 Polar boundary faces have exactly zero length. Gradient and wind adapters return
 zero placeholders there; finite user-supplied polar values also have zero flux.
-There are no scalar samples at the poles and no division by cos(±90°).
+The default constructor has no scalar samples at the poles. Neither layout
+divides by cos(±90°).
 Near-pole cells still have short east–west distances, affecting conditioning,
 accuracy and any explicit diffusion timestep. No polar filtering is applied.
 
-The first implementation supports the full sphere only, without land masks or
-regional boundaries. Pole-centered datasets (including repeated longitudes at
-a pole) require an explicit conversion to this cell-centered layout. Missing
-values are not filled or skipped. `LatLonGrid` remains available for existing
-regridding layouts.
+The grid supports the full sphere only, without land masks or regional
+boundaries. Both centered and pole-sampled datasets are supported as described
+below. Missing values are not filled or skipped. `LatLonGrid` remains available
+for existing regridding layouts.
 
 Run `python -I examples/equiangular.py` for integral, adjoint and refinement
 measurements, including polar errors. Tests cover CPU float64 algebra, spherical
@@ -100,7 +101,7 @@ are not a guarantee of uniformly second-order pointwise accuracy near the poles.
 
 `curl(east, north)` computes outward circulation per dual-cell area from the
 same face layout as `grad`. Its result has shape `(..., nlat+1, nlon)`.
-Interior entry `(i,j)` is at latitude boundary i and longitude boundary j+1,
+For the default centered layout, interior entry `(i,j)` is at latitude boundary i and longitude boundary j+1,
 modulo 360°. Both polar rows repeat a **single cap-average value**: there are
 not nlon independent polar points. `corner_area` divides each cap's area equally
 among its repeated entries; use `corner_integral` for its area integral.
@@ -143,7 +144,104 @@ Atmospheric and ocean rotation use that vertex curl to construct absolute
 vorticity. Their energy-work pairing and PV compatibility are distinct: a
 weighted skew rotation has zero kinetic-energy work, but that alone does not
 establish the discrete vorticity/continuity relationship needed for consistent
-PV transport and geostrophic balance. The existing
-[rotation investigation](../verification/ocean/ROTATING_BALANCE.md) records those
-unresolved consistency limits. No rotation operator is changed here. Equiangular
-curl is a diagnostic operator and has no TRiSK rotation dependency.
+PV transport and geostrophic balance. The [compatible rotation option](COMPATIBLE_ROTATION.md) corrects the identified
+Voronoi geometry and uniform-PV flux inconsistencies; wider PV and long-run
+qualification remains separate. Equiangular curl is a diagnostic operator and
+has no TRiSK rotation dependency.
+
+
+## Dataset coordinates: centered and ERA5-style layouts
+
+```python
+grid = EquiangularGrid.from_coordinates(
+    ds.latitude.values, ds.longitude.values, radius=6.371e6,
+)
+# Coordinates stay in the supplied order. For ordinary ERA5 files this is
+# north-to-south latitude and 0, 0.25, ..., 359.75 degree longitude.
+u = torch.as_tensor(ds.u10.transpose(..., "latitude", "longitude").values.copy(),
+                    dtype=torch.float64)
+v = torch.as_tensor(ds.v10.transpose(..., "latitude", "longitude").values.copy(),
+                    dtype=torch.float64)
+divergence = grid.div_from_collocated(u, v)
+vorticity = grid.curl_from_collocated(u, v)
+```
+
+Both outputs retain the input horizontal shape and ordering. `grad` still
+returns face fields; its components are always geographically eastward and
+northward, including for descending latitude. The boundary at index i separates
+input rows i−1 and i. `lat_bounds_deg` follows latitude order; `lon_bounds_deg`
+is an unwrapped eastward sequence. No interpolation to another latitude grid,
+latitude flip, seam roll or component sign change is required from the caller.
+
+Accepted layouts:
+
+- Uniform half-step latitude centers excluding both poles (e.g. −89.5 to 89.5).
+- Uniform point latitudes including both poles (e.g. 90 to −90 in 0.25° steps).
+- Either latitude order, any longitude offset, −180/180 or 0/360 conventions,
+  and an eastward cyclic sequence whose seam occurs inside the array.
+- Optional `lat_bounds` and `lon_bounds`, each with shape `(n+1,)` or `(n,2)`.
+  These must match the contiguous midpoint control volumes in axis order;
+  latitude endpoints are clipped to the poles. They are validated, not used to
+  introduce arbitrary off-center/nonuniform cells. Wrapped longitude bounds
+  are accepted modulo 360°.
+
+Coordinates and bounds are degrees; validation tolerance is 1e−6 degrees.
+Regional subsets, Gaussian/nonuniform latitude, descending longitude and a
+repeated 0/360 endpoint are rejected. Remove a redundant periodic endpoint
+explicitly from both coordinates and fields before constructing the grid.
+Geometry is copied/detached to CPU float64. Field differentiation is supported;
+coordinate differentiation is not. Use `.to()` to match tensor dtype/device.
+
+[ECMWF describes regular-grid ERA5 values as point samples](https://confluence.ecmwf.int/pages/viewpage.action?pageId=226500583).
+The diagnostic control volumes are midpoint quadrature regions around those
+samples; their exact area weights do not turn point samples into exact cell
+averages or recover conservation lost in an upstream interpolation. The radius
+is explicit and defaults to 6,371,000 m; set it for the desired spherical
+convention. No ellipsoidal geometry is inferred from metadata.
+
+## Pole-sampled control volumes
+
+A pole-sampled scalar row is one cap, stored as repeated longitude entries,
+with one equal fraction of cap area per entry. Its outer boundary is halfway
+between the pole and the first nonpolar row. `integral` uses these fractional
+weights; `grad` first averages the duplicate polar scalar samples. `div`,
+`laplacian` and cell-located `curl_from_collocated` return one cap-average value
+repeated across the polar row. This is an explicit topology convention, not a
+missing-data fill or a pointwise derivative at every polar longitude.
+
+East faces inside that cap are collapsed and carry no flux. The northward
+component on the cap boundary retains its longitude dependence. **Do not
+average polar u/v components across longitude:** even a smooth physical vector
+has longitude-dependent components in the local east/north basis at a pole.
+The adapter averages each local component along its coordinate direction.
+
+The dual cells adjacent to a sampled pole are triangular sectors. The two
+endpoint rows of the native corner array have zero area and zero placeholders;
+they are not estimates of polar vorticity. Use `curl_from_collocated(...,
+location="cell")` (the default) for the cap value. `corner_integral` ignores
+those zero-area placeholders. On the original centered layout, the endpoint
+dual rows instead represent nonzero-area caps, as described above.
+
+## Collocated diagnostic accuracy
+
+`wind_to_faces` uses arithmetic component interpolation at coordinate
+midpoints. `div_from_collocated` applies the matched divergence; default
+`curl_from_collocated` additionally uses conservative dual-to-cell averaging.
+These operations smooth the input. They preserve the discrete global flux and
+circulation budgets, not kinetic energy or pointwise extrema.
+
+`tools/qualify_equiangular.py` measures analytic degree-one axial/tilted and
+degree-two vector fields on both latitude layouts at four resolutions. It
+reports area-weighted RMS, interior maximum, endpoint maximum, and maximum
+above 75° latitude for divergence, curl and linearly scaled stress curl.
+Results and interpretation are in [the qualification report](EQUIANGULAR_VALIDATION.md).
+The references are analytic point values: cap-averaged diagnostic outputs also
+include a representation error relative to a polar point reference.
+
+Run `python -I examples/equiangular_dataset.py` for a synthetic ERA5-style case,
+or pass `--file data.nc --u u10 --v v10`. This explicit xarray boundary preserves
+coordinate labels and checks component alignment. It loads selected arrays;
+subset time/levels first for large files. No cloud access or data download is
+performed. For stress, provide stress component names; the curl has stress-units
+per metre. It is not Ekman pumping. Coastlines and NaNs still require an explicit
+application-specific treatment; zero-filling land is not a general solution.
