@@ -1,0 +1,173 @@
+{
+  "per_file_limit_bytes": 131072,
+  "included": [
+    {
+      "name": "case-01-latitude.webp",
+      "bytes": 20530,
+      "sha256": "5173ce8a401eef1dfab2f98fbf52164f710a2deba3c2c63bcc9af32cb5fc5765"
+    },
+    {
+      "name": "case-01.csv",
+      "bytes": 54401,
+      "sha256": "7f108b0ddcef769dffd4011436e51ccf0b2f8cd7ed8041ae3b36bc38c1b74041"
+    },
+    {
+      "name": "case-01.json",
+      "bytes": 37325,
+      "sha256": "ba50e35cba1c7c7797372953f0369913f5a9aa2f60819681f1e96015cac4d9b9"
+    },
+    {
+      "name": "case-01.webp",
+      "bytes": 126776,
+      "sha256": "0ee12e9585c681dcb863367cf5f2956f36dec2e61ddcc8a2793909d55a5c65b2"
+    },
+    {
+      "name": "case-02-latitude.webp",
+      "bytes": 20768,
+      "sha256": "d6e358481e5dd1dc9fa369216081fe52295d2e3d38e00d3549af72d663a5ae97"
+    },
+    {
+      "name": "case-02.csv",
+      "bytes": 54401,
+      "sha256": "7fb57aa5f241d8f7318b5c8edaf11c3f5dcf88dc5004c613f040f1cedbeab3a8"
+    },
+    {
+      "name": "case-02.json",
+      "bytes": 37447,
+      "sha256": "1916b117065478f7ec51ffba737954a3489fa47fb7ed566a3fdd17039e2cb71c"
+    },
+    {
+      "name": "case-02.webp",
+      "bytes": 122700,
+      "sha256": "ff66c1832965f84daddd9bee9c95d4700086fa3aae527b2440e03bd21adc57ab"
+    },
+    {
+      "name": "case-03-latitude.webp",
+      "bytes": 20126,
+      "sha256": "b32da7cda095353c31505aa19e88f254bc59121731f9d42c30a989a12e00aaad"
+    },
+    {
+      "name": "case-03.csv",
+      "bytes": 54401,
+      "sha256": "afe96ac29f564babb905ac649e30823ab4f557b68b513a8f3bc4c49a98393ca8"
+    },
+    {
+      "name": "case-03.json",
+      "bytes": 37400,
+      "sha256": "115596c6b30aeed7caf8b5ac6b2d6334adf512557adb13cbdfa85d34cafc7373"
+    },
+    {
+      "name": "case-04-latitude.webp",
+      "bytes": 20634,
+      "sha256": "b6fbb6d931dbbed2ab3cd4b4908889c6b9bd9bc8724270f5c73c9a9a3ab496ef"
+    },
+    {
+      "name": "case-04.csv",
+      "bytes": 54401,
+      "sha256": "42631412b1c086dffc386f654b786968e770bfe20e441379199a91eee97b627f"
+    },
+    {
+      "name": "case-04.json",
+      "bytes": 37478,
+      "sha256": "e7363e1d642283b47b7c5c1327b4d756e9fd2ebb864301f46251883d90c50593"
+    },
+    {
+      "name": "case-04.webp",
+      "bytes": 119832,
+      "sha256": "7629a1404053f2ba7db6ace28442bb3a529f2343d2bb3f505458cf0dbc3d8ea8"
+    },
+    {
+      "name": "case-05-latitude.webp",
+      "bytes": 19974,
+      "sha256": "98147006df7b57d6018cf64a8d502bad9bfe0f1c06b146359884614308aa7d51"
+    },
+    {
+      "name": "case-05.csv",
+      "bytes": 54401,
+      "sha256": "6bf81c0b189e61e9b1eddc85ce4ff531426c11bdc8c5b4caabde39075427e906"
+    },
+    {
+      "name": "case-05.json",
+      "bytes": 37352,
+      "sha256": "a6ac259329dcb009b74e5a6975760b2e09b2f48729809a767ed77bf859ef5582"
+    },
+    {
+      "name": "case-05.webp",
+      "bytes": 127764,
+      "sha256": "8f80351809c463c3acfb781119013dae0a33ddfe7aa8066139e7982f4d9a7b28"
+    },
+    {
+      "name": "case-06-latitude.webp",
+      "bytes": 20574,
+      "sha256": "546ac44693bfdb16f82e624a017c3ef8529be9331dfa6beb1983a5195ca0b063"
+    },
+    {
+      "name": "case-06.csv",
+      "bytes": 54401,
+      "sha256": "15b0f68ceed60a67c7e6d54c53416f402f79f95c6b6fa7d90fe517ca87efcc7c"
+    },
+    {
+      "name": "case-06.json",
+      "bytes": 37375,
+      "sha256": "bc9a03478baea9e1e40c7198dfa4df322c4c5b57f4ef06fd073a57bc4d400c98"
+    },
+    {
+      "name": "case-06.webp",
+      "bytes": 125342,
+      "sha256": "952027ee5ee9b30c6400035f22c74b27ea149e97d23850fc65fe35d465fbbab1"
+    },
+    {
+      "name": "case-07-latitude.webp",
+      "bytes": 19796,
+      "sha256": "70a1b22964b7b736b4a99dd5200fef4fa4881c359caff6714cca62651e9d5633"
+    },
+    {
+      "name": "case-07.csv",
+      "bytes": 54401,
+      "sha256": "11b2fa8e7b45e33f32401ef5bee941828867e976b3dfaf168000cc8aca8465da"
+    },
+    {
+      "name": "case-07.json",
+      "bytes": 37330,
+      "sha256": "5a6aaa6f80f970351e93ccc4c85b567b735fc3b0e69602e8b6f51f1fd1aca4c4"
+    },
+    {
+      "name": "case-07.webp",
+      "bytes": 127684,
+      "sha256": "8b7a5043ce5ef999551294673d528d1656c58d11981d0e3607ceec4e9dd2c8cb"
+    },
+    {
+      "name": "case-08-latitude.webp",
+      "bytes": 20580,
+      "sha256": "1111be9a4b8c1e3a71981e4aa27062a5ec6a6dd990deb2fe0a114050db5255e4"
+    },
+    {
+      "name": "case-08.csv",
+      "bytes": 54401,
+      "sha256": "ac07a72704f57d0146de59d212d8f98110c84aa5d7575ffdf7549919cf420083"
+    },
+    {
+      "name": "case-08.json",
+      "bytes": 37466,
+      "sha256": "a8140c2acb992aa1f5874cba7610bbd35cfa01a04fe7d9f4d6b00f296fd4cd4c"
+    },
+    {
+      "name": "case-08.webp",
+      "bytes": 120850,
+      "sha256": "b025b9d00b6ebab16b14f74815e1c92a90fec40fbe8cf7dbc5d48f6966326645"
+    },
+    {
+      "name": "metrics.json",
+      "bytes": 2855,
+      "sha256": "37bdc1fbb2882ad6831026d927af316ef3de91bf40767a462d3cbae86a9dc538"
+    }
+  ],
+  "omitted": [
+    {
+      "name": "case-03.webp",
+      "bytes": 132360,
+      "sha256": "c0f6d9185c10714b9448d1aaa94ab80571c493735614442b8d216b008276b257",
+      "reason": "Exceeds 128 KiB upload cap"
+    }
+  ]
+}
