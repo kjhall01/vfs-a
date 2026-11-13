@@ -1595,3 +1595,16 @@ wrapper retains extensive TKE through this operation. No atmospheric bulk law
 or automatic water enthalpy conversion is supplied. See
 [guide](../docs/OCEAN_SURFACE_EXCHANGE.md) and
 [qualification](../verification/ocean/SURFACE_EXCHANGE.md).
+
+## JMD95 conservative-path work research
+
+`validation/ocean_column/path_work.py` integrates analytic thermodynamic
+conjugates along conservative h0/SP exchanges. It preserves the midpoint energy
+flux/local allocation and all parent coupled-solver guards. Eight one-hour
+JMD95 controls complete, while the matched accelerated finite-work case rejects
+at 40 minutes. The cautious finite-work endpoint agrees closely. TKE retains
+substantial timestep sensitivity. See [evidence](../verification/ocean/PATH_WORK.md).
+This is research-only; supported runtime defaults and tolerances are unchanged.
+The requested 48-hour run rejects after 6 hours: local budget residual 5.25097
+(limit 1) despite converged iterates. Do not integrate as a qualified long-run
+closure. Installed-wheel suite: 1017 passed, one CUDA skip; portable fixtures pass.
