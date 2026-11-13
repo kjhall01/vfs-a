@@ -24,6 +24,13 @@ See [usage](../docs/COMPATIBLE_ROTATION.md) and
 [validation](../verification/ocean/ROTATION_CORRECTION.md). Historical defaults
 remain reproducible; long-run and coastal PV behavior remain unqualified.
 
+The [forced-column campaign](../verification/ocean/COLUMN_CAMPAIGN.md) records
+32 cases against merged main: all 26 active scalar-mixing cases reject, while
+six momentum/TKE controls reach 48 h. Next task: energy-affordable adjacent-layer
+scalar mixing with positive local TKE; retain guards and rerun the fixed matrix.
+No production code changes accompany this evidence. Installed-wheel regression:
+985 passed, one CUDA skip.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

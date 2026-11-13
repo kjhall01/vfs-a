@@ -1,0 +1,29 @@
+[
+  {
+    "kind": "timestep",
+    "layers": 16,
+    "relative_velocity_difference": 0.048094769003226394
+  },
+  {
+    "kind": "timestep",
+    "layers": 32,
+    "relative_velocity_difference": 0.07137472249172154
+  },
+  {
+    "kind": "timestep",
+    "layers": 64,
+    "relative_velocity_difference": 0.07634956198764101
+  },
+  {
+    "kind": "vertical",
+    "coarse_layers": 16,
+    "fine_layers": 32,
+    "relative_velocity_difference": 0.08531116602693332
+  },
+  {
+    "kind": "vertical",
+    "coarse_layers": 32,
+    "fine_layers": 64,
+    "relative_velocity_difference": 0.027527009884514307
+  }
+]

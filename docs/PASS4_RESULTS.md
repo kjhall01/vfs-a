@@ -508,3 +508,9 @@ calculation, wetting/drying and advective TKE exchange remain absent.
 
 Prescribed-exchange installed-wheel regression: 982 passed, one CUDA skip;
 corrected-Gibbs and dry-helper portable comparisons pass outside checkout.
+
+## Forced-column qualification
+
+See [campaign results](../verification/ocean/COLUMN_CAMPAIGN.md): 32 cases,
+26 active-mixing rejections, six 48-hour momentum controls. Installed-wheel
+regression: 985 passed, one CUDA skip. Production code remains unchanged.

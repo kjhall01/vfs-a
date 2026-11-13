@@ -1,0 +1,11 @@
+{
+  "base_commit": "8e8147bd31c341a452b8df2f0c019d39a7dd5b8b",
+  "base_tree": "b80c6632aaad49708cb0b2721daaff617618bd20",
+  "python": "3.12",
+  "torch": "2.15.0+cpu",
+  "runtime": "noneditable installed wheel; outside-checkout execution",
+  "cases": 32,
+  "completed": 6,
+  "rejected": 26,
+  "production_source_changes": false
+}
