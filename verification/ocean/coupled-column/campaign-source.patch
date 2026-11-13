@@ -1,0 +1,10 @@
+--- coupled.py
++++ coupled.py
+@@ -4 +4 @@
+-Patankar iteration is checked against the ACTUAL nonlinear-work residual.
++Patankar iteration is followed by an ACTUAL nonlinear-work reconciliation.
+@@ -157 +156,0 @@
+-        budget_error=h.new_tensor(float("inf"));correction=budget_error
+@@ -211 +210 @@
+-        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; iterate residual {float(error):.6g}, reconciled residual {float(correction):.6g}, budget residual {float(budget_error):.6g}')
++        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; scaled residual {float(error):.6g}')

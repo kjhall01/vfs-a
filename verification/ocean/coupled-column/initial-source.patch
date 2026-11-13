@@ -1,0 +1,96 @@
+--- coupled.py
++++ coupled.py
+@@ -4 +4 @@
+-Patankar iteration is checked against the ACTUAL nonlinear-work residual.
++Patankar iteration is followed by an ACTUAL nonlinear-work reconciliation.
+@@ -33 +32,0 @@
+-    budget_error: torch.Tensor
+@@ -43 +41,0 @@
+-    caloric_reconstruction_residual: torch.Tensor
+@@ -59,3 +56,0 @@
+-    interface_scheme: str = "resistance"
+-    budget_atol: float = 1e-13
+-    budget_rtol: float = 1e-9
+@@ -65 +59,0 @@
+-        if self.interface_scheme not in ("arithmetic","resistance"):raise ValueError("unknown interface scheme")
+@@ -68 +61,0 @@
+-        if self.budget_atol<=0 or self.budget_rtol<=0 or not math.isfinite(self.budget_atol+self.budget_rtol):raise ValueError('positive finite budget tolerances required')
+@@ -94,7 +86,0 @@
+-        def resistance(diffusivity, thickness):
+-            upper,lower=diffusivity[:,:-1],diffusivity[:,1:]
+-            denominator=thickness[:,:-1]*lower+thickness[:,1:]*upper
+-            # Two half-layer diffusive resistances in series; exact zero is
+-            # handled without evaluating a singular reciprocal or adding a floor.
+-            return 2*upper*lower/torch.where(denominator>0,denominator,torch.ones_like(denominator))
+-
+@@ -104 +89,0 @@
+-            if self.interface_scheme=="resistance":g=resistance(km,h)
+@@ -107,2 +91,0 @@
+-            if self.interface_scheme=="resistance":
+-                eg=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]*resistance(ek,he)
+@@ -139,13 +122,2 @@
+-            # The h0 transfer is conservative by construction. Cancel it
+-            # algebraically, rather than making TKE pay inverse-roundtrip noise.
+-            # Full-H acceptance below independently checks that noise.
+-            work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
+-            reconstruction=change-div(flux)-work
+-            if self.interface_scheme=="resistance":
+-                # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
+-                # The divided difference stays finite when either side is zero.
+-                root=positive_sqrt(k);den=root[:,:-1]+root[:,1:]
+-                mean=(2/3)*(k[:,:-1]+root[:,:-1]*root[:,1:]+k[:,1:])/torch.where(den>0,den,torch.ones_like(den))
+-                gk=self.c_mu*self.mixing_length*mean/(.5*(h[:,:-1]+h[:,1:]))
+-            else:gk=g
+-            conductance=area*gk/self.sigma_k
++            work=change-div(flux)
++            conductance=area*g/self.sigma_k
+@@ -154 +126 @@
+-            return mixed,production,work,flux,conductance,diss,diag,-dt*conductance,reconstruction
++            return mixed,production,work,flux,conductance,diss,diag,-dt*conductance
+@@ -157 +128,0 @@
+-        budget_error=h.new_tensor(float("inf"));correction=budget_error
+@@ -159 +130 @@
+-            mixed,production,work,flux,g,diss,diagonal,off,reconstruction=trial(guess)
++            mixed,production,work,flux,g,diss,diagonal,off=trial(guess)
+@@ -163,7 +134 @@
+-            if ((guess==0)&(positive>0)).any():
+-                # A zero layer may receive TKE through represented transport.
+-                # This is an uncommitted warm start, not a physical energy floor.
+-                warm=tridiagonal(diagonal,off,mass*k0+production+source)
+-                if ((warm<=0)&(positive>0)).any():raise FloatingPointError('no positive transported TKE warm start')
+-                guess=warm;previous=None
+-                continue
++            if ((guess==0)&(positive>0)).any():raise FloatingPointError('positive mixing work at exactly zero TKE iterate')
+@@ -174 +138,0 @@
+-            accepted=False
+@@ -176,9 +140,4 @@
+-                # Evaluate the ACTUAL energy-equation residual. A signed direct
+-                # solve minimizes it, but may return tiny negative k at exhausted
+-                # layers. Never clip that solution: the positive iterate is an
+-                # alternative only when it independently meets the strict budget
+-                # residual test. A residual tolerance is not a TKE floor.
+-                direct=tridiagonal(diagonal,off,mass*k0+production-work)
+-                budget_scale=mass*self.budget_atol+self.budget_rtol*(mass*k0+production+work.abs())
+-                for final in (direct,predicted):
+-                    if not torch.isfinite(final).all() or (final<0).any():continue
++                # Signed RHS admits explicitly represented vertical TKE transport.
++                # Reconcile actual H work; a negative solution is never clipped.
++                final=tridiagonal(diagonal,off,mass*k0+production-work)
++                if torch.isfinite(final).all() and (final>=0).all():
+@@ -186,7 +145 @@
+-                    tflux=dt*g*(final[:,1:]-final[:,:-1])
+-                    actual_residual=mass*(final-k0)-production+work+diss*final-div(tflux)
+-                    budget_error=(actual_residual.abs()/budget_scale).max()
+-                    if correction<=1 and budget_error<=1:
+-                        accepted=True
+-                        break
+-                if accepted:break
++                    if correction<=1:break
+@@ -211 +164 @@
+-        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; iterate residual {float(error):.6g}, reconciled residual {float(correction):.6g}, budget residual {float(budget_error):.6g}')
++        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; scaled residual {float(error):.6g}')
+@@ -225,2 +178,2 @@
+-        report=CoupledReport(iteration,correction,budget_error,column.sum(),column,exchange.sum(-1),work,flux,tkeflux,heat,entropy,residual,reconstruction,
+-            {'limited_pairs':h.new_zeros(()),'coupled_iterations':h.new_tensor(iteration),'accelerated_columns':h.new_tensor(accelerations),'scaled_residual_sum':correction,'budget_scaled_residual_sum':budget_error})
++        report=CoupledReport(iteration,correction,column.sum(),column,exchange.sum(-1),work,flux,tkeflux,heat,entropy,residual,
++            {'limited_pairs':h.new_zeros(()),'coupled_iterations':h.new_tensor(iteration),'accelerated_columns':h.new_tensor(accelerations),'max_scaled_residual':correction})

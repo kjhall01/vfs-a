@@ -1,0 +1,13 @@
+{
+  "parent_commit": "43982015e0df8436ac69140799aaafc2dce99478",
+  "installed_wheel_tests": "1005 passed, one CUDA skip",
+  "device": "cpu",
+  "dtype": "float64",
+  "threads_per_case": 1,
+  "concurrent_jobs": true,
+  "final_source_sha256": "73540eade7c2f4f9371b40c1150db8373b02a7d6e093aaba5888a819c2f9cfed",
+  "campaign_source_sha256": "69f36bb0447af2f6859b70ef1890151f0018bb1df02bf953671108b47d23d00c",
+  "campaign_source_note": "The final revision only improves failure diagnostics; campaign-source.patch reproduces the campaign source from the final source.",
+  "evidence_limit_bytes": 131072,
+  "scope": "research-only, fully wet; no supported runtime changes"
+}

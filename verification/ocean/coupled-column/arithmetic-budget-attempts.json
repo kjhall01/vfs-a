@@ -1,0 +1,44 @@
+[
+  {
+    "file": "probe.json",
+    "raw_sha256": "2957f48c4a5950cce70a871fdf384678853a6f8dd2069f424d78bbb225e6d113",
+    "layers": 16,
+    "dt_s": 150,
+    "requested_hours": 0.25,
+    "completed_hours": 0.041666666666666664,
+    "limiter": {
+      "limited_pairs": 0.0,
+      "coupled_iterations": 20.0,
+      "accelerated_columns": 18.0,
+      "scaled_residual_sum": 0.5272918433911236,
+      "budget_scaled_residual_sum": 1.7303494963192865e-07
+    },
+    "limited_steps": 0,
+    "accepted_steps": 1,
+    "backtrack_safety": 0.5,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "rejected",
+    "failure": {
+      "time_s": 150.0,
+      "attempt_dt_s": 150,
+      "message": "coupled column failed to converge in 80 iterations; scaled residual 0.17925"
+    },
+    "wall_s": 5.715069675999985,
+    "external_energy_J_m2": 0.017560975609756096,
+    "energy_error_J_kg": -1.6338976983718068e-13,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.014633734758026864,
+      -0.00010975506860045493
+    ],
+    "analytic_wind_transport": [
+      0.014633597567149357,
+      -0.00010975403964958835
+    ]
+  }
+]
