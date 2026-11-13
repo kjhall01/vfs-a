@@ -1,0 +1,44 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "patch": true,
+  "duration": 300.0,
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "geometry": "Fibonacci Voronoi, zero Lloyd iterations, compatible rotation geometry",
+  "profiles": "fixed functions of physical depth; no horizontal stepping",
+  "source_hashes": {
+    "resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+    "lagged.py": "cf204eb831ae521aea8ebb7617da8342ba8c7a8f5cdc2beefb7da52dfe7af6a2",
+    "coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+    "path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b"
+  },
+  "cases": [
+    {
+      "method": "semi4",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 147.405302923,
+      "wall_s": 147.54279736600438,
+      "counts": {
+        "limited_pairs": 24101.0,
+        "semi_trials": 12.0,
+        "limited_interfaces": 24101.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.0020543275695377185,
+        "mixing_substeps": 4.0
+      },
+      "max_local_budget_ratio": 3.344676114291879e-07,
+      "energy_error_J_kg": -1.0268829302128538e-11,
+      "min_tke": 1.0113736990852399e-14,
+      "min_tracer": 1.1179853578823322,
+      "salt_relative_change": 5.148481168769429e-18,
+      "passive_relative_change": -5.997599029122647e-20
+    }
+  ],
+  "setup_wall_s": 3.5519691389999934,
+  "peak_rss_KiB": 640888,
+  "raw_sha256": "a99a74448f050944cdcd9e241d0c33626fdf9e452f13c2b74412d24c7c860cd5"
+}
