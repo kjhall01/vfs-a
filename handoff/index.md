@@ -1637,3 +1637,19 @@ The dt300/16-layer wind case completes 12 hours with final energy residual
 1.60e-11 J/kg, using 7637 iterations / 8381 full trials. Cost spikes during weak-
 TKE transitions; further solver efficiency and longer/temporal qualification
 remain necessary. Do not treat this as supported-runtime integration.
+
+## Semi-implicit mixing candidate
+
+`LaggedClosure` / `SubcycledLaggedClosure` use a bounded positive coefficient
+predictor, one native momentum solve, shared scalar tridiagonal factors, and an
+ordered TKE-transport / actual-buoyancy-work / dissipation split. Funding retries
+reduce scalar conductances; all energy/entropy/positivity guards remain. No
+supported runtime or defaults changed. See [qualification](../verification/ocean/SEMIIMPLICIT_MIXING.md).
+The dt300/four-substep case completes twelve hours without column-wide deferrals:
+1727 trials versus 8381 coupled, energy residual -1.20e-10 J/kg. On a 162-cell
+weak-turbulence mesh, eight semi-implicit substeps are closer in velocity/TKE/T
+to the fine reference than two coupled substeps and use 36% less measured CPU.
+Coarse-step errors, limiter sensitivity and larger/global/GPU scaling remain
+open. Retain rejected funding controls and coupled reference; do not automatically
+merge experimental alternatives. Installed suite: 1030 passed, one CUDA skip;
+portable fixtures and seven focused tests pass.

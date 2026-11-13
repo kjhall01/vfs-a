@@ -1,0 +1,58 @@
+{
+  "case": "lagged_sub4",
+  "reference": "coupled_dt300",
+  "metrics": {
+    "u": {
+      "rms_difference": 0.00023590880186130726,
+      "max_abs_difference": 0.0007567418589524005,
+      "relative_l2": 0.009694555470706724
+    },
+    "v": {
+      "rms_difference": 9.637163433775014e-05,
+      "max_abs_difference": 0.0002961593460649517,
+      "relative_l2": 0.0024020012832222685
+    },
+    "temperature": {
+      "rms_difference": 0.0012891069295051633,
+      "max_abs_difference": 0.003946776365951976,
+      "relative_l2": 0.00011560378394197096
+    },
+    "salinity": {
+      "rms_difference": 0.0001289082728981626,
+      "max_abs_difference": 0.0003946392683289446,
+      "relative_l2": 3.6935903341267263e-06
+    },
+    "tke": {
+      "rms_difference": 2.70743237282182e-07,
+      "max_abs_difference": 7.962847957101646e-07,
+      "relative_l2": 0.00983648163841155
+    },
+    "diffusivity": {
+      "rms_difference": 8.898956810802433e-06,
+      "max_abs_difference": 3.3487313890671064e-05,
+      "relative_l2": 0.014182547176710877
+    },
+    "velocity_relative_l2": 0.005430766432068227,
+    "temperature_mld_difference_m": 0.0,
+    "tke_ratio_15_30m": {
+      "depths_m": [
+        15.625,
+        21.875,
+        28.125
+      ],
+      "ratios": [
+        1.2767116213030973,
+        204608.1850807127,
+        4.211146116212373e+25
+      ],
+      "minimum": 1.2767116213030973,
+      "maximum": 4.211146116212373e+25,
+      "reference_tke": [
+        1.6610054258143129e-06,
+        1.869703876763065e-15,
+        9.64753088967844e-42
+      ],
+      "zero_reference_layers": 0
+    }
+  }
+}

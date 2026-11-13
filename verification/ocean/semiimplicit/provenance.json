@@ -1,0 +1,8 @@
+{
+  "parent_commit": "421fe74bf6948810c1fbba90e51168b21b19fe25",
+  "runtime_changes": false,
+  "reference300_source": "verification/ocean/refreshed-solve/budget.json at parent",
+  "long_reference_source": "verification/ocean/refreshed-solve/long.json at parent",
+  "column_reference": "reference18: coupled dt18.75, 1 hour",
+  "max_artifact_bytes": 131072
+}
