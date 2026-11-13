@@ -1,0 +1,37 @@
+--- coupled.py
++++ coupled.py
+@@ -4 +4 @@
+-Patankar iteration is checked against the ACTUAL nonlinear-work residual.
++Patankar iteration is followed by an ACTUAL nonlinear-work reconciliation.
+@@ -59 +58,0 @@
+-    interface_scheme: str = "resistance"
+@@ -65 +63,0 @@
+-        if self.interface_scheme not in ("arithmetic","resistance"):raise ValueError("unknown interface scheme")
+@@ -94,7 +91,0 @@
+-        def resistance(diffusivity, thickness):
+-            upper,lower=diffusivity[:,:-1],diffusivity[:,1:]
+-            denominator=thickness[:,:-1]*lower+thickness[:,1:]*upper
+-            # Two half-layer diffusive resistances in series; exact zero is
+-            # handled without evaluating a singular reciprocal or adding a floor.
+-            return 2*upper*lower/torch.where(denominator>0,denominator,torch.ones_like(denominator))
+-
+@@ -104 +94,0 @@
+-            if self.interface_scheme=="resistance":g=resistance(km,h)
+@@ -107,2 +96,0 @@
+-            if self.interface_scheme=="resistance":
+-                eg=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]*resistance(ek,he)
+@@ -144,8 +132 @@
+-            if self.interface_scheme=="resistance":
+-                # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
+-                # The divided difference stays finite when either side is zero.
+-                root=positive_sqrt(k);den=root[:,:-1]+root[:,1:]
+-                mean=(2/3)*(k[:,:-1]+root[:,:-1]*root[:,1:]+k[:,1:])/torch.where(den>0,den,torch.ones_like(den))
+-                gk=self.c_mu*self.mixing_length*mean/(.5*(h[:,:-1]+h[:,1:]))
+-            else:gk=g
+-            conductance=area*gk/self.sigma_k
++            conductance=area*g/self.sigma_k
+@@ -157 +137,0 @@
+-        budget_error=h.new_tensor(float("inf"));correction=budget_error
+@@ -211 +191 @@
+-        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; iterate residual {float(error):.6g}, reconciled residual {float(correction):.6g}, budget residual {float(budget_error):.6g}')
++        else:raise FloatingPointError(f'coupled column failed to converge in {self.max_iterations} iterations; scaled residual {float(error):.6g}')

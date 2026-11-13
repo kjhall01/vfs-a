@@ -51,6 +51,13 @@ sensitivity essentially unchanged; it is not a supported default. Next candidate
 a bounded predictor/corrector of coupled momentum/TKE/scalar coefficients, judged
 by runtime at matched profile accuracy. No physical surface TKE source is added.
 
+The [coupled column prototype](../verification/ocean/COUPLED_COLUMN.md) couples
+end-TKE diffusivities, native momentum loss, conservative scalar transport, TKE
+transport and dissipation. It is research-only. A cautiously damped solve completes
+one-hour dt150/300/600 wind runs, but is expensive; accelerated solves fail the
+longer matrix. No supported solver replacement or larger-step qualification is
+claimed. Next: robust coupled residual solve, then matched-accuracy cost tests.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

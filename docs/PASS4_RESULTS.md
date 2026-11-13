@@ -539,3 +539,13 @@ parent state/report outputs and a two-hour trajectory exactly. A research-only
 predictor saves roughly 12% in the 128-column fixed-state CPU benchmark, with no
 material improvement in timestep error. Large-step mixing and weak-TKE-layer
 sensitivity remain unresolved. No defaults, fixtures or tolerances change.
+
+## Coupled ocean column prototype
+
+[Research-only end-TKE coupling](../verification/ocean/COUPLED_COLUMN.md) retains
+actual-work residual checks and native kinetic-energy accounting. Resistance-based
+momentum/scalar conductance and nonlinear TKE transport are explicit numerical
+choices. Eight short cases complete; the accelerated one-hour matrix rejects.
+Cautious iteration completes three one-hour wind runs but is expensive and has no
+demonstrated matched-accuracy speed advantage. Supported runtime code is unchanged.
+Installed-wheel regression: 1005 passed, one CUDA skip; seven focused tests pass.

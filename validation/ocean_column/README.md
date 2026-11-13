@@ -165,3 +165,31 @@ subclass satisfies the facade's type check while preserving parent method resolu
 It excludes initialization and warmup, times five interleaved calls, and reports
 exact state/report equivalence for the cached default. It is CPU-only and is not
 an estimate of coupled-model throughput. See [findings](../../verification/ocean/MIXING_COST.md).
+
+## Coupled column prototype
+
+`coupled.py` is research-only and is not installed as part of VFS. It solves
+end-TKE-dependent momentum/scalar/TKE transport and dissipation together, checks
+actual nonlinear energy residuals, and rejects failed solves without modifying
+inputs. It changes interface and dissipation discretizations; it is not a drop-in
+numerically equivalent optimization. Fully wet columns only.
+
+Against an installed wheel, from a copy of this directory outside the checkout:
+
+```bash
+python coupled_campaign.py --dt 300 --layers 16 --hours 1 --no-acceleration --relaxation .3 --iterations 240 --output cautious.json
+python coupled_matrix.py --output long-matrix
+python coupled_matrix.py --short --output short-matrix
+```
+
+The default accelerated research configuration intentionally retains the tested
+failure case; the cautious command above is the configuration that completed the
+one-hour wind check. Neither is a supported runtime default. Matrix execution is
+serial unless `--workers` is supplied. Scientific rejections are recorded as such,
+not replaced by smaller timesteps. `--interface-scheme arithmetic` reproduces the
+alternative face choice using the final residual formulation.
+
+`analyze_coupled.py` checks completion and equal endpoint times before comparing
+profiles. Six-minute filenames use `short-METHOD-DT.json`. Put the short and long outputs
+in the same selected directory to analyze them together. References
+are numerical, not analytic truth. See [equations and evidence](../../verification/ocean/COUPLED_COLUMN.md).
