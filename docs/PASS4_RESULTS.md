@@ -620,3 +620,14 @@ physical initial profiles and native spherical batches. Conservation, numerical
 reference errors, limiter activity and cost are reported separately. Supported
 runtime and defaults remain unchanged. Installed-wheel regression: 1,031 passed,
 one CUDA skip; portable Gibbs and dry comparisons passed.
+
+## Mixing profile and cost budget
+
+The [mixing profile](../verification/ocean/MIXING_PROFILE.md) attributes 96.9%
+of instrumented 1,024-by-64 mixing time to thermodynamic kernels. Unprofiled
+mixing costs 123.63 CPU s versus 22.25 s for one dynamics step or 109.64 s for
+five dt60 steps. A proposed 20% two-block budget allows 27.41 s for mixing at
+the latter cadence; that combined schedule remains unqualified. The report
+proposes cached thermodynamic work, residual-controlled warm starts and
+derivative-only heating before frozen-conjugate trial approximations. No
+physical formulation, supported runtime, defaults or tolerances are changed.
