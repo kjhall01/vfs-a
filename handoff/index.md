@@ -58,6 +58,13 @@ one-hour dt150/300/600 wind runs, but is expensive; accelerated solves fail the
 longer matrix. No supported solver replacement or larger-step qualification is
 claimed. Next: robust coupled residual solve, then matched-accuracy cost tests.
 
+The [linear-EOS control](../verification/ocean/LINEAR_EOS_CONTROL.md) separates
+linear density, constant-cp calorics and exact affine mixing-work evaluation.
+Linearization alone does not cure accelerated failures. Exact affine work completes
+five of six one-hour cases, but dt600 and the 48-hour attempt still reject. Next:
+cancellation-safe JMD95 work evaluation before assuming the local TKE design or
+nonlinear solver alone is responsible. Supported runtime code remains unchanged.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

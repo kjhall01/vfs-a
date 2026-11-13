@@ -1,0 +1,9 @@
+--- coupled.py
++++ coupled.py
+@@ -70,4 +69,0 @@
+-
+-    def _buoyancy_work(self,ocean,before,after,enthalpy_flux,salt_flux,default_work):
+-        """Research control hook; default retains the actual finite-H allocation."""
+-        return default_work
+@@ -147 +142,0 @@
+-            work=self._buoyancy_work(ocean,physical,after,fh,fs,work)

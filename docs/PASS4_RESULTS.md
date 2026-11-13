@@ -549,3 +549,13 @@ choices. Eight short cases complete; the accelerated one-hour matrix rejects.
 Cautious iteration completes three one-hour wind runs but is expensive and has no
 demonstrated matched-accuracy speed advantage. Supported runtime code is unchanged.
 Installed-wheel regression: 1005 passed, one CUDA skip; seven focused tests pass.
+
+## Linear-EOS mixing control
+
+[Matched linear-density/caloric controls](../verification/ocean/LINEAR_EOS_CONTROL.md)
+show that constant cp greatly reduces evaluation cost but does not by itself cure
+accelerated convergence failures. An exact affine work formula completes five of
+six one-hour controls; dt600 and the 48-hour attempt remain failed. Same-EOS bulk
+profiles closely match the cautious finite-work solve, implicating cost-evaluation
+sensitivity. The adapter, hook and controls are research-only; installed runtime,
+EOS defaults, physical sources, fixtures and tolerances are unchanged.

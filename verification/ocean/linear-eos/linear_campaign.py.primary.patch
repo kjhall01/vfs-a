@@ -1,0 +1,15 @@
+--- linear_campaign.py
++++ linear_campaign.py
+@@ -8 +8 @@
+-from linear_eos import LinearColumnOcean,ExactLinearWorkClosure
++from linear_eos import LinearColumnOcean
+@@ -14 +13,0 @@
+-    p.add_argument('--exact-work',action='store_true')
+@@ -20,3 +19 @@
+-    if a.exact_work and (a.eos!='linear-cp' or a.solver=='existing'):raise ValueError('exact-work requires coupled linear-cp')
+-    cls=ExactLinearWorkClosure if a.exact_work else CoupledClosure
+-    closure=None if a.solver=='existing' else cls(2.,accelerate=a.solver=='accelerated',relaxation=.7 if a.solver=='accelerated' else .3,max_iterations=80 if a.solver=='accelerated' else 240)
++    closure=None if a.solver=='existing' else CoupledClosure(2.,accelerate=a.solver=='accelerated',relaxation=.7 if a.solver=='accelerated' else .3,max_iterations=80 if a.solver=='accelerated' else 240)
+@@ -24 +21 @@
+-    r.update(eos=a.eos,solver=a.solver,exact_work=a.exact_work,python=platform.python_version(),torch=torch.__version__,
++    r.update(eos=a.eos,solver=a.solver,python=platform.python_version(),torch=torch.__version__,
