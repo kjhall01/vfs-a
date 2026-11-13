@@ -1,0 +1,133 @@
+{
+  "revision": null,
+  "dirty": null,
+  "command": [
+    "validation/performance/run.py",
+    "--preset",
+    "quick",
+    "--threads",
+    "1",
+    "--steps",
+    "2",
+    "--repeats",
+    "2",
+    "--output",
+    "/tmp/performance-quick-validation"
+  ],
+  "cases": [
+    {
+      "name": "dry-none-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "dry",
+        "closure": "none",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.010760082499984946,
+      "sypd": 15.277165546273979
+    },
+    {
+      "name": "moist-none-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "moist",
+        "closure": "none",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.0629645137499324,
+      "sypd": 2.610733441009256
+    },
+    {
+      "name": "ocean-none-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.7058375067500151,
+      "sypd": 0.23289150841633438
+    },
+    {
+      "name": "mixing-fast-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "mixing",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.7445001804999833,
+      "sypd": 0.2207972085828652
+    },
+    {
+      "name": "full-fast-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 2.0129062612500093,
+      "sypd": 0.08166478728212305
+    },
+    {
+      "name": "full_ale-fast-128x16-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 16,
+        "threads": 1,
+        "dt": 60.0,
+        "steps": 2,
+        "repeats": 2,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 2.3801709674999643,
+      "sypd": 0.06906376217860413
+    }
+  ]
+}

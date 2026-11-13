@@ -1,0 +1,249 @@
+{
+  "revision": null,
+  "dirty": null,
+  "command": [
+    "validation/performance/run.py",
+    "--preset",
+    "smoke",
+    "--steps",
+    "1",
+    "--repeats",
+    "1",
+    "--closures",
+    "supported",
+    "semi",
+    "fast",
+    "--output",
+    "/tmp/performance-smoke"
+  ],
+  "cases": [
+    {
+      "name": "dry-none-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "dry",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.006526038999936645,
+      "sypd": 0.41981453488461495
+    },
+    {
+      "name": "moist-none-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "moist",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.02356543799987776,
+      "sypd": 0.11626034820195033
+    },
+    {
+      "name": "ocean-none-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.395300799999859,
+      "sypd": 0.006930737371131648
+    },
+    {
+      "name": "mixing-supported-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "mixing",
+        "closure": "supported",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.3264617760000874,
+      "sypd": 0.008392180122785727
+    },
+    {
+      "name": "mixing-semi-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "mixing",
+        "closure": "semi",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 1.1442075919999297,
+      "sypd": 0.002394430911447255
+    },
+    {
+      "name": "mixing-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "mixing",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.33182608299989624,
+      "sypd": 0.008256511973466886
+    },
+    {
+      "name": "full-supported-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "supported",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.952261862000114,
+      "sypd": 0.002877072091958811
+    },
+    {
+      "name": "full-semi-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "semi",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 1.741331227000046,
+      "sypd": 0.0015733514594562473
+    },
+    {
+      "name": "full-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 0.9555950260000827,
+      "sypd": 0.0028670367183315825
+    },
+    {
+      "name": "full_ale-supported-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "supported",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 1.1799273310000444,
+      "sypd": 0.002321944712540231
+    },
+    {
+      "name": "full_ale-semi-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "semi",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 1.9128959110000778,
+      "sypd": 0.0014322399936360932
+    },
+    {
+      "name": "full_ale-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "median_step_wall_s": 1.1324905630001467,
+      "sypd": 0.002419204289119454
+    }
+  ]
+}

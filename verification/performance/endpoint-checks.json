@@ -1,0 +1,886 @@
+[
+  {
+    "config": {
+      "case": "dry",
+      "closure": "none",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 0.021575357999836342,
+        "process_cpu_s": 0.02156923700000002,
+        "before": {
+          "mass": 4.941149610869144e+18,
+          "boundary_total_energy": 1.1925012905357141e+24
+        },
+        "after": {
+          "mass": 4.941149610869144e+18,
+          "boundary_total_energy": 1.1925012905356867e+24
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "mass": 0.0,
+          "boundary_total_energy": -27380416512.0
+        }
+      },
+      {
+        "wall_s": 0.021464972000103444,
+        "process_cpu_s": 0.021461987999999987,
+        "before": {
+          "mass": 4.941149610869144e+18,
+          "boundary_total_energy": 1.1925012905357141e+24
+        },
+        "after": {
+          "mass": 4.941149610869144e+18,
+          "boundary_total_energy": 1.1925012905356867e+24
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "mass": 0.0,
+          "boundary_total_energy": -27380416512.0
+        }
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  },
+  {
+    "config": {
+      "case": "full",
+      "closure": "fast",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 4.138746416999993,
+        "process_cpu_s": 4.136629623,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644748955315e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935092372967847e+24,
+          "tke": 3017491319740486.0,
+          "min_tke": 4.8183220190035553e-08,
+          "min_thickness": 5.34454702552453,
+          "min_tracer": 0.8988544317464583,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 7.786297634058699e+18,
+          "remap_energy_change_J": 0.0,
+          "max_local_budget_ratio": 2.7899879847493246e-07,
+          "mixing_limited_pairs": 84.0,
+          "mixing_semi_trials": 17.0,
+          "mixing_limited_interfaces": 84.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 0.6860387634224691,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 298574320.0,
+          "salt": 0.0,
+          "total": 7.786297633496105e+18,
+          "tke": -2210669517334844.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": -1.076083558888213e-11
+      },
+      {
+        "wall_s": 3.912878628000044,
+        "process_cpu_s": 3.911136206000001,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644748955315e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935092372967847e+24,
+          "tke": 3017491319740486.0,
+          "min_tke": 4.8183220190035553e-08,
+          "min_thickness": 5.34454702552453,
+          "min_tracer": 0.8988544317464583,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 7.786297634058699e+18,
+          "remap_energy_change_J": 0.0,
+          "max_local_budget_ratio": 2.7899879847493246e-07,
+          "mixing_limited_pairs": 84.0,
+          "mixing_semi_trials": 17.0,
+          "mixing_limited_interfaces": 84.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 0.6860387634224691,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 298574320.0,
+          "salt": 0.0,
+          "total": 7.786297633496105e+18,
+          "tke": -2210669517334844.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": -1.076083558888213e-11
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  },
+  {
+    "config": {
+      "case": "full_ale",
+      "closure": "fast",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 4.99635292999983,
+        "process_cpu_s": 4.995144501,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.1006447489553144e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935092372967595e+24,
+          "tke": 2999219283998767.0,
+          "min_tke": 1.582563262768205e-06,
+          "min_thickness": 6.249998261954656,
+          "min_tracer": 0.9136866248957214,
+          "passive_inventory": 8.342006356816617e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 7.786297608490539e+18,
+          "remap_energy_change_J": -268435456.00825727,
+          "max_local_budget_ratio": 2.7899879847493246e-07,
+          "mixing_limited_pairs": 0.0,
+          "mixing_semi_trials": 16.0,
+          "mixing_limited_interfaces": 0.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 1.0,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 298574312.0,
+          "salt": 0.0,
+          "total": 7.786297608263172e+18,
+          "tke": -2228941553076563.0,
+          "passive_inventory": -16384.0
+        },
+        "energy_minus_external_inputs_J_kg": -4.348889008686096e-12
+      },
+      {
+        "wall_s": 4.524330940000027,
+        "process_cpu_s": 4.523174465,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.1006447489553144e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935092372967595e+24,
+          "tke": 2999219283998767.0,
+          "min_tke": 1.582563262768205e-06,
+          "min_thickness": 6.249998261954656,
+          "min_tracer": 0.9136866248957214,
+          "passive_inventory": 8.342006356816617e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 7.786297608490539e+18,
+          "remap_energy_change_J": -268435456.00825727,
+          "max_local_budget_ratio": 2.7899879847493246e-07,
+          "mixing_limited_pairs": 0.0,
+          "mixing_semi_trials": 16.0,
+          "mixing_limited_interfaces": 0.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 1.0,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 298574312.0,
+          "salt": 0.0,
+          "total": 7.786297608263172e+18,
+          "tke": -2228941553076563.0,
+          "passive_inventory": -16384.0
+        },
+        "energy_minus_external_inputs_J_kg": -4.348889008686096e-12
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  },
+  {
+    "config": {
+      "case": "mixing",
+      "closure": "fast",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 1.4777644869998312,
+        "process_cpu_s": 1.4777023850000002,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758155e+21,
+          "total": 2.2935014509991515e+24,
+          "tke": 3017521747164619.0,
+          "min_tke": 4.823095041526741e-08,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8988544317868716,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0,
+          "max_local_budget_ratio": 2.9010969025521456e-07,
+          "mixing_limited_pairs": 84.0,
+          "mixing_semi_trials": 17.0,
+          "mixing_limited_interfaces": 84.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 0.6860511417880886,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 0.0,
+          "salt": 262144.0,
+          "total": 268435456.0,
+          "tke": -2210639089910711.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": 5.134414651064268e-12
+      },
+      {
+        "wall_s": 1.5002362350001022,
+        "process_cpu_s": 1.4977090470000003,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758155e+21,
+          "total": 2.2935014509991515e+24,
+          "tke": 3017521747164619.0,
+          "min_tke": 4.823095041526741e-08,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8988544317868716,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0,
+          "max_local_budget_ratio": 2.9010969025521456e-07,
+          "mixing_limited_pairs": 84.0,
+          "mixing_semi_trials": 17.0,
+          "mixing_limited_interfaces": 84.0,
+          "mixing_deferred_columns": 0.0,
+          "mixing_minimum_fraction": 0.6860511417880886,
+          "mixing_mixing_substeps": 8.0
+        },
+        "endpoint_changes": {
+          "volume": 0.0,
+          "salt": 262144.0,
+          "total": 268435456.0,
+          "tke": -2210639089910711.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": 5.134414651064268e-12
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  },
+  {
+    "config": {
+      "case": "moist",
+      "closure": "none",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 0.12911698199991406,
+        "process_cpu_s": 0.1291095630000001,
+        "before": {
+          "mass": 4.941149610869144e+18,
+          "energy": 6.913936985604222e+22,
+          "min_vapor": 0.01,
+          "min_liquid": 0.001,
+          "min_ice": 0.0001,
+          "species_mass_kg": [
+            4.941149610869142e+16,
+            4941149610869143.0,
+            494114961086914.3
+          ]
+        },
+        "after": {
+          "mass": 4.941149610869143e+18,
+          "energy": 6.9139369856013666e+22,
+          "min_vapor": 0.009999999999999988,
+          "min_liquid": 0.0009999999999999987,
+          "min_ice": 9.999999999999988e-05,
+          "species_mass_kg": [
+            4.941149610869143e+16,
+            4941149610869142.0,
+            494114961086914.3
+          ]
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "mass": -1024.0,
+          "energy": -28554821632.0
+        }
+      },
+      {
+        "wall_s": 0.12274107299981551,
+        "process_cpu_s": 0.12273559699999992,
+        "before": {
+          "mass": 4.941149610869144e+18,
+          "energy": 6.913936985604222e+22,
+          "min_vapor": 0.01,
+          "min_liquid": 0.001,
+          "min_ice": 0.0001,
+          "species_mass_kg": [
+            4.941149610869142e+16,
+            4941149610869143.0,
+            494114961086914.3
+          ]
+        },
+        "after": {
+          "mass": 4.941149610869143e+18,
+          "energy": 6.9139369856013666e+22,
+          "min_vapor": 0.009999999999999988,
+          "min_liquid": 0.0009999999999999987,
+          "min_ice": 9.999999999999988e-05,
+          "species_mass_kg": [
+            4.941149610869143e+16,
+            4941149610869142.0,
+            494114961086914.3
+          ]
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "mass": -1024.0,
+          "energy": -28554821632.0
+        }
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  },
+  {
+    "config": {
+      "case": "ocean",
+      "closure": "none",
+      "cells": 128,
+      "layers": 16,
+      "threads": 1,
+      "dt": 60.0,
+      "steps": 2,
+      "repeats": 2,
+      "warmup": 1,
+      "mixing_substeps": 4,
+      "remap_every": 1
+    },
+    "status": "completed",
+    "samples": [
+      {
+        "wall_s": 1.4091119100000924,
+        "process_cpu_s": 1.408054844,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644719097882e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999992e-05,
+          "min_thickness": 5.344547025522896,
+          "min_tracer": 0.8975153583241543,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "volume": -16.0,
+          "salt": 0.0,
+          "total": 0.0,
+          "tke": 0.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": 0.0
+      },
+      {
+        "wall_s": 1.414238116999968,
+        "process_cpu_s": 1.4141616989999997,
+        "before": {
+          "volume": 5.100644719097883e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999999e-05,
+          "min_thickness": 5.3445470222453935,
+          "min_tracer": 0.8975153583241544,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "after": {
+          "volume": 5.100644719097882e+16,
+          "salt": 1.8246285562758153e+21,
+          "total": 2.2935014509991512e+24,
+          "tke": 5228160837075330.0,
+          "min_tke": 9.999999999999992e-05,
+          "min_thickness": 5.344547025522896,
+          "min_tracer": 0.8975153583241543,
+          "passive_inventory": 8.342006356816619e+19,
+          "initial_mass_kg": 5.22816083707533e+19
+        },
+        "reports": {
+          "external_energy_J": 0.0,
+          "remap_energy_change_J": 0.0
+        },
+        "endpoint_changes": {
+          "volume": -16.0,
+          "salt": 0.0,
+          "total": 0.0,
+          "tke": 0.0,
+          "passive_inventory": 0.0
+        },
+        "energy_minus_external_inputs_J_kg": 0.0
+      }
+    ],
+    "installed_python_source_sha256": "3a621d9e94553d94f57a075441206ae9f36c89066b030ba024c50c5ae5e3a1fa",
+    "source_hashes": {
+      "performance/cases.py": "3a11fae3ff9b6e5ab8747cd036eb01f79367b54b8060fbc83dfd58d8e7442b9e",
+      "performance/run.py": "5976c1cdf3ccaec54b7457b30c8ce72856b27180f423847c3f3d5beb3060f003",
+      "ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+      "ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+      "ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+      "ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+      "ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+      "ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+      "ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+      "ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+      "ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+      "ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+      "ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+      "ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+      "ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+      "ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+      "ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+      "ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+      "ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+      "ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+      "ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+      "ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+      "ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+      "ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+      "ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+      "ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+      "ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+      "ocean_column/fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+      "ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+      "ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+      "ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+      "ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+      "ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+      "ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+      "ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+      "ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+      "ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+      "ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+      "ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+      "ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+      "ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+      "ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+      "ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+      "ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+      "ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+      "ocean_column/resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+      "ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+      "ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+      "ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+      "ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849"
+    }
+  }
+]
