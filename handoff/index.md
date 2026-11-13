@@ -1621,3 +1621,19 @@ or simply increase the default cap. Next require refreshed residual acceptance
 and improve the constrained solve. See [diagnostic](../verification/ocean/LAYER_BUDGET.md).
 Research-only observer/probes; installed suite 1020 passed, one CUDA skip;
 final focused checks 10 passed. No supported runtime changes.
+
+## Refreshed-budget research solve
+
+`ConsistentPathClosure` recomputes complete momentum/scalar/TKE physics from a
+candidate end TKE before acceptance, and commits that refreshed state and heat.
+Budget-normalized Anderson acceleration is optional; positivity and full-H/entropy
+guards are unchanged. The pinned rejected input passes with an independently
+verified fresh residual. All ten one-hour controls pass; TKE timestep sensitivity
+remains about 29% for dt300 versus dt75. Fixed-input CPU cost is about 1.89 times
+legacy, so no general speed claim is made. See [evidence](../verification/ocean/REFRESHED_SOLVE.md).
+Supported runtime and legacy research defaults are unchanged. Installed-wheel
+suite: 1023 passed, one CUDA skip; portable fixtures pass.
+The dt300/16-layer wind case completes 12 hours with final energy residual
+1.60e-11 J/kg, using 7637 iterations / 8381 full trials. Cost spikes during weak-
+TKE transitions; further solver efficiency and longer/temporal qualification
+remain necessary. Do not treat this as supported-runtime integration.

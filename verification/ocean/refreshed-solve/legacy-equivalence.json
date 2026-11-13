@@ -1,0 +1,5 @@
+{
+  "profiles_exact": true,
+  "energy_exact": true,
+  "iterations_exact": true
+}
