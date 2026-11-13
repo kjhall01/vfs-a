@@ -22,10 +22,18 @@ def compare(coarse,fine):
         x=np.array(a[name]);y=overlap@np.array(b[name])/ha
         rms=float(np.sqrt(np.sum(ha*(x-y)**2)/ha.sum()))
         scale=float(np.sqrt(np.sum(ha*y*y)/ha.sum()))
-        result[name]={'rms_difference':rms,'relative_l2':rms/scale if scale else None}
+        result[name]={'rms_difference':rms,'max_abs_difference':float(np.max(np.abs(x-y))),'relative_l2':rms/scale if scale else None}
     x=np.array([a['u'],a['v']]);y=np.array([overlap@np.array(b[k])/ha for k in ('u','v')])
     result['velocity_relative_l2']=float(np.sqrt(np.sum(ha*(x-y)**2)/np.sum(ha*y*y)))
     result['temperature_mld_difference_m']=a['temperature_mld_m']-b['temperature_mld_m']
+    # A fixed local band exposes weak-turbulence differences hidden by bulk L2.
+    z=np.array(a['depth']);band=(z>=15)&(z<=30)
+    ka=np.array(a['tke']);kb=overlap@np.array(b['tke'])/ha
+    positive=band & (kb>0);ratio=ka[positive]/kb[positive]
+    result['tke_ratio_15_30m']=dict(depths_m=z[positive].tolist(),ratios=ratio.tolist(),
+        minimum=float(ratio.min()) if ratio.size else None,
+        maximum=float(ratio.max()) if ratio.size else None,
+        reference_tke=kb[positive].tolist(),zero_reference_layers=int(np.sum(band & (kb==0))))
     return result
 
 

@@ -20,23 +20,23 @@ def main():
             ax=axes[i,j]
             for n in (16,32,64):
                 r=next((r for r in rows if (r['scenario'],r['layers'],r['dt_s'],r['seed_tke'],r['backtrack_safety'])==(scenario,n,150,1e-4,.5)),None)
-                if r is None:continue
+                if r is None:raise ValueError('required completed profile missing')
                 q=r['final_profile'];ax.plot(q[field],q['depth'],label=f'{n} layers')
-            ax.set(xlabel=label,ylim=(100,0),title=scenario.replace('_',' '))
+            ax.set(xlabel=label,ylim=(50,0),title=scenario.replace('_',' '))
             if field=='tke':ax.set_xscale('log')
             if j==0:ax.set_ylabel('Depth (m)')
             ax.grid(alpha=.2);ax.legend(fontsize=7)
-    fig.suptitle('Active scalar mixing: 48-hour profiles, dt=150 s\nResolution comparison; no observational reference')
+    fig.suptitle('Active scalar mixing: 48-hour profiles, upper 50 m, dt=150 s\nResolution comparison; no observational reference')
     fig.savefig(a.output/'profiles.svg');plt.close(fig)
     fig,axes=plt.subplots(1,3,figsize=(10,4),constrained_layout=True,sharey=True)
     for ax,(field,label) in zip(axes,fields):
         for safety in (.25,.5,.75):
             r=next((r for r in rows if (r['scenario'],r['layers'],r['dt_s'],r['seed_tke'],r['backtrack_safety'])==('wind',32,150,1e-4,safety)),None)
-            if r is None:continue
+            if r is None:raise ValueError('required completed profile missing')
             q=r['final_profile'];ax.plot(q[field],q['depth'],label=f'factor={safety}')
-        ax.set(xlabel=label,ylim=(100,0));ax.grid(alpha=.2);ax.legend(fontsize=8)
+        ax.set(xlabel=label,ylim=(50,0));ax.grid(alpha=.2);ax.legend(fontsize=8)
         if field=='tke':ax.set_xscale('log')
-    axes[0].set_ylabel('Depth (m)');fig.suptitle('Trial-reduction factor sensitivity: 32 layers, dt=150 s, wind, 48 h')
+    axes[0].set_ylabel('Depth (m)');fig.suptitle('Trial-reduction factor sensitivity: 32 layers, dt=150 s, wind, 48 h, upper 50 m')
     fig.savefig(a.output/'limiter-sensitivity.svg');plt.close(fig)
     for path in a.output.glob('*.svg'):
         print(path.name,path.stat().st_size,'bytes; omit from upload if above 131072')

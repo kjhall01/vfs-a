@@ -37,7 +37,10 @@ All 20 one-hour forcing/startup cases complete; exact-zero TKE still cannot
 bootstrap turbulence. Active profile convergence remains unqualified.
 
 The [sustained mixing campaign](../verification/ocean/SUSTAINED_MIXING.md)
-adds limiter diagnostics and a restartable 23-case matrix; it is in progress.
+records 23/23 completed 48-hour cases with tight budgets. TKE profiles remain
+timestep/vertical-resolution sensitive, and local weak-TKE layers depend strongly
+on the numerical trial factor. Next: qualify a less factor-sensitive coupled
+exchange or physics subcycling before physical entrainment claims.
 See the [surface TKE startup design](../verification/ocean/TKE_STARTUP_DESIGN.md)
 for a proposed prescribed energy flux. No source is added in this branch.
 

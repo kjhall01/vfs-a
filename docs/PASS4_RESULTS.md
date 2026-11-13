@@ -523,7 +523,10 @@ are unchanged; this is a physics update, not packaging equivalence.
 
 ## Sustained TKE qualification
 
-The [sustained campaign](../verification/ocean/SUSTAINED_MIXING.md) is in progress.
+The [sustained campaign](../verification/ocean/SUSTAINED_MIXING.md) completes all
+23 cases for 48 hours. Maximum energy residual: 1.383e-9 J/kg. TKE profiles
+remain timestep/vertical-resolution sensitive; local trial-factor sensitivity
+is explicitly reported.
 Default mixing behavior is unchanged; limiter diagnostics and the existing trial
 factor are explicit. Installed-wheel portable suite: 990 passed, one CUDA skip;
 final checkpoint/column harness: five passed.

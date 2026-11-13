@@ -72,6 +72,11 @@ nonnegative values. With omitted/zero input, retain existing numerical behavior.
 
 ## Separate limitations
 
+The existing bottom-drag operator can already generate bottom-layer TKE from
+resolved bottom currents, including when initial TKE is zero. The campaign uses
+a stress-free bottom, and bottom drag does not supply a dependable surface
+source in a deep column. The proposed surface flux complements that mechanism.
+
 The present K_m proportional to sqrt(k) closure has zero mixing and zero shear
 production at k=0. Changing variables to sqrt(k), choosing a growing solution at
 zero, or adding an undocumented floor changes the startup assumption; none by

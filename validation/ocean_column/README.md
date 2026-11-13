@@ -116,3 +116,15 @@ Restarting the runner skips completed cases and resumes the others. Checkpoints
 validate the experiment parameters and TKE runtime source hash. A regression
 check verifies exact agreement between resumed and uninterrupted evolution.
 The local checkpoint files are not publication artifacts.
+
+Optional figures (Matplotlib):
+
+```sh
+python validation/ocean_column/plot_sustained.py --input /tmp/sustained-evidence --output /tmp/sustained-figures
+```
+
+The analysis also retains maximum absolute profile differences. A post-inspection
+15–30 m TKE ratio diagnostic exposes local weak-turbulence sensitivity hidden by
+bulk norms; zero reference layers are counted separately. It is not an acceptance
+gate. The plotting script requires its comparison cases to be complete and
+reports file sizes; leave any artifact above the upload cap out of publication.
