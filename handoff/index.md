@@ -1728,3 +1728,24 @@ bitwise in four comparisons. Thirteen new residual/derivative/geometry/protocol
 checks pass; inference geometry without mutation counters falls back to ordinary
 indexing. Warm inversion remains opt-in, with short-run roundoff differences
 reported explicitly. Oversized tensor captures are omitted.
+
+## Ocean energy quadrature and kernel fusion
+
+`StratifiedOcean(..., quadrature_order=2|3)` exposes a cheaper discrete energy:
+four or nine quadrature locations per layer, versus the unchanged default 16.
+All derivatives and diabatic energy operations retain the selected rule. The
+[quadrature campaign](../verification/ocean/ENERGY_QUADRATURE.md) compares fixed
+physical states through 6000 m against orders 8/12 and independently checks
+energy gradients/work. Deep order-2 pressure differences reach 6.58e-6 relative
+L2; the error does not vanish by increasing layer count alone. Surface Gibbs
+arithmetic is separated into a pure kernel with public domain guards unchanged.
+An opt-in `compile_thermodynamics()` method owns compiled kernels per model;
+individual-kernel attribution remains in the research harness. No Mac speedup,
+long-run stability, full-model backward or wave-growth qualification is claimed.
+
+Final per-model compiled full-step samples (1024×64, dt60, four mixing substeps,
+one CPU thread) improve eager q4 61.25 s to 18.70 s with q4 or 14.83 s with q2.
+These are short samples beyond #72, not Mac or long-run qualification. Final
+installed-wheel suite: 1084 passed, one CUDA skip; both portable fixtures and
+three compiled CLI smoke cases pass. Defaults remain eager q4. Compact evidence
+and source/wheel hashes are retained; oversized tensor captures are omitted.

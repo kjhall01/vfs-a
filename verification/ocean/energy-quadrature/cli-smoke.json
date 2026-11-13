@@ -1,0 +1,94 @@
+{
+  "revision": null,
+  "dirty": null,
+  "command": [
+    "validation/performance/run.py",
+    "--preset",
+    "smoke",
+    "--cases",
+    "ocean",
+    "full",
+    "full_ale",
+    "--steps",
+    "1",
+    "--repeats",
+    "1",
+    "--warm-start",
+    "--energy-quadrature",
+    "2",
+    "--compile-thermodynamics",
+    "--output",
+    "/tmp/energy-public-cli"
+  ],
+  "cases": [
+    {
+      "name": "ocean-none-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true,
+        "energy_quadrature": 2,
+        "compile_thermo": true,
+        "compile_gibbs": true
+      },
+      "median_step_wall_s": 0.03920604900122271,
+      "sypd": 0.06988018678729441
+    },
+    {
+      "name": "full-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true,
+        "energy_quadrature": 2,
+        "compile_thermo": true,
+        "compile_gibbs": true
+      },
+      "median_step_wall_s": 0.2953540199996496,
+      "sypd": 0.00927607495371321
+    },
+    {
+      "name": "full_ale-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true,
+        "energy_quadrature": 2,
+        "compile_thermo": true,
+        "compile_gibbs": true
+      },
+      "median_step_wall_s": 0.521607294000205,
+      "sypd": 0.005252468780461846
+    }
+  ]
+}

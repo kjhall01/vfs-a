@@ -1,0 +1,2166 @@
+{
+  "reference": "same piecewise-uniform states with order 12; order 8 convergence control included",
+  "torch": "2.15.0+cpu",
+  "rows": [
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.347011474057581e-13,
+      "gradient_relative_l2": {
+        "h": 4.581431089489224e-14,
+        "temp_h": 1.4837805311737011e-12,
+        "salt_h": 3.946875562735634e-14
+      },
+      "pressure_error_rms_m_s2": 1.1152546294029022e-20,
+      "pressure_reference_rms_m_s2": 5.072646646233835e-09,
+      "pressure_relative_l2": 2.198565575686054e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -6.661338147750939e-16,
+      "gradient_relative_l2": {
+        "h": 1.391192364684099e-15,
+        "temp_h": 4.044379809183896e-16,
+        "salt_h": 3.809540441008443e-16
+      },
+      "pressure_error_rms_m_s2": 6.927580737147645e-21,
+      "pressure_reference_rms_m_s2": 5.072646646233835e-09,
+      "pressure_relative_l2": 1.3656738228141712e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 1.3322676295501878e-15,
+      "gradient_relative_l2": {
+        "h": 1.1317597613393445e-15,
+        "temp_h": 2.182409649039726e-16,
+        "salt_h": 1.910085972428323e-16
+      },
+      "pressure_error_rms_m_s2": 5.652435384509064e-21,
+      "pressure_reference_rms_m_s2": 5.072646646233835e-09,
+      "pressure_relative_l2": 1.1142970876368238e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 2.220446049250313e-16,
+      "gradient_relative_l2": {
+        "h": 7.223005832994982e-16,
+        "temp_h": 2.5499188919053817e-16,
+        "salt_h": 2.290304841933924e-16
+      },
+      "pressure_error_rms_m_s2": 3.696813061571361e-21,
+      "pressure_reference_rms_m_s2": 5.072646646233835e-09,
+      "pressure_relative_l2": 7.287740147080902e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 5.072646646233835e-09,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.4147350785597155e-13,
+      "gradient_relative_l2": {
+        "h": 4.4654422167049504e-14,
+        "temp_h": 1.4575609642468692e-12,
+        "salt_h": 4.100512426228723e-14
+      },
+      "pressure_error_rms_m_s2": 5.520445398487428e-20,
+      "pressure_reference_rms_m_s2": 6.377224841617439e-08,
+      "pressure_relative_l2": 8.656501120144436e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -2.220446049250313e-16,
+      "gradient_relative_l2": {
+        "h": 1.4316254183204897e-15,
+        "temp_h": 3.889829182007311e-16,
+        "salt_h": 3.9064549070275996e-16
+      },
+      "pressure_error_rms_m_s2": 7.022517297141611e-21,
+      "pressure_reference_rms_m_s2": 6.377224841617439e-08,
+      "pressure_relative_l2": 1.101187032220195e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 1.1528562710769277e-15,
+        "temp_h": 1.9156707622164882e-16,
+        "salt_h": 2.0938847214169407e-16
+      },
+      "pressure_error_rms_m_s2": 5.944368702621843e-21,
+      "pressure_reference_rms_m_s2": 6.377224841617439e-08,
+      "pressure_relative_l2": 9.321246859337938e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 6.594476368124034e-16,
+        "temp_h": 2.5215128166246734e-16,
+        "salt_h": 2.466334072838116e-16
+      },
+      "pressure_error_rms_m_s2": 3.3043871736117012e-21,
+      "pressure_reference_rms_m_s2": 6.377224841617439e-08,
+      "pressure_relative_l2": 5.1815440974378726e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 6.377224841617439e-08,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.370347772988024e-14,
+        "temp_h": 4.516060256954779e-13,
+        "salt_h": 2.1875640326452895e-14
+      },
+      "pressure_error_rms_m_s2": 6.628937693532689e-22,
+      "pressure_reference_rms_m_s2": 4.420811569340315e-22,
+      "pressure_relative_l2": 1.499484334393804
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 4.039086084837414e-16,
+        "temp_h": 3.9452608352574463e-16,
+        "salt_h": 4.0881012815562876e-16
+      },
+      "pressure_error_rms_m_s2": 5.419929120162758e-22,
+      "pressure_reference_rms_m_s2": 4.420811569340315e-22,
+      "pressure_relative_l2": 1.2260031976372008
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.1479074849066227e-16,
+        "temp_h": 1.9999441945690757e-16,
+        "salt_h": 2.0384193246489857e-16
+      },
+      "pressure_error_rms_m_s2": 4.861745196842761e-22,
+      "pressure_reference_rms_m_s2": 4.420811569340315e-22,
+      "pressure_relative_l2": 1.099740425617879
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.628686158080836e-16,
+        "temp_h": 2.353221693857347e-16,
+        "salt_h": 2.59629000592229e-16
+      },
+      "pressure_error_rms_m_s2": 4.816154386159062e-22,
+      "pressure_reference_rms_m_s2": 4.420811569340315e-22,
+      "pressure_relative_l2": 1.0894276561255338
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.420811569340315e-22,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.589040093425865e-13,
+      "gradient_relative_l2": {
+        "h": 5.524295512040684e-14,
+        "temp_h": 1.5803305874612864e-12,
+        "salt_h": 4.2128040951774616e-14
+      },
+      "pressure_error_rms_m_s2": 1.0149425222565741e-20,
+      "pressure_reference_rms_m_s2": 5.076095230470443e-09,
+      "pressure_relative_l2": 1.999455243006761e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -5.551115123125783e-16,
+      "gradient_relative_l2": {
+        "h": 1.4433596911454165e-15,
+        "temp_h": 3.9615630062239576e-16,
+        "salt_h": 4.023502866435489e-16
+      },
+      "pressure_error_rms_m_s2": 6.90845410831881e-21,
+      "pressure_reference_rms_m_s2": 5.076095230470443e-09,
+      "pressure_relative_l2": 1.3609780342278072e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 1.138426220690703e-15,
+        "temp_h": 1.9832475586757213e-16,
+        "salt_h": 2.046932071319752e-16
+      },
+      "pressure_error_rms_m_s2": 5.385507212244827e-21,
+      "pressure_reference_rms_m_s2": 5.076095230470443e-09,
+      "pressure_relative_l2": 1.0609547236066548e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.1102230246251565e-16,
+      "gradient_relative_l2": {
+        "h": 7.337291895445142e-16,
+        "temp_h": 2.429206283868824e-16,
+        "salt_h": 2.520900752838854e-16
+      },
+      "pressure_error_rms_m_s2": 3.372342209567651e-21,
+      "pressure_reference_rms_m_s2": 5.076095230470443e-09,
+      "pressure_relative_l2": 6.643575536811017e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 5.076095230470443e-09,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.7122748491592574e-13,
+      "gradient_relative_l2": {
+        "h": 5.28722117054579e-14,
+        "temp_h": 1.547746468865519e-12,
+        "salt_h": 4.358991610488999e-14
+      },
+      "pressure_error_rms_m_s2": 4.781135968121297e-20,
+      "pressure_reference_rms_m_s2": 6.425858619663195e-08,
+      "pressure_relative_l2": 7.440462436398727e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -9.992007221626409e-16,
+      "gradient_relative_l2": {
+        "h": 1.4196197557922347e-15,
+        "temp_h": 4.1000376029302447e-16,
+        "salt_h": 3.920826986003459e-16
+      },
+      "pressure_error_rms_m_s2": 6.882323824691142e-21,
+      "pressure_reference_rms_m_s2": 6.425858619663195e-08,
+      "pressure_relative_l2": 1.0710356750817951e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -1.1102230246251565e-16,
+      "gradient_relative_l2": {
+        "h": 1.1652330974367507e-15,
+        "temp_h": 2.0872154097575432e-16,
+        "salt_h": 1.9607682373173975e-16
+      },
+      "pressure_error_rms_m_s2": 5.620537614957307e-21,
+      "pressure_reference_rms_m_s2": 6.425858619663195e-08,
+      "pressure_relative_l2": 8.746749574848104e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 7.070871620267927e-16,
+        "temp_h": 2.5696134309746125e-16,
+        "salt_h": 2.393566375164279e-16
+      },
+      "pressure_error_rms_m_s2": 3.3221810017512762e-21,
+      "pressure_reference_rms_m_s2": 6.425858619663195e-08,
+      "pressure_relative_l2": 5.170018822987122e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 6.425858619663195e-08,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.698202129407034e-14,
+        "temp_h": 4.79463519381633e-13,
+        "salt_h": 2.319768750110184e-14
+      },
+      "pressure_error_rms_m_s2": 6.450871435733017e-22,
+      "pressure_reference_rms_m_s2": 1.436786793220806e-20,
+      "pressure_relative_l2": 0.04489790319739977
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 4.2816610637986877e-16,
+        "temp_h": 4.05895584216411e-16,
+        "salt_h": 4.0931835799495284e-16
+      },
+      "pressure_error_rms_m_s2": 6.032929635741833e-22,
+      "pressure_reference_rms_m_s2": 1.436786793220806e-20,
+      "pressure_relative_l2": 0.041989038764881595
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.216361889620844e-16,
+        "temp_h": 2.0990525462921736e-16,
+        "salt_h": 2.0199093636070288e-16
+      },
+      "pressure_error_rms_m_s2": 4.915614080561386e-22,
+      "pressure_reference_rms_m_s2": 1.436786793220806e-20,
+      "pressure_relative_l2": 0.034212550559030316
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.6602713077995864e-16,
+        "temp_h": 2.481758550465686e-16,
+        "salt_h": 2.4632797060822396e-16
+      },
+      "pressure_error_rms_m_s2": 5.061674815363005e-22,
+      "pressure_reference_rms_m_s2": 1.436786793220806e-20,
+      "pressure_relative_l2": 0.03522912960534935
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 1.436786793220806e-20,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.58792987040124e-13,
+      "gradient_relative_l2": {
+        "h": 5.5204002670683357e-14,
+        "temp_h": 1.5819541150227523e-12,
+        "salt_h": 4.21606641556847e-14
+      },
+      "pressure_error_rms_m_s2": 1.0046040706711343e-20,
+      "pressure_reference_rms_m_s2": 5.077006603633957e-09,
+      "pressure_relative_l2": 1.978733039173263e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -8.881784197001252e-16,
+      "gradient_relative_l2": {
+        "h": 1.4035258905073256e-15,
+        "temp_h": 4.0251283534937623e-16,
+        "salt_h": 3.976497463726403e-16
+      },
+      "pressure_error_rms_m_s2": 6.746446470422903e-21,
+      "pressure_reference_rms_m_s2": 5.077006603633957e-09,
+      "pressure_relative_l2": 1.328823654787846e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 1.1172068380717532e-15,
+        "temp_h": 2.0143674033316399e-16,
+        "salt_h": 1.9784134086925927e-16
+      },
+      "pressure_error_rms_m_s2": 5.4911251667333825e-21,
+      "pressure_reference_rms_m_s2": 5.077006603633957e-09,
+      "pressure_relative_l2": 1.0815674659164346e-12
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -2.220446049250313e-16,
+      "gradient_relative_l2": {
+        "h": 7.189697550223901e-16,
+        "temp_h": 2.5054111649816457e-16,
+        "salt_h": 2.431105301883679e-16
+      },
+      "pressure_error_rms_m_s2": 3.419582907365829e-21,
+      "pressure_reference_rms_m_s2": 5.077006603633957e-09,
+      "pressure_relative_l2": 6.735431277395234e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 5.077006603633957e-09,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.717825964282383e-13,
+      "gradient_relative_l2": {
+        "h": 5.3031906485989486e-14,
+        "temp_h": 1.549321773480267e-12,
+        "salt_h": 4.3654012210818116e-14
+      },
+      "pressure_error_rms_m_s2": 4.807670193217358e-20,
+      "pressure_reference_rms_m_s2": 6.428449631011019e-08,
+      "pressure_relative_l2": 7.478739772689549e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -3.3306690738754696e-16,
+      "gradient_relative_l2": {
+        "h": 1.424102105644927e-15,
+        "temp_h": 3.995041180859526e-16,
+        "salt_h": 4.044517062566956e-16
+      },
+      "pressure_error_rms_m_s2": 6.91564438887981e-21,
+      "pressure_reference_rms_m_s2": 6.428449631011019e-08,
+      "pressure_relative_l2": 1.0757872871117398e-13
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 1.1216908860716061e-15,
+        "temp_h": 1.9867377880813778e-16,
+        "salt_h": 2.0295124911629346e-16
+      },
+      "pressure_error_rms_m_s2": 5.5653237583432856e-21,
+      "pressure_reference_rms_m_s2": 6.428449631011019e-08,
+      "pressure_relative_l2": 8.657334315098323e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.1102230246251565e-16,
+      "gradient_relative_l2": {
+        "h": 7.147841959354126e-16,
+        "temp_h": 2.4653328013380953e-16,
+        "salt_h": 2.523721168301651e-16
+      },
+      "pressure_error_rms_m_s2": 3.29038975389393e-21,
+      "pressure_reference_rms_m_s2": 6.428449631011019e-08,
+      "pressure_relative_l2": 5.1184810378244195e-14
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 6.428449631011019e-08,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.701942202276616e-14,
+        "temp_h": 4.799481154150701e-13,
+        "salt_h": 2.3205587028880926e-14
+      },
+      "pressure_error_rms_m_s2": 6.613640506900482e-22,
+      "pressure_reference_rms_m_s2": 1.4889009183286378e-20,
+      "pressure_relative_l2": 0.04441961466666706
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 4.2032659457658703e-16,
+        "temp_h": 4.0272603629498816e-16,
+        "salt_h": 4.0513720400652654e-16
+      },
+      "pressure_error_rms_m_s2": 6.31584756128918e-22,
+      "pressure_reference_rms_m_s2": 1.4889009183286378e-20,
+      "pressure_relative_l2": 0.042419528952799754
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.225267710195518e-16,
+        "temp_h": 2.0592338481908376e-16,
+        "salt_h": 2.073666161424374e-16
+      },
+      "pressure_error_rms_m_s2": 5.163347416528294e-22,
+      "pressure_reference_rms_m_s2": 1.4889009183286378e-20,
+      "pressure_relative_l2": 0.03467891887879549
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.6793927951173114e-16,
+        "temp_h": 2.5496516732473316e-16,
+        "salt_h": 2.522628865334297e-16
+      },
+      "pressure_error_rms_m_s2": 5.471842730306678e-22,
+      "pressure_reference_rms_m_s2": 1.4889009183286378e-20,
+      "pressure_relative_l2": 0.03675088558914371
+    },
+    {
+      "depth_m": 100.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 1.4889009183286378e-20,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.3522281171750592e-05,
+      "gradient_relative_l2": {
+        "h": 1.260402288041476e-07,
+        "temp_h": 2.4554950405336518e-06,
+        "salt_h": 9.596284258281365e-08
+      },
+      "pressure_error_rms_m_s2": 2.9994518949630307e-13,
+      "pressure_reference_rms_m_s2": 2.2515657833594593e-07,
+      "pressure_relative_l2": 1.3321626741403418e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.703870904952055e-09,
+      "gradient_relative_l2": {
+        "h": 1.1249291080757882e-11,
+        "temp_h": 2.2756766808703297e-10,
+        "salt_h": 8.531747097443001e-12
+      },
+      "pressure_error_rms_m_s2": 2.8117693538729513e-17,
+      "pressure_reference_rms_m_s2": 2.2515657833594593e-07,
+      "pressure_relative_l2": 1.2488062195001197e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 1.9184653865522705e-13,
+      "gradient_relative_l2": {
+        "h": 1.0778528799182425e-15,
+        "temp_h": 3.402963257234835e-15,
+        "salt_h": 1.751481171589631e-16
+      },
+      "pressure_error_rms_m_s2": 2.0858497209964054e-19,
+      "pressure_reference_rms_m_s2": 2.2515657833594593e-07,
+      "pressure_relative_l2": 9.263996354946395e-13
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -2.4868995751603507e-14,
+      "gradient_relative_l2": {
+        "h": 8.016244433255922e-16,
+        "temp_h": 2.462148453082155e-16,
+        "salt_h": 2.5152126931178676e-16
+      },
+      "pressure_error_rms_m_s2": 1.462206223866851e-19,
+      "pressure_reference_rms_m_s2": 2.2515657833594593e-07,
+      "pressure_relative_l2": 6.494175007781294e-13
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.2515657833594593e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.463182946499387e-05,
+      "gradient_relative_l2": {
+        "h": 1.2070826404869005e-07,
+        "temp_h": 2.5191044143435264e-06,
+        "salt_h": 9.99353837360335e-08
+      },
+      "pressure_error_rms_m_s2": 4.251217636285845e-12,
+      "pressure_reference_rms_m_s2": 2.9181565855308015e-06,
+      "pressure_relative_l2": 1.456816148031537e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.625121453547763e-09,
+      "gradient_relative_l2": {
+        "h": 1.1619020536681073e-11,
+        "temp_h": 2.0762325499179305e-10,
+        "salt_h": 7.827242714263775e-12
+      },
+      "pressure_error_rms_m_s2": 3.6008828397898656e-16,
+      "pressure_reference_rms_m_s2": 2.9181565855308015e-06,
+      "pressure_relative_l2": 1.2339580602508614e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 1.7763568394002505e-13,
+      "gradient_relative_l2": {
+        "h": 1.3822053395084733e-15,
+        "temp_h": 1.7676850072725266e-14,
+        "salt_h": 6.784304576673118e-16
+      },
+      "pressure_error_rms_m_s2": 2.3421393313875293e-19,
+      "pressure_reference_rms_m_s2": 2.9181565855308015e-06,
+      "pressure_relative_l2": 8.026092030155753e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.4210854715202004e-14,
+      "gradient_relative_l2": {
+        "h": 7.371377480911817e-16,
+        "temp_h": 2.364680950079203e-16,
+        "salt_h": 2.434594488337491e-16
+      },
+      "pressure_error_rms_m_s2": 1.3506537587086545e-19,
+      "pressure_reference_rms_m_s2": 2.9181565855308015e-06,
+      "pressure_relative_l2": 4.62844853975845e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.9181565855308015e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": -1.0942338708007131e-17,
+      "gradient_relative_l2": {
+        "h": 1.280801171320177e-07,
+        "temp_h": 8.918784241007073e-07,
+        "salt_h": 5.124061851420488e-08
+      },
+      "pressure_error_rms_m_s2": 2.3827424062873127e-20,
+      "pressure_reference_rms_m_s2": 1.6855750576120466e-20,
+      "pressure_relative_l2": 1.4136080120116052
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -1.0942338708007131e-17,
+      "gradient_relative_l2": {
+        "h": 2.1545573324161138e-11,
+        "temp_h": 1.4923438895557573e-10,
+        "salt_h": 8.67972307849312e-12
+      },
+      "pressure_error_rms_m_s2": 2.2114260381721917e-20,
+      "pressure_reference_rms_m_s2": 1.6855750576120466e-20,
+      "pressure_relative_l2": 1.3119712635669383
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -1.0942338708007131e-17,
+      "gradient_relative_l2": {
+        "h": 2.3586995360810518e-15,
+        "temp_h": 1.5303699546307452e-14,
+        "salt_h": 1.026904484046263e-15
+      },
+      "pressure_error_rms_m_s2": 2.1456741090233685e-20,
+      "pressure_reference_rms_m_s2": 1.6855750576120466e-20,
+      "pressure_relative_l2": 1.2729626600331545
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.0942338708007131e-17,
+      "gradient_relative_l2": {
+        "h": 2.635353775921562e-16,
+        "temp_h": 2.386998311490335e-16,
+        "salt_h": 2.420753268672338e-16
+      },
+      "pressure_error_rms_m_s2": 1.8649905723361023e-20,
+      "pressure_reference_rms_m_s2": 1.6855750576120466e-20,
+      "pressure_relative_l2": 1.1064417237985436
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 1.6855750576120466e-20,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.3587275226333304e-05,
+      "gradient_relative_l2": {
+        "h": 1.2858892915748094e-07,
+        "temp_h": 2.497364209234673e-06,
+        "salt_h": 9.763004387880541e-08
+      },
+      "pressure_error_rms_m_s2": 3.039347885182768e-13,
+      "pressure_reference_rms_m_s2": 2.2555171254666593e-07,
+      "pressure_relative_l2": 1.3475170952443718e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.7053879136929027e-09,
+      "gradient_relative_l2": {
+        "h": 1.1610331555719322e-11,
+        "temp_h": 2.347066344373669e-10,
+        "salt_h": 8.80136393175653e-12
+      },
+      "pressure_error_rms_m_s2": 2.9029186978272837e-17,
+      "pressure_reference_rms_m_s2": 2.2555171254666593e-07,
+      "pressure_relative_l2": 1.2870302180599397e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 9.237055564881302e-14,
+      "gradient_relative_l2": {
+        "h": 1.2067164611141318e-15,
+        "temp_h": 3.553043755594078e-15,
+        "salt_h": 1.8364571747846066e-16
+      },
+      "pressure_error_rms_m_s2": 2.331151826319015e-19,
+      "pressure_reference_rms_m_s2": 2.2555171254666593e-07,
+      "pressure_relative_l2": 1.0335331973312802e-12
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 1.0658141036401503e-14,
+      "gradient_relative_l2": {
+        "h": 7.278042016198347e-16,
+        "temp_h": 2.4009701816133374e-16,
+        "salt_h": 2.44411495184609e-16
+      },
+      "pressure_error_rms_m_s2": 1.348931878982216e-19,
+      "pressure_reference_rms_m_s2": 2.2555171254666593e-07,
+      "pressure_relative_l2": 5.98058806005796e-13
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.2555171254666593e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.4701731398124593e-05,
+      "gradient_relative_l2": {
+        "h": 1.231552659617816e-07,
+        "temp_h": 2.5620562474281593e-06,
+        "salt_h": 1.0165390494553381e-07
+      },
+      "pressure_error_rms_m_s2": 4.316937207048701e-12,
+      "pressure_reference_rms_m_s2": 2.9397073068612957e-06,
+      "pressure_relative_l2": 1.468492185250192e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.6264963537414587e-09,
+      "gradient_relative_l2": {
+        "h": 1.2011130948979761e-11,
+        "temp_h": 2.1433322863178864e-10,
+        "salt_h": 8.081487945648237e-12
+      },
+      "pressure_error_rms_m_s2": 3.721666943004392e-16,
+      "pressure_reference_rms_m_s2": 2.9397073068612957e-06,
+      "pressure_relative_l2": 1.2659991470300444e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 8.526512829121202e-14,
+      "gradient_relative_l2": {
+        "h": 1.3176866870407612e-15,
+        "temp_h": 1.854734306901093e-14,
+        "salt_h": 7.185727198522017e-16
+      },
+      "pressure_error_rms_m_s2": 2.1898806572452745e-19,
+      "pressure_reference_rms_m_s2": 2.9397073068612957e-06,
+      "pressure_relative_l2": 7.449315284328066e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -2.4868995751603507e-14,
+      "gradient_relative_l2": {
+        "h": 6.706500785376352e-16,
+        "temp_h": 2.434446985920576e-16,
+        "salt_h": 2.3923835329710063e-16
+      },
+      "pressure_error_rms_m_s2": 1.2797039468931408e-19,
+      "pressure_reference_rms_m_s2": 2.9397073068612957e-06,
+      "pressure_relative_l2": 4.353167895002008e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.9397073068612957e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": -1.209098109907501e-15,
+      "gradient_relative_l2": {
+        "h": 1.302446583004652e-07,
+        "temp_h": 9.067494461541162e-07,
+        "salt_h": 5.210388471823202e-08
+      },
+      "pressure_error_rms_m_s2": 2.3229162510592333e-20,
+      "pressure_reference_rms_m_s2": 4.817921393228139e-19,
+      "pressure_relative_l2": 0.04821407535465863
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -6.601847613288417e-16,
+      "gradient_relative_l2": {
+        "h": 2.221583618340352e-11,
+        "temp_h": 1.5383873445949246e-10,
+        "salt_h": 8.949574315064331e-12
+      },
+      "pressure_error_rms_m_s2": 2.382909306487091e-20,
+      "pressure_reference_rms_m_s2": 4.817921393228139e-19,
+      "pressure_relative_l2": 0.04945928154486715
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -1.5020658650109714e-16,
+      "gradient_relative_l2": {
+        "h": 2.4537225220941613e-15,
+        "temp_h": 1.6093835355997428e-14,
+        "salt_h": 1.0699967365826278e-15
+      },
+      "pressure_error_rms_m_s2": 2.4228447763035195e-20,
+      "pressure_reference_rms_m_s2": 4.817921393228139e-19,
+      "pressure_relative_l2": 0.050288175720528884
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 7.235522166387383e-17,
+      "gradient_relative_l2": {
+        "h": 2.563741106942897e-16,
+        "temp_h": 2.415118452183544e-16,
+        "salt_h": 2.4114764680346556e-16
+      },
+      "pressure_error_rms_m_s2": 2.0372105214598785e-20,
+      "pressure_reference_rms_m_s2": 4.817921393228139e-19,
+      "pressure_relative_l2": 0.04228401327434053
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.817921393228139e-19,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.358824810499982e-05,
+      "gradient_relative_l2": {
+        "h": 1.2869736696690074e-07,
+        "temp_h": 2.4993786938180926e-06,
+        "salt_h": 9.771050928685869e-08
+      },
+      "pressure_error_rms_m_s2": 3.0421336907982327e-13,
+      "pressure_reference_rms_m_s2": 2.2559627650327617e-07,
+      "pressure_relative_l2": 1.3484857719954675e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.705473178821194e-09,
+      "gradient_relative_l2": {
+        "h": 1.1629209711334622e-11,
+        "temp_h": 2.350783966233932e-10,
+        "salt_h": 8.815441112940892e-12
+      },
+      "pressure_error_rms_m_s2": 2.9076696768717293e-17,
+      "pressure_reference_rms_m_s2": 2.2559627650327617e-07,
+      "pressure_relative_l2": 1.2888819451900412e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 1.2079226507921703e-13,
+      "gradient_relative_l2": {
+        "h": 1.1822377972777073e-15,
+        "temp_h": 3.570979642778214e-15,
+        "salt_h": 1.783786017356348e-16
+      },
+      "pressure_error_rms_m_s2": 2.2342101136608304e-19,
+      "pressure_reference_rms_m_s2": 2.2559627650327617e-07,
+      "pressure_relative_l2": 9.903577081549858e-13
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.0658141036401503e-14,
+      "gradient_relative_l2": {
+        "h": 7.228113879207005e-16,
+        "temp_h": 2.4269456096326974e-16,
+        "salt_h": 2.42659561636134e-16
+      },
+      "pressure_error_rms_m_s2": 1.3445944379934079e-19,
+      "pressure_reference_rms_m_s2": 2.2559627650327617e-07,
+      "pressure_relative_l2": 5.960180100640454e-13
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.2559627650327617e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 2.4702741015403262e-05,
+      "gradient_relative_l2": {
+        "h": 1.232592680704003e-07,
+        "temp_h": 2.5641182166690156e-06,
+        "salt_h": 1.0173660729959317e-07
+      },
+      "pressure_error_rms_m_s2": 4.320929126383102e-12,
+      "pressure_reference_rms_m_s2": 2.940851367439961e-06,
+      "pressure_relative_l2": 1.4692783097516795e-06
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 2.62658161886975e-09,
+      "gradient_relative_l2": {
+        "h": 1.2032005993484554e-11,
+        "temp_h": 2.1468501432603173e-10,
+        "salt_h": 8.094858282337932e-12
+      },
+      "pressure_error_rms_m_s2": 3.728168433449886e-16,
+      "pressure_reference_rms_m_s2": 2.940851367439961e-06,
+      "pressure_relative_l2": 1.2677173946044354e-10
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 1.0302869668521453e-13,
+      "gradient_relative_l2": {
+        "h": 1.4506668386565978e-15,
+        "temp_h": 1.8593636029681824e-14,
+        "salt_h": 7.142254079582216e-16
+      },
+      "pressure_error_rms_m_s2": 2.249718287799305e-19,
+      "pressure_reference_rms_m_s2": 2.940851367439961e-06,
+      "pressure_relative_l2": 7.649887759399776e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.7763568394002505e-14,
+      "gradient_relative_l2": {
+        "h": 7.064110663713035e-16,
+        "temp_h": 2.4596514122708356e-16,
+        "salt_h": 2.4504966228889626e-16
+      },
+      "pressure_error_rms_m_s2": 1.3306639512109896e-19,
+      "pressure_reference_rms_m_s2": 2.940851367439961e-06,
+      "pressure_relative_l2": 4.5247575785149085e-14
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.940851367439961e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": -2.0618725337643315e-16,
+      "gradient_relative_l2": {
+        "h": 1.3034956665976748e-07,
+        "temp_h": 9.074687494933116e-07,
+        "salt_h": 5.214579286655984e-08
+      },
+      "pressure_error_rms_m_s2": 2.2927696517279953e-20,
+      "pressure_reference_rms_m_s2": 5.67823479858907e-19,
+      "pressure_relative_l2": 0.04037821141700063
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": -2.0618725337643315e-16,
+      "gradient_relative_l2": {
+        "h": 2.225077853296195e-11,
+        "temp_h": 1.540788171660173e-10,
+        "salt_h": 8.9636456605068e-12
+      },
+      "pressure_error_rms_m_s2": 2.425737188158546e-20,
+      "pressure_reference_rms_m_s2": 5.67823479858907e-19,
+      "pressure_relative_l2": 0.0427199169143427
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": -7.670389338702585e-17,
+      "gradient_relative_l2": {
+        "h": 2.4610504168489207e-15,
+        "temp_h": 1.6130373938148937e-14,
+        "salt_h": 1.0673820517501442e-15
+      },
+      "pressure_error_rms_m_s2": 2.4204589191294282e-20,
+      "pressure_reference_rms_m_s2": 5.67823479858907e-19,
+      "pressure_relative_l2": 0.0426269607542623
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -3.105540019841493e-17,
+      "gradient_relative_l2": {
+        "h": 2.5356356623637117e-16,
+        "temp_h": 2.3795278041513095e-16,
+        "salt_h": 2.4225010506354676e-16
+      },
+      "pressure_error_rms_m_s2": 2.0264211998536154e-20,
+      "pressure_reference_rms_m_s2": 5.67823479858907e-19,
+      "pressure_relative_l2": 0.03568752036032643
+    },
+    {
+      "depth_m": 4000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 5.67823479858907e-19,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.00016830712026205674,
+      "gradient_relative_l2": {
+        "h": 6.096065829619638e-07,
+        "temp_h": 1.0172456661057542e-05,
+        "salt_h": 4.622553498822172e-07
+      },
+      "pressure_error_rms_m_s2": 2.14172292740984e-12,
+      "pressure_reference_rms_m_s2": 3.561143676627356e-07,
+      "pressure_relative_l2": 6.014143550192831e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.381919893603481e-08,
+      "gradient_relative_l2": {
+        "h": 1.2578706962570213e-10,
+        "temp_h": 2.1829873966068163e-09,
+        "salt_h": 9.514790232476563e-11
+      },
+      "pressure_error_rms_m_s2": 4.657025450057316e-16,
+      "pressure_reference_rms_m_s2": 3.561143676627356e-07,
+      "pressure_relative_l2": 1.3077330972694238e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 5.030642569181509e-12,
+      "gradient_relative_l2": {
+        "h": 3.426471841675584e-15,
+        "temp_h": 5.668851149497375e-14,
+        "salt_h": 2.75295956179611e-15
+      },
+      "pressure_error_rms_m_s2": 3.6209405359282115e-19,
+      "pressure_reference_rms_m_s2": 3.561143676627356e-07,
+      "pressure_relative_l2": 1.0167914762028044e-12
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -4.973799150320701e-14,
+      "gradient_relative_l2": {
+        "h": 7.595466821746618e-16,
+        "temp_h": 2.521613375253095e-16,
+        "salt_h": 2.482816682687058e-16
+      },
+      "pressure_error_rms_m_s2": 2.094160991235732e-19,
+      "pressure_reference_rms_m_s2": 3.561143676627356e-07,
+      "pressure_relative_l2": 5.88058551240214e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 3.561143676627356e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0001764701376174571,
+      "gradient_relative_l2": {
+        "h": 5.836817744053658e-07,
+        "temp_h": 1.0540626966512528e-05,
+        "salt_h": 4.825627149951659e-07
+      },
+      "pressure_error_rms_m_s2": 3.042516775161997e-11,
+      "pressure_reference_rms_m_s2": 4.671148825029877e-06,
+      "pressure_relative_l2": 6.513422905429559e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.274374987289775e-08,
+      "gradient_relative_l2": {
+        "h": 1.2835447882150278e-10,
+        "temp_h": 2.0156755451584168e-09,
+        "salt_h": 8.759968036261223e-11
+      },
+      "pressure_error_rms_m_s2": 6.016137133523238e-15,
+      "pressure_reference_rms_m_s2": 4.671148825029877e-06,
+      "pressure_relative_l2": 1.2879352293993238e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 3.844036200462142e-12,
+      "gradient_relative_l2": {
+        "h": 1.8780041470527553e-14,
+        "temp_h": 3.646627294193924e-13,
+        "salt_h": 1.651103829073918e-14
+      },
+      "pressure_error_rms_m_s2": 4.952857298523567e-19,
+      "pressure_reference_rms_m_s2": 4.671148825029877e-06,
+      "pressure_relative_l2": 1.0603081777194047e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -9.237055564881302e-14,
+      "gradient_relative_l2": {
+        "h": 7.690538567054667e-16,
+        "temp_h": 2.512839012584196e-16,
+        "salt_h": 2.376031858738999e-16
+      },
+      "pressure_error_rms_m_s2": 2.0879902046497336e-19,
+      "pressure_reference_rms_m_s2": 4.671148825029877e-06,
+      "pressure_relative_l2": 4.4699714842341354e-14
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.671148825029877e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 6.130409538209615e-07,
+        "temp_h": 3.92053527617234e-06,
+        "salt_h": 2.43547704895939e-07
+      },
+      "pressure_error_rms_m_s2": 3.3034039007720034e-20,
+      "pressure_reference_rms_m_s2": 2.2268652437296063e-20,
+      "pressure_relative_l2": 1.4834323316481353
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.314981120595749e-10,
+        "temp_h": 1.4722883249860252e-09,
+        "salt_h": 9.263712860053668e-11
+      },
+      "pressure_error_rms_m_s2": 3.28925301378368e-20,
+      "pressure_reference_rms_m_s2": 2.2268652437296063e-20,
+      "pressure_relative_l2": 1.4770777095944798
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.337433527818586e-14,
+        "temp_h": 3.3837693626887945e-13,
+        "salt_h": 2.1458140515753392e-14
+      },
+      "pressure_error_rms_m_s2": 4.0203517463250344e-20,
+      "pressure_reference_rms_m_s2": 2.2268652437296063e-20,
+      "pressure_relative_l2": 1.805386184748052
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.5942028887444353e-16,
+        "temp_h": 2.42726320780124e-16,
+        "salt_h": 2.570135100204391e-16
+      },
+      "pressure_error_rms_m_s2": 2.829207644127445e-20,
+      "pressure_reference_rms_m_s2": 2.2268652437296063e-20,
+      "pressure_relative_l2": 1.2704889315120933
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 8,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 2.2268652437296063e-20,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0001686358233428109,
+      "gradient_relative_l2": {
+        "h": 6.207861155497411e-07,
+        "temp_h": 1.0335841676129575e-05,
+        "salt_h": 4.699290160227488e-07
+      },
+      "pressure_error_rms_m_s2": 2.1742571504560468e-12,
+      "pressure_reference_rms_m_s2": 3.5689889083573837e-07,
+      "pressure_relative_l2": 6.092081556669062e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.384173024618576e-08,
+      "gradient_relative_l2": {
+        "h": 1.2978474203906622e-10,
+        "temp_h": 2.250433348423268e-09,
+        "salt_h": 9.8132669324657e-11
+      },
+      "pressure_error_rms_m_s2": 4.809290044864265e-16,
+      "pressure_reference_rms_m_s2": 3.5689889083573837e-07,
+      "pressure_relative_l2": 1.3475217122705273e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 5.059064278611913e-12,
+      "gradient_relative_l2": {
+        "h": 3.84147174153509e-15,
+        "temp_h": 5.960209300362596e-14,
+        "salt_h": 2.9241413729941357e-15
+      },
+      "pressure_error_rms_m_s2": 3.194070653214129e-19,
+      "pressure_reference_rms_m_s2": 3.5689889083573837e-07,
+      "pressure_relative_l2": 8.949511290815949e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -1.4210854715202004e-14,
+      "gradient_relative_l2": {
+        "h": 7.723602876456767e-16,
+        "temp_h": 2.409552747118996e-16,
+        "salt_h": 2.506867020046951e-16
+      },
+      "pressure_error_rms_m_s2": 2.155653782383789e-19,
+      "pressure_reference_rms_m_s2": 3.5689889083573837e-07,
+      "pressure_relative_l2": 6.039956519158593e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 3.5689889083573837e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0001768226287808261,
+      "gradient_relative_l2": {
+        "h": 5.943959129618705e-07,
+        "temp_h": 1.0710172692702087e-05,
+        "salt_h": 4.905105444642388e-07
+      },
+      "pressure_error_rms_m_s2": 3.0921791657979424e-11,
+      "pressure_reference_rms_m_s2": 4.704946597422617e-06,
+      "pressure_relative_l2": 6.57218759399277e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.276496667898755e-08,
+      "gradient_relative_l2": {
+        "h": 1.326198551700206e-10,
+        "temp_h": 2.0795647355215786e-09,
+        "salt_h": 9.041246135982732e-11
+      },
+      "pressure_error_rms_m_s2": 6.216391995088528e-15,
+      "pressure_reference_rms_m_s2": 4.704946597422617e-06,
+      "pressure_relative_l2": 1.3212460261491341e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 3.936406756110955e-12,
+      "gradient_relative_l2": {
+        "h": 1.9542547854032236e-14,
+        "temp_h": 3.8197827464737117e-13,
+        "salt_h": 1.729833168311814e-14
+      },
+      "pressure_error_rms_m_s2": 5.303738980985248e-19,
+      "pressure_reference_rms_m_s2": 4.704946597422617e-06,
+      "pressure_relative_l2": 1.1272686886373268e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 7.981425639704749e-16,
+        "temp_h": 2.449270577779062e-16,
+        "salt_h": 2.533652017847987e-16
+      },
+      "pressure_error_rms_m_s2": 2.171397493817907e-19,
+      "pressure_reference_rms_m_s2": 4.704946597422617e-06,
+      "pressure_relative_l2": 4.6151373854219814e-14
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.704946597422617e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 6.22914056196785e-07,
+        "temp_h": 3.982366624109704e-06,
+        "salt_h": 2.474571176739292e-07
+      },
+      "pressure_error_rms_m_s2": 4.105138184687876e-20,
+      "pressure_reference_rms_m_s2": 7.049320754336761e-19,
+      "pressure_relative_l2": 0.05823452113683981
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.385637651796464e-10,
+        "temp_h": 1.5166944103501688e-09,
+        "salt_h": 9.546215048242238e-11
+      },
+      "pressure_error_rms_m_s2": 3.779978502472926e-20,
+      "pressure_reference_rms_m_s2": 7.049320754336761e-19,
+      "pressure_relative_l2": 0.05362188264943788
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.602756967005731e-14,
+        "temp_h": 3.5491010555076915e-13,
+        "salt_h": 2.2509681963590962e-14
+      },
+      "pressure_error_rms_m_s2": 3.7182288540290077e-20,
+      "pressure_reference_rms_m_s2": 7.049320754336761e-19,
+      "pressure_relative_l2": 0.05274591671462168
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.7159126704065227e-16,
+        "temp_h": 2.3607656389537997e-16,
+        "salt_h": 2.432809312127773e-16
+      },
+      "pressure_error_rms_m_s2": 3.224586858644434e-20,
+      "pressure_reference_rms_m_s2": 7.049320754336761e-19,
+      "pressure_relative_l2": 0.04574322790831528
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 32,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 7.049320754336761e-19,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.00016864232559754555,
+      "gradient_relative_l2": {
+        "h": 6.212945104414267e-07,
+        "temp_h": 1.0343865476084916e-05,
+        "salt_h": 4.703069774139303e-07
+      },
+      "pressure_error_rms_m_s2": 2.176223289307235e-12,
+      "pressure_reference_rms_m_s2": 3.569722488515951e-07,
+      "pressure_relative_l2": 6.096337450063132e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.384262553003282e-08,
+      "gradient_relative_l2": {
+        "h": 1.2999314301889598e-10,
+        "temp_h": 2.2539472945419584e-09,
+        "salt_h": 9.828847740097855e-11
+      },
+      "pressure_error_rms_m_s2": 4.817376025801083e-16,
+      "pressure_reference_rms_m_s2": 3.569722488515951e-07,
+      "pressure_relative_l2": 1.3495099524679887e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 5.03774799653911e-12,
+      "gradient_relative_l2": {
+        "h": 3.788820926886714e-15,
+        "temp_h": 5.976203107992812e-14,
+        "salt_h": 2.9329518677846282e-15
+      },
+      "pressure_error_rms_m_s2": 3.436021950301258e-19,
+      "pressure_reference_rms_m_s2": 3.569722488515951e-07,
+      "pressure_relative_l2": 9.625459573832928e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -3.552713678800501e-14,
+      "gradient_relative_l2": {
+        "h": 7.764263738873828e-16,
+        "temp_h": 2.3937866892281315e-16,
+        "salt_h": 2.432255497615693e-16
+      },
+      "pressure_error_rms_m_s2": 2.1382713675212835e-19,
+      "pressure_reference_rms_m_s2": 3.569722488515951e-07,
+      "pressure_relative_l2": 5.990021281486873e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "smooth",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 3.569722488515951e-07,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.00017682936047691555,
+      "gradient_relative_l2": {
+        "h": 5.948827027801789e-07,
+        "temp_h": 1.0718469046637024e-05,
+        "salt_h": 4.909004722300006e-07
+      },
+      "pressure_error_rms_m_s2": 3.094995022714086e-11,
+      "pressure_reference_rms_m_s2": 4.706737262240194e-06,
+      "pressure_relative_l2": 6.575669832993839e-06
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 4.276588327911668e-08,
+      "gradient_relative_l2": {
+        "h": 1.328452807232578e-10,
+        "temp_h": 2.082910762797177e-09,
+        "salt_h": 9.056016421129401e-11
+      },
+      "pressure_error_rms_m_s2": 6.226852667264115e-15,
+      "pressure_reference_rms_m_s2": 4.706737262240194e-06,
+      "pressure_relative_l2": 1.3229658509343714e-09
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 3.922195901395753e-12,
+      "gradient_relative_l2": {
+        "h": 1.9576435758483448e-14,
+        "temp_h": 3.829000690114212e-13,
+        "salt_h": 1.7350643176658443e-14
+      },
+      "pressure_error_rms_m_s2": 5.210159809142456e-19,
+      "pressure_reference_rms_m_s2": 4.706737262240194e-06,
+      "pressure_relative_l2": 1.1069578603719756e-13
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": -4.263256414560601e-14,
+      "gradient_relative_l2": {
+        "h": 7.640120228560263e-16,
+        "temp_h": 2.4508382581313054e-16,
+        "salt_h": 2.442674356169681e-16
+      },
+      "pressure_error_rms_m_s2": 2.1162558139556486e-19,
+      "pressure_reference_rms_m_s2": 4.706737262240194e-06,
+      "pressure_relative_l2": 4.496226783112186e-14
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "front",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.706737262240194e-06,
+      "pressure_relative_l2": 0.0
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 2,
+      "points": 4,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 6.234015504740969e-07,
+        "temp_h": 3.985414796706125e-06,
+        "salt_h": 2.476503808219665e-07
+      },
+      "pressure_error_rms_m_s2": 3.714354212978373e-20,
+      "pressure_reference_rms_m_s2": 4.952751225034886e-19,
+      "pressure_relative_l2": 0.07499577596797646
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 3,
+      "points": 9,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.389317804076165e-10,
+        "temp_h": 1.5190077108378308e-09,
+        "salt_h": 9.560929279483588e-11
+      },
+      "pressure_error_rms_m_s2": 3.696430620794831e-20,
+      "pressure_reference_rms_m_s2": 4.952751225034886e-19,
+      "pressure_relative_l2": 0.07463388433705942
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 4,
+      "points": 16,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 5.6148429452820856e-14,
+        "temp_h": 3.5580740988220307e-13,
+        "salt_h": 2.256592115771903e-14
+      },
+      "pressure_error_rms_m_s2": 3.6830552688697775e-20,
+      "pressure_reference_rms_m_s2": 4.952751225034886e-19,
+      "pressure_relative_l2": 0.0743638253068896
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 8,
+      "points": 64,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 2.6409871553402666e-16,
+        "temp_h": 2.365535871014365e-16,
+        "salt_h": 2.438013754035054e-16
+      },
+      "pressure_error_rms_m_s2": 3.0464537818457365e-20,
+      "pressure_reference_rms_m_s2": 4.952751225034886e-19,
+      "pressure_relative_l2": 0.06151033321533887
+    },
+    {
+      "depth_m": 6000.0,
+      "layers": 64,
+      "profile": "reference",
+      "order": 12,
+      "points": 144,
+      "anomaly_energy_error_J_kg": 0.0,
+      "gradient_relative_l2": {
+        "h": 0.0,
+        "temp_h": 0.0,
+        "salt_h": 0.0
+      },
+      "pressure_error_rms_m_s2": 0.0,
+      "pressure_reference_rms_m_s2": 4.952751225034886e-19,
+      "pressure_relative_l2": 0.0
+    }
+  ]
+}

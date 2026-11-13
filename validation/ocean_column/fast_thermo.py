@@ -51,6 +51,9 @@ class Caloric:
         self.factors=[sa.pow(1+.5*i)/d['sa_scale']**(.5*i) for i in range(len(d['salt_power_coefficients']))]
         self.log_entropy=d['entropy_log_coefficient']*torch.special.xlogy(sa,sa/35.16504)
     def evaluate(self,theta):
+        kernel=getattr(self.reference,'_compiled_caloric',None)
+        return self._values(theta) if kernel is None else kernel(self,theta)
+    def _values(self,theta):
         r=self.reference;d=r.data;t=r.to_90*theta
         y=(t-d['temperature_midpoint'])/d['temperature_halfspan']
         g,gt,gtt=polynomial(y,d['pure_power_coefficients'])
@@ -98,20 +101,25 @@ class MixingThermodynamics:
         if type(ocean.reference) is not SurfaceGibbs or type(ocean.energy.base) is not JMD95Energy:
             raise TypeError('fast mixing requires the unmodified SurfaceGibbs/JMD95 kernels')
         self.ocean=ocean;self.reference=ocean.reference;self.base=ocean.energy.base
+        options=getattr(self.reference,'_compile_options',None)
+        if options is not None and not hasattr(self.reference,'_compiled_caloric'):
+            self.reference._compiled_caloric=torch.compile(Caloric._values,**options)
+            self.base._compiled_temperature_partial=torch.compile(temperature_partial,**options)
+        self.temperature_kernel=getattr(self.base,'_compiled_temperature_partial',temperature_partial)
         self.node,self.weight=self.base._quadrature(physical.h)
         self.z=self.base.height(physical)[...,None]+physical.h[...,None]*(self.node-.5)
         self.pressure=-self.base.rho0*self.base.gravity*(self.z[...,None]*self.node)/1e4
         t,s=physical.temperature()[...,None,None],physical.salinity()[...,None,None]
-        self.rho_ref,_,_,self.rp_ref=jmd95_partials(torch.full_like(s,self.base.S0),torch.full_like(t,self.base.T0),self.pressure)
+        self.rho_ref,_,_,self.rp_ref=self.base._partials(torch.full_like(s,self.base.S0),torch.full_like(t,self.base.T0),self.pressure)
     def parcel(self,theta,salt):
         b=self.base;z=self.z;x=z[...,None]*self.node
-        rho,rt,rs,rp=jmd95_partials(salt[...,None,None],theta[...,None,None],self.pressure)
+        rho,rt,rs,rp=b._partials(salt[...,None,None],theta[...,None,None],self.pressure)
         f=b.gravity/b.rho0*(rho-self.rho_ref);fz=-b.gravity**2/1e4*(rp-self.rp_ref)
         return (z*(f*self.weight).sum(-1),z*(b.gravity/b.rho0*rt*self.weight).sum(-1),
                 z*(b.gravity/b.rho0*rs*self.weight).sum(-1),((f+x*fz)*self.weight).sum(-1))
     def temperature_derivative(self,theta,salt):
         # Reference density has zero temperature derivative; never evaluate it.
-        rt=temperature_partial(salt[...,None,None],theta[...,None,None],self.pressure)
+        rt=self.temperature_kernel(salt[...,None,None],theta[...,None,None],self.pressure)
         return (self.z*(self.base.gravity/self.base.rho0*rt*self.weight).sum(-1)*self.weight).sum(-1)
     def parts(self,physical):
         t,s=physical.temperature(),physical.salinity()

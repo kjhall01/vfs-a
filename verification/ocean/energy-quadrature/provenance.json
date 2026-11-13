@@ -1,0 +1,300 @@
+{
+  "parent": "c505ef453c3a6ec400de9b63790545d8b5e72a0f",
+  "wheels": {
+    "quadrature": [
+      {
+        "name": "vfs-1.0.0+extraction4-py3-none-any.whl",
+        "sha256": "25ebf2192462ed1a791083b125d4d68600cefe3e45dceda40525a048c15ab489"
+      }
+    ],
+    "prototype": [
+      {
+        "name": "vfs-1.0.0+extraction4-py3-none-any.whl",
+        "sha256": "88a9e83a2f49067a056a1a87ed23eaa2e00b1fe64be2d1dfd64f457988e0b93a"
+      }
+    ],
+    "final": [
+      {
+        "name": "vfs-1.0.0+extraction4-py3-none-any.whl",
+        "sha256": "b71b86dd2c072a2a662f3b1c80a460fcd0b3f841cd4c0b4d7a42a2bb0e0d1e7b"
+      }
+    ]
+  },
+  "runtime_sha256": {
+    "vfs/moisture.py": "73366703f35f9882a1453753854dde4c05234d81ea9a9bb60833b666f1cb841e",
+    "vfs/field.py": "3564866a47d6547a146af1e953fb54df2ea257ffddc6304502d26c28a8144853",
+    "vfs/model.py": "450325a200b1c81f46601daa82077a74234af19fe004ac2ff8654d27a77141cc",
+    "vfs/imex.py": "d1ae41b95dc567751e1a55d601420628f60ef5fff28e166a4fa224a1410c88f9",
+    "vfs/__init__.py": "ad8eff6173ab15a21c7091423325ad338b631234b4d2bbbf4de78845ceab3f3b",
+    "vfs/boundary.py": "22c50438f332a3e4dd1c939c288f9d8a1dc9f7047e75ed5b88bf077597f5db56",
+    "vfs/io.py": "77f53bd97f172a83418d8ac6453f5780ca100bddc707917a6ba504dda1b04556",
+    "vfs/era5.py": "1a414ad559cae02b28c3ea44cd672f46b3a398c78456bebffe59471f42a5e8d8",
+    "vfs/earth.py": "98e9e31fe5e7de9d901aaf519375255a745249c02cd7998d4b65375166f03f75",
+    "vfs/ocean/ale.py": "ae6e66203a62144c19cb02c7c9ca6e968047576b2c2aba00f16ee644a817b739",
+    "vfs/ocean/mixed_layer.py": "3186a4836cef062b37ec360d6a84274ad022fea3be4cedb35dea7fa2041eae26",
+    "vfs/ocean/jmd95.py": "f233dce80a9d7f116a7a0a8bc9b7001f56a74c908c17534adc4af127635d294c",
+    "vfs/ocean/state.py": "21e60cab5662677bff7b441a60337c1214252218a25a10fe5cbeace80af0d1b3",
+    "vfs/ocean/initial_conditions.py": "2af37b5e6a45c606afeb4aff4cde412a4ac074a96556945d517812298068cd2a",
+    "vfs/ocean/helpers.py": "f0c8a5e57dfb91b162a1e821711f548cd9f6f0b45a6bd7528c8add623d077002",
+    "vfs/ocean/jmd95_energy.py": "b709606dd291e7b3fdb8ac19b2326568337c8003104ba85c9e5d9164583d0643",
+    "vfs/ocean/regrid.py": "d566f52603c20d15d5a041a76b3007c60c92d634f65ac4a4af5890491b86f03b",
+    "vfs/ocean/model.py": "02e5b1080505e7b22468c26c1889bda3f21d4a09b12d9f336634716089d93993",
+    "vfs/ocean/constants.py": "66040cd703194abb47c52b43b253a42d382b8a6b811383fa828a076131c2bd30",
+    "vfs/ocean/__init__.py": "ccefaf5fdbd086680d62d34afda3eb6fdc3a045dfea1ac67b61d6c3db5d56a6e",
+    "vfs/ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7",
+    "vfs/ocean/conservative.py": "156e57c258e5d6717b5f48402b04c9964eb7ee348302621c9b8db81018dd842d",
+    "vfs/ocean/diagnostics.py": "25851b4e8ddba9476504d79e365f2612e39e5e98bbcdddecc200b8308490afbf",
+    "vfs/ocean/transport.py": "9132b8f9bd355c3b261b894f6e28d184ff7abfe00e002b3746fc2b6a94cc0c8f",
+    "vfs/ocean/eos.py": "a1fa25bc46491791866aa3ae6a25143dbde5008fe48e566657c5bff87d38cce6",
+    "vfs/ocean/io.py": "9fdd86bc89d7682425c584c79f59d9b32fc04b0cbe881a073530308bd0ce3299",
+    "vfs/ocean/column.py": "996857a903d612984aaaa46288da6299ed6c7db7204d1d006a345317006577b7",
+    "vfs/ocean/dynamics.py": "1a656e72a4b89997f2e3325b623c22ac8132a3ca0b85b42cb791e946e8d0434f",
+    "vfs/ocean/domain.py": "9c10f94c592eb66f75239b0e6ecd0271006f8825c29539474f105195bd84afa2",
+    "vfs/ocean/physics.py": "f8c64d659d2e88af42a6992818ad801666dbe95397ce8b2b3e985ef96077fe6b",
+    "vfs/data/topography.py": "d0115b221d9ba24c492dae0979234d973aaeaf28ec98c7812b3b69849e34724c",
+    "vfs/data/__init__.py": "bc80e212916c9a3119ae7f0bb9cb010e3221a79eb293a9cd61667922c55cfd83",
+    "vfs/data/elevation.py": "4cff2139c6bb4314f8010737809a3d90f10b1de0862cdd9da4073be1a1faeaed",
+    "vfs/initial_conditions/__init__.py": "d71589271fb5eedcf4643ffc5a1d813ec52bc55bc01325065ad7d70c59bcf9ef",
+    "vfs/initial_conditions/equilibrium.py": "82a6a3b4518c5f27ef0f9dfd9d8ccd3e4b230119c0ff6589acefedad23ffa409",
+    "vfs/initial_conditions/jablonski_williamson.py": "211e36959771e68b88016958e045febb08dec762a362daabecdb9ae281a8b7f3",
+    "vfs/initial_conditions/held_suarez.py": "0060a60426d74f940f88d2aaaa7ea003bf40074bd25062202627c1791919e708",
+    "vfs/initial_conditions/analytic_climate.py": "adc3967a0bbdd2e82516c90506faf4289be69330a0389778faa839067711c8fd",
+    "vfs/atmosphere/moisture.py": "2e0c0659f62d8a1a217ce0e2c1b6720441eeb5e307e6d5e5e83cbc6aa6bd997a",
+    "vfs/atmosphere/topography.py": "df52bd9e19e7cc62e845676e6273be1fdc268b768d3842f841e769c5a2884469",
+    "vfs/atmosphere/state.py": "d9846293e49de07c12d673e2cce6943577b2cc42df754aafb227a85322b8975f",
+    "vfs/atmosphere/moist_budgets.py": "2c234564347b49153f8e8ffafaf1a276dca2375ae27fe81536ffe1c4763c731d",
+    "vfs/atmosphere/regrid.py": "a9e710f54accdcf4e4660b68a8024767986f088abc623df80c8104fa1bed6cb1",
+    "vfs/atmosphere/mixture_thermodynamics.py": "a30736eefdfe4c9e8649db06b7dbd6104de274d4cf072191570a76bbb5d7f35a",
+    "vfs/atmosphere/model.py": "4e30640593e98c0719b294baf9169f5f4fa36e1ad53d9a763f871933977cb6c6",
+    "vfs/atmosphere/constants.py": "a3235f86c494320aa33466950e28a307fa3b571cda74db9f974dbfe46f910efc",
+    "vfs/atmosphere/dry_model.py": "398b114608df18e653267aa119920226d331480ec5f0b04baa70b52b7261c019",
+    "vfs/atmosphere/__init__.py": "2ed5e928722fba55e301b3585476b74eb0b924336a2efdd4e2017e0b36d37cc2",
+    "vfs/atmosphere/bounded_moist.py": "d240914e55db06843eda264a3ca29a505ef241f5bb63ac21e9f91fb7dc2a1de7",
+    "vfs/atmosphere/scalar_transport.py": "bd799a3088d3d0163808eb028bcb852e6769b91184428690194f609b38904b55",
+    "vfs/atmosphere/conservative.py": "e686f56e320ced983c6c1ef77477285b2250ebc15191987a938613eb4db6d811",
+    "vfs/atmosphere/dry_energy.py": "c81ef31b816185d07a2bd7d9130bb8e6f9ec03928b2e86eae3fa6386f5795c98",
+    "vfs/atmosphere/steppers.py": "ed0322a21b1d095b358ec0c736847f841488ca17d07ed13b88ed7471ecd65415",
+    "vfs/atmosphere/gibbs_means.py": "2e119368ee46e60878fd1defcaf2f74a8f41b760401ddd9d2406533f0b60e463",
+    "vfs/atmosphere/boundary.py": "00be6e430668fcfb6872aae10f7b64910440860ff8f08d94a0545dded79ff632",
+    "vfs/atmosphere/held_suarez.py": "be218c2339f6c4ec6f6d5aaffb7c1579bec6298eb8e7d3b5791b7b89328acb56",
+    "vfs/atmosphere/io.py": "c6fe5c29f3360fc6352afa816bd890afcc79c3201b5bccd57c013680e976d2f3",
+    "vfs/atmosphere/era5.py": "1f7ac4b81f2f01073b5d6f10ff3af8081a66b027826414354ecf26b47b26e544",
+    "vfs/atmosphere/bounded_transport.py": "ab099f8eeca91121c79d1fe53ef3f587af41ad361f9c2982daab590f78174632",
+    "vfs/atmosphere/column.py": "cb0a78e131498e52ef80c9727636a75d6dd96d9123f43a0dd85fccf93ac53da1",
+    "vfs/atmosphere/moist_cp.py": "78b67bfad735d222b049feb3dc821536115b7795237d16cfcba465bbf533e70b",
+    "vfs/atmosphere/earth.py": "9827f360e54b21abc15105c33684ae40dc7a00970812f93cc472ae34905c20ef",
+    "vfs/atmosphere/moist_conservative.py": "3e79dbe3c7d6a2d28f7a4722151946630a924558e68b33c9b7a9d95c98020635",
+    "vfs/integrators/krylov.py": "02aff0ab369ee2bf1f74ebf1addaa11859ff675f02ca6a85410ca7a1355d7ac5",
+    "vfs/integrators/explicit.py": "c208055171a3bff3bcaa4b08b67eed4e893e3993429c9084882d9121f711a22d",
+    "vfs/integrators/__init__.py": "14be3b23fcca7505d20fcac4a864cf7558d0e8b77a4c0c19adee1a3fdb4c2513",
+    "vfs/integrators/tableau.py": "e877b95f438484f91b57a76259dcb3cb01345f9913c9d654a1bc304b5ce2f3a1",
+    "vfs/core/config.py": "c4b1d86fa3c87d9209daa27ea4e206d3183cf710a564299154ae9fc24db6a468",
+    "vfs/core/state.py": "261d86773f4631009b0fcad520296882d6c4caf2cd9023ceefa99ed135b702b9",
+    "vfs/core/__init__.py": "e2aa94eaf6ed31416ab5ed1e47b2f78cca7156da903637d1557c915b64c01c1d",
+    "vfs/core/integrators.py": "7b0c1f0de5a4185ff7911aedcb6d9a78db5b41c66a45ea20ea4e6d2c7543c701",
+    "vfs/core/diagnostic_contracts.py": "968b6a7baad79439c971459a81f51f73022332cdd0f6fe66f6605a74b8e74e83",
+    "vfs/core/io.py": "fd38ae01582fa19849549a45a9b96f1dcea5c4a9e0d264ef0124020862583b01",
+    "vfs/geometry/regrid.py": "c85b88cc058d0b83a61eb3f79a36e151781282be6a9f6f4d2dc8cfd11c9d57fd",
+    "vfs/geometry/__init__.py": "2f1ec22a8c2bceb78e80a977dc394544e8d8c21ddd7349aa9f03e3b9fa10ea9a",
+    "vfs/geometry/geodesic.py": "a8a7628d5c4bddcb18a0d6f4ee25abb3cdb6e5c767f362e8a6fef973e969f26f",
+    "vfs/geometry/remap.py": "79bc7663320f18cb559e4ff3d72978ab8bbf2cc68acbdd14c043f581f2c2c818",
+    "vfs/geometry/column.py": "3a6202a2a087e16453935c4a02caba7f48b6d3753872cfcdb9e9b3a5a1f67ac8",
+    "vfs/geometry/equiangular.py": "c03f3cce96dfd36dd14746093462787b1e457751064c6a4fe8e8dfd12c44c0d7",
+    "vfs/ocean/stratified/surface_heating.py": "e747a6d80e0ae8be09f4a42f376b56f6e91b341c3baf4470ff2fa7ffb35fdddc",
+    "vfs/ocean/stratified/heating.py": "2216c87ae4a86c7eca69aecd8909a77c080b226590d6a1740d79e5a5d74b2e8a",
+    "vfs/ocean/stratified/thermodynamics.py": "a184066cbc629ac3523a52ae7ba9dcf2b8f3f8adc1acc070e5354bcc293034b8",
+    "vfs/ocean/stratified/tke.py": "e41a208475001c434ff53268418848f2c051713dd5376cfb4f1e4441ed44304b",
+    "vfs/ocean/stratified/model.py": "d4af72a3728c9611a360a35619048e715678f8aceac3dbcd97465fd3f5c1d61d",
+    "vfs/ocean/stratified/enthalpy_remap.py": "06f663a115acc1aa73566b500855beb89921d6cd028ef5ce2b9fef86572605e8",
+    "vfs/ocean/stratified/__init__.py": "b69c992c58c4d920e35de44abff7abfb36a92c50c8d6964c0f894bc7200af3f4",
+    "vfs/ocean/stratified/faces.py": "4af8b7af9b907b227655f5cd773d7af438e19fbc34ebecd7d89f4c1320dedfc6",
+    "vfs/ocean/stratified/tke_model.py": "81857c1f9f27e60e06cb315e9db7089207bf6dbb95b1e53747cab915894cd2a3",
+    "vfs/ocean/stratified/surface_exchange.py": "d4ae2fa26ea51d1fe938b54d2107e12040a10520812d05909dc51e75c97d09b5",
+    "vfs/ocean/stratified/boundary.py": "d7a9fbe48c5fd5c93d1b8a1a6155771368b2f0398ba4a88b62e53b1901a5bd0e",
+    "vfs/ocean/stratified/remap.py": "8d3975cb6262e3bb544d039fc6ea4d4ab357974756ba701214a800ecac56c542",
+    "vfs/ocean/stratified/energy_columns.py": "a493ef5aa96107004465ae5eaae9e3a8f70aae343b79de9ad9763b570ca475ef",
+    "vfs/ocean/stratified/equations.py": "0cabef51c7be50bf13c18582ad5c5bdcca915a3556f219c4f3321c75df523124",
+    "vfs/ocean/stratified/transport.py": "7d56fd60aecb8ec165339e34d37074ccbcc6f1c5e6f9cbe5f9dd56c500152482",
+    "vfs/atmosphere/imex/solvers.py": "fba713c6345c39467d6795bf20e031dd7fc21c7624554f7b9c3647be47c78ec3",
+    "vfs/atmosphere/imex/moist_ark.py": "db954479885062ebe43b3a1a3667f4416c175afa8cc5de26c62db954036171f5",
+    "vfs/atmosphere/imex/__init__.py": "5bf6f37ba4c016984e66f457ffe1a17a15a7493c17965e6cd03214b954d6086c",
+    "vfs/atmosphere/imex/moist_wave.py": "a422e90a33db4765758483c76976a9cd994be32dc116e7c7b2eb8fd2ad16cf2f",
+    "vfs/atmosphere/imex/dry_ark.py": "31fe328cc5a006151ceb736defa75e28898593aec255aff4261843d902ba67d2",
+    "vfs/atmosphere/imex/conservative_wave.py": "cc3fff7960eaa0273cc9ff2df816f32fbf36d73e0651944806c38106191af000",
+    "vfs/atmosphere/imex/transfer.py": "fb1f54c43460e8d607c82a6c459bc3223c276b1b8193f5b64c0642fcc4078370",
+    "vfs/atmosphere/initial_conditions/__init__.py": "e67072ee6e4cf93e038f7083040d2af98e16ee3b9ec98a6978bc1ff91222a4cd",
+    "vfs/atmosphere/initial_conditions/equilibrium.py": "0457e2811b1ebad9d6debce4d46dd2b1b6238ab545e15eb0204f214706647975",
+    "vfs/atmosphere/initial_conditions/jablonski_williamson.py": "2f94e94fd41df1835d512949ffc85c40eb904df5e490ca2e0e8d6f0b31a22c72",
+    "vfs/atmosphere/initial_conditions/held_suarez.py": "10a8c3e144343f5824676af61abdbbb4425a436e3101192cd4aca553392edf2b",
+    "vfs/atmosphere/initial_conditions/analytic_climate.py": "d76f1228ff5c73cde0b07c73a9d2feea2b7e95bc4abe91df910b2a8dc958b0db",
+    "vfs/integrators/imex/solvers.py": "f4ab42373ee0a20754085d2f3fb0c7a3776b881c84ade0156ba0ce06ee869f52",
+    "vfs/integrators/imex/moist_ark.py": "280fe78bc6e5af92fca1c1275bdba96d6ec673de337c63cf0ecdfb02f9e8111b",
+    "vfs/integrators/imex/__init__.py": "e5bf1499471c041158ce3b584382cff579fa62ec6f30baf93140dd41531a18bc",
+    "vfs/integrators/imex/moist_wave.py": "07d6758e53bbc0a39b690ffd38e3479fdeeb80f6d32f40bb95c5ca2f625aa708",
+    "vfs/integrators/imex/dry_ark.py": "66fb16131b476ab675ed9bad7a2212e135ecee9bf0f1d5bf180fb6b2b09f13e0",
+    "vfs/integrators/imex/conservative_wave.py": "cbb0f4e524ce587cea934cc228accd2a582cfe6901b9a4c27681215be9d7ae4a",
+    "vfs/integrators/imex/tableau.py": "e8f47f833b99d3c302c29e70e739d0e737f7111c2d9b6fc6d352e78530e096e3",
+    "vfs/geometry/mesh/multilevel.py": "4e788635de1493d631f5c9c82ef71ade1d553052d68231adda7c6399bd0b1fdc",
+    "vfs/geometry/mesh/rotation.py": "2e1de7e7c130acbd2ebc060aa947b3b0f9a87e9747da0d836bcbfc94cd7b9726",
+    "vfs/geometry/mesh/__init__.py": "cb17cea1b8e6d60ef10098db185989f10d2611f5c45fecf8bafb81dee545f19f",
+    "vfs/geometry/mesh/grid.py": "0a4d173391f1ebe80a20eefa900ea6dc2570de950eef02b9b0a334a00219cc72",
+    "vfs/geometry/mesh/io.py": "eb96e59acf536b19f2b1ded85ff3ecd4039029982cfa9ca3ed1e3ffd1ebd8c43"
+  },
+  "harness_sha256": {
+    "validation/performance/field_reuse.py": "0825d1ab017c95777a52e68978118f8aaf1b86dbe595f15d2efc129a36a8f1b8",
+    "validation/performance/compare_field_reuse.py": "1166a18eb6acacb6cd05c2abad7f4f06059c6005afb19c32d09aaef3fe9d1fb5",
+    "validation/performance/run.py": "e06b27dee920f885dada3a5541c001e47d29c16b51d4ff13e5854b16f234db17",
+    "validation/performance/stage_reuse.py": "55644088551e464549f3becca9f4b433112c0f41b6580f96a9b391531e3103f3",
+    "validation/performance/cases.py": "d9f5469de9c7c429bd3ebd13047b67c1f170eb3841c7dd83bcff4e8d80d4fbbe",
+    "validation/energy_quadrature/accuracy.py": "587692359f7d8205cc6837c2c7d764ae3194d27521b95eaf059b8695b6f9cfb8",
+    "validation/energy_quadrature/kernels.py": "ede77dce7a56688d50908d9ea8ae3a2e633b41d91e088e239fb3a107aba4c9eb",
+    "validation/ocean_column/resolution_campaign.py": "a8a26aff03bb352c75bfa03379b7b8039f4a5662dcf76eae865fd3de00147357",
+    "validation/ocean_column/budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+    "validation/ocean_column/lagged_mesh.py": "fd18be3639a742370aec071721feb112d760814b74d1cc7dac077ac056d09c85",
+    "validation/ocean_column/diagnose_budget.py": "9e4ebc19ad263b6659ce79eaafd7607ccb73620ca695a1aa48066c10335a019f",
+    "validation/ocean_column/summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+    "validation/ocean_column/benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+    "validation/ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+    "validation/ocean_column/benchmark_consistent.py": "063dd9b46806e0b76b00dc4f246c02efbc08021785db911291734fce853e3ca9",
+    "validation/ocean_column/analyze_lagged.py": "cb128a31962f77d13ffd37be78943225634301d471ded16fcd4932322b01788f",
+    "validation/ocean_column/plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+    "validation/ocean_column/limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+    "validation/ocean_column/sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849",
+    "validation/ocean_column/benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a",
+    "validation/ocean_column/analyze_path.py": "c31bcbab6753d3f20be188a5965fa45c774869c357018d7a591163e856ed46a0",
+    "validation/ocean_column/benchmark_path.py": "23478ea48c0b5813d77a79283898f3040100a6201f543a9d4e4a7ae2f3d385a0",
+    "validation/ocean_column/benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+    "validation/ocean_column/resolution_mesh.py": "3553585b15b95d23c140544ccdf8245f290de0af8b2fa7d4080c41654ba13147",
+    "validation/ocean_column/lagged_matrix.py": "5693f080301c8127f6cfec64a2075f9a425702c1a044083323953ba715335cad",
+    "validation/ocean_column/profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+    "validation/ocean_column/linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+    "validation/ocean_column/coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+    "validation/ocean_column/analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+    "validation/ocean_column/analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117",
+    "validation/ocean_column/consistent_campaign.py": "a53b902392a256ef57b77de4294819201f6a5727310bef9bc76aca73dcdc8801",
+    "validation/ocean_column/coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+    "validation/ocean_column/coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+    "validation/ocean_column/mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+    "validation/ocean_column/summarize_budget.py": "d2b063e25def5dc1205ecca12b46d6a8e64524fc0d08746ab3da85583331fdb1",
+    "validation/ocean_column/analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+    "validation/ocean_column/path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b",
+    "validation/ocean_column/path_matrix.py": "610a918903035a0ff3d9e361ad33e5cf284357b354b89deeff79ecae383c213e",
+    "validation/ocean_column/run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+    "validation/ocean_column/linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+    "validation/ocean_column/analyze_fast.py": "6a3937f3f0e61bdd2071ad15eec9cd06a688961a251db6b8f660e838aa7e9bf9",
+    "validation/ocean_column/campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+    "validation/ocean_column/path_campaign.py": "0f612ac2a92b947f92eac9682059585cb3efd79c0640d99c0dcc45333feb056f",
+    "validation/ocean_column/analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+    "validation/ocean_column/probe_budget_candidate.py": "bee597929ac049ccb4d740cff22430a959df964d918e3bec931c0715e7dc3105",
+    "validation/ocean_column/benchmark_cadence.py": "e1bde6a5ec2045fe2e945dcf3c195dcc0f37056a3d92b3d314326a4959f42d8c",
+    "validation/ocean_column/consistent_matrix.py": "4d0dc3cd61bd5730b54b56f2684e982466fa892cf69557e31214ed9655f7a9b0",
+    "validation/ocean_column/fast_thermo.py": "1f0b25b3b2d43707818adf6ee505a92cff835d48449a8d42ce60fddfd6881149",
+    "validation/ocean_column/lagged_campaign.py": "ce802e2c6261be6be226aceffc87ec21ffd7c7823d9aa45f3ecc3007f3959ef3",
+    "validation/ocean_column/qualify_fast.py": "1e985e1934052c87efd4a55678cb5db089362854305f19f625c9bfa3f998bce7",
+    "validation/ocean_column/analyze_consistent.py": "dd078996951021e06e8bc7f8505a6971108df8a3aed0b2a70966395202e5ccdd",
+    "validation/ocean_column/analyze_resolution.py": "d922bd34bf2f1fe21b69c69834405430407c773b3fae573b9b50395d6c39dd85",
+    "validation/ocean_column/consistent.py": "1704aaa0c5901e0b5cc4c1fc3c6f959dcad968638876904e7ea897790def58a5",
+    "validation/ocean_column/consistent_replay.py": "4e948cb4e51537e79f77560d6ac211d19a9a6dd81578d78922362af903b2c56f",
+    "validation/ocean_column/linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f"
+  },
+  "omitted_captures": [
+    {
+      "name": "public-full-q2.pt",
+      "bytes": 162623484
+    },
+    {
+      "name": "public-full-q4.pt",
+      "bytes": 162623484
+    },
+    {
+      "name": "fused-full_ale-q4.pt",
+      "bytes": 10118139
+    },
+    {
+      "name": "fused-full-q2.pt",
+      "bytes": 162623359
+    },
+    {
+      "name": "fused-full-q4.pt",
+      "bytes": 162623359
+    },
+    {
+      "name": "fused-ocean-q4.pt",
+      "bytes": 156503693
+    },
+    {
+      "name": "fusion-probe.pt",
+      "bytes": 183746
+    },
+    {
+      "name": "large-full-compiled4.pt",
+      "bytes": 162624234
+    },
+    {
+      "name": "large-full-q2.pt",
+      "bytes": 162623359
+    },
+    {
+      "name": "large-full-q4.pt",
+      "bytes": 162623359
+    },
+    {
+      "name": "large-ocean-compiled4.pt",
+      "bytes": 156504183
+    },
+    {
+      "name": "large-ocean-q2.pt",
+      "bytes": 156503693
+    },
+    {
+      "name": "large-ocean-q4.pt",
+      "bytes": 156503693
+    },
+    {
+      "name": "full-q2-compiled.pt",
+      "bytes": 10045389
+    },
+    {
+      "name": "full_ale-q3.pt",
+      "bytes": 10116423
+    },
+    {
+      "name": "full_ale-q2.pt",
+      "bytes": 10116423
+    },
+    {
+      "name": "full_ale-q4.pt",
+      "bytes": 10116423
+    },
+    {
+      "name": "full-q3.pt",
+      "bytes": 10042671
+    },
+    {
+      "name": "full-q2.pt",
+      "bytes": 10042671
+    },
+    {
+      "name": "full-q4.pt",
+      "bytes": 10042671
+    },
+    {
+      "name": "ocean-q3.pt",
+      "bytes": 9566219
+    },
+    {
+      "name": "ocean-q2.pt",
+      "bytes": 9566219
+    },
+    {
+      "name": "ocean-q4.pt",
+      "bytes": 9566219
+    }
+  ],
+  "notes": [
+    "large-* and unprefixed case samples use initial quadrature wheel; fused-* use global-patch prototype; public-* use final per-model API.",
+    "fusion-probe and cli-smoke overlap regression testing: execution evidence only, timings excluded.",
+    "Comparative timings ran sequentially, outside checkout, CPU float64 one thread. Full large samples are single timed steps after warmup; not confidence intervals.",
+    "Tensor captures omitted whole, not split. Runtime hashes verified against final unpacked wheel."
+  ]
+}

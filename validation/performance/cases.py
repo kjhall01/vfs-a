@@ -67,8 +67,10 @@ def make_case(c):
     from lagged import SubcycledLaggedClosure
     from vfs.ocean.stratified import (TKEOcean,TKEClosure,OceanBoundaryStress,
         OceanSurfaceHeating,OceanSurfaceExchange,OceanSurfaceFluxes,AdaptiveThermalRemapper)
-    ocean,resolved,k = setup(c['cells'],layers)
+    ocean,resolved,k = setup(c['cells'],layers,quadrature_order=c.get('energy_quadrature',4))
     ocean.warm_start = c.get('warm_start', False)
+    if c.get('compile_thermo',False) and c.get('compile_gibbs',False):
+        ocean.compile_thermodynamics()
     if not c.get('prepared', True) and hasattr(ocean.base, '_stratified_transport'):
         del ocean.base._stratified_transport
     closure = None
