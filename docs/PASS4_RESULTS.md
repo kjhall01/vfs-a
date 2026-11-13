@@ -530,3 +530,12 @@ is explicitly reported.
 Default mixing behavior is unchanged; limiter diagnostics and the existing trial
 factor are explicit. Installed-wheel portable suite: 990 passed, one CUDA skip;
 final checkpoint/column harness: five passed.
+
+## Ocean mixing cost experiment
+
+[Sweep-invariant calculation reuse and analytic cost prediction](../verification/ocean/MIXING_COST.md)
+retain actual Hamiltonian/local-TKE/entropy guards. The cached default matches
+parent state/report outputs and a two-hour trajectory exactly. A research-only
+predictor saves roughly 12% in the 128-column fixed-state CPU benchmark, with no
+material improvement in timestep error. Large-step mixing and weak-TKE-layer
+sensitivity remain unresolved. No defaults, fixtures or tolerances change.

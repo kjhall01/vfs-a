@@ -1,0 +1,48 @@
+....F..                                                                  [100%]
+=================================== FAILURES ===================================
+____________ test_failed_run_retains_manifest_and_refuses_overwrite ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-16/test_failed_run_retains_manife0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f4f881b6b10>
+
+    def test_failed_run_retains_manifest_and_refuses_overwrite(tmp_path, monkeypatch):
+        common = driver.common
+        monkeypatch.setattr(common, "verify_package", lambda *args, **kwargs: {})
+        monkeypatch.setattr(common, "git", lambda *args: b"test-only")
+        output = tmp_path / "run"
+        with pytest.raises(RuntimeError, match="deliberate"):
+>           with common.recorded_run(tmp_path, output, "test", {}, driver.__file__):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_energy_verification.py:100:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repo = PosixPath('/tmp/pytest-of-agent/pytest-16/test_failed_run_retains_manife0')
+output = PosixPath('/tmp/pytest-of-agent/pytest-16/test_failed_run_retains_manife0/run')
+experiment_id = 'test', configuration = {}
+driver = '/tmp/mixing-check/tools/run_energy_verification.py'
+numerical_revision = None, structural_revision = None, ocean_revision = None
+
+    @contextmanager
+    def recorded_run(repo, output, experiment_id, configuration, driver, numerical_revision=None, structural_revision=None, ocean_revision=None):
+        """Share baseline checks and the run/artifact lifecycle between experiments."""
+        package = Path(vfs.__file__).resolve().parent
+        if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
+>           raise ValueError("Install a baseline wheel and run outside the checkout")
+E           ValueError: Install a baseline wheel and run outside the checkout
+
+tools/run_verification.py:153: ValueError
+=============================== warnings summary ===============================
+tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[u_e]
+  /tmp/mixing-installed/vfs/atmosphere/bounded_transport.py:137: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+    steps = max(1, math.ceil(float((out / torch.minimum(m0, m1)).max()) / safety))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_energy_verification.py::test_failed_run_retains_manifest_and_refuses_overwrite
+1 failed, 6 passed, 1 warning in 6.75s

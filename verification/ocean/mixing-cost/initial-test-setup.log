@@ -1,0 +1,234 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 28%]
+........................................................................ [ 36%]
+.........FFFF.............................................F............. [ 43%]
+..............F.........F............................................... [ 50%]
+...................................................s.................... [ 57%]
+........................................................................ [ 64%]
+........................................................................ [ 72%]
+........................................................................ [ 79%]
+........................................................................ [ 86%]
+........................................................................ [ 93%]
+...............................................................          [100%]
+=================================== FAILURES ===================================
+_________ test_active_cloud_complete_step_directional_derivative[u_e] __________
+
+key = 'u_e'
+
+    @pytest.mark.parametrize("key", KEYS)
+    def test_active_cloud_complete_step_directional_derivative(key):
+        torch.set_num_threads(1)
+>       _, state = load(ROOT / "examples/bounded_moist.py").initialize()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bounded_gradients.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_extraction.py:14: in load
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d30c440>
+path = '/tmp/mixing-check/examples/bounded_moist.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/bounded_moist.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+__________ test_active_cloud_complete_step_directional_derivative[ps] __________
+
+key = 'ps'
+
+    @pytest.mark.parametrize("key", KEYS)
+    def test_active_cloud_complete_step_directional_derivative(key):
+        torch.set_num_threads(1)
+>       _, state = load(ROOT / "examples/bounded_moist.py").initialize()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bounded_gradients.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_extraction.py:14: in load
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d178320>
+path = '/tmp/mixing-check/examples/bounded_moist.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/bounded_moist.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+___ test_active_cloud_complete_step_directional_derivative[entropy_content] ____
+
+key = 'entropy_content'
+
+    @pytest.mark.parametrize("key", KEYS)
+    def test_active_cloud_complete_step_directional_derivative(key):
+        torch.set_num_threads(1)
+>       _, state = load(ROOT / "examples/bounded_moist.py").initialize()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bounded_gradients.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_extraction.py:14: in load
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d10ef30>
+path = '/tmp/mixing-check/examples/bounded_moist.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/bounded_moist.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+____ test_active_cloud_complete_step_directional_derivative[water_content] _____
+
+key = 'water_content'
+
+    @pytest.mark.parametrize("key", KEYS)
+    def test_active_cloud_complete_step_directional_derivative(key):
+        torch.set_num_threads(1)
+>       _, state = load(ROOT / "examples/bounded_moist.py").initialize()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bounded_gradients.py:196:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_extraction.py:14: in load
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d10f590>
+path = '/tmp/mixing-check/examples/bounded_moist.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/bounded_moist.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+____________ test_failed_run_retains_manifest_and_refuses_overwrite ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-15/test_failed_run_retains_manife0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fe97d1798e0>
+
+    def test_failed_run_retains_manifest_and_refuses_overwrite(tmp_path, monkeypatch):
+        common = driver.common
+        monkeypatch.setattr(common, "verify_package", lambda *args, **kwargs: {})
+        monkeypatch.setattr(common, "git", lambda *args: b"test-only")
+        output = tmp_path / "run"
+        with pytest.raises(RuntimeError, match="deliberate"):
+>           with common.recorded_run(tmp_path, output, "test", {}, driver.__file__):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_energy_verification.py:100:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repo = PosixPath('/tmp/pytest-of-agent/pytest-15/test_failed_run_retains_manife0')
+output = PosixPath('/tmp/pytest-of-agent/pytest-15/test_failed_run_retains_manife0/run')
+experiment_id = 'test', configuration = {}
+driver = '/tmp/mixing-check/tools/run_energy_verification.py'
+numerical_revision = None, structural_revision = None, ocean_revision = None
+
+    @contextmanager
+    def recorded_run(repo, output, experiment_id, configuration, driver, numerical_revision=None, structural_revision=None, ocean_revision=None):
+        """Share baseline checks and the run/artifact lifecycle between experiments."""
+        package = Path(vfs.__file__).resolve().parent
+        if not package.is_relative_to(Path(sysconfig.get_path("purelib")).resolve()):
+>           raise ValueError("Install a baseline wheel and run outside the checkout")
+E           ValueError: Install a baseline wheel and run outside the checkout
+
+tools/run_verification.py:153: ValueError
+___________________ test_radius_scaling_and_xarray_boundary ____________________
+
+    def test_radius_scaling_and_xarray_boundary():
+        from pathlib import Path
+        import importlib.util
+        import xarray as xr
+        lat,lon=coordinates(8,True,True)
+        one=EquiangularGrid.from_coordinates(lat,lon,radius=1.)
+        two=EquiangularGrid.from_coordinates(lat,lon,radius=2.)
+        p,l=map(torch.deg2rad,one.meshgrid())
+        u,v=-p.sin()*l.cos(),l.sin()
+        torch.testing.assert_close(two.curl_from_collocated(u,v),one.curl_from_collocated(u,v)/2)
+        torch.testing.assert_close(two.div_from_collocated(u,v),one.div_from_collocated(u,v)/2)
+        torch.testing.assert_close(two.laplacian(u),one.laplacian(u)/4)
+        torch.testing.assert_close(two.cell_area,4*one.cell_area)
+        spec=importlib.util.spec_from_file_location('dataset_example',Path(__file__).parents[1]/'examples/equiangular_dataset.py')
+>       module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_equiangular_coordinates.py:135:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d10c380>
+path = '/tmp/mixing-check/examples/equiangular_dataset.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/equiangular_dataset.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+______________________ test_inventories_preserve_autograd ______________________
+
+    def test_inventories_preserve_autograd():
+        from vfs.atmosphere.moist_budgets import inventories
+
+>       example = load(ROOT / "examples/bounded_moist.py")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_extraction.py:29:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_extraction.py:14: in load
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <_frozen_importlib_external.SourceFileLoader object at 0x7fe97d17b800>
+path = '/tmp/mixing-check/examples/bounded_moist.py'
+
+>   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/mixing-check/examples/bounded_moist.py'
+
+<frozen importlib._bootstrap_external>:1190: FileNotFoundError
+=============================== warnings summary ===============================
+tests/ocean/test_admissibility_investigation.py::test_stage_observer_delegates_exact_ssprk3_and_preserves_gradients
+  /tmp/mixing-check/tests/ocean/test_admissibility_investigation.py:59: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+    dt=.1*float(a.carrier_rates(state)[2].min())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[u_e]
+FAILED tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[ps]
+FAILED tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[entropy_content]
+FAILED tests/test_bounded_gradients.py::test_active_cloud_complete_step_directional_derivative[water_content]
+FAILED tests/test_energy_verification.py::test_failed_run_retains_manifest_and_refuses_overwrite
+FAILED tests/test_equiangular_coordinates.py::test_radius_scaling_and_xarray_boundary
+FAILED tests/test_extraction.py::test_inventories_preserve_autograd - FileNot...
+7 failed, 991 passed, 1 skipped, 1 warning in 310.39s (0:05:10)

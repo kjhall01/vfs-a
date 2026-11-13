@@ -100,6 +100,14 @@ class TKEClosure:
     _thermal_parts = staticmethod(thermal_parts)
     _heat = staticmethod(apply_heat)
 
+    def _mixing_proposal(self, ocean, physical, reference, reservoir, proposed):
+        """Initial trial coefficient; research predictors may override this hook.
+
+        Every proposal still passes the actual Hamiltonian affordability check.
+        The supported default is the original implicit pair exchange.
+        """
+        return proposed
+
     def _mix_adjacent(self, ocean, state, reservoir, conductance, dt, diagnostics=None):
         """Local implicit pair exchanges: even half, odd full, even half step.
 
@@ -135,20 +143,29 @@ class TKEClosure:
             salt0, enthalpy0 = before.salinity(), old_ref['h0']
             coefficient = fraction*dt*g/(1+fraction*dt*g*(1/h[:, :-1]+1/h[:, 1:]))
             proposed_coefficient = coefficient
+            coefficient = self._mixing_proposal(ocean, before, old_ref, reservoir, coefficient)
+            if (not torch.isfinite(coefficient).all() or (coefficient < 0).any()
+                    or (coefficient > proposed_coefficient).any()):
+                raise ValueError('mixing proposal must be finite and between zero and the implicit exchange')
+            # These depend on the sweep's original state, not its trial exchange.
+            # Keep the inverse/evaluate baseline exactly as before; using the
+            # original entropy instead would change roundoff cancellation.
+            nodes = adjacent_sum(active.to(h.dtype)) > 0
+            theta0 = energy.reference.temperature_from_enthalpy(salt0, enthalpy0)
+            eta0 = energy.reference.evaluate(salt0, theta0, entropy_derivatives=True)['entropy']
+            alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
+            budget = torch.minimum(reservoir[:, :-1]/alpha, reservoir[:, 1:]/(1-alpha))
             def candidate(coefficient):
                 def mix(q):
                     return q+divergence(coefficient*(q[:, 1:]-q[:, :-1]))/h
                 salt_h = state.salt_h+divergence(coefficient*(salt0[:, 1:]-salt0[:, :-1]))
                 salt, enthalpy = salt_h/h, mix(enthalpy0)
-                nodes = adjacent_sum(active.to(h.dtype)) > 0
                 theta = energy.reference.temperature_from_enthalpy(salt, enthalpy)
                 eta = energy.reference.evaluate(salt, theta, entropy_derivatives=True)['entropy']
                 # Subtract the same inverse/evaluate round trip at zero increment.
                 # Uniform fields then remain bitwise unchanged WITHOUT branching on
                 # their gradients (which would incorrectly erase the linearized
                 # diffusion response at a uniform state).
-                theta0 = energy.reference.temperature_from_enthalpy(salt0, enthalpy0)
-                eta0 = energy.reference.evaluate(salt0, theta0, entropy_derivatives=True)['entropy']
                 tracer = state.tracer_h
                 if tracer is not None and tracer.shape[-1] > 0:
                     tracer = torch.stack([tracer[..., j]+divergence(coefficient*
@@ -160,7 +177,6 @@ class TKEClosure:
                 new_psi, new_ref = self._thermal_parts(ocean, after)
                 change = mass*((new_psi-old_psi)+(new_ref['h0']-old_ref['h0']))
                 work = torch.where(active, change[:, :-1]+change[:, 1:], torch.zeros_like(g))
-                alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
                 upper_work, lower_work = alpha*work, (1-alpha)*work
                 debit = torch.cat((upper_work, zero), -1)+torch.cat((zero, lower_work), -1)
                 return updated, change, work, upper_work, debit
@@ -173,9 +189,6 @@ class TKEClosure:
                 bad_pair = active & (bad_layer[:, :-1] | bad_layer[:, 1:])
                 if not bad_pair.any():
                     break
-                alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
-                budget = torch.minimum(reservoir[:, :-1]/alpha,
-                                       reservoir[:, 1:]/(1-alpha))
                 # Work need not be linear in exchanged content: this ratio is
                 # only a trial reduction, always rechecked against the full H.
                 positive_work = torch.where(work > 0, work, torch.ones_like(work))

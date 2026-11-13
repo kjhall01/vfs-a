@@ -44,6 +44,13 @@ exchange or physics subcycling before physical entrainment claims.
 See the [surface TKE startup design](../verification/ocean/TKE_STARTUP_DESIGN.md)
 for a proposed prescribed energy flux. No source is added in this branch.
 
+The [mixing cost experiment](../verification/ocean/MIXING_COST.md) reuses
+sweep-invariant thermodynamics with exact default-trajectory agreement. A research
+analytic work predictor reduces frozen-input CPU closure cost, but leaves timestep
+sensitivity essentially unchanged; it is not a supported default. Next candidate:
+a bounded predictor/corrector of coupled momentum/TKE/scalar coefficients, judged
+by runtime at matched profile accuracy. No physical surface TKE source is added.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---
