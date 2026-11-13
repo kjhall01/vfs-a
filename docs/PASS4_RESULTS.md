@@ -559,3 +559,17 @@ six one-hour controls; dt600 and the 48-hour attempt remain failed. Same-EOS bul
 profiles closely match the cautious finite-work solve, implicating cost-evaluation
 sensitivity. The adapter, hook and controls are research-only; installed runtime,
 EOS defaults, physical sources, fixtures and tolerances are unchanged.
+
+## JMD95 conservative-path work research
+
+The research `PathWorkClosure` replaces subtraction of nearly equal parcel
+energies with analytic derivative integration along conservative h0/SP paths,
+retaining the coupled solver's local work allocation and full-H/entropy guards.
+Eight one-hour cases complete, including 32 layers and cooling/rain forcing.
+The matched accelerated finite-work control rejects at 40 minutes; the cautious
+finite-work endpoint agrees closely. TKE timestep sensitivity remains material.
+See [full evidence](../verification/ocean/PATH_WORK.md). No installed package
+source, fixture, default or tolerance changed.
+The 48-hour attempt rejects after 6 hours on the unchanged layer-budget gate;
+last accepted full-H residual 2.07e-12 J/kg. Installed-wheel portable regression:
+1017 passed, one CUDA skip; corrected-Gibbs and dry-helper comparisons pass.

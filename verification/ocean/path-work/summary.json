@@ -1,0 +1,492 @@
+{
+  "cases": [
+    {
+      "method": "finite",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 52.26898475299822,
+      "energy_error_J_kg": 1.1692909881536784e-11,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "case": "cautious",
+      "iterations": 1296.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "cooling",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 30.35675358500157,
+      "energy_error_J_kg": 2.6422302897383527e-11,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "case": "cooling",
+      "iterations": 203.0
+    },
+    {
+      "method": "finite",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "rejected",
+      "requested_hours": 1.0,
+      "completed_hours": 0.6666666666666666,
+      "failure": {
+        "time_s": 2400.0,
+        "attempt_dt_s": 300.0,
+        "message": "coupled column failed to converge in 80 iterations; iterate residual 74.799, reconciled residual inf, budget residual inf"
+      },
+      "wall_s": 11.964348691995838,
+      "energy_error_J_kg": 2.6146162724325133e-11,
+      "salt_relative_change": -1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "case": "finite300",
+      "iterations": 177.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "rejected",
+      "requested_hours": 48.0,
+      "completed_hours": 6.0,
+      "failure": {
+        "time_s": 21600.0,
+        "attempt_dt_s": 300.0,
+        "message": "coupled column failed to converge in 80 iterations; iterate residual 0.00486001, reconciled residual 0.00486001, budget residual 5.25097"
+      },
+      "wall_s": 231.36286172400287,
+      "energy_error_J_kg": 2.071609043657479e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 1.775553150222396e-16,
+      "case": "long",
+      "iterations": 1960.0
+    },
+    {
+      "method": "path",
+      "path_order": 5,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 40.8655096079965,
+      "energy_error_J_kg": 2.1007174822438086e-11,
+      "salt_relative_change": -1.3017278326570211e-16,
+      "passive_relative_change": 3.551106300444792e-16,
+      "case": "order5",
+      "iterations": 190.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 150.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 39.06142663599894,
+      "energy_error_J_kg": 3.461777705469125e-11,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "case": "path150",
+      "iterations": 334.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 32,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 56.33294419400045,
+      "energy_error_J_kg": 8.183452675394819e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 1.7745542656518954e-16,
+      "case": "path32",
+      "iterations": 370.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 600.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 18.756838470995717,
+      "energy_error_J_kg": -9.153591662425242e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "case": "path600",
+      "iterations": 186.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 75.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 67.77940195299743,
+      "energy_error_J_kg": -2.983270391263343e-11,
+      "salt_relative_change": -1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "case": "path75",
+      "iterations": 624.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "wind",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 20.328431743000692,
+      "energy_error_J_kg": 3.031131227641442e-11,
+      "salt_relative_change": -1.3017278326570211e-16,
+      "passive_relative_change": 1.775553150222396e-16,
+      "case": "probe",
+      "iterations": 190.0
+    },
+    {
+      "method": "path",
+      "path_order": 3,
+      "scenario": "rain_heating",
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 43.13439048500004,
+      "energy_error_J_kg": 1.7456619477853543e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "case": "rain",
+      "iterations": 349.0
+    }
+  ],
+  "comparisons": [
+    {
+      "left": "probe",
+      "right": "order5",
+      "metrics": {
+        "u": {
+          "rms_difference": 4.3323449050396973e-16,
+          "max_abs_difference": 1.2281842209915794e-15,
+          "relative_l2": 3.2241752460854235e-14
+        },
+        "v": {
+          "rms_difference": 1.1901408010144972e-16,
+          "max_abs_difference": 3.382710778154774e-16,
+          "relative_l2": 4.906827696761425e-14
+        },
+        "temperature": {
+          "rms_difference": 3.1086244689504383e-15,
+          "max_abs_difference": 1.2434497875801753e-14,
+          "relative_l2": 2.7875893720226014e-16
+        },
+        "salinity": {
+          "rms_difference": 0.0,
+          "max_abs_difference": 0.0,
+          "relative_l2": 0.0
+        },
+        "tke": {
+          "rms_difference": 6.467625375173918e-18,
+          "max_abs_difference": 2.3946468451826325e-17,
+          "relative_l2": 2.0310869004608614e-12
+        },
+        "diffusivity": {
+          "rms_difference": 4.525537289113581e-16,
+          "max_abs_difference": 1.3366044382401299e-15,
+          "relative_l2": 1.42762202438731e-12
+        },
+        "velocity_relative_l2": 3.2904443293541585e-14,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            0.9999999932486212,
+            0.9999999253300541,
+            1.0000000586894005
+          ],
+          "minimum": 0.9999999253300541,
+          "maximum": 1.0000000586894005,
+          "reference_tke": [
+            1.06467844024895e-12,
+            9.660483637573621e-20,
+            1.7058396003630569e-15
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "left": "probe",
+      "right": "cautious",
+      "metrics": {
+        "u": {
+          "rms_difference": 6.174132988104865e-12,
+          "max_abs_difference": 1.7523212048065062e-11,
+          "relative_l2": 4.594852715781578e-10
+        },
+        "v": {
+          "rms_difference": 9.188396339190709e-13,
+          "max_abs_difference": 2.619113259605399e-12,
+          "relative_l2": 3.788280984847464e-10
+        },
+        "temperature": {
+          "rms_difference": 2.3985574731183773e-10,
+          "max_abs_difference": 7.224389975135637e-10,
+          "relative_l2": 2.150852696114619e-11
+        },
+        "salinity": {
+          "rms_difference": 2.3984946019279767e-11,
+          "max_abs_difference": 7.224798537208699e-11,
+          "relative_l2": 6.87237196322491e-13
+        },
+        "tke": {
+          "rms_difference": 8.090692568866503e-14,
+          "max_abs_difference": 1.4341059434007809e-13,
+          "relative_l2": 2.540793373413759e-08
+        },
+        "diffusivity": {
+          "rms_difference": 2.3988339858779455e-09,
+          "max_abs_difference": 9.458982106925991e-09,
+          "relative_l2": 7.567340671097834e-06
+        },
+        "velocity_relative_l2": 4.5715765909299e-10,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1.0983829913759906,
+            7629140.497456301,
+            0.7003009903519207
+          ],
+          "minimum": 0.7003009903519207,
+          "maximum": 7629140.497456301,
+          "reference_tke": [
+            9.69314384345241e-13,
+            1.2662609791295385e-26,
+            2.435866468817256e-15
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "left": "path600",
+      "right": "path75",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.0002212408805286415,
+          "max_abs_difference": 0.0006292733237311191,
+          "relative_l2": 0.016377000428087853
+        },
+        "v": {
+          "rms_difference": 4.8915507734820335e-05,
+          "max_abs_difference": 0.00013890902255705236,
+          "relative_l2": 0.020031944299836946
+        },
+        "temperature": {
+          "rms_difference": 0.00045522810240751526,
+          "max_abs_difference": 0.001082420707167131,
+          "relative_l2": 4.0821524533858915e-05
+        },
+        "salinity": {
+          "rms_difference": 4.552502299869777e-05,
+          "max_abs_difference": 0.0001082642735852346,
+          "relative_l2": 1.3044219117551914e-06
+        },
+        "tke": {
+          "rms_difference": 1.6758534646761492e-06,
+          "max_abs_difference": 3.132437788226269e-06,
+          "relative_l2": 0.6798806444757433
+        },
+        "diffusivity": {
+          "rms_difference": 9.359204326576331e-05,
+          "max_abs_difference": 0.0001276235010248862,
+          "relative_l2": 0.3384246582271141
+        },
+        "velocity_relative_l2": 0.01650504235747205,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            4.6692920344808595,
+            2.6632208510996744e+16,
+            803.5861635542376
+          ],
+          "minimum": 4.6692920344808595,
+          "maximum": 2.6632208510996744e+16,
+          "reference_tke": [
+            4.736756676886572e-13,
+            1.8983794337747694e-35,
+            1.4070509875425986e-17
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "left": "probe",
+      "right": "path75",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.00010454394135317966,
+          "max_abs_difference": 0.00029650554169263646,
+          "relative_l2": 0.0077386971530940315
+        },
+        "v": {
+          "rms_difference": 2.391898031295117e-05,
+          "max_abs_difference": 6.777431593237276e-05,
+          "relative_l2": 0.009795332881659072
+        },
+        "temperature": {
+          "rms_difference": 0.000235665213502479,
+          "max_abs_difference": 0.000555049386077755,
+          "relative_l2": 2.1132731577622673e-05
+        },
+        "salinity": {
+          "rms_difference": 2.3567694256056503e-05,
+          "max_abs_difference": 5.552994643664988e-05,
+          "relative_l2": 6.752817411652146e-07
+        },
+        "tke": {
+          "rms_difference": 7.243568887984145e-07,
+          "max_abs_difference": 1.4868758148675996e-06,
+          "relative_l2": 0.2938659248956943
+        },
+        "diffusivity": {
+          "rms_difference": 4.2848689541293734e-05,
+          "max_abs_difference": 6.524713344484009e-05,
+          "relative_l2": 0.15493895215338938
+        },
+        "velocity_relative_l2": 0.007812065649942427,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            2.247695006703841,
+            5088805085196675.0,
+            121.23510203827037
+          ],
+          "minimum": 2.247695006703841,
+          "maximum": 5088805085196675.0,
+          "reference_tke": [
+            4.736756676886572e-13,
+            1.8983794337747694e-35,
+            1.4070509875425986e-17
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "left": "path150",
+      "right": "path75",
+      "metrics": {
+        "u": {
+          "rms_difference": 3.7502472776075756e-05,
+          "max_abs_difference": 0.0001062289120700499,
+          "relative_l2": 0.00277606024366114
+        },
+        "v": {
+          "rms_difference": 8.738524163614914e-06,
+          "max_abs_difference": 2.473806467880068e-05,
+          "relative_l2": 0.003578612129660155
+        },
+        "temperature": {
+          "rms_difference": 7.821957484834893e-05,
+          "max_abs_difference": 0.0001553098464661673,
+          "relative_l2": 7.01415900471257e-06
+        },
+        "salinity": {
+          "rms_difference": 7.822481724361616e-06,
+          "max_abs_difference": 1.5547767318935257e-05,
+          "relative_l2": 2.2413643955443367e-07
+        },
+        "tke": {
+          "rms_difference": 2.480686461395415e-07,
+          "max_abs_difference": 5.380845290147901e-07,
+          "relative_l2": 0.10063950969852174
+        },
+        "diffusivity": {
+          "rms_difference": 1.511341601274818e-05,
+          "max_abs_difference": 2.5100634632458266e-05,
+          "relative_l2": 0.05464943888696479
+        },
+        "velocity_relative_l2": 0.0028049719651489302,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            2.3804630739355512,
+            1.106731557478901e+16,
+            259.75921896762037
+          ],
+          "minimum": 2.3804630739355512,
+          "maximum": 1.106731557478901e+16,
+          "reference_tke": [
+            4.736756676886572e-13,
+            1.8983794337747694e-35,
+            1.4070509875425986e-17
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    }
+  ],
+  "note": "Numerical endpoint comparisons, not analytic solutions. Campaign timings overlap other jobs; not a speed benchmark."
+}
