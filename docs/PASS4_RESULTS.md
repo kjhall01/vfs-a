@@ -584,3 +584,17 @@ consistency. A local positive splice also fails that fresh check. See
 refreshed residual acceptance and a constrained nonlinear solve. Supported runtime
 is unchanged. Installed suite: 1020 passed, one CUDA skip; final focused tests:
 10 passed. No GPU or backward qualification.
+
+## Refreshed end-TKE acceptance
+
+The opt-in research closure now checks and commits physics recomputed from the
+candidate end TKE, retaining positivity, entropy and full-H guards. All ten
+one-hour controls pass, and the pinned six-hour rejection passes at iteration 92
+with an independent refreshed residual below its unchanged limit. Budget-weighted
+acceleration reduces one-hour trial counts, but fixed-input cost rises versus
+legacy and TKE remains timestep-sensitive. Supported runtime/defaults/fixtures
+are unchanged. Installed suite: 1023 passed, one CUDA skip; portable comparisons
+pass. See [qualification and limitations](../verification/ocean/REFRESHED_SOLVE.md).
+The 12-hour dt300/16-layer wind run completes with full-energy residual
+1.60e-11 J/kg. It requires 7637 iterations and 8381 trials, including costly
+transition periods. Longer-run and temporal-accuracy qualification remain open.

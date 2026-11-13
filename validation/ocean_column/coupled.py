@@ -59,6 +59,8 @@ class CoupledClosure(TKEClosure):
     interface_scheme: str = "resistance"
     budget_atol: float = 1e-13
     budget_rtol: float = 1e-9
+    refresh_budget: bool = False
+    budget_acceleration: bool = False
 
     def __post_init__(self):
         super().__post_init__()
@@ -102,7 +104,10 @@ class CoupledClosure(TKEClosure):
             # handled without evaluating a singular reciprocal or adding a floor.
             return 2*upper*lower/torch.where(denominator>0,denominator,torch.ones_like(denominator))
 
+        trial_evaluations=0
         def trial(k):
+            nonlocal trial_evaluations
+            trial_evaluations+=1
             km=self.c_mu*self.mixing_length*positive_sqrt(k)
             g=.5*(km[:,:-1]+km[:,1:])/(.5*(h[:,:-1]+h[:,1:]))
             if self.interface_scheme=="resistance":g=resistance(km,h)
@@ -192,16 +197,36 @@ class CoupledClosure(TKEClosure):
                     actual_residual=mass*(final-k0)-production+work+diss*final-div(tflux)
                     budget_error=(actual_residual.abs()/budget_scale).max()
                     if correction<=1 and budget_error<=1:
+                        if self.refresh_budget:
+                            # Recompute ALL momentum/scalar work and transport
+                            # from candidate end TKE, before committing anything.
+                            refreshed=trial(final)
+                            rm,rp,rw,rf,rg,rd,rdiag,roff,rr=refreshed
+                            rtflux=dt*rg*(final[:,1:]-final[:,:-1])
+                            residual=mass*(final-k0)-rp+rw+rd*final-div(rtflux)
+                            rscale=mass*self.budget_atol+self.budget_rtol*(mass*k0+rp+rw.abs())
+                            budget_error=(residual.abs()/rscale).max()
+                            if not torch.isfinite(budget_error) or budget_error>1:continue
+                            mixed,production,work,flux,g,diss,diagonal,off,reconstruction=refreshed
                         accepted=True
                         break
                 if accepted:break
             next_guess=(1-self.relaxation)*guess+self.relaxation*predicted
             f=predicted-guess
+            acceleration_scale=scale
+            if self.budget_acceleration:
+                # Anderson mixing minimizes the current nonlinear budget, not
+                # a TKE-change norm whose absolute scale hides weak layers.
+                gflux=dt*g*(guess[:,1:]-guess[:,:-1])
+                residual=mass*(guess-k0)-production+work+diss*guess-div(gflux)
+                bscale=mass*self.budget_atol+self.budget_rtol*(mass*k0+production+work.abs())
+                f=residual/bscale
+                acceleration_scale=torch.ones_like(scale)
             if self.accelerate and previous is not None:
                 old_f,old_predicted=previous
-                difference=(f-old_f)/scale
+                difference=(f-old_f)/acceleration_scale
                 denominator=difference.square().sum(-1,keepdim=True)
-                beta=((f/scale)*difference).sum(-1,keepdim=True)/torch.where(denominator>0,denominator,torch.ones_like(denominator))
+                beta=((f/acceleration_scale)*difference).sum(-1,keepdim=True)/torch.where(denominator>0,denominator,torch.ones_like(denominator))
                 extrapolated=predicted-beta*(predicted-old_predicted)
                 # Reject unsafe ITERATES, never clip physical TKE or its budget.
                 valid=(denominator>0)&torch.isfinite(beta)&(beta.abs()<=2)
@@ -229,4 +254,6 @@ class CoupledClosure(TKEClosure):
         residual=mass*(final-k0)-production+work+heat-div(tkeflux)
         report=CoupledReport(iteration,correction,budget_error,column.sum(),column,exchange.sum(-1),work,flux,tkeflux,heat,entropy,residual,reconstruction,
             {'limited_pairs':h.new_zeros(()),'coupled_iterations':h.new_tensor(iteration),'accelerated_columns':h.new_tensor(accelerations),'scaled_residual_sum':correction,'budget_scaled_residual_sum':budget_error})
+        if self.refresh_budget:
+            report.mixing_limiter["trial_evaluations"]=h.new_tensor(trial_evaluations)
         return end,h*final,report
