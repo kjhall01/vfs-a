@@ -66,6 +66,7 @@ class TKEReport:
     buoyancy_layer_work: torch.Tensor
     buoyancy_energy_flux: torch.Tensor
     buoyancy_layer_residual: torch.Tensor
+    mixing_limiter: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -82,8 +83,11 @@ class TKEClosure:
     prandtl: float = 1.0
     sigma_k: float = 1.0
     mix_scalars: bool = True
+    mixing_backtrack_safety: float = 0.5
 
     def __post_init__(self):
+        if not 0 < self.mixing_backtrack_safety < 1:
+            raise ValueError('mixing_backtrack_safety must lie strictly between zero and one')
         for name in ('mixing_length', 'prandtl', 'sigma_k'):
             x = getattr(self, name)
             if not math.isfinite(x) or x <= 0:
@@ -96,7 +100,7 @@ class TKEClosure:
     _thermal_parts = staticmethod(thermal_parts)
     _heat = staticmethod(apply_heat)
 
-    def _mix_adjacent(self, ocean, state, reservoir, conductance, dt):
+    def _mix_adjacent(self, ocean, state, reservoir, conductance, dt, diagnostics=None):
         """Local implicit pair exchanges: even half, odd full, even half step.
 
         Each sweep contains disjoint layer pairs. For each pair the actual
@@ -130,6 +134,7 @@ class TKEClosure:
             old_psi, old_ref = self._thermal_parts(ocean, before)
             salt0, enthalpy0 = before.salinity(), old_ref['h0']
             coefficient = fraction*dt*g/(1+fraction*dt*g*(1/h[:, :-1]+1/h[:, 1:]))
+            proposed_coefficient = coefficient
             def candidate(coefficient):
                 def mix(q):
                     return q+divergence(coefficient*(q[:, 1:]-q[:, :-1]))/h
@@ -174,7 +179,7 @@ class TKEClosure:
                 # Work need not be linear in exchanged content: this ratio is
                 # only a trial reduction, always rechecked against the full H.
                 positive_work = torch.where(work > 0, work, torch.ones_like(work))
-                reduction = .5*(budget/positive_work).clamp(min=0, max=1)
+                reduction = self.mixing_backtrack_safety*(budget/positive_work).clamp(min=0, max=1)
                 coefficient = torch.where(bad_pair, coefficient*reduction, coefficient)
                 updated, change, work, upper_work, debit = candidate(coefficient)
             else:
@@ -184,6 +189,18 @@ class TKEClosure:
                 updated, change, work, upper_work, debit = candidate(coefficient)
             if (debit > reservoir).any():
                 raise ValueError('local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing')
+            if diagnostics is not None:
+                ratio = torch.where(active, coefficient/torch.where(active, proposed_coefficient, torch.ones_like(g)), torch.ones_like(g))
+                diagnostics['active_pairs'] += active.sum()
+                diagnostics['limited_pairs'] += (active & (ratio < 1)).sum()
+                diagnostics['zero_pairs'] += (active & (ratio == 0)).sum()
+                diagnostics['proposed_exchange'] += proposed_coefficient.sum()
+                diagnostics['accepted_exchange'] += coefficient.sum()
+                for name, field in (('salt', salt0), ('enthalpy', enthalpy0)):
+                    contrast = (field[:, 1:]-field[:, :-1]).abs()
+                    diagnostics['proposed_'+name] += (proposed_coefficient*contrast).sum()
+                    diagnostics['accepted_'+name] += (coefficient*contrast).sum()
+                diagnostics['minimum_fraction'] = torch.minimum(diagnostics['minimum_fraction'], ratio.min())
             flux = torch.where(active, change[:, :-1]-upper_work, torch.zeros_like(g))
             entropy_delta = mass_area*(updated.entropy_h-state.entropy_h)
             entropy_pair = entropy_delta[:, :-1]+entropy_delta[:, 1:]
@@ -255,9 +272,11 @@ class TKEClosure:
         layer_work = torch.zeros_like(h)
         energy_flux = torch.zeros_like(conductance)
         layer_residual = torch.zeros_like(h)
+        limiter = {key: h.new_zeros(()) for key in ('active_pairs', 'limited_pairs', 'zero_pairs', 'proposed_exchange', 'accepted_exchange', 'proposed_salt', 'accepted_salt', 'proposed_enthalpy', 'accepted_enthalpy')}
+        limiter['minimum_fraction'] = h.new_ones(())
         if self.mix_scalars and torch.any(conductance != 0):
             mixed, reservoir, interface_work, layer_work, energy_flux, layer_residual = self._mix_adjacent(
-                ocean, mixed, reservoir, conductance/self.prandtl, dt)
+                ocean, mixed, reservoir, conductance/self.prandtl, dt, limiter)
             buoyancy = interface_work.sum(-1)
         # Closed vertical transport of TKE, then exact local decay for fixed L.
         before_diffusion = reservoir.sum()
@@ -296,4 +315,4 @@ class TKEClosure:
             raise FloatingPointError('TKE full-H energy closure failed')
         return end, end_tke, TKEReport(shear, time_loss, buoyancy, cell_mass*heat_specific,
             kinetic_residual, cell_mass*thermal_residual, diffusion_residual, entropy_change, column_residual, column_exchange, global_residual,
-            interface_work, layer_work, energy_flux, layer_residual)
+            interface_work, layer_work, energy_flux, layer_residual, limiter)

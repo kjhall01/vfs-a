@@ -320,3 +320,28 @@ def test_uniform_scalar_state_retains_linearized_mixing_response(mesh):
     actual=torch.autograd.grad(loss(a),a)[0]
     step=1e-4;expected=(loss(a.detach()+step)-loss(a.detach()-step))/(2*step)
     torch.testing.assert_close(actual,expected,rtol=2e-7,atol=1e-7)
+
+
+def test_limiter_diagnostics_do_not_change_pair_solution(mesh):
+    m,s,reservoir,g=local_pair(mesh)
+    reservoir=reservoir*1e-6
+    keys=('active_pairs','limited_pairs','zero_pairs','proposed_exchange',
+          'accepted_exchange','proposed_salt','accepted_salt',
+          'proposed_enthalpy','accepted_enthalpy')
+    d={key:reservoir.new_zeros(()) for key in keys}
+    d['minimum_fraction']=reservoir.new_ones(())
+    plain=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    measured=m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.,d)
+    for key in ('salt_h','entropy_h','tracer_h'):
+        assert torch.equal(getattr(plain[0],key),getattr(measured[0],key))
+    for a,b in zip(plain[1:],measured[1:]):assert torch.equal(a,b)
+    assert 0 < d['limited_pairs'] <= d['active_pairs']
+    assert 0 <= d['minimum_fraction'] < 1
+    for name in ('exchange','salt','enthalpy'):
+        assert 0 <= d['accepted_'+name] <= d['proposed_'+name]
+
+
+@pytest.mark.parametrize('safety',[0.,1.,-1.,float('nan')])
+def test_invalid_backtracking_safety(safety):
+    with pytest.raises(ValueError,match='mixing_backtrack_safety'):
+        TKEClosure(2.,mixing_backtrack_safety=safety)

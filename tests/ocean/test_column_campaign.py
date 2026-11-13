@@ -37,3 +37,33 @@ def test_short_control_transport_reference():
     assert r['status']=='completed'
     actual=torch.tensor(r['transport']);reference=torch.tensor(r['analytic_wind_transport'])
     torch.testing.assert_close(actual,reference,rtol=1e-6,atol=1e-10)
+
+
+def test_profile_comparison_conservative_overlap():
+    import numpy as np
+    path=Path(__file__).resolve().parents[2]/'validation/ocean_column/analyze_sustained.py'
+    spec=importlib.util.spec_from_file_location('column_analysis_test',path)
+    analysis=importlib.util.module_from_spec(spec);spec.loader.exec_module(analysis)
+    def record(depth,values):
+        p={k:values for k in ('u','v','temperature','salinity','tke','diffusivity')}
+        p.update(depth=depth,temperature_mld_m=0.)
+        return {'profiles':[p]}
+    # Fine averages reduce exactly to [2, 6] over the two coarse layers.
+    a=record([1.,3.],[2.,6.]);b=record([.5,1.5,2.5,3.5],[1.,3.,5.,7.])
+    result=analysis.compare(a,b)
+    assert result['velocity_relative_l2']==0
+    assert result['temperature']['rms_difference']==0
+    np.testing.assert_array_equal(analysis.thickness(b['profiles'][0]),[1.,1.,1.,1.])
+
+
+def test_hourly_restart_matches_uninterrupted_run(tmp_path):
+    checkpoint=tmp_path/'column.pt'
+    partial=module.run(4,300.,2.,'wind',checkpoint=checkpoint,wall_limit=.001)
+    assert partial['status']=='checkpointed' and partial['completed_hours']==1.
+    resumed=module.run(4,300.,2.,'wind',checkpoint=checkpoint)
+    plain=module.run(4,300.,2.,'wind')
+    resumed.pop('wall_s');plain.pop('wall_s')
+    assert resumed==plain
+    import pytest
+    with pytest.raises(ValueError,match='checkpoint parameters'):
+        module.run(4,150.,2.,'wind',checkpoint=checkpoint)

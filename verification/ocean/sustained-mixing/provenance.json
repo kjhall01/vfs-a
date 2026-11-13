@@ -1,0 +1,22 @@
+{
+  "runtime_commit": "1dc0bcb434520badea0992565d462a27b875c3dd",
+  "parent_physics_commit": "9c317aac2141ea03b3bed6ee94dfe13e36a57ce7",
+  "tke_source_sha256": "85a49cf2e266426d525afd5327b93cb50085e8aa0897c2772d04ddb6f8664f59",
+  "python": "3.12",
+  "torch": "2.15.0+cpu",
+  "device": "CPU",
+  "dtype": "float64",
+  "noneditable_installed_wheel": true,
+  "requested_cases": 23,
+  "completed_48h": 23,
+  "physical_rejections": 0,
+  "restart_equivalence_test": "exact, two-hour active-mixing run",
+  "historical_fixtures_changed": false,
+  "limitations": [
+    "no physical entrainment reference",
+    "timestep and vertical profile sensitivity",
+    "local limiter sensitivity",
+    "zero-TKE startup source not implemented",
+    "no horizontal dycore/ALE/GPU/backward qualification"
+  ]
+}

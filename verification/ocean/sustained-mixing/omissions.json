@@ -1,0 +1,122 @@
+[
+  {
+    "file": "cooling-16-150-k0.0001-a0.5.json",
+    "bytes": 190907,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-16-300-k0.0001-a0.5.json",
+    "bytes": 190904,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-32-150-k0.0001-a0.5.json",
+    "bytes": 345668,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-32-300-k0.0001-a0.5.json",
+    "bytes": 345805,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-64-150-k0.0001-a0.5.json",
+    "bytes": 656748,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-64-300-k0.0001-a0.5.json",
+    "bytes": 656390,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-16-150-k0.0001-a0.5.json",
+    "bytes": 199932,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-16-300-k0.0001-a0.5.json",
+    "bytes": 200476,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-32-150-k0.0001-a0.5.json",
+    "bytes": 362607,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-32-300-k0.0001-a0.5.json",
+    "bytes": 362073,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-64-150-k0.0001-a0.5.json",
+    "bytes": 685485,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-64-300-k0.0001-a0.5.json",
+    "bytes": 685430,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-16-150-k0.0001-a0.5.json",
+    "bytes": 190959,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-16-300-k0.0001-a0.5.json",
+    "bytes": 190957,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k0.0001-a0.25.json",
+    "bytes": 345659,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k0.0001-a0.5.json",
+    "bytes": 345740,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k0.0001-a0.75.json",
+    "bytes": 345719,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k0.001-a0.5.json",
+    "bytes": 346092,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k1e-06-a0.5.json",
+    "bytes": 345847,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-300-k0.0001-a0.5.json",
+    "bytes": 345671,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-75-k0.0001-a0.5.json",
+    "bytes": 345722,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-64-150-k0.0001-a0.5.json",
+    "bytes": 656494,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-64-300-k0.0001-a0.5.json",
+    "bytes": 656399,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "profiles.svg",
+    "bytes": 142598,
+    "reason": "generated resolution figure exceeds 128 KiB; omitted"
+  }
+]

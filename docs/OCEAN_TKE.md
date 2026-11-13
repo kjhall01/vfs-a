@@ -213,3 +213,22 @@ particular, K_m proportional to sqrt(k) leaves exactly zero TKE invariant in a
 stable wind-driven column: finite shear alone cannot start this closure without
 nonzero turbulence or a separately justified source. The limiter addresses
 energy depletion, not this startup limitation.
+
+`TKEReport.mixing_limiter` contains scalar tensor diagnostics accumulated across
+all disjoint-pair sweeps: active/limited/zero pair counts, proposed/accepted
+exchange coefficients, absolute salt and potential-enthalpy transfers, and the
+minimum accepted coefficient fraction. Counts include repeat visits during the
+even/odd/even sweeps. Coefficient sums have units of length; salt transfer sums
+have units of length times salinity, and potential-enthalpy transfer sums have
+units m J/kg. These are unweighted diagnostic sums, not total inventories in J
+or kg; use the existing energy/content reports for physical budgets. Accepted
+fractions compare each accepted flux with its proposal at the same actual stage,
+not with an unlimited counterfactual trajectory. Passive tracers share the same
+coefficient.
+
+`TKEClosure.mixing_backtrack_safety` is the numerical trial reduction factor
+(default 0.5, strictly between zero and one). It does not change the energy
+acceptance test or represent a physical mixing efficiency. Its sensitivity is
+examined in the [sustained campaign](../verification/ocean/SUSTAINED_MIXING.md).
+See the [startup proposal](../verification/ocean/TKE_STARTUP_DESIGN.md) for a
+separately budgeted surface TKE source; it is not implemented here.
