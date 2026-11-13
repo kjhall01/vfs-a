@@ -573,3 +573,14 @@ source, fixture, default or tolerance changed.
 The 48-hour attempt rejects after 6 hours on the unchanged layer-budget gate;
 last accepted full-H residual 2.07e-12 J/kg. Installed-wheel portable regression:
 1017 passed, one CUDA skip; corrected-Gibbs and dry-helper comparisons pass.
+
+## Local TKE budget diagnostic
+
+The rejected six-hour path-work input passes at iteration 92 without changed
+physics or tolerances. Other accepted variants reveal that frozen-budget closure
+plus the existing TKE-change check does not ensure refreshed end-coefficient
+consistency. A local positive splice also fails that fresh check. See
+[ledger and replay evidence](../verification/ocean/LAYER_BUDGET.md). Next target:
+refreshed residual acceptance and a constrained nonlinear solve. Supported runtime
+is unchanged. Installed suite: 1020 passed, one CUDA skip; final focused tests:
+10 passed. No GPU or backward qualification.
