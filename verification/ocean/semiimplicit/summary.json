@@ -1,0 +1,1177 @@
+{
+  "cases": [
+    {
+      "case": "column_control",
+      "method": "lagged",
+      "funding": "column",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 10.817102799999702,
+      "energy_error_J_kg": -4.081313281913913e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 180.0,
+        "semi_trials": 36.0,
+        "limited_interfaces": 180.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.048299910649321244,
+        "mixing_substeps": 12.0
+      }
+    },
+    {
+      "case": "cooling",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 4,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 36.87609877000068,
+      "energy_error_J_kg": 3.7403391083566155e-11,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 170.0,
+        "semi_trials": 143.0,
+        "limited_interfaces": 170.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.002210560053975281,
+        "mixing_substeps": 48.0
+      }
+    },
+    {
+      "case": "dt150",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 150.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 22.325084140997205,
+      "energy_error_J_kg": 9.709659773223881e-12,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 86.0,
+        "semi_trials": 72.0,
+        "limited_interfaces": 86.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.002074220426979601,
+        "mixing_substeps": 24.0
+      }
+    },
+    {
+      "case": "dt18",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 18.75,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 119.68818749099592,
+      "energy_error_J_kg": -8.959024784910692e-12,
+      "salt_relative_change": 3.905183497971063e-16,
+      "passive_relative_change": 1.0653318901334375e-15,
+      "limiter": {
+        "limited_pairs": 676.0,
+        "semi_trials": 570.0,
+        "limited_interfaces": 676.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.002190499409391749,
+        "mixing_substeps": 192.0
+      }
+    },
+    {
+      "case": "dt300",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 11.418899212003453,
+      "energy_error_J_kg": -1.4005033776589787e-11,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 43.0,
+        "semi_trials": 36.0,
+        "limited_interfaces": 43.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.0028902875770869764,
+        "mixing_substeps": 12.0
+      }
+    },
+    {
+      "case": "dt75",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 75.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 34.74753893100569,
+      "energy_error_J_kg": 3.501250477403651e-11,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 170.0,
+        "semi_trials": 143.0,
+        "limited_interfaces": 170.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.0020530551538927955,
+        "mixing_substeps": 48.0
+      }
+    },
+    {
+      "case": "factor05",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.5,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 6.618441804006579,
+      "energy_error_J_kg": 3.2571011496568134e-11,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 1.775553150222396e-16,
+      "limiter": {
+        "limited_pairs": 49.0,
+        "semi_trials": 36.0,
+        "limited_interfaces": 49.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.02171927803471234,
+        "mixing_substeps": 12.0
+      }
+    },
+    {
+      "case": "factor05_fine",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 1,
+      "predictors": 1,
+      "reduction": 0.5,
+      "layers": 16,
+      "dt_s": 18.75,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 98.58618743499392,
+      "energy_error_J_kg": -7.056748553090651e-11,
+      "salt_relative_change": 5.206911330628085e-16,
+      "passive_relative_change": 7.102212600889584e-16,
+      "limiter": {
+        "limited_pairs": 677.0,
+        "semi_trials": 570.0,
+        "limited_interfaces": 677.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.0008663277806297626,
+        "mixing_substeps": 192.0
+      }
+    },
+    {
+      "case": "initial_local",
+      "method": "lagged",
+      "funding": "local",
+      "substeps": 1,
+      "predictors": 0,
+      "reduction": 0.5,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 13.906662301000324,
+      "energy_error_J_kg": 9.290770169461278e-12,
+      "salt_relative_change": 0.0,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 62.0,
+        "semi_trials": 105.0,
+        "limited_interfaces": 62.0,
+        "deferred_columns": 8.0,
+        "minimum_fraction": 0.0,
+        "mixing_substeps": 12.0
+      }
+    },
+    {
+      "case": "layers32",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 4,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 32,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 23.029671965996386,
+      "energy_error_J_kg": -5.670783240275785e-12,
+      "salt_relative_change": 1.3017299310820577e-16,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 356.0,
+        "semi_trials": 143.0,
+        "limited_interfaces": 356.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 3.5372920236181497e-10,
+        "mixing_substeps": 48.0
+      }
+    },
+    {
+      "case": "long",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 4,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 12.0,
+      "completed_hours": 12.0,
+      "failure": null,
+      "wall_s": 316.3882680000024,
+      "energy_error_J_kg": -1.199608089048458e-10,
+      "salt_relative_change": 1.041382266125617e-15,
+      "passive_relative_change": 5.326659450667188e-16,
+      "limiter": {
+        "limited_pairs": 2868.0,
+        "semi_trials": 1727.0,
+        "limited_interfaces": 2868.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 6.936161531943424e-05,
+        "mixing_substeps": 576.0
+      }
+    },
+    {
+      "case": "rain",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 4,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 31.966926654000417,
+      "energy_error_J_kg": -4.4286659941440673e-11,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 1.775553150222396e-16,
+      "limiter": {
+        "limited_pairs": 170.0,
+        "semi_trials": 143.0,
+        "limited_interfaces": 170.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.001249762093816501,
+        "mixing_substeps": 48.0
+      }
+    },
+    {
+      "case": "reference18",
+      "method": "reference",
+      "funding": null,
+      "substeps": null,
+      "predictors": null,
+      "reduction": 0.5,
+      "layers": 16,
+      "dt_s": 18.75,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 291.2698934250002,
+      "energy_error_J_kg": 3.030030349120308e-12,
+      "salt_relative_change": 2.6034556653140423e-16,
+      "passive_relative_change": 1.775553150222396e-16,
+      "limiter": {
+        "limited_pairs": 0.0,
+        "coupled_iterations": 1819.0,
+        "accelerated_columns": 1087.0,
+        "scaled_residual_sum": 2.226061129425558,
+        "budget_scaled_residual_sum": 49.543646999795875,
+        "trial_evaluations": 2363.0
+      }
+    },
+    {
+      "case": "reference300",
+      "method": null,
+      "funding": null,
+      "substeps": null,
+      "predictors": null,
+      "reduction": null,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 24.19053336300567,
+      "energy_error_J_kg": 1.2235248244373574e-11,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 0.0,
+        "coupled_iterations": 206.0,
+        "accelerated_columns": 156.0,
+        "scaled_residual_sum": 0.1149246329896842,
+        "budget_scaled_residual_sum": 5.562132476629967,
+        "trial_evaluations": 256.0
+      }
+    },
+    {
+      "case": "sub16",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 16,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 129.21326432799833,
+      "energy_error_J_kg": -1.775133598487894e-11,
+      "salt_relative_change": 3.905183497971063e-16,
+      "passive_relative_change": 3.551106300444792e-16,
+      "limiter": {
+        "limited_pairs": 676.0,
+        "semi_trials": 570.0,
+        "limited_interfaces": 676.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.002253399493359149,
+        "mixing_substeps": 192.0
+      }
+    },
+    {
+      "case": "sub4",
+      "method": "lagged",
+      "funding": "split",
+      "substeps": 4,
+      "predictors": 1,
+      "reduction": 0.9,
+      "layers": 16,
+      "dt_s": 300.0,
+      "status": "completed",
+      "requested_hours": 1.0,
+      "completed_hours": 1.0,
+      "failure": null,
+      "wall_s": 36.11792785500438,
+      "energy_error_J_kg": 3.052713594104539e-13,
+      "salt_relative_change": 1.3017278326570211e-16,
+      "passive_relative_change": 0.0,
+      "limiter": {
+        "limited_pairs": 170.0,
+        "semi_trials": 143.0,
+        "limited_interfaces": 170.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.002130143580245926,
+        "mixing_substeps": 48.0
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "case": "dt300",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.0001324509182484397,
+          "max_abs_difference": 0.00037511138042161155,
+          "relative_l2": 0.009789193765208136
+        },
+        "v": {
+          "rms_difference": 3.0243080730913025e-05,
+          "max_abs_difference": 8.554359118635957e-05,
+          "relative_l2": 0.012360107004432443
+        },
+        "temperature": {
+          "rms_difference": 0.0002232472466437823,
+          "max_abs_difference": 0.0005991677771532977,
+          "relative_l2": 2.0019165154872314e-05
+        },
+        "salinity": {
+          "rms_difference": 2.2326593259653652e-05,
+          "max_abs_difference": 5.9913542237666206e-05,
+          "relative_l2": 6.397206530266686e-07
+        },
+        "tke": {
+          "rms_difference": 1.0314884483307232e-06,
+          "max_abs_difference": 2.1503781116064117e-06,
+          "relative_l2": 0.45405533744064325
+        },
+        "diffusivity": {
+          "rms_difference": 5.818669326666265e-05,
+          "max_abs_difference": 8.969574859122746e-05,
+          "relative_l2": 0.21912542806065358
+        },
+        "velocity_relative_l2": 0.009880870176967286,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            7842.995232121805,
+            2.314727782759961e+21,
+            59487790.495739564
+          ],
+          "minimum": 7842.995232121805,
+          "maximum": 2.314727782759961e+21,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "dt150",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 7.023012411277992e-05,
+          "max_abs_difference": 0.00019876633788380076,
+          "relative_l2": 0.005190574004213954
+        },
+        "v": {
+          "rms_difference": 1.6616727831343095e-05,
+          "max_abs_difference": 4.700120542114062e-05,
+          "relative_l2": 0.0067911247497017425
+        },
+        "temperature": {
+          "rms_difference": 0.00016620712272484865,
+          "max_abs_difference": 0.0003755048507319003,
+          "relative_l2": 1.4904227889780097e-05
+        },
+        "salinity": {
+          "rms_difference": 1.6620886313160417e-05,
+          "max_abs_difference": 3.759413549175861e-05,
+          "relative_l2": 4.762358557116449e-07
+        },
+        "tke": {
+          "rms_difference": 4.685342178576096e-07,
+          "max_abs_difference": 1.0269599227729419e-06,
+          "relative_l2": 0.20624609295053822
+        },
+        "diffusivity": {
+          "rms_difference": 2.714216530634027e-05,
+          "max_abs_difference": 4.4933549089138075e-05,
+          "relative_l2": 0.10221475490947689
+        },
+        "velocity_relative_l2": 0.005248748345328897,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            2622.805329170027,
+            2.786037037814736e+20,
+            6715354.652005434
+          ],
+          "minimum": 2622.805329170027,
+          "maximum": 2.786037037814736e+20,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "dt75",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 3.160796758599216e-05,
+          "max_abs_difference": 8.942057093552877e-05,
+          "relative_l2": 0.002336084364800848
+        },
+        "v": {
+          "rms_difference": 7.570834694600489e-06,
+          "max_abs_difference": 2.141638712731958e-05,
+          "relative_l2": 0.003094140037211303
+        },
+        "temperature": {
+          "rms_difference": 9.070224375621926e-05,
+          "max_abs_difference": 0.00022896546136408347,
+          "relative_l2": 8.133507691454484e-06
+        },
+        "salinity": {
+          "rms_difference": 9.070586813027364e-06,
+          "max_abs_difference": 2.2921161260569534e-05,
+          "relative_l2": 2.598982142900815e-07
+        },
+        "tke": {
+          "rms_difference": 2.0105698624740345e-07,
+          "max_abs_difference": 4.532975825154622e-07,
+          "relative_l2": 0.08850413970520121
+        },
+        "diffusivity": {
+          "rms_difference": 1.179785488124608e-05,
+          "max_abs_difference": 2.038092552947285e-05,
+          "relative_l2": 0.04442957411590328
+        },
+        "velocity_relative_l2": 0.00236382048750273,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1027.4979623326415,
+            4.304628180697079e+19,
+            1171571.8640027272
+          ],
+          "minimum": 1027.4979623326415,
+          "maximum": 4.304628180697079e+19,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "dt18",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 5.002451147327987e-09,
+          "max_abs_difference": 1.4748118129515042e-08,
+          "relative_l2": 3.6972158615259954e-07
+        },
+        "v": {
+          "rms_difference": 8.602553635778398e-09,
+          "max_abs_difference": 2.611005221753171e-08,
+          "relative_l2": 3.5157953779790197e-06
+        },
+        "temperature": {
+          "rms_difference": 5.4096243113099315e-06,
+          "max_abs_difference": 1.4630764669121277e-05,
+          "relative_l2": 4.850951765005434e-07
+        },
+        "salinity": {
+          "rms_difference": 5.409340989516454e-07,
+          "max_abs_difference": 1.4628495179636047e-06,
+          "relative_l2": 1.549930663407926e-08
+        },
+        "tke": {
+          "rms_difference": 2.153863899941253e-09,
+          "max_abs_difference": 7.657885288530717e-09,
+          "relative_l2": 0.0009481186158426863
+        },
+        "diffusivity": {
+          "rms_difference": 6.767603867683748e-07,
+          "max_abs_difference": 2.0469023468923124e-06,
+          "relative_l2": 0.0025486138001603476
+        },
+        "velocity_relative_l2": 7.237426286195339e-07,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            206.27921759247667,
+            1.444239971794736e+18,
+            56970.75225309334
+          ],
+          "minimum": 206.27921759247667,
+          "maximum": 1.444239971794736e+18,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "sub4",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 8.37052143160465e-05,
+          "max_abs_difference": 0.00023768221786462664,
+          "relative_l2": 0.00618649212050824
+        },
+        "v": {
+          "rms_difference": 1.9155122665115155e-05,
+          "max_abs_difference": 5.433229170267149e-05,
+          "relative_l2": 0.007828546566747363
+        },
+        "temperature": {
+          "rms_difference": 0.00010272632304407512,
+          "max_abs_difference": 0.00023814827980039865,
+          "relative_l2": 9.211738364923667e-06
+        },
+        "salinity": {
+          "rms_difference": 1.0272795727669109e-05,
+          "max_abs_difference": 2.381554060804092e-05,
+          "relative_l2": 2.943449327394608e-07
+        },
+        "tke": {
+          "rms_difference": 4.98317828563851e-07,
+          "max_abs_difference": 1.3945800544241094e-06,
+          "relative_l2": 0.21935666867371612
+        },
+        "diffusivity": {
+          "rms_difference": 2.2574677665329726e-05,
+          "max_abs_difference": 6.002731204251974e-05,
+          "relative_l2": 0.08501404065146961
+        },
+        "velocity_relative_l2": 0.006245115452460661,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1323.8446991088388,
+            6.833024498270071e+19,
+            1188643.8880343966
+          ],
+          "minimum": 1323.8446991088388,
+          "maximum": 6.833024498270071e+19,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "sub16",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 6.537757698193535e-05,
+          "max_abs_difference": 0.00018589076522623781,
+          "relative_l2": 0.004831931536899826
+        },
+        "v": {
+          "rms_difference": 1.4731164571335658e-05,
+          "max_abs_difference": 4.183572000359401e-05,
+          "relative_l2": 0.006020510014229494
+        },
+        "temperature": {
+          "rms_difference": 4.7742651545148235e-05,
+          "max_abs_difference": 0.00013567194220520662,
+          "relative_l2": 4.281208572927597e-06
+        },
+        "salinity": {
+          "rms_difference": 4.774290000015819e-06,
+          "max_abs_difference": 1.3567512375800561e-05,
+          "relative_l2": 1.3679704203095212e-07
+        },
+        "tke": {
+          "rms_difference": 4.2125583523589606e-07,
+          "max_abs_difference": 1.2206986194300117e-06,
+          "relative_l2": 0.1854344183169634
+        },
+        "diffusivity": {
+          "rms_difference": 1.801458245813979e-05,
+          "max_abs_difference": 5.294631986864682e-05,
+          "relative_l2": 0.06784116558030058
+        },
+        "velocity_relative_l2": 0.004874017111887369,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            291.334851236505,
+            2.6589628075094456e+18,
+            58020.31352227227
+          ],
+          "minimum": 291.334851236505,
+          "maximum": 2.6589628075094456e+18,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "reference300",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.00013488474571543633,
+          "max_abs_difference": 0.0003823643557444051,
+          "relative_l2": 0.009969073293267175
+        },
+        "v": {
+          "rms_difference": 3.1099906742326055e-05,
+          "max_abs_difference": 8.808933507901663e-05,
+          "relative_l2": 0.012710284993225135
+        },
+        "temperature": {
+          "rms_difference": 0.00029213213460539136,
+          "max_abs_difference": 0.0006397515588751901,
+          "relative_l2": 2.6196253425881163e-05
+        },
+        "salinity": {
+          "rms_difference": 2.9214858641420296e-05,
+          "max_abs_difference": 6.40241142733089e-05,
+          "relative_l2": 8.370891264429801e-07
+        },
+        "tke": {
+          "rms_difference": 9.163933977541774e-07,
+          "max_abs_difference": 1.929462597116076e-06,
+          "relative_l2": 0.4033911519988635
+        },
+        "diffusivity": {
+          "rms_difference": 5.5111851679257e-05,
+          "max_abs_difference": 8.949251997325444e-05,
+          "relative_l2": 0.20754587367746966
+        },
+        "velocity_relative_l2": 0.010067331645197079,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            2.651431956992286,
+            18.71496094793729,
+            11752.884651893994
+          ],
+          "minimum": 2.651431956992286,
+          "maximum": 11752.884651893994,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "factor05",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 8.179377246179594e-05,
+          "max_abs_difference": 0.00023214722709698904,
+          "relative_l2": 0.006045221112880417
+        },
+        "v": {
+          "rms_difference": 1.8789137274947038e-05,
+          "max_abs_difference": 5.35324997428116e-05,
+          "relative_l2": 0.007678971243228385
+        },
+        "temperature": {
+          "rms_difference": 0.00030268463099121284,
+          "max_abs_difference": 0.0006522213861739345,
+          "relative_l2": 2.714252340734719e-05
+        },
+        "salinity": {
+          "rms_difference": 3.0266420649301908e-05,
+          "max_abs_difference": 6.51466784091781e-05,
+          "relative_l2": 8.672193808242298e-07
+        },
+        "tke": {
+          "rms_difference": 1.0053763603097773e-06,
+          "max_abs_difference": 2.216594575253266e-06,
+          "relative_l2": 0.44256094508286387
+        },
+        "diffusivity": {
+          "rms_difference": 6.915918261421709e-05,
+          "max_abs_difference": 0.00013406280133164644,
+          "relative_l2": 0.260446755845255
+        },
+        "velocity_relative_l2": 0.00610366671623983,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            270162.9265835228,
+            1.301212165696023e+27,
+            2171916748129.1604
+          ],
+          "minimum": 270162.9265835228,
+          "maximum": 1.301212165696023e+27,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "factor05_fine",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 1.2714212822314723e-07,
+          "max_abs_difference": 3.7719220626313953e-07,
+          "relative_l2": 9.396831259129365e-06
+        },
+        "v": {
+          "rms_difference": 2.311754197047534e-08,
+          "max_abs_difference": 7.045657912329553e-08,
+          "relative_l2": 9.447955880449319e-06
+        },
+        "temperature": {
+          "rms_difference": 5.834142255547789e-06,
+          "max_abs_difference": 1.598064185692749e-05,
+          "relative_l2": 5.231628121138279e-07
+        },
+        "salinity": {
+          "rms_difference": 5.833927886415932e-07,
+          "max_abs_difference": 1.5977818605961147e-06,
+          "relative_l2": 1.6715869339335057e-08
+        },
+        "tke": {
+          "rms_difference": 3.184391106581684e-09,
+          "max_abs_difference": 1.0937771478669414e-08,
+          "relative_l2": 0.0014017508201685052
+        },
+        "diffusivity": {
+          "rms_difference": 1.4468766733722223e-06,
+          "max_abs_difference": 4.997937440436328e-06,
+          "relative_l2": 0.005448796840038186
+        },
+        "velocity_relative_l2": 9.398454520089806e-06,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1791.9331901735577,
+            4.847146448620493e+19,
+            618094.2911532817
+          ],
+          "minimum": 1791.9331901735577,
+          "maximum": 4.847146448620493e+19,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "column_control",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.00021269574129054327,
+          "max_abs_difference": 0.0006040315682982605,
+          "relative_l2": 0.015719934992238054
+        },
+        "v": {
+          "rms_difference": 4.814991626559131e-05,
+          "max_abs_difference": 0.00013701098483129281,
+          "relative_l2": 0.01967848853072859
+        },
+        "temperature": {
+          "rms_difference": 0.0012382745805956583,
+          "max_abs_difference": 0.0029496233206458555,
+          "relative_l2": 0.00011103932392760438
+        },
+        "salinity": {
+          "rms_difference": 0.00012382649989412542,
+          "max_abs_difference": 0.00029495495105891223,
+          "relative_l2": 3.5479828226827944e-06
+        },
+        "tke": {
+          "rms_difference": 3.4734476156760777e-06,
+          "max_abs_difference": 9.954701489159996e-06,
+          "relative_l2": 1.528991848401705
+        },
+        "diffusivity": {
+          "rms_difference": 0.00017201453417209012,
+          "max_abs_difference": 0.0003348951295567015,
+          "relative_l2": 0.647790006907108
+        },
+        "velocity_relative_l2": 0.01586044879182342,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1503893.2637714052,
+            4.666537820564639e+25,
+            13553264186951.158
+          ],
+          "minimum": 1503893.2637714052,
+          "maximum": 4.666537820564639e+25,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "initial_local",
+      "reference": "reference18",
+      "metrics": {
+        "u": {
+          "rms_difference": 0.00027376390730190705,
+          "max_abs_difference": 0.0007824094773121112,
+          "relative_l2": 0.020233366215491804
+        },
+        "v": {
+          "rms_difference": 6.381147155766777e-05,
+          "max_abs_difference": 0.00018291547136300643,
+          "relative_l2": 0.02607924184644598
+        },
+        "temperature": {
+          "rms_difference": 0.0007460077316140076,
+          "max_abs_difference": 0.0017603323523402992,
+          "relative_l2": 6.689646663289955e-05
+        },
+        "salinity": {
+          "rms_difference": 7.460238096726639e-05,
+          "max_abs_difference": 0.0001760804445893882,
+          "relative_l2": 2.1375712503334377e-06
+        },
+        "tke": {
+          "rms_difference": 3.2384707909970193e-06,
+          "max_abs_difference": 9.11432575227116e-06,
+          "relative_l2": 1.425556389097199
+        },
+        "diffusivity": {
+          "rms_difference": 0.00014106444887329993,
+          "max_abs_difference": 0.00030932783762699384,
+          "relative_l2": 0.5312349956345087
+        },
+        "velocity_relative_l2": 0.020444137022785986,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            1716886.2055002414,
+            4.0691892678571183e+27,
+            5891517921551.962
+          ],
+          "minimum": 1716886.2055002414,
+          "maximum": 4.0691892678571183e+27,
+          "reference_tke": [
+            3.655652800151039e-13,
+            8.724358764391579e-36,
+            2.0687785463157604e-19
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "factor05",
+      "reference": "dt300",
+      "metrics": {
+        "u": {
+          "rms_difference": 5.066864654042543e-05,
+          "max_abs_difference": 0.00014459518673418234,
+          "relative_l2": 0.00377036733086756
+        },
+        "v": {
+          "rms_difference": 1.1459185164754438e-05,
+          "max_abs_difference": 3.280436178166202e-05,
+          "relative_l2": 0.004723423174031133
+        },
+        "temperature": {
+          "rms_difference": 0.00039245454356029875,
+          "max_abs_difference": 0.0009861381616023124,
+          "relative_l2": 3.5192470626637885e-05
+        },
+        "salinity": {
+          "rms_difference": 3.924524855273464e-05,
+          "max_abs_difference": 9.871716751064241e-05,
+          "relative_l2": 1.1244884417725913e-06
+        },
+        "tke": {
+          "rms_difference": 1.7502806495390277e-07,
+          "max_abs_difference": 4.898864856234283e-07,
+          "relative_l2": 0.05307405022346458
+        },
+        "diffusivity": {
+          "rms_difference": 3.66525606831291e-05,
+          "max_abs_difference": 0.00013336127398498674,
+          "relative_l2": 0.11361334727570999
+        },
+        "velocity_relative_l2": 0.0038040978130064267,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            34.4463968914634,
+            562144.791014918,
+            36510.29446596626
+          ],
+          "minimum": 34.4463968914634,
+          "maximum": 562144.791014918,
+          "reference_tke": [
+            2.8671267481877325e-09,
+            2.0194515618702552e-14,
+            1.230670647453126e-11
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    },
+    {
+      "case": "factor05_fine",
+      "reference": "dt18",
+      "metrics": {
+        "u": {
+          "rms_difference": 1.2965863132270843e-07,
+          "max_abs_difference": 3.7847728859687155e-07,
+          "relative_l2": 9.582823792203768e-06
+        },
+        "v": {
+          "rms_difference": 3.14363843045342e-08,
+          "max_abs_difference": 9.249667092193136e-08,
+          "relative_l2": 1.2847834312749522e-05
+        },
+        "temperature": {
+          "rms_difference": 7.996377073189154e-07,
+          "max_abs_difference": 1.6763490080506926e-06,
+          "relative_l2": 7.170560702720363e-08
+        },
+        "salinity": {
+          "rms_difference": 7.995553491710035e-08,
+          "max_abs_difference": 1.6768451160942277e-07,
+          "relative_l2": 2.2909543975404235e-09
+        },
+        "tke": {
+          "rms_difference": 1.186616369079974e-09,
+          "max_abs_difference": 3.2798861901386972e-09,
+          "relative_l2": 0.0005223267171884463
+        },
+        "diffusivity": {
+          "rms_difference": 8.664985678503391e-07,
+          "max_abs_difference": 3.382099846374398e-06,
+          "relative_l2": 0.0032627573281751965
+        },
+        "velocity_relative_l2": 9.703078091820106e-06,
+        "temperature_mld_difference_m": 0.0,
+        "tke_ratio_15_30m": {
+          "depths_m": [
+            15.625,
+            21.875,
+            28.125
+          ],
+          "ratios": [
+            8.68693032234437,
+            33.561918678909116,
+            10.849326482602677
+          ],
+          "minimum": 8.68693032234437,
+          "maximum": 33.561918678909116,
+          "reference_tke": [
+            7.540851994049027e-11,
+            1.2600067655812052e-17,
+            1.1785987002866977e-14
+          ],
+          "zero_reference_layers": 0
+        }
+      }
+    }
+  ],
+  "note": "Coupled dt18.75 is a numerical reference, not an analytic solution or established converged truth. Subcycling changes only mixing, not outer forcing/rotation. Concurrent wall timings are not isolated benchmarks."
+}

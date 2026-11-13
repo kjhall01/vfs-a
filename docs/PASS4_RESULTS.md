@@ -598,3 +598,16 @@ pass. See [qualification and limitations](../verification/ocean/REFRESHED_SOLVE.
 The 12-hour dt300/16-layer wind run completes with full-energy residual
 1.60e-11 J/kg. It requires 7637 iterations and 8381 trials, including costly
 transition periods. Longer-run and temporal-accuracy qualification remain open.
+
+## Semi-implicit vertical mixing research
+
+A bounded predicted-coefficient update splits TKE transport, actual JMD95
+buoyancy work and dissipation, retaining native shared-edge energy allocation.
+Multiple scalar right-hand sides share a factorization; momentum and TKE factors
+are reused through funding retries. The twelve-hour/four-substep control completes
+with 1727 trials and energy residual -1.20e-10 J/kg. A 162-cell mesh comparison
+finds a lower-cost update closer in all reported fields to its fine numerical
+reference. Coarse-step/limiter/global-scaling limitations remain explicit in
+[the report](../verification/ocean/SEMIIMPLICIT_MIXING.md). Supported runtime and
+fixtures are unchanged; installed suite: 1030 passed, one CUDA skip, portable
+fixture comparisons passed. No GPU/backward or full global-dycore qualification.

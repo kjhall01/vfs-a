@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "cells": 162,
+      "layers": 8,
+      "method": "reference",
+      "cpu_s": 28.991962185000002,
+      "wall_s": 29.04799982899567,
+      "trials": 165.0,
+      "limited_interfaces": 0.0,
+      "deferred_columns": 0.0,
+      "energy_error_J_kg": 0.0,
+      "min_tke": 1.2828170192057877e-12,
+      "min_tracer": 11.406159546497461
+    },
+    {
+      "cells": 162,
+      "layers": 8,
+      "method": "coupled2",
+      "cpu_s": 8.473869897999997,
+      "wall_s": 8.51006408900139,
+      "trials": 53.0,
+      "limited_interfaces": 0.0,
+      "deferred_columns": 0.0,
+      "energy_error_J_kg": 1.0268829302128536e-11,
+      "min_tke": 8.954446866394273e-07,
+      "min_tracer": 11.405626738387223,
+      "velocity_relative_l2": 4.9679162334970725e-05,
+      "temperature_rms_C": 0.0001364352465092255,
+      "tke_relative_l2": 0.1478907898886296
+    },
+    {
+      "cells": 162,
+      "layers": 8,
+      "method": "lagged8",
+      "cpu_s": 5.385170205000001,
+      "wall_s": 5.408384018999641,
+      "trials": 20.0,
+      "limited_interfaces": 1296.0,
+      "deferred_columns": 0.0,
+      "energy_error_J_kg": 5.134414651064268e-12,
+      "min_tke": 1.4575352824363809e-09,
+      "min_tracer": 11.406043617554976,
+      "velocity_relative_l2": 3.1251754614245266e-05,
+      "temperature_rms_C": 2.9195492074627777e-05,
+      "tke_relative_l2": 0.02715640754042737
+    }
+  ],
+  "seed": 0.0001,
+  "speed": 0.004,
+  "duration": 300.0,
+  "note": "Vertical-mixing-only comparison. Numerical reference uses 16 coupled substeps. No horizontal dycore evolution. Timings include concurrent jobs; CPU and wall both reported."
+}
