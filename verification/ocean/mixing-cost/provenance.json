@@ -1,0 +1,14 @@
+{
+  "parent_commit": "d8132aed11c6013b33ba865ffbc6f9699d6101cd",
+  "parent_runtime_sha256": "85a49cf2e266426d525afd5327b93cb50085e8aa0897c2772d04ddb6f8664f59",
+  "runtime_sha256": "e41a208475001c434ff53268418848f2c051713dd5376cfb4f1e4441ed44304b",
+  "predictor_sha256": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+  "python": "3.12.14",
+  "device": "cpu",
+  "dtype": "float64",
+  "threads_per_process": 1,
+  "concurrent_campaigns": true,
+  "completed_two_hour_cases": 18,
+  "installed_suite": "998 passed, 1 skipped",
+  "max_file_bytes": 131072
+}

@@ -1,0 +1,36 @@
+         244763 function calls (244717 primitive calls) in 3.658 seconds
+
+   Ordered by: cumulative time
+   List reduced from 410 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    3.658    3.658 run.py:33(run)
+     3027    0.707    0.000    3.104    0.001 thermodynamics.py:38(evaluate)
+        6    0.000    0.000    2.962    0.494 tke_model.py:105(mix_with_report)
+        6    0.004    0.001    2.769    0.462 tke.py:233(apply)
+    24216    2.090    0.000    2.170    0.000 thermodynamics.py:13(polynomial)
+      129    0.002    0.000    2.025    0.016 equations.py:30(physical_state)
+      129    0.058    0.000    2.021    0.016 faces.py:99(temperature_from_entropy)
+      119    0.000    0.000    1.960    0.016 model.py:45(check_state)
+      119    0.006    0.000    1.959    0.016 equations.py:98(validate)
+        6    0.013    0.002    1.953    0.325 tke.py:111(_mix_adjacent)
+       35    0.014    0.000    1.276    0.036 tke.py:158(candidate)
+       53    0.025    0.000    0.848    0.016 thermodynamics.py:78(temperature_from_enthalpy)
+        6    0.002    0.000    0.586    0.098 heating.py:15(apply_heat)
+       29    0.001    0.000    0.476    0.016 tke_model.py:63(check_state)
+        6    0.000    0.000    0.404    0.067 tke_model.py:117(boundary_with_report)
+      168    0.004    0.000    0.383    0.002 heating.py:30(derivative)
+       42    0.001    0.000    0.294    0.007 {built-in method builtins.sum}
+      144    0.001    0.000    0.260    0.002 heating.py:38(<genexpr>)
+      593    0.084    0.000    0.254    0.000 jmd95_energy.py:28(jmd95_partials)
+      237    0.028    0.000    0.246    0.001 jmd95_energy.py:103(parcel_potential)
+        4    0.000    0.000    0.214    0.053 tke_model.py:97(budgets)
+        6    0.002    0.000    0.202    0.034 boundary.py:71(apply)
+        2    0.001    0.001    0.147    0.073 run.py:73(profile)
+        4    0.000    0.000    0.147    0.037 model.py:66(budgets)
+       65    0.003    0.000    0.144    0.002 heating.py:7(thermal_parts)
+     5930    0.126    0.000    0.141    0.000 jmd95_energy.py:18(_polynomial)
+    42971    0.119    0.000    0.119    0.000 {method 'pow' of 'torch._C.TensorBase' objects}
+    90753    0.103    0.000    0.103    0.000 {built-in method torch.zeros_like}
+        4    0.000    0.000    0.078    0.019 equations.py:71(terms)
+      119    0.003    0.000    0.075    0.001 jmd95.py:47(check_state)

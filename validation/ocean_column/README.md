@@ -128,3 +128,40 @@ The analysis also retains maximum absolute profile differences. A post-inspectio
 bulk norms; zero reference layers are counted separately. It is not an acceptance
 gate. The plotting script requires its comparison cases to be complete and
 reports file sizes; leave any artifact above the upload cap out of publication.
+
+## Mixing cost experiment
+
+`budget_predictor.py` is a research subclass outside the installed package. Its
+analytic cost estimate only chooses an initial trial; production work, entropy,
+and local TKE checks still decide acceptance. Margin 0.5 is the conservative probe,
+not a calibrated physical parameter. The default installed closure is unchanged
+apart from reusing sweep-invariant calculations.
+
+Build/install the candidate wheel in a disposable environment. Copy this validation
+directory outside the checkout, and run with that environment's Python:
+
+```bash
+python mixing_cost.py --method default --dt 150 --hours 2 --output default.json
+python mixing_cost.py --method predictor --margin .5 --dt 150 --hours 2 --output predictor.json
+python mixing_cost.py --method predictor --margin .95 --dt 150 --hours .25 --profile --output profile.json
+```
+
+Repeat wind cases for dt 75, 37.5 and 18.75 seconds, and 150-second cooling and
+rain/heating smokes with `--scenario`. `analyze_mixing_cost.py --input RESULTS
+--output comparisons.json` lists the exact expected filenames/matrix in its source;
+it refuses incomplete cases. These fine-step solutions are numerical references,
+not analytic truth. Custom closures intentionally cannot resume campaign checkpoints.
+
+For an interleaved fixed-state benchmark, export the parent implementation without
+changing branches, then pass its path to the benchmark:
+
+```bash
+git show d8132aed11c6013b33ba865ffbc6f9699d6101cd:vfs/ocean/stratified/tke.py > /tmp/tke-parent.py
+python benchmark_mixing.py --baseline-module /tmp/tke-parent.py --output benchmark.json
+```
+
+The benchmark loads the parent under the installed package namespace; a nominal
+subclass satisfies the facade's type check while preserving parent method resolution.
+It excludes initialization and warmup, times five interleaved calls, and reports
+exact state/report equivalence for the cached default. It is CPU-only and is not
+an estimate of coupled-model throughput. See [findings](../../verification/ocean/MIXING_COST.md).
