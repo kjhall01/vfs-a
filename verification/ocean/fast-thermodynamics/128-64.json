@@ -1,0 +1,83 @@
+{
+  "cells": 128,
+  "layers": 64,
+  "patch": false,
+  "dt": 300,
+  "substeps": 4,
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "source_hashes": {
+    "lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+    "fast_thermo.py": "2fcdffebb06c246d366b1bef3c62efe3da278931aaa990fd57df93323d803cfa",
+    "benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a"
+  },
+  "samples": [
+    {
+      "method": "baseline",
+      "repeat": 0,
+      "cpu_s": 10.451379240999998,
+      "wall_s": 10.478663846995914
+    },
+    {
+      "method": "fast",
+      "repeat": 0,
+      "cpu_s": 2.8582894040000006,
+      "wall_s": 2.861875520000467
+    },
+    {
+      "method": "fast",
+      "repeat": 1,
+      "cpu_s": 3.069551079,
+      "wall_s": 3.072214334999444
+    },
+    {
+      "method": "baseline",
+      "repeat": 1,
+      "cpu_s": 12.908529648999995,
+      "wall_s": 12.94037670599937
+    }
+  ],
+  "warmup_excluded": true,
+  "median_cpu_s": {
+    "baseline": 11.679954444999996,
+    "fast": 2.9639202415000003
+  },
+  "speedup": 3.9407114541951804,
+  "differences": {
+    "velocity_relative_l2": 4.970465857074418e-17,
+    "tke_relative_l2": 1.2896195557543685e-14,
+    "temperature_rms_C": 6.742556509897518e-15
+  },
+  "checks": {
+    "baseline": {
+      "energy_error_J_kg": 5.134414651064267e-12,
+      "local_budget_ratio": 3.1552012823383795e-07,
+      "min_tke": 1.4493624135468388e-08,
+      "salt_relative_change": 7.091702691296061e-18,
+      "passive_relative_change": 1.7393037181178362e-19,
+      "limiter": {
+        "limited_pairs": 2752.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 2752.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370466300716764,
+        "mixing_substeps": 4.0
+      }
+    },
+    "fast": {
+      "energy_error_J_kg": 5.134414651064267e-12,
+      "local_budget_ratio": 3.1552012823383795e-07,
+      "min_tke": 1.4493624135468272e-08,
+      "salt_relative_change": 7.074969827778943e-18,
+      "passive_relative_change": 7.7968787363903e-20,
+      "limiter": {
+        "limited_pairs": 2752.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 2752.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370466300716549,
+        "mixing_substeps": 4.0
+      }
+    }
+  }
+}

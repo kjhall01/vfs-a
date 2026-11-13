@@ -1,0 +1,23 @@
+[
+  {
+    "file": "wind24.json",
+    "raw_bytes": 328645,
+    "sha256": "0ca67c1fea91054257d189cfc0dc682774733e6b0ea579421308670bd1499503",
+    "raw_omitted": true,
+    "representation": "endpoint profiles plus hourly scalar diagnostics"
+  },
+  {
+    "file": "cooling12.json",
+    "raw_bytes": 169351,
+    "sha256": "2de27fcd7455e27f9283413796c3182b326001c632b3a6069a190b19eb1c6bb4",
+    "raw_omitted": true,
+    "representation": "endpoint profiles plus hourly scalar diagnostics"
+  },
+  {
+    "file": "rain12.json",
+    "raw_bytes": 176688,
+    "sha256": "7dbde095c53aff691d3fa4922d1b98c7fd07ed487354e13dd79c360fa474589f",
+    "raw_omitted": true,
+    "representation": "endpoint profiles plus hourly scalar diagnostics"
+  }
+]

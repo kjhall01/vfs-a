@@ -95,7 +95,12 @@ class EntropyEnergy:
         return (self.mass_area(state)*state.entropy_h).sum()
 
 
-def validate(model, state, energy):
+def validate(model, state, energy, *, physical=None):
+    """Validate fields; an internal caller may supply a residual-checked inversion.
+
+    The supplied physical state must represent these exact entropy contents.
+    Public model checks continue to reconstruct it independently by default.
+    """
     if energy.base is not model.dynamics.energy or model.sources:
         raise ValueError('research composition requires the same unforced JMD95 model')
     salt = state.salt_h/state.h
@@ -103,7 +108,8 @@ def validate(model, state, energy):
         raise ValueError('entropy candidate requires 0 < SP < 42; no salt floor')
     if state.tracer_h is not None and (state.tracer_h < 0).any():
         raise ValueError('research passive tracers must be nonnegative')
-    physical = state.physical_state(energy.reference)
+    if physical is None:
+        physical = state.physical_state(energy.reference)
     theta90 = physical.temperature()*energy.reference.to_90
     if ((theta90 <= -2.5)|(theta90 >= 40)).any():
         raise ValueError('entropy candidate requires interior reference temperatures')
