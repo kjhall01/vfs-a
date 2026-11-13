@@ -68,10 +68,10 @@ class OceanBoundaryStress:
         if not math.isfinite(self.bottom_drag_coefficient) or self.bottom_drag_coefficient < 0:
             raise ValueError('bottom_drag_coefficient must be finite and nonnegative')
 
-    def apply(self, ocean, state, tke_h, dt, *, surface_stress=None):
+    def apply(self, ocean, state, tke_h, dt, *, surface_stress=None, _physical=None, _return_physical=False):
         if not math.isfinite(float(dt)) or float(dt) <= 0:
             raise ValueError('dt must be finite and positive')
-        physical=ocean.check_state(state)
+        physical=(ocean.check_state(state) if _physical is None else ocean.check_state(state, _physical=_physical))
         h, mesh=state.h, state.mesh
         if tke_h.shape != h.shape or tke_h.dtype != h.dtype or tke_h.device != h.device:
             raise ValueError('tke_h must match thickness shape, dtype and device')
@@ -122,7 +122,9 @@ class OceanBoundaryStress:
         safe_mass=torch.where(mass_area > 0,mass_area,torch.ones_like(mass_area))
         end_tke=tke_h+gain/safe_mass
         end=replace(state,u_e=velocity)
-        ocean.check_state(end)
+        final=physical.with_tensors(end.u_e,physical.h,physical.temp_h,physical.salt_h,physical.tracer_h)
+        final = (ocean.check_state(end) if _physical is None else
+                 ocean.check_state(end, _physical=final))
         if not torch.isfinite(end_tke).all() or (end_tke < 0).any():
             raise FloatingPointError('boundary TKE update failed')
         kinetic_change=.5*metric*(velocity-state.u_e)*(velocity+state.u_e)
@@ -135,5 +137,6 @@ class OceanBoundaryStress:
         tolerance=512*torch.finfo(h.dtype).eps*scale
         if (column_residual.abs() > tolerance).any():
             raise FloatingPointError('boundary work/TKE energy closure failed')
-        return end,end_tke,BoundaryStressReport(surface_impulse,bottom_impulse,surface_work,
-            surface_work.sum(),loss,gain,momentum_residual,column_residual,residual)
+        result = (end,end_tke,BoundaryStressReport(surface_impulse,bottom_impulse,surface_work,
+            surface_work.sum(),loss,gain,momentum_residual,column_residual,residual))
+        return (*result,final) if _return_physical else result

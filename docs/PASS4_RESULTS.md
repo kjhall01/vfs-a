@@ -667,3 +667,20 @@ step with exact state/report equality; full-ocean gains are smaller. See
 Installed-wheel portable suite: 1061 passed, one CUDA skip, one existing warning;
 corrected-Gibbs and dry portable comparisons pass. Focused reverse-mode and
 invalid-content checks pass; no full-model backward qualification is asserted.
+
+## Validated ocean field reuse
+
+Checked dynamics/forcing fields are reused only for unchanged contents within a
+call; transport connectivity is prepared with mutation guards, and repeated local
+gathers are shared. Optional `warm_start=True` keeps the same entropy residual
+and domain checks with Newton polishing and fallback. The default solver remains
+unchanged. See [measurements and limitations](../verification/ocean/FIELD_REUSE.md).
+1024×64 dynamics exploratory medians improve 14.65 → 9.56 s/step (1.53×), or
+6.42 s (2.28×) with optional warm inversion. Full-model mixing cost remains.
+No atmospheric kernels, Hamiltonian/EOS formulas, fixtures or tolerances change.
+Final installed-wheel suite: 1074 passed, one CUDA skip, one existing warning;
+corrected-Gibbs and dry portable comparisons pass. Default captures match exactly
+(122/232/280 small-case tensors; 64 large dynamics tensors). Warm endpoint relative
+L2 differences reach 3.16e-15 in these short tests; limiter reports can differ.
+Thirteen new focused checks and three warm CLI smoke cases pass. Inference
+geometry without mutation counters retains ordinary uncached indexing.

@@ -96,12 +96,36 @@ def gibbs_face(reference, si, ti, sj, tj):
                               composition_entropy=.5*(vi['entropy_s']+vj['entropy_s']))
 
 
-def temperature_from_entropy(reference, sp, entropy):
+def temperature_from_entropy(reference, sp, entropy, *, guess=None):
     """Explicit analytic bracketed Newton inversion; no clipping or forward AD."""
     lo, hi = [torch.full_like(entropy, t/reference.to_90) for t in reference.data['temperature_ITS90_range_C']]
     el, eh = reference.evaluate(sp, lo)['entropy'], reference.evaluate(sp, hi)['entropy']
     if not torch.isfinite(entropy).all() or ((entropy < el)|(entropy > eh)).any():
         raise ValueError('entropy outside the surface-reference domain')
+    if guess is not None:
+        if guess.shape != entropy.shape or guess.dtype != entropy.dtype or guess.device != entropy.device:
+            raise ValueError('temperature guess must match entropy shape/dtype/device')
+        domain_lo, domain_hi = lo, hi
+        theta = torch.where(torch.isfinite(guess)&(guess >= lo)&(guess <= hi),
+                            guess, lo+(hi-lo)*(entropy-el)/(eh-el))
+        tolerance = 128*torch.finfo(entropy.dtype).eps*(entropy.abs()+20)
+        for _ in range(13):
+            values = reference.evaluate(sp, theta)
+            error = values['entropy']-entropy
+            if (error.abs() <= tolerance).all():
+                # Polish even an exact initial guess so the inverse retains its
+                # implicit derivative with respect to target entropy and salt.
+                polished = theta-error/values['entropy_theta']
+                if ((polished >= domain_lo)&(polished <= domain_hi)).all():
+                    residual = (reference.evaluate(sp, polished)['entropy']-entropy).abs()
+                    if (residual <= tolerance).all():
+                        return polished
+            lo = torch.where(error < 0, theta, lo)
+            hi = torch.where(error > 0, theta, hi)
+            proposal = theta-error/values['entropy_theta']
+            theta = torch.where((proposal >= lo)&(proposal <= hi), proposal, .5*(lo+hi))
+        # Explicit fallback to the established solve, never accept a loose residual.
+        return temperature_from_entropy(reference, sp, entropy)
     theta = lo+(hi-lo)*(entropy-el)/(eh-el)
     for _ in range(12):
         values = reference.evaluate(sp, theta)

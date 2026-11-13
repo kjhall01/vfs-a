@@ -72,8 +72,8 @@ class FrontWorkLedger(parent.WorkLedger):
     kinetic_budget: torch.Tensor
 
 
-def evaluate(model, state, dt, energy):
-    stage = parent._StageEvaluation(model, state, dt, energy)
+def evaluate(model, state, dt, energy, *, physical=None):
+    stage = parent._StageEvaluation(model, state, dt, energy, physical=physical)
     original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
     eta, salt, face = stage.eta, stage.salt, stage.face
     target, low, high = local_target(model, state, dt, eta, salt,
@@ -125,20 +125,34 @@ def evaluate(model, state, dt, energy):
 
 
 def euler(model, state, dt, energy):
-    rhs, work = evaluate(model, state, dt, energy)
+    end, work, _ = _euler(model, state, dt, energy)
+    return end, work
+
+
+def _euler(model, state, dt, energy, *, physical=None, warm_start=False):
+    if physical is None:
+        physical = validate(model, state, energy)
+    rhs, work = evaluate(model, state, dt, energy, physical=physical)
     area, ledger = state.mesh.cell_area[:, None], work.transport
     amounts = ledger.amounts/area[..., None]
     end = replace(state, u_e=state.u_e+dt*rhs.u_e, h=ledger.volume/area,
                   entropy_h=amounts[..., 0]+dt*work.entropy_source,
                   salt_h=amounts[..., 1], tracer_h=None if state.tracer_h is None else amounts[..., 2:])
-    validate(model, end, energy)
-    return end, work
+    checked = validate(model, end, energy, guess=physical.temperature() if warm_start else None)
+    return end, work, checked
 
 
 def step(model, state, dt, energy):
-    first, l1 = euler(model, state, dt, energy)
-    second, l2 = euler(model, first, dt, energy)
-    third, l3 = euler(model, .75*state+.25*second, dt, energy)
+    end, reports, _ = step_with_physical(model, state, dt, energy)
+    return end, reports
+
+
+def step_with_physical(model, state, dt, energy, *, physical=None, warm_start=False):
+    first, l1, p1 = _euler(model, state, dt, energy, physical=physical, warm_start=warm_start)
+    second, l2, p2 = _euler(model, first, dt, energy, physical=p1, warm_start=warm_start)
+    middle = .75*state+.25*second
+    pm = validate(model, middle, energy, guess=p2.temperature() if warm_start else None)
+    third, l3, p3 = _euler(model, middle, dt, energy, physical=pm, warm_start=warm_start)
     end = (1/3)*state+(2/3)*third
-    validate(model, end, energy)
-    return end, (l1, l2, l3)
+    checked = validate(model, end, energy, guess=p3.temperature() if warm_start else None)
+    return end, (l1, l2, l3), checked

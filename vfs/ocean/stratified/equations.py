@@ -27,8 +27,8 @@ class EntropyState:
         eta = reference.evaluate(state.salinity(), state.temperature(), entropy_derivatives=True)['entropy']
         return cls(state.u_e, state.h, state.h*eta, state.salt_h, state.tracer_h, state.mesh, state.column)
 
-    def physical_state(self, reference):
-        theta = temperature_from_entropy(reference, self.salt_h/self.h, self.entropy_h/self.h)
+    def physical_state(self, reference, *, guess=None):
+        theta = temperature_from_entropy(reference, self.salt_h/self.h, self.entropy_h/self.h, guess=guess)
         return OceanState(self.u_e, self.h, self.h*theta, self.salt_h, self.tracer_h,
                           mesh=self.mesh, column=self.column)
 
@@ -99,7 +99,7 @@ class EntropyEnergy:
         return (self.mass_area(state)*state.entropy_h).sum()
 
 
-def validate(model, state, energy, *, physical=None):
+def validate(model, state, energy, *, physical=None, guess=None):
     """Validate fields; an internal caller may supply a residual-checked inversion.
 
     The supplied physical state must represent these exact entropy contents.
@@ -113,7 +113,7 @@ def validate(model, state, energy, *, physical=None):
     if state.tracer_h is not None and (state.tracer_h < 0).any():
         raise ValueError('research passive tracers must be nonnegative')
     if physical is None:
-        physical = state.physical_state(energy.reference)
+        physical = state.physical_state(energy.reference, guess=guess)
     theta90 = physical.temperature()*energy.reference.to_90
     if ((theta90 <= -2.5)|(theta90 >= 40)).any():
         raise ValueError('entropy candidate requires interior reference temperatures')
@@ -123,6 +123,8 @@ def validate(model, state, energy, *, physical=None):
 
 
 def transport_for(model):
+    if hasattr(model, '_stratified_transport'):
+        return model._stratified_transport
     return HorizontalTransport(model.mesh, domain=model.domain, scheme='donor',
                                min_thickness=model.dynamics.min_thickness)
 
@@ -189,8 +191,12 @@ def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy
     # Allocate each node's capacity equally to ALL incident faces. Then each
     # individual face recovers beta=1 as its flux vanishes, even while OTHER
     # faces remain limited. A common node ratio would not ensure that limit.
-    degree = torch.zeros(q.shape[0], dtype=q.dtype, device=q.device)
-    degree = degree.index_add(0, low.i, torch.ones_like(low.carrier)).index_add(0, low.j, torch.ones_like(low.carrier))
+    prepared = getattr(transport_for(model), '_prepared', None)
+    if prepared is None:
+        degree = torch.zeros(q.shape[0], dtype=q.dtype, device=q.device)
+        degree = degree.index_add(0, low.i, torch.ones_like(low.carrier)).index_add(0, low.j, torch.ones_like(low.carrier))
+    else:
+        degree = prepared['degree']
     degree = degree.clamp_min(1)[:, None]  # isolated dry nodes have no faces
     lower_capacity = baseline[:, 1:]/degree
     # Reserve rounding room in the finite upper bound when limiting. Scaling
@@ -240,8 +246,8 @@ class _StageEvaluation:
     tensor graphs are retained for differentiation. Validation and every
     original thermodynamic expression remain in force.
     """
-    def __init__(self, model, state, dt, energy):
-        self.physical = validate(model, state, energy)
+    def __init__(self, model, state, dt, energy, *, physical=None):
+        self.physical = validate(model, state, energy, physical=physical)
         self.eta, self.salt, self.face = high_traces(model, self.physical, energy)
         ref = energy.reference.evaluate(self.physical.salinity(),
             self.physical.temperature(), entropy_derivatives=True)

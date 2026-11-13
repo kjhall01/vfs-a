@@ -117,6 +117,7 @@ def main():
     p.add_argument('--repeats', type=int, default=3)
     p.add_argument('--warmup', type=int, default=1)
     p.add_argument('--mixing-substeps', type=int, default=4)
+    p.add_argument('--warm-start', action='store_true', help='opt-in residual-checked warm ocean dynamics inversions')
     p.add_argument('--remap-every', type=int, default=1)
     p.add_argument('--timeout', type=float, default=1800, help='wall seconds per isolated case, including setup')
     p.add_argument('--worker', type=Path, help=argparse.SUPPRESS)
@@ -154,7 +155,7 @@ def main():
                     config = dict(case=case,closure=closure,cells=cells,layers=layers,threads=threads_n,
                         dt=a.dt if a.dt is not None else (1. if a.preset=='smoke' else 60.),
                         steps=a.steps,repeats=a.repeats,warmup=a.warmup,
-                        mixing_substeps=a.mixing_substeps,remap_every=a.remap_every)
+                        mixing_substeps=a.mixing_substeps,remap_every=a.remap_every,warm_start=a.warm_start)
                     cfg = a.output/(name+'.config.json'); out = a.output/(name+'.json')
                     write(cfg,config)
                     env = dict(os.environ,OMP_NUM_THREADS=str(threads_n),MKL_NUM_THREADS=str(threads_n),

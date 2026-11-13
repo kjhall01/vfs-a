@@ -60,10 +60,11 @@ class TKEOcean:
             raise TypeError("exchange must be OceanSurfaceExchange or None")
         self.exchange = exchange
 
-    def check_state(self, state):
+    def check_state(self, state, *, _physical=None):
         if not isinstance(state, TKEState):
             raise TypeError('expected TKEState')
-        self.ocean.check_state(state.ocean)
+        physical = (self.ocean.check_state(state.ocean) if _physical is None else
+                    self.ocean.check_state(state.ocean, _physical=_physical))
         h, k = state.ocean.h, state.tke_h
         if k.shape != h.shape or k.dtype != h.dtype or k.device != h.device:
             raise ValueError('tke_h must match thickness shape, dtype and device')
@@ -71,6 +72,7 @@ class TKEOcean:
             raise ValueError('TKE must be finite and nonnegative')
         if self.ocean.domain is not None and (k[~self.ocean.domain.wet_cell] != 0).any():
             raise ValueError('dry-cell TKE must be zero')
+        return physical
 
     def state(self, resolved, *, tke):
         """Explicit initialization from specific k [m²/s²], never an implicit floor."""
@@ -161,6 +163,57 @@ class TKEOcean:
         return result, report
 
     def step_with_report(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None, surface_fluxes=None):
+        if type(self) is not TKEOcean or type(self.ocean) is not StratifiedOcean:
+            return self._legacy_step_with_report(state,dt,target_h=target_h,
+                surface_stress=surface_stress,shortwave=shortwave,
+                surface_heat=surface_heat,surface_fluxes=surface_fluxes)
+
+        physical = self.check_state(state)
+        packed_input = self._pack(state)
+        physical = physical.with_tensors(physical.u_e,physical.h,physical.temp_h,
+                                        physical.salt_h,packed_input.tracer_h)
+        packed, report, physical = self.ocean._step_with_physical(
+            packed_input, dt, target_h=target_h, physical=physical)
+        transported = self._unpack(packed, state)
+        physical = physical.with_tensors(physical.u_e,physical.h,physical.temp_h,
+                                        physical.salt_h,transported.ocean.tracer_h)
+        self.check_state(transported, _physical=physical)
+        end = transported
+        exchange = boundary = heating = mixing = None
+        if surface_fluxes is not None:
+            if type(self.exchange) is OceanSurfaceExchange:
+                resolved, exchange, physical = self.exchange.apply(self.ocean,end.ocean,dt,
+                    surface_fluxes,_physical=physical,_return_physical=True)
+                end = TKEState(resolved,end.tke_h)
+            else:
+                end, exchange = self.exchange_with_report(end,dt,surface_fluxes=surface_fluxes)
+                physical = self.ocean.check_state(end.ocean)
+            self.check_state(end,_physical=physical)
+        if self.boundary is not None or surface_stress is not None:
+            if type(self.boundary) is OceanBoundaryStress:
+                resolved, k, boundary, physical = self.boundary.apply(self.ocean,end.ocean,end.tke_h,dt,
+                    surface_stress=surface_stress,_physical=physical,_return_physical=True)
+                end = TKEState(resolved,k)
+            else:
+                end, boundary = self.boundary_with_report(end,dt,surface_stress=surface_stress)
+                physical = self.ocean.check_state(end.ocean)
+            self.check_state(end,_physical=physical)
+        if self.heating is not None or shortwave is not None or surface_heat is not None:
+            if type(self.heating) is OceanSurfaceHeating:
+                resolved, heating, physical = self.heating.apply(self.ocean,end.ocean,dt,
+                    shortwave=shortwave,surface_heat=surface_heat,_physical=physical,_return_physical=True)
+                end = TKEState(resolved,end.tke_h)
+            else:
+                end, heating = self.heat_with_report(end,dt,shortwave=shortwave,surface_heat=surface_heat)
+                physical = self.ocean.check_state(end.ocean)
+            self.check_state(end,_physical=physical)
+        # Closures retain their own validation protocol (including research subclasses).
+        if self.closure is not None:
+            end, mixing = self.mix_with_report(end,dt)
+        transport_residual = (self.ocean.energy.mass_area(state.ocean)*(transported.tke_h-state.tke_h)).sum()
+        return end, TKEStepReport(report, mixing, transport_residual, boundary, heating, exchange)
+
+    def _legacy_step_with_report(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None, surface_fluxes=None):
         self.check_state(state)
         packed, report = self.ocean.step_with_report(self._pack(state), dt, target_h=target_h)
         transported = self._unpack(packed, state)
@@ -170,6 +223,7 @@ class TKEOcean:
         end, mixing = self.mix_with_report(heated, dt)
         transport_residual = (self.ocean.energy.mass_area(state.ocean)*(transported.tke_h-state.tke_h)).sum()
         return end, TKEStepReport(report, mixing, transport_residual, boundary, heating, exchange)
+
 
     def step(self, state, dt, *, target_h=None, surface_stress=None, shortwave=None, surface_heat=None, surface_fluxes=None):
         return self.step_with_report(state, dt, target_h=target_h, surface_stress=surface_stress, shortwave=shortwave, surface_heat=surface_heat, surface_fluxes=surface_fluxes)[0]

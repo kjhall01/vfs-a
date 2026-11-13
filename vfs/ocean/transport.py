@@ -67,6 +67,45 @@ class HorizontalTransport:
         self.mesh, self.domain, self.scheme = mesh, domain, scheme
         self.cfl_safety, self.min_thickness = cfl_safety, min_thickness
 
+    def prepare(self, layers):
+        """Precompute immutable layer connectivity; no state-dependent quantities.
+
+        Rebuild the model after changing connectivity or device. Tensor versions
+        reject in-place edits rather than silently using a stale graph.
+        """
+        cells = self.mesh.cellsOnEdge
+        active = None if self.domain is None else self.domain.active_edge
+        if cells.is_inference() or (active is not None and active.is_inference()):
+            # Inference tensors have no mutation counter: preserve the ordinary
+            # indexing path rather than cache geometry we cannot invalidate.
+            self.__dict__.pop('_prepared', None)
+            return
+        edges = cells if active is None else cells[active]
+        k = torch.arange(layers, device=cells.device)
+        i = (edges[:, 0, None]*layers+k).flatten()
+        j = (edges[:, 1, None]*layers+k).flatten()
+        degree = self.mesh.cell_area.new_zeros(self.mesh.nCells*layers)
+        ones = degree.new_ones(i.shape)
+        degree = degree.index_add(0, i, ones).index_add(0, j, ones)
+        self._prepared = dict(layers=layers, cells=cells, version=cells._version,
+            active=active, active_version=None if active is None else active._version,
+            i=i, j=j, neighbors=torch.cat((j,i)), degree=degree)
+
+    def _indices(self, layers, device):
+        p = getattr(self, '_prepared', None)
+        if p is None:
+            cells = self.mesh.cellsOnEdge
+            if self.domain is not None: cells = cells[self.domain.active_edge]
+            k = torch.arange(layers, device=device)
+            return (cells[:,0,None]*layers+k).flatten(), (cells[:,1,None]*layers+k).flatten()
+        active = None if self.domain is None else self.domain.active_edge
+        if (layers != p['layers'] or self.mesh.cellsOnEdge is not p['cells']
+                or self.mesh.cellsOnEdge._version != p['version'] or p['i'].device != device
+                or p['degree'].dtype != self.mesh.cell_area.dtype
+                or active is not p['active'] or (active is not None and active._version != p['active_version'])):
+            raise ValueError('prepared transport geometry changed; rebuild the model')
+        return p['i'], p['j']
+
     def graph(self, state):
         state.validate()
         if state.mesh is not self.mesh or state.h.ndim != 2:
@@ -87,13 +126,10 @@ class HorizontalTransport:
         if (state.salt_h < 0).any().item():
             raise ValueError('initial salinity must be nonnegative')
         mesh, layers = self.mesh, state.h.shape[-1]
-        cells = mesh.cellsOnEdge
         flux = mesh.dv_edge[:,None]*mesh.cell_to_edge(state.h)*state.u_e
         if self.domain is not None:
-            cells, flux = cells[self.domain.active_edge], flux[self.domain.active_edge]
-        k = torch.arange(layers,device=state.h.device)
-        i = (cells[:,0,None]*layers+k).flatten()
-        j = (cells[:,1,None]*layers+k).flatten()
+            flux = flux[self.domain.active_edge]
+        i, j = self._indices(layers, state.h.device)
         volume = (mesh.cell_area[:,None]*state.h).flatten()
         return volume,i,j,flux.flatten()
 
@@ -121,15 +157,18 @@ class HorizontalTransport:
         if state.tracer_h is not None:
             fields.append(state.tracer_h)
         q = (torch.cat(fields,-1)/state.h[...,None]).reshape(volume.numel(),-1)
-        donor = torch.where((G >= 0)[:,None],q[i],q[j])
-        centered = .5*(q[i]+q[j])
+        qi, qj = q[i], q[j]
+        positive, negative = G.clamp_min(0), (-G).clamp_min(0)
+        donor = torch.where((G >= 0)[:,None],qi,qj)
+        centered = .5*(qi+qj)
         low_flux, high_flux = G[:,None]*donor, G[:,None]*centered
         # Positive remaining-carrier representation avoids subtracting nearly
         # equal scalar amounts. Incoming volume always carries the donor value.
-        low = (remaining[:,None]*q).index_add(0,j,G.clamp_min(0)[:,None]*q[i])
-        low = low.index_add(0,i,(-G).clamp_min(0)[:,None]*q[j])
-        neighbors = torch.cat((j,i))[:,None].expand(-1,q.shape[-1])
-        values = torch.cat((q[i],q[j]))
+        low = (remaining[:,None]*q).index_add(0,j,positive[:,None]*qi)
+        low = low.index_add(0,i,negative[:,None]*qj)
+        prepared = getattr(self, '_prepared', None)
+        neighbors = (torch.cat((j,i)) if prepared is None else prepared['neighbors'])[:,None].expand(-1,q.shape[-1])
+        values = torch.cat((qi,qj))
         qmin = q.scatter_reduce(0,neighbors,values,reduce='amin',include_self=True)
         qmax = q.scatter_reduce(0,neighbors,values,reduce='amax',include_self=True)
         lower, upper = new_volume[:,None]*qmin,new_volume[:,None]*qmax

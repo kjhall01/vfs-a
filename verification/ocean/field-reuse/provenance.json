@@ -1,0 +1,150 @@
+{
+  "parent_commit": "0d3c9c131d087be4ac138f5eea011067b22da0d1",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "omitted_local_tensor_captures": [
+    {
+      "name": "final-full_ale-parent.pt",
+      "bytes": 10119283
+    },
+    {
+      "name": "final-full_ale-candidate.pt",
+      "bytes": 10120205
+    },
+    {
+      "name": "final-full_ale-warm.pt",
+      "bytes": 10118711
+    },
+    {
+      "name": "final-full-parent.pt",
+      "bytes": 10045627
+    },
+    {
+      "name": "final-full-candidate.pt",
+      "bytes": 10046341
+    },
+    {
+      "name": "final-full-warm.pt",
+      "bytes": 10045151
+    },
+    {
+      "name": "final-ocean-parent.pt",
+      "bytes": 9567499
+    },
+    {
+      "name": "final-ocean-candidate.pt",
+      "bytes": 9567883
+    },
+    {
+      "name": "final-ocean-warm.pt",
+      "bytes": 9567243
+    },
+    {
+      "name": "large-warm-2.pt",
+      "bytes": 156503553
+    },
+    {
+      "name": "large-candidate-2.pt",
+      "bytes": 156503903
+    },
+    {
+      "name": "large-parent-2.pt",
+      "bytes": 156503693
+    },
+    {
+      "name": "large-warm-1.pt",
+      "bytes": 156503553
+    },
+    {
+      "name": "large-candidate-1.pt",
+      "bytes": 156503903
+    },
+    {
+      "name": "large-parent-1.pt",
+      "bytes": 156503693
+    },
+    {
+      "name": "full_ale-warm.pt",
+      "bytes": 10116995
+    },
+    {
+      "name": "full_ale-candidate.pt",
+      "bytes": 10118425
+    },
+    {
+      "name": "full_ale-parent.pt",
+      "bytes": 10117567
+    },
+    {
+      "name": "full-warm.pt",
+      "bytes": 10043723
+    },
+    {
+      "name": "full-candidate.pt",
+      "bytes": 10044913
+    },
+    {
+      "name": "full-parent.pt",
+      "bytes": 10044199
+    },
+    {
+      "name": "ocean-warm.pt",
+      "bytes": 9566475
+    },
+    {
+      "name": "ocean-candidate.pt",
+      "bytes": 9567115
+    },
+    {
+      "name": "ocean-parent.pt",
+      "bytes": 9566731
+    }
+  ],
+  "note": "First large sample predates final custom-TKE subclass fallback; final small samples and full suite use final runtime. No comparative timing/test jobs concurrent; CLI smoke timings excluded. All tensor captures omitted; no files split.",
+  "warm_cli_smoke_note": "Execution check only; ran alongside regression suite, do not use its timings for speed comparisons.",
+  "final_runtime_sha256": {
+    "vfs/ocean/__init__.py": "ccefaf5fdbd086680d62d34afda3eb6fdc3a045dfea1ac67b61d6c3db5d56a6e",
+    "vfs/ocean/ale.py": "ae6e66203a62144c19cb02c7c9ca6e968047576b2c2aba00f16ee644a817b739",
+    "vfs/ocean/column.py": "996857a903d612984aaaa46288da6299ed6c7db7204d1d006a345317006577b7",
+    "vfs/ocean/conservative.py": "156e57c258e5d6717b5f48402b04c9964eb7ee348302621c9b8db81018dd842d",
+    "vfs/ocean/constants.py": "66040cd703194abb47c52b43b253a42d382b8a6b811383fa828a076131c2bd30",
+    "vfs/ocean/diagnostics.py": "25851b4e8ddba9476504d79e365f2612e39e5e98bbcdddecc200b8308490afbf",
+    "vfs/ocean/domain.py": "9c10f94c592eb66f75239b0e6ecd0271006f8825c29539474f105195bd84afa2",
+    "vfs/ocean/dynamics.py": "1a656e72a4b89997f2e3325b623c22ac8132a3ca0b85b42cb791e946e8d0434f",
+    "vfs/ocean/energy.py": "e9a10ac06e8fbd5dfa16ed40f966b4e30d05b6ea51a06c4c3c08c77896c0dfb7",
+    "vfs/ocean/eos.py": "a1fa25bc46491791866aa3ae6a25143dbde5008fe48e566657c5bff87d38cce6",
+    "vfs/ocean/helpers.py": "f0c8a5e57dfb91b162a1e821711f548cd9f6f0b45a6bd7528c8add623d077002",
+    "vfs/ocean/initial_conditions.py": "2af37b5e6a45c606afeb4aff4cde412a4ac074a96556945d517812298068cd2a",
+    "vfs/ocean/io.py": "9fdd86bc89d7682425c584c79f59d9b32fc04b0cbe881a073530308bd0ce3299",
+    "vfs/ocean/jmd95.py": "f233dce80a9d7f116a7a0a8bc9b7001f56a74c908c17534adc4af127635d294c",
+    "vfs/ocean/jmd95_energy.py": "57778357346bafdb9dbb52ebb959b630cc385dc02f07a26df68667a387d17f39",
+    "vfs/ocean/mixed_layer.py": "3186a4836cef062b37ec360d6a84274ad022fea3be4cedb35dea7fa2041eae26",
+    "vfs/ocean/model.py": "02e5b1080505e7b22468c26c1889bda3f21d4a09b12d9f336634716089d93993",
+    "vfs/ocean/physics.py": "f8c64d659d2e88af42a6992818ad801666dbe95397ce8b2b3e985ef96077fe6b",
+    "vfs/ocean/regrid.py": "d566f52603c20d15d5a041a76b3007c60c92d634f65ac4a4af5890491b86f03b",
+    "vfs/ocean/state.py": "21e60cab5662677bff7b441a60337c1214252218a25a10fe5cbeace80af0d1b3",
+    "vfs/ocean/stratified/__init__.py": "b69c992c58c4d920e35de44abff7abfb36a92c50c8d6964c0f894bc7200af3f4",
+    "vfs/ocean/stratified/boundary.py": "d7a9fbe48c5fd5c93d1b8a1a6155771368b2f0398ba4a88b62e53b1901a5bd0e",
+    "vfs/ocean/stratified/energy_columns.py": "a493ef5aa96107004465ae5eaae9e3a8f70aae343b79de9ad9763b570ca475ef",
+    "vfs/ocean/stratified/enthalpy_remap.py": "06f663a115acc1aa73566b500855beb89921d6cd028ef5ce2b9fef86572605e8",
+    "vfs/ocean/stratified/equations.py": "0cabef51c7be50bf13c18582ad5c5bdcca915a3556f219c4f3321c75df523124",
+    "vfs/ocean/stratified/faces.py": "4af8b7af9b907b227655f5cd773d7af438e19fbc34ebecd7d89f4c1320dedfc6",
+    "vfs/ocean/stratified/heating.py": "2216c87ae4a86c7eca69aecd8909a77c080b226590d6a1740d79e5a5d74b2e8a",
+    "vfs/ocean/stratified/model.py": "ad2fe06113755f272236be82b627193483e4e43486be0ed917374733d3f53259",
+    "vfs/ocean/stratified/remap.py": "8d3975cb6262e3bb544d039fc6ea4d4ab357974756ba701214a800ecac56c542",
+    "vfs/ocean/stratified/surface_exchange.py": "d4ae2fa26ea51d1fe938b54d2107e12040a10520812d05909dc51e75c97d09b5",
+    "vfs/ocean/stratified/surface_heating.py": "e747a6d80e0ae8be09f4a42f376b56f6e91b341c3baf4470ff2fa7ffb35fdddc",
+    "vfs/ocean/stratified/thermodynamics.py": "7cf00cbbc3510dd043063e4500b2ab4156424165508b372ccad6a64528949e1d",
+    "vfs/ocean/stratified/tke.py": "e41a208475001c434ff53268418848f2c051713dd5376cfb4f1e4441ed44304b",
+    "vfs/ocean/stratified/tke_model.py": "81857c1f9f27e60e06cb315e9db7089207bf6dbb95b1e53747cab915894cd2a3",
+    "vfs/ocean/stratified/transport.py": "7d56fd60aecb8ec165339e34d37074ccbcc6f1c5e6f9cbe5f9dd56c500152482",
+    "vfs/ocean/transport.py": "9132b8f9bd355c3b261b894f6e28d184ff7abfe00e002b3746fc2b6a94cc0c8f"
+  },
+  "benchmark_wheel_sha256": {
+    "vfs-1.0.0+extraction4-py3-none-any.whl": "267fd3c5856181827db1476a3ac461aef3a11969703d614a61872c1d091f5f46"
+  },
+  "final_tested_wheel_sha256": {
+    "vfs-1.0.0+extraction4-py3-none-any.whl": "4ae7cf77fe234140e9c0189c5bb4eaf2cc9bcd4b25d8a7d30d104097303b4e7c"
+  },
+  "final_compatibility_change": "After timings, prepare() falls back to ordinary indexing for inference tensors without mutation counters. Timed standard tensors do not enter this branch. Final installed suite rerun."
+}

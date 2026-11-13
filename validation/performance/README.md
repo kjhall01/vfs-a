@@ -104,3 +104,39 @@ Per-case JSON includes raw timings, endpoints, package/source fingerprints,
 thread counts and platform/build information. Logs preserve errors. Return the
 summary plus the relevant case JSON when comparing machines. Do not upload any
 individual artifact above 128 KiB; keep it local.
+
+### Validated field reuse and warm inversion
+
+`StratifiedOcean` reuses checked physical fields within a step and precomputes
+layer connectivity. Rebuild the model after changing mesh connectivity, its
+active-edge mask, layer count, or device; stale prepared connectivity is rejected.
+No thermodynamic fields are cached between public calls.
+
+`StratifiedOcean(mesh, column, warm_start=True)` additionally starts stage entropy
+inversions from the previous checked temperature. It retains the reference-domain
+and residual checks, Newton-polishes the result, and falls back to the original
+solver if necessary. The default is `False`; warm starts can change roundoff and
+roundoff-sensitive limiter diagnostics. This option does not warm every mixing or
+forcing inversion.
+
+For independent wheel comparisons, unpack each wheel into a separate directory
+and run `field_reuse.py --package /path/to/unpacked-wheel --output /tmp/sample.json`.
+Use `--warm` for warm inversions or `--unprepared` to disable prepared connectivity.
+Run samples sequentially, alternate wheel order, and repeat them. `.pt` tensor
+captures are local comparison intermediates; do not commit oversized captures.
+See `verification/ocean/FIELD_REUSE.md` for measured scope and limitations.
+
+`compare_field_reuse.py parent.json candidate.json --output comparison.json`
+checks every captured state/report tensor for exact equality. With
+`--allow-roundoff`, it records per-field differences without asserting an
+accuracy threshold; use this for warm-inversion diagnostics, alongside residual,
+positivity, inventory and energy-budget checks.
+
+The main campaign accepts `--warm-start` for the ocean dynamics in `ocean`,
+`full`, and `full_ale`. It does not alter atmosphere or mixing-only calculations.
+For example, compare separate output directories with and without this flag:
+
+```sh
+python -I validation/performance/run.py --sizes 1024x64 --threads 1 \
+  --cases ocean full full_ale --dt 60 --warm-start --output perf-warm
+```

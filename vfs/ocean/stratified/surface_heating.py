@@ -44,11 +44,11 @@ class OceanSurfaceHeating:
         if self.bottom not in ('export','absorb'):
             raise ValueError("bottom must be 'export' or 'absorb'")
 
-    def apply(self, ocean, state, dt, *, shortwave=None, surface_heat=None):
+    def apply(self, ocean, state, dt, *, shortwave=None, surface_heat=None, _physical=None, _return_physical=False):
         """Heat an EntropyState directly; does not require a TKE state/closure."""
         if not math.isfinite(float(dt)) or float(dt) <= 0:
             raise ValueError('dt must be finite and positive')
-        physical=ocean.check_state(state)
+        physical=(ocean.check_state(state) if _physical is None else ocean.check_state(state, _physical=_physical))
         h=state.h; mass_area=ocean.energy.mass_area(state)
         wet=(mass_area[:,0] > 0)
         def field(value,name):
@@ -95,6 +95,7 @@ class OceanSurfaceHeating:
         flux_scale=(surface_energy.abs()+shortwave_energy+exported_energy).clamp_min(1)
         if (flux_residual.abs()>128*torch.finfo(h.dtype).eps*flux_scale).any():
             raise FloatingPointError('shortwave flux ledger failed')
-        return end,SurfaceHeatingReport(surface_energy,shortwave_energy,transmitted_energy,
+        result = (end,SurfaceHeatingReport(surface_energy,shortwave_energy,transmitted_energy,
             exported_energy,bottom_energy,layer_heat,incoming.sum(),flux_residual,
-            mass*inversion,residual,residual.sum())
+            mass*inversion,residual,residual.sum()))
+        return (*result,final) if _return_physical else result

@@ -1,0 +1,262 @@
+[
+  {
+    "case": "final-ocean",
+    "paths": {
+      "candidate": {
+        "tensor_count": 122,
+        "bitwise_equal": true,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      },
+      "warm": {
+        "tensor_count": 122,
+        "bitwise_equal": false,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 2.1141942363467336e-18,
+            "relative_l2": 8.749346049227352e-17
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "final-full",
+    "paths": {
+      "candidate": {
+        "tensor_count": 232,
+        "bitwise_equal": true,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      },
+      "warm": {
+        "tensor_count": 232,
+        "bitwise_equal": false,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 3.469446951953614e-18,
+            "relative_l2": 9.421868743248764e-17
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 5.9117155615240335e-12,
+            "relative_l2": 5.443497196949203e-16
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 8.881784197001252e-16,
+            "relative_l2": 1.9207288258546906e-18
+          },
+          ".0.tke_h": {
+            "max_abs": 8.836247705756861e-18,
+            "relative_l2": 2.8615477933823556e-15
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "final-full_ale",
+    "paths": {
+      "candidate": {
+        "tensor_count": 280,
+        "bitwise_equal": true,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      },
+      "warm": {
+        "tensor_count": 280,
+        "bitwise_equal": false,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 4.20128341838133e-18,
+            "relative_l2": 1.3087073624214096e-16
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 9.322320693172514e-12,
+            "relative_l2": 7.579360856261164e-16
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 1.1926223897340549e-17,
+            "relative_l2": 3.157171992320784e-15
+          }
+        }
+      }
+    }
+  },
+  {
+    "case": "large",
+    "paths": {
+      "candidate": {
+        "tensor_count": 64,
+        "bitwise_equal": true,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      },
+      "warm": {
+        "tensor_count": 64,
+        "bitwise_equal": false,
+        "state_errors": {
+          ".0.ocean.u_e": {
+            "max_abs": 1.2549640146519714e-17,
+            "relative_l2": 1.8055832271973824e-16
+          },
+          ".0.ocean.h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.entropy_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.salt_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.ocean.tracer_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          },
+          ".0.tke_h": {
+            "max_abs": 0.0,
+            "relative_l2": 0.0
+          }
+        }
+      }
+    }
+  }
+]

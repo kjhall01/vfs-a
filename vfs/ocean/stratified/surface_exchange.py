@@ -56,12 +56,12 @@ class OceanSurfaceExchange:
     including changing salinity, mass, free-surface and kinetic energy.
     No automatic freshwater enthalpy, latent heat or TKE source is inferred.
     """
-    def apply(self,ocean,state,dt,fluxes):
+    def apply(self,ocean,state,dt,fluxes, *, _physical=None, _return_physical=False):
         if not isinstance(fluxes,OceanSurfaceFluxes):
             raise TypeError('fluxes must be OceanSurfaceFluxes')
         if not math.isfinite(float(dt)) or float(dt)<=0:
             raise ValueError('dt must be finite and positive')
-        physical=ocean.check_state(state)
+        physical=(ocean.check_state(state) if _physical is None else ocean.check_state(state, _physical=_physical))
         h=state.h;mesh=state.mesh;energy=ocean.energy
         mass_area=energy.mass_area(state);area=mass_area[:,0]/ocean.column.rho0
         wet=area>0
@@ -126,6 +126,7 @@ class OceanSurfaceExchange:
             raise FloatingPointError('surface exchange full-H column energy closure failed')
         mass_residual=mass_area[:,0]*(new_h[:,0]-h[:,0])-dt*area*(p-e)
         momentum_residual=new_metric[:,0]*velocity[:,0]-old_metric[:,0]*state.u_e[:,0]-impulse
-        return end,SurfaceExchangeReport(dt*area*p,dt*area*e,mass_residual,impulse,
+        result = (end,SurfaceExchangeReport(dt*area*p,dt*area*e,mass_residual,impulse,
             momentum_residual,sensible_energy,latent_energy,water_energy,external.sum(),
-            changes,correction,mass_area*new_h*inversion,residual,residual.sum())
+            changes,correction,mass_area*new_h*inversion,residual,residual.sum()))
+        return (*result,final) if _return_physical else result
