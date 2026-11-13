@@ -138,11 +138,13 @@ def test_rejects_invalid_states_and_parameters(mesh):
     with pytest.raises(ValueError):TKEClosure(1.,prandtl=float('nan'))
 
 
-def test_tke_exhaustion_rejects_without_mutating_input(mesh):
+def test_tke_exhaustion_limits_without_mutating_input(mesh):
     m,s=case(mesh,closure=TKEClosure(100.,c_epsilon=0.),k=1e-8)
     s=replace(s,ocean=replace(s.ocean,u_e=torch.zeros_like(s.ocean.u_e)))
     saved=s.tke_h.clone()
-    with pytest.raises(ValueError,match='available TKE'):m.mix_with_report(s,1000.)
+    end, report=m.mix_with_report(s,1000.)
+    assert (end.tke_h >= 0).all()
+    assert report.global_energy_residual.abs()/mean_mass(m,s) < 1e-9
     assert torch.equal(saved,s.tke_h)
 
 
@@ -230,8 +232,9 @@ def test_local_pair_cannot_spend_remote_tke(mesh):
     # Plenty of energy in layers 2/3 cannot finance the isolated 0/1 interface.
     reservoir=reservoir*s.tke_h.new_tensor([0.,0.,1e6,1e6])
     saved=reservoir.clone()
-    with pytest.raises(ValueError,match='adjacent layer'):
-        m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    end, remaining, *rest = m.closure._mix_adjacent(m.ocean,s.ocean,reservoir,g,10.)
+    assert (remaining >= 0).all()
+    assert torch.equal(remaining[:,2:],reservoir[:,2:])
     assert torch.equal(reservoir,saved)
 
 

@@ -1,0 +1,504 @@
+[
+  {
+    "layers": 16,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 24.460918091994245,
+    "external_energy_J_m2": -359990.1440844664,
+    "energy_error_J_kg": 2.33852826967472e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 3.551106300444792e-16,
+    "transport": [
+      0.34368540084653687,
+      -0.06254027053003615
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 14.665978384000482,
+    "external_energy_J_m2": -359990.16059696046,
+    "energy_error_J_kg": 1.0405826132471969e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 1.775553150222396e-16,
+    "transport": [
+      0.3436950672249912,
+      -0.062542029516371
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 32,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 30.942215583003417,
+    "external_energy_J_m2": -359982.36088025937,
+    "energy_error_J_kg": -5.7793108791839785e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.7745542656518954e-16,
+    "transport": [
+      0.3436854008465368,
+      -0.06254027053003615
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 32,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 7.789154946003691,
+    "external_energy_J_m2": -359982.1695218511,
+    "energy_error_J_kg": 1.4370761630011768e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.3436950672249911,
+      -0.062542029516371
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 64,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 34.64319915600208,
+    "external_energy_J_m2": -359975.5878943528,
+    "energy_error_J_kg": -8.478442706712862e-13,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017299387753633e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.3436854008465369,
+      -0.06254027053003616
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 64,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 7.600964753000881,
+    "external_energy_J_m2": -359974.0381025791,
+    "energy_error_J_kg": -1.4421302916073218e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.3436950672249911,
+      -0.06254202951637099
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 16,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 34.09729112900095,
+    "external_energy_J_m2": 718069.5314256242,
+    "energy_error_J_kg": -2.935710476665962e-11,
+    "mass_residual_kg_m2": 5.465405905624721e-12,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 1.775553150222396e-16,
+    "transport": [
+      0.34368540084653704,
+      -0.06254027053003622
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 13.856392260000575,
+    "external_energy_J_m2": 718069.517013123,
+    "energy_error_J_kg": -5.140446308182507e-12,
+    "mass_residual_kg_m2": -9.100720177457333e-12,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499105,
+      -0.06254202951637094
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 32,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 39.18854442399606,
+    "external_energy_J_m2": 718077.4456857448,
+    "energy_error_J_kg": 2.441882360272291e-11,
+    "mass_residual_kg_m2": -9.100720177457333e-12,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.7745542656518954e-16,
+    "transport": [
+      0.34368540084653676,
+      -0.06254027053003612
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 32,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 16.3638712749962,
+    "external_energy_J_m2": 718077.6039927099,
+    "energy_error_J_kg": -2.4168956570509003e-12,
+    "mass_residual_kg_m2": -9.100720177457333e-12,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499105,
+      -0.062542029516371
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 64,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 24.84891829999833,
+    "external_energy_J_m2": 718084.3199981084,
+    "energy_error_J_kg": 1.5476991127176983e-11,
+    "mass_residual_kg_m2": -9.100720177457333e-12,
+    "salt_relative_change": -1.3017299387753633e-16,
+    "passive_relative_change": 1.7745506055865523e-16,
+    "transport": [
+      0.343685400846537,
+      -0.0625402705300362
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 64,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 21.33048602299823,
+    "external_energy_J_m2": 718085.7918690833,
+    "energy_error_J_kg": 7.825381145244692e-13,
+    "mass_residual_kg_m2": -9.100720177457333e-12,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.3436950672249912,
+      -0.06254202951637099
+    ],
+    "analytic_wind_transport": null
+  },
+  {
+    "layers": 16,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 29.846365090998006,
+    "external_energy_J_m2": 9.85995683735446,
+    "energy_error_J_kg": 2.697562436191131e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34368540084653715,
+      -0.0625402705300362
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 12.99253145300463,
+    "external_energy_J_m2": 9.84288662785098,
+    "energy_error_J_kg": 2.896513875362516e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.3436950672249911,
+      -0.062542029516371
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 3.224835670996981,
+    "external_energy_J_m2": 10.007099984647063,
+    "energy_error_J_kg": 1.176961773569751e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499116,
+      -0.06254202951637099
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 1e-12,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 8.47926458800066,
+    "external_energy_J_m2": 10.002074252118888,
+    "energy_error_J_kg": -1.0225077370173162e-13,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499105,
+      -0.06254202951637099
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 32,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 16.530908104003174,
+    "external_energy_J_m2": 17.663647113667032,
+    "energy_error_J_kg": 1.455297216935145e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.7745542656518954e-16,
+    "transport": [
+      0.34368540084653704,
+      -0.06254027053003619
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 32,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 12.028440389003663,
+    "external_energy_J_m2": 17.848769359774053,
+    "energy_error_J_kg": -1.6765542146991144e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499105,
+      -0.06254202951637096
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 64,
+    "dt_s": 150.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 13.221351556996524,
+    "external_energy_J_m2": 24.453029184832033,
+    "energy_error_J_kg": -4.9359803918976956e-12,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.7745506055865523e-16,
+    "transport": [
+      0.34368540084653687,
+      -0.06254027053003618
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  },
+  {
+    "layers": 64,
+    "dt_s": 300.0,
+    "requested_hours": 1.0,
+    "completed_hours": 1.0,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 10.883597543004726,
+    "external_energy_J_m2": 25.99031078776587,
+    "energy_error_J_kg": -1.0463364635431457e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      0.34369506722499127,
+      -0.062542029516371
+    ],
+    "analytic_wind_transport": [
+      0.3436821788049659,
+      -0.06253968421664897
+    ]
+  }
+]
