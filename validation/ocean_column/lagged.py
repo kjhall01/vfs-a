@@ -43,6 +43,7 @@ def diffuse_many(values,mass,g,dt):
 
 @dataclass(frozen=True)
 class LaggedClosure(PathWorkClosure):
+    fast_thermodynamics: bool = False
     max_reductions: int = 8
     reduction: float = .9
     predictor_steps: int = 1
@@ -52,8 +53,11 @@ class LaggedClosure(PathWorkClosure):
         if self.max_reductions<0 or self.predictor_steps<0 or self.funding not in ('column','local','split') or not 0<self.reduction<1:raise ValueError('invalid scalar retry controls')
 
     def apply(self,ocean,state,tke_h,dt):
+        return self._apply(ocean,state,tke_h,dt)[:3]
+
+    def _apply(self,ocean,state,tke_h,dt,physical=None):
         if not math.isfinite(dt) or dt<=0:raise ValueError('positive finite dt required')
-        physical=ocean.check_state(state)
+        if physical is None:physical=ocean.check_state(state)
         h=state.h;mesh=state.mesh;energy=ocean.energy
         if tke_h.shape!=h.shape or tke_h.dtype!=h.dtype or tke_h.device!=h.device:raise ValueError('TKE must match thickness')
         if not torch.isfinite(tke_h).all() or (tke_h<0).any():raise ValueError('TKE must be finite and nonnegative')
@@ -66,12 +70,20 @@ class LaggedClosure(PathWorkClosure):
         he=mesh.cell_to_edge(h);mechanical=energy.base.mechanical
         metric=mechanical.metric(physical)
         allocate=lambda e:h*mechanical.interpolation_transpose(mesh,e/he)
-        psi0,ref0=thermal_parts(ocean,physical)
+        workbuf=None
+        if self.fast_thermodynamics:
+            from fast_thermo import MixingThermodynamics
+            workbuf=MixingThermodynamics(ocean,physical)
+        parts=workbuf.parts if workbuf else lambda p:thermal_parts(ocean,p)
+        psi0,ref0=parts(physical)
         s0=physical.salinity();theta0=physical.temperature();H0=ref0['h0']
         node,weight=energy.base._quadrature(h)
         z=energy.base.height(physical)[...,None]+h[...,None]*(node-.5)
         alpha=h[:,:-1]/(h[:,:-1]+h[:,1:])
-        theta_round=energy.reference.temperature_from_enthalpy(s0,H0)
+        if workbuf:
+            from fast_thermo import Caloric
+            theta_round=Caloric(energy.reference,s0).inverse(H0,theta0,'h0')
+        else:theta_round=energy.reference.temperature_from_enthalpy(s0,H0)
         eta_round=energy.reference.evaluate(s0,theta_round,entropy_derivatives=True)['entropy']
 
         def resistance(diffusivity, thickness):
@@ -110,7 +122,7 @@ class LaggedClosure(PathWorkClosure):
             fs=dt*gh*(salt[:,1:]-salt[:,:-1]);fh=dt*gh*(enthalpy[:,1:]-enthalpy[:,:-1])
             salt_h=state.salt_h+div(fs);salt=salt_h/h
             enthalpy=H0+div(fh)/h
-            theta=energy.reference.temperature_from_enthalpy(salt,enthalpy)
+            theta=Caloric(energy.reference,salt).inverse(enthalpy,theta0,'h0') if workbuf else energy.reference.temperature_from_enthalpy(salt,enthalpy)
             eta=energy.reference.evaluate(salt,theta,entropy_derivatives=True)['entropy']
             tracer=state.tracer_h
             if tracer is not None:
@@ -119,21 +131,26 @@ class LaggedClosure(PathWorkClosure):
                 tz=torch.zeros_like(tracer[:,:1])
                 tracer=tracer+torch.cat((f,tz),1)-torch.cat((tz,f),1)
             mixed=replace(state,u_e=u,salt_h=salt_h,entropy_h=state.entropy_h+h*(eta-eta_round),tracer_h=tracer)
-            after=ocean.check_state(mixed);psi1,ref1=thermal_parts(ocean,after)
+            after=workbuf.physical(mixed,theta) if workbuf else ocean.check_state(mixed)
+            psi1,ref1=parts(after)
             change=mass*((psi1-psi0)+(ref1['h0']-H0))
             # Centred conjugate energy flux defines the local work allocation;
             # the actual finite H difference retains its nonlinear remainder.
             tm=.5*(theta0+after.temperature());sm=.5*(s0+salt)
-            ref=energy.reference.evaluate(sm,tm)
-            _,pt,ps,_=energy.base.parcel_potential(tm[...,None],sm[...,None],z)
-            a=(pt*weight).sum(-1)/ref['h_theta'];b=(ps*weight).sum(-1)-a*ref['h_s']
+            if workbuf:a,b=workbuf.conjugates(tm,sm)
+            else:
+                ref=energy.reference.evaluate(sm,tm)
+                _,pt,ps,_=energy.base.parcel_potential(tm[...,None],sm[...,None],z)
+                a=(pt*weight).sum(-1)/ref['h_theta'];b=(ps*weight).sum(-1)-a*ref['h_s']
             face=lambda q:(1-alpha)*q[:,:-1]+alpha*q[:,1:]
             flux=area*(fh+face(a)*fh+face(b)*fs)
             # The h0 transfer is conservative by construction. Cancel it
             # algebraically, rather than making TKE pay inverse-roundtrip noise.
             # Full-H acceptance below independently checks that noise.
-            work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
-            work=self._buoyancy_work(ocean,physical,after,fh,fs,work)
+            if workbuf:work=workbuf.path_work(self,physical,H0,fh,fs,(a,b))
+            else:
+                work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
+                work=self._buoyancy_work(ocean,physical,after,fh,fs,work)
             reconstruction=change-div(flux)-work
             if self.interface_scheme=="resistance":
                 # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
@@ -145,21 +162,21 @@ class LaggedClosure(PathWorkClosure):
             conductance=area*gk/self.sigma_k
             diss=dt*mass*self.c_epsilon*positive_sqrt(k)/self.mixing_length
             diag=mass+add(dt*conductance)+diss
-            return mixed,production,work,flux,conductance,diss,diag,-dt*conductance,reconstruction
+            return mixed,production,work,flux,conductance,diss,diag,-dt*conductance,reconstruction,after
 
         scalar_scale=torch.ones_like(h[:,:-1]);limited=torch.zeros_like(scalar_scale,dtype=torch.bool)
         deferred=torch.zeros_like(h[:,:1],dtype=torch.bool)
         fixed_k=k0
         for _ in range(self.predictor_steps):
             momentum_cache.clear()
-            _,p,b,_,_,_,a,off,_=trial(fixed_k,scalar_scale)
+            _,p,b,_,_,_,a,off,_,_=trial(fixed_k,scalar_scale)
             denom=torch.where(fixed_k>0,fixed_k,torch.ones_like(fixed_k))
             fixed_k=Factor(a+b.clamp_min(0)/denom,off).solve(mass*k0+p+(-b).clamp_min(0))
             if not torch.isfinite(fixed_k).all() or (fixed_k<0).any():raise FloatingPointError('invalid coefficient predictor')
         momentum_cache.clear()
         factor=None
         for attempt in range(self.max_reductions+2):
-            mixed,production,work,flux,g,diss,diagonal,off,reconstruction=trial(fixed_k,scalar_scale)
+            mixed,production,work,flux,g,diss,diagonal,off,reconstruction,after=trial(fixed_k,scalar_scale)
             if factor is None:
                 factor=Factor(mass+add(dt*g) if self.funding=='split' else diagonal,off)
                 transported=factor.solve(mass*k0+production)
@@ -200,8 +217,11 @@ class LaggedClosure(PathWorkClosure):
         budget_error=(actual_residual.abs()/budget_scale).max()
         if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')
         heat=diss*final
-        end,thermal_residual=apply_heat(ocean,mixed,heat/mass)
-        final_physical=ocean.check_state(end);psi2,ref2=thermal_parts(ocean,final_physical)
+        if workbuf:end,thermal_residual,final_physical=workbuf.heat(mixed,after,heat/mass)
+        else:
+            end,thermal_residual=apply_heat(ocean,mixed,heat/mass)
+            final_physical=ocean.check_state(end)
+        psi2,ref2=parts(final_physical)
         local_ke=allocate(.5*metric*(end.u_e-state.u_e)*(end.u_e+state.u_e))
         exchange=local_ke+production
         column=(mass*((psi2-psi0)+(ref2['h0']-H0))+local_ke+mass*(final-k0)).sum(-1)-exchange.sum(-1)
@@ -216,7 +236,7 @@ class LaggedClosure(PathWorkClosure):
             {'limited_pairs':limited.sum().to(h.dtype),'semi_trials':h.new_tensor(trial_evaluations),
              'limited_interfaces':limited.sum().to(h.dtype),'deferred_columns':deferred.sum().to(h.dtype),
              'minimum_fraction':scalar_scale.min() if scalar_scale.numel() else h.new_ones(())})
-        return end,h*final,report
+        return end,h*final,report,final_physical
 
 @dataclass(frozen=True)
 class SubcycledLaggedClosure(LaggedClosure):
@@ -226,9 +246,11 @@ class SubcycledLaggedClosure(LaggedClosure):
         super().__post_init__()
         if not isinstance(self.substeps,int) or self.substeps<1:raise ValueError('positive integer substeps required')
     def apply(self,ocean,state,tke_h,dt):
-        reports=[]
+        reports=[];physical=None
         for _ in range(self.substeps):
-            state,tke_h,r=super().apply(ocean,state,tke_h,dt/self.substeps);reports.append(r)
+            state,tke_h,r,physical=super()._apply(ocean,state,tke_h,dt/self.substeps,
+                physical=physical if self.fast_thermodynamics else None)
+            reports.append(r)
         summed={name:sum(getattr(r,name) for r in reports) for name in ('global_energy_residual','column_energy_residual','kinetic_column_exchange','buoyancy_layer_work','buoyancy_energy_flux','tke_energy_flux','dissipated_heat','entropy_change','local_tke_residual','caloric_reconstruction_residual')}
         metrics={key:(torch.stack([r.mixing_limiter[key] for r in reports]).min() if key=='minimum_fraction' else sum(r.mixing_limiter[key] for r in reports)) for key in reports[0].mixing_limiter}
         metrics['mixing_substeps']=tke_h.new_tensor(self.substeps)

@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/tmp/path-check/validation/ocean_column/benchmark_fast.py", line 35, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/tmp/path-check/validation/ocean_column/benchmark_fast.py", line 20, in main
+    for name in models:outputs[name]=models[name].mix_with_report(states[name],300.)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py", line 112, in mix_with_report
+    resolved, tke_h, report = self.closure.apply(self.ocean, state.ocean, state.tke_h, dt)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/path-check/validation/ocean_column/lagged.py", line 251, in apply
+    state,tke_h,r,physical=super()._apply(ocean,state,tke_h,dt/self.substeps,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/path-check/validation/ocean_column/lagged.py", line 172, in _apply
+    _,p,b,_,_,_,a,off,_,_=trial(fixed_k,scalar_scale)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/path-check/validation/ocean_column/lagged.py", line 125, in trial
+    theta=Caloric(energy.reference,salt).inverse(enthalpy,theta0,'h0') if workbuf else energy.reference.temperature_from_enthalpy(salt,enthalpy)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/path-check/validation/ocean_column/fast_thermo.py", line 91, in inverse
+    raise FloatingPointError('warm caloric inversion failed original residual check')
+FloatingPointError: warm caloric inversion failed original residual check

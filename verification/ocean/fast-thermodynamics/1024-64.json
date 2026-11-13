@@ -1,0 +1,95 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "patch": false,
+  "dt": 300,
+  "substeps": 4,
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "source_hashes": {
+    "lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+    "fast_thermo.py": "34759ca708c577620aa150eb1bb87e50943958f1a51e5dd56910a5999ff2c441",
+    "benchmark_fast.py": "f69db12d96ee0620836348090ecaa59be694bb946b4ee59cb5c1e2a74631e43a"
+  },
+  "samples": [
+    {
+      "method": "baseline",
+      "repeat": 0,
+      "cpu_s": 106.15314194300001,
+      "wall_s": 106.39824943299755
+    },
+    {
+      "method": "fast",
+      "repeat": 0,
+      "cpu_s": 29.942268009999992,
+      "wall_s": 30.003543115002685
+    },
+    {
+      "method": "fast",
+      "repeat": 1,
+      "cpu_s": 28.342896036000013,
+      "wall_s": 28.38834865600802
+    },
+    {
+      "method": "baseline",
+      "repeat": 1,
+      "cpu_s": 105.73739013199997,
+      "wall_s": 105.94460066399188
+    },
+    {
+      "method": "baseline",
+      "repeat": 2,
+      "cpu_s": 109.01710893299997,
+      "wall_s": 109.23068468099518
+    },
+    {
+      "method": "fast",
+      "repeat": 2,
+      "cpu_s": 30.43588464900006,
+      "wall_s": 30.49300684600894
+    }
+  ],
+  "warmup_excluded": true,
+  "median_cpu_s": {
+    "baseline": 106.15314194300001,
+    "fast": 29.942268009999992
+  },
+  "speedup": 3.5452605630123752,
+  "differences": {
+    "velocity_relative_l2": 5.0374848442544046e-17,
+    "tke_relative_l2": 1.312508928705167e-14,
+    "temperature_rms_C": 6.815119149250671e-15
+  },
+  "checks": {
+    "baseline": {
+      "energy_error_J_kg": -1.0268829302128538e-11,
+      "local_budget_ratio": 3.344676114291879e-07,
+      "min_tke": 1.4493010159612969e-08,
+      "salt_relative_change": 5.0034259102654114e-18,
+      "passive_relative_change": -7.197118834947176e-20,
+      "limiter": {
+        "limited_pairs": 21980.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 21980.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370210103401658,
+        "mixing_substeps": 4.0
+      }
+    },
+    "fast": {
+      "energy_error_J_kg": -1.0268829302128538e-11,
+      "local_budget_ratio": 3.344676114291879e-07,
+      "min_tke": 1.4493010159613237e-08,
+      "salt_relative_change": 5.019328124979501e-18,
+      "passive_relative_change": -4.1983193203858525e-20,
+      "limiter": {
+        "limited_pairs": 21980.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 21980.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370210103401823,
+        "mixing_substeps": 4.0
+      }
+    }
+  }
+}

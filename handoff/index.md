@@ -1673,3 +1673,14 @@ the latter cadence; that combined schedule remains unqualified. The report
 proposes cached thermodynamic work, residual-controlled warm starts and
 derivative-only heating before frozen-conjugate trial approximations. No
 physical formulation, supported runtime, defaults or tolerances are changed.
+
+## Optimized mixing thermodynamics
+
+The opt-in research `fast_thermodynamics=True` path retains JMD95, the same
+Hamiltonian work and guards, and reduces the 1,024-by-64 four-substep mixing
+median from 106.15 to 29.94 CPU s (3.55×). Long 64-layer forced columns agree
+with the original to about 4.1e-13 TKE relative L2 or better. Public defaults
+remain unchanged; an internal validation hook reuses residual-checked physical
+fields. Installed suite: 1,052 passed, one CUDA skip, plus a separately passing
+composed-step regression; both portable fixture checks pass. See
+[implementation and evidence](../verification/ocean/FAST_THERMODYNAMICS.md).
