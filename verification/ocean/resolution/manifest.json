@@ -1,0 +1,184 @@
+[
+  {
+    "file": "L128-dt75.json",
+    "raw_bytes": 44836,
+    "raw_sha256": "9acb49b2e728ce4a69f02d1a04f8149a99c1a3ce81fe74c5ad3c3f40ad68370b",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-base.json",
+    "raw_bytes": 12818,
+    "raw_sha256": "94f0736dd4a9f8c7bb1613f9b786e6183d839980cf5fcea120a640842d5712ad",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-dt150.json",
+    "raw_bytes": 12820,
+    "raw_sha256": "8b24be2f6d185974e534d2a272f0415d7dda20eb41865a9c625855fb8133937c",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-dt75.json",
+    "raw_bytes": 12817,
+    "raw_sha256": "69b4cf08ecee4ba8ec450b6f00d4dedef67559f5e4a795793fbf6676e13bf161",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-factor05.json",
+    "raw_bytes": 12810,
+    "raw_sha256": "8cdf87747bd1e8ffd1e3ae171043dd497beceabe271fb4a078ecd9fff62b70d9",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-reference75.json",
+    "raw_bytes": 12859,
+    "raw_sha256": "99e88db56b362c79f281c93113c58dd9d6ac7353b7595d72d55eba64980e5334",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-sub8.json",
+    "raw_bytes": 12802,
+    "raw_sha256": "e55ebbe6d326bd6ce320250dce1b4a16762c97ab0007899048114b0b08c320dd",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L32-wind24.json",
+    "raw_bytes": 171186,
+    "raw_sha256": "498dcee304848864a79de3da8de09ac6edbe1b582d60d11a303705221fb7ed7c",
+    "raw_omitted": true,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-base.json",
+    "raw_bytes": 23399,
+    "raw_sha256": "c246d66e6c76565b9fa7833321a4cc8a433078b77901af55a052946ff2c7b39a",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-cooling12.json",
+    "raw_bytes": 169660,
+    "raw_sha256": "3b27d6ffeecf2206f4dcc4ccf194b7d53db9f4ee8c11590219fd8fa2dea202d6",
+    "raw_omitted": true,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-dt150.json",
+    "raw_bytes": 23377,
+    "raw_sha256": "9ef23972e5fbedfe17de1bac15f0862619ed5dc5015b7b445d8a913b3724a3d8",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-dt75.json",
+    "raw_bytes": 23423,
+    "raw_sha256": "265f9ecc19fd2f437a5a6793457296eec12306d38abb409cf006c8550f13168c",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-factor05.json",
+    "raw_bytes": 23384,
+    "raw_sha256": "fd2013a260344fff5c2a15dab1cc22e9728ab9239839733a1a9441ce0cd3a4cf",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-rain_heating12.json",
+    "raw_bytes": 177007,
+    "raw_sha256": "d83efd428a6ce8890f62f69222897c134cc34f0ccfe7d224a1c2731e0907fb5e",
+    "raw_omitted": true,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-reference75.json",
+    "raw_bytes": 23169,
+    "raw_sha256": "387a22a47c90c4b08f14bbce59f46f5b32b4ee66a506ea3ef2b079c96d60a381",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-sub8.json",
+    "raw_bytes": 23397,
+    "raw_sha256": "bbec26a5f5072b8edf33bb5592810c23bb090e115edb332a74993fb8b1699642",
+    "raw_omitted": false,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "L64-wind24.json",
+    "raw_bytes": 328981,
+    "raw_sha256": "58e1cc1c47ac90469052f19c8c6a6a4ed0e59c1b34494e4fd21fa07179d10384",
+    "raw_omitted": true,
+    "representation": "endpoint profiles and hourly scalar diagnostics"
+  },
+  {
+    "file": "mesh1024-32.json",
+    "raw_bytes": 3033,
+    "raw_sha256": "e7365ce84ad2a7bf40386dccdefb8588a42b0d0f28c4b684fb4580047d850170",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh1024-64-coupled.json",
+    "raw_bytes": 1537,
+    "raw_sha256": "91d24446a78a4a49390f6c27a19526ff158b3c7ea05c8e9e19305d950787898a",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh1024-64-patch.json",
+    "raw_bytes": 1502,
+    "raw_sha256": "a99a74448f050944cdcd9e241d0c33626fdf9e452f13c2b74412d24c7c860cd5",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh1024-64-semi.json",
+    "raw_bytes": 2270,
+    "raw_sha256": "92e679a9bb997ac3a67d667e0c43b87777ac2148779975e0845e65e56a38fc65",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh128-32.json",
+    "raw_bytes": 4447,
+    "raw_sha256": "b66199456a59e4f4bbec8bd975182e4966bb60b7a797544800d38ac9ec1db78a",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh128-64.json",
+    "raw_bytes": 4407,
+    "raw_sha256": "d4b4cecfc3ce428ae0062e677b2e4b461f4b60b22af658a4f920747e6e91ef2b",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh512-32.json",
+    "raw_bytes": 3027,
+    "raw_sha256": "eaa3a025a3169a9b5530700a7116eeece19806cf6b46fbac3a69e93bb4daf729",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh512-64-coupled.json",
+    "raw_bytes": 1539,
+    "raw_sha256": "3a716ed14e9256d256bb46e2654e4c1d2d583302e3f6d1d8f23eadeb26f05172",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  },
+  {
+    "file": "mesh512-64-semi.json",
+    "raw_bytes": 2244,
+    "raw_sha256": "510545ae364bcef31c7b54fd95e29f8bd19c7a707bb060b2b8fd29e5abfed046",
+    "raw_omitted": false,
+    "representation": "complete metrics"
+  }
+]

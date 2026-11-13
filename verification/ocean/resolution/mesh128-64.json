@@ -1,0 +1,128 @@
+{
+  "cells": 128,
+  "layers": 64,
+  "patch": false,
+  "duration": 300.0,
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "geometry": "Fibonacci Voronoi, zero Lloyd iterations, compatible rotation geometry",
+  "profiles": "fixed functions of physical depth; no horizontal stepping",
+  "source_hashes": {
+    "resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+    "lagged.py": "cf204eb831ae521aea8ebb7617da8342ba8c7a8f5cdc2beefb7da52dfe7af6a2",
+    "coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+    "path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b"
+  },
+  "cases": [
+    {
+      "method": "coupled16",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 315.368067062,
+      "wall_s": 315.88127926200104,
+      "counts": {
+        "limited_pairs": 0.0,
+        "coupled_iterations": 422.0,
+        "accelerated_columns": 26947.0,
+        "scaled_residual_sum": 0.2354501481856335,
+        "budget_scaled_residual_sum": 10.131011539257095,
+        "trial_evaluations": 474.0
+      },
+      "max_local_budget_ratio": 0.988035624679141,
+      "energy_error_J_kg": 5.134414651064267e-12,
+      "min_tke": 9.745441900760459e-110,
+      "min_tracer": 1.1199781591318405,
+      "salt_relative_change": 2.6077713931771938e-17,
+      "passive_relative_change": -4.1383433293148514e-19
+    },
+    {
+      "method": "coupled1",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 62.42640805799999,
+      "wall_s": 62.52440608300094,
+      "counts": {
+        "limited_pairs": 0.0,
+        "coupled_iterations": 62.0,
+        "accelerated_columns": 7680.0,
+        "scaled_residual_sum": 0.00015623569676308585,
+        "budget_scaled_residual_sum": 0.7465634817939519,
+        "trial_evaluations": 98.0
+      },
+      "max_local_budget_ratio": 0.7465634817939519,
+      "energy_error_J_kg": 0.0,
+      "min_tke": 3.1334038446673102e-06,
+      "min_tracer": 1.1182970835449153,
+      "salt_relative_change": 4.542193176432613e-19,
+      "passive_relative_change": 4.498199270994404e-19,
+      "versus_coupled16": {
+        "velocity_relative_l2": 0.00048248659026902334,
+        "tke_relative_l2": 0.3195866487845519,
+        "temperature_rms_C": 0.0003578719708693649
+      }
+    },
+    {
+      "method": "semi4",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 14.069774397000003,
+      "wall_s": 14.070146733000001,
+      "counts": {
+        "limited_pairs": 2752.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 2752.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370466300716764,
+        "mixing_substeps": 4.0
+      },
+      "max_local_budget_ratio": 3.1552012823383795e-07,
+      "energy_error_J_kg": 5.134414651064267e-12,
+      "min_tke": 1.4493624135468388e-08,
+      "min_tracer": 1.1194793984515217,
+      "salt_relative_change": 7.091702691296061e-18,
+      "passive_relative_change": 1.7393037181178362e-19,
+      "versus_coupled16": {
+        "velocity_relative_l2": 0.00019082648118657974,
+        "tke_relative_l2": 0.08342537709576615,
+        "temperature_rms_C": 0.00017185693857678995
+      }
+    },
+    {
+      "method": "semi8",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 27.66149169800002,
+      "wall_s": 27.67715993100137,
+      "counts": {
+        "limited_pairs": 4681.0,
+        "semi_trials": 22.0,
+        "limited_interfaces": 4681.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.025629308849726248,
+        "mixing_substeps": 8.0
+      },
+      "max_local_budget_ratio": 3.1202920706973543e-07,
+      "energy_error_J_kg": 0.0,
+      "min_tke": 1.3168876743997436e-11,
+      "min_tracer": 1.1198107427353097,
+      "salt_relative_change": 1.2482887451563901e-17,
+      "passive_relative_change": 4.2582953098747024e-19,
+      "versus_coupled16": {
+        "velocity_relative_l2": 6.314900961316098e-05,
+        "tke_relative_l2": 0.028872185592279546,
+        "temperature_rms_C": 9.469688290286174e-05
+      }
+    }
+  ],
+  "setup_wall_s": 0.27971163900656393,
+  "peak_rss_KiB": 318376,
+  "raw_sha256": "d4b4cecfc3ce428ae0062e677b2e4b461f4b60b22af658a4f920747e6e91ef2b"
+}

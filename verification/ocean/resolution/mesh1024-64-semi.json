@@ -1,0 +1,67 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "patch": false,
+  "duration": 300.0,
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "geometry": "Fibonacci Voronoi, zero Lloyd iterations, compatible rotation geometry",
+  "profiles": "fixed functions of physical depth; no horizontal stepping",
+  "source_hashes": {
+    "resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+    "lagged.py": "cf204eb831ae521aea8ebb7617da8342ba8c7a8f5cdc2beefb7da52dfe7af6a2",
+    "coupled.py": "3da0ce6dabb37938883e97759934d46a7ff821df098e1ca954c0006d0abb2dc8",
+    "path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b"
+  },
+  "cases": [
+    {
+      "method": "semi4",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 133.06263115800002,
+      "wall_s": 133.24544631499884,
+      "counts": {
+        "limited_pairs": 21980.0,
+        "semi_trials": 11.0,
+        "limited_interfaces": 21980.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.11370210103401658,
+        "mixing_substeps": 4.0
+      },
+      "max_local_budget_ratio": 3.344676114291879e-07,
+      "energy_error_J_kg": -1.0268829302128538e-11,
+      "min_tke": 1.4493010159612969e-08,
+      "min_tracer": 1.1179853578823322,
+      "salt_relative_change": 5.0034259102654114e-18,
+      "passive_relative_change": -7.197118834947176e-20
+    },
+    {
+      "method": "semi8",
+      "status": "completed",
+      "failure": null,
+      "completed_seconds": 300.0,
+      "requested_seconds": 300.0,
+      "cpu_s": 211.20020225,
+      "wall_s": 211.70046685100533,
+      "counts": {
+        "limited_pairs": 37414.0,
+        "semi_trials": 22.0,
+        "limited_interfaces": 37414.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 0.025621899036821282,
+        "mixing_substeps": 8.0
+      },
+      "max_local_budget_ratio": 3.4456497825368993e-07,
+      "energy_error_J_kg": -5.134414651064269e-12,
+      "min_tke": 1.3167901841825291e-11,
+      "min_tracer": 1.1183167800273939,
+      "salt_relative_change": 1.1976354386124864e-17,
+      "passive_relative_change": -9.596158446596235e-20
+    }
+  ],
+  "setup_wall_s": 1.741467238003679,
+  "peak_rss_KiB": 650448,
+  "raw_sha256": "92e679a9bb997ac3a67d667e0c43b87777ac2148779975e0845e65e56a38fc65"
+}

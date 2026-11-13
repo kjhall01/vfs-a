@@ -1653,3 +1653,12 @@ Coarse-step errors, limiter sensitivity and larger/global/GPU scaling remain
 open. Retain rejected funding controls and coupled reference; do not automatically
 merge experimental alternatives. Installed suite: 1030 passed, one CUDA skip;
 portable fixtures and seven focused tests pass.
+
+## Higher-resolution mixing campaign
+
+The [32–64-layer and larger-mesh campaign](../verification/ocean/RESOLUTION_CAMPAIGN.md)
+qualifies the research semi-implicit candidate with longer forcing, fixed
+physical initial profiles and native spherical batches. Conservation, numerical
+reference errors, limiter activity and cost are reported separately. Supported
+runtime and defaults remain unchanged. Installed-wheel regression: 1,031 passed,
+one CUDA skip; portable Gibbs and dry comparisons passed.

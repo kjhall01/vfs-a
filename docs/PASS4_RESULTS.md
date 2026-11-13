@@ -611,3 +611,12 @@ reference. Coarse-step/limiter/global-scaling limitations remain explicit in
 [the report](../verification/ocean/SEMIIMPLICIT_MIXING.md). Supported runtime and
 fixtures are unchanged; installed suite: 1030 passed, one CUDA skip, portable
 fixture comparisons passed. No GPU/backward or full global-dycore qualification.
+
+## Higher-resolution mixing campaign
+
+The [32–64-layer and larger-mesh campaign](../verification/ocean/RESOLUTION_CAMPAIGN.md)
+qualifies the research semi-implicit candidate with longer forcing, fixed
+physical initial profiles and native spherical batches. Conservation, numerical
+reference errors, limiter activity and cost are reported separately. Supported
+runtime and defaults remain unchanged. Installed-wheel regression: 1,031 passed,
+one CUDA skip; portable Gibbs and dry comparisons passed.
