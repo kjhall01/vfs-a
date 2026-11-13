@@ -1608,3 +1608,16 @@ This is research-only; supported runtime defaults and tolerances are unchanged.
 The requested 48-hour run rejects after 6 hours: local budget residual 5.25097
 (limit 1) despite converged iterates. Do not integrate as a qualified long-run
 closure. Installed-wheel suite: 1017 passed, one CUDA skip; portable fixtures pass.
+
+## Rejected-step local-budget diagnostic
+
+The six-hour rejection is still converging and passes at iteration 92 with
+unchanged gates. A tiny negative direct candidate at 34.375 m invalidates the
+whole direct solve, while the positive iterate's largest residual is at 15.625 m.
+Crucially, some accepted replays close the frozen ledger but fail a fresh
+end-TKE coefficient/work residual by thousands of tolerance units. This is
+nonlinear consistency, not demonstrated loss of total H. Do not fix with clipping
+or simply increase the default cap. Next require refreshed residual acceptance
+and improve the constrained solve. See [diagnostic](../verification/ocean/LAYER_BUDGET.md).
+Research-only observer/probes; installed suite 1020 passed, one CUDA skip;
+final focused checks 10 passed. No supported runtime changes.
