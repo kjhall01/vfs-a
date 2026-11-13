@@ -1,0 +1,557 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "dt": 300.0,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "source_hashes": {
+    "profile_mixing.py": "3fe4b6acdcd97bc690b4cd1ffc1ce3022704977e65c7d9577d484a19a6749216",
+    "resolution_mesh.py": "3e4197cd69d4f5b1edf1c66c9c7dca00e5414bfc31cc65e8b652c45c7bb5f463",
+    "lagged.py": "cf204eb831ae521aea8ebb7617da8342ba8c7a8f5cdc2beefb7da52dfe7af6a2",
+    "path_work.py": "a5ec543784abb35a84a5ac53526673086de927f313afb456b242f4350754c54b"
+  },
+  "scope": "fixed-state vertical mixing versus SSPRK3 dynamics with transported TKE; no ALE or boundary forcing",
+  "timings": {
+    "mixing4": {
+      "status": "completed",
+      "samples": [
+        {
+          "cpu_s": 126.710170845,
+          "wall_s": 127.07239419600228
+        },
+        {
+          "cpu_s": 120.541681372,
+          "wall_s": 120.82717506600602
+        }
+      ],
+      "median_cpu_s": 123.6259261085
+    },
+    "dynamics": {
+      "status": "completed",
+      "samples": [
+        {
+          "cpu_s": 21.681837950999977,
+          "wall_s": 21.725857452998753
+        },
+        {
+          "cpu_s": 22.82780594899998,
+          "wall_s": 22.887808958010282
+        }
+      ],
+      "median_cpu_s": 22.25482194999998
+    }
+  },
+  "profile": {
+    "wall_s": 84.01465344900498,
+    "bitwise_state_match": true,
+    "categories": {
+      "surface_gibbs": {
+        "calls": 1371,
+        "inclusive_s": 48.78792567066557,
+        "exclusive_s": 48.78792567066557
+      },
+      "entropy_inverse": {
+        "calls": 29,
+        "inclusive_s": 15.988950400918839,
+        "exclusive_s": 0.3738028158841189
+      },
+      "state_validation": {
+        "calls": 25,
+        "inclusive_s": 14.200031027023215,
+        "exclusive_s": 0.4918294330855133
+      },
+      "jmd95_parcel_potential": {
+        "calls": 186,
+        "inclusive_s": 32.61248999093368,
+        "exclusive_s": 32.61248999093368
+      },
+      "thermal_energy_parts": {
+        "calls": 19,
+        "inclusive_s": 4.09408046194585,
+        "exclusive_s": 0.05470635401434265
+      },
+      "enthalpy_inverse": {
+        "calls": 48,
+        "inclusive_s": 25.982362530980026,
+        "exclusive_s": 0.7773001141758868
+      },
+      "momentum_diffusion": {
+        "calls": 8,
+        "inclusive_s": 0.06925885999226011,
+        "exclusive_s": 0.06925885999226011
+      },
+      "banded_factor": {
+        "calls": 19,
+        "inclusive_s": 0.04243719500664156,
+        "exclusive_s": 0.04243719500664156
+      },
+      "banded_solve": {
+        "calls": 19,
+        "inclusive_s": 0.045004674000665545,
+        "exclusive_s": 0.045004674000665545
+      },
+      "scalar_diffusion": {
+        "calls": 11,
+        "inclusive_s": 0.07423399500839878,
+        "exclusive_s": 0.01899155497085303
+      },
+      "buoyancy_path_work": {
+        "calls": 11,
+        "inclusive_s": 28.704739494001842,
+        "exclusive_s": 0.26040825102245435
+      },
+      "dissipation_heat_inverse": {
+        "calls": 4,
+        "inclusive_s": 27.954915238005924,
+        "exclusive_s": 0.17788029010989703
+      }
+    },
+    "outermost_categories_s": {
+      "state_validation": 11.849255069028004,
+      "thermal_energy_parts": 4.09408046194585,
+      "enthalpy_inverse": 7.963336898988928,
+      "surface_gibbs": 0.9055886479327455,
+      "momentum_diffusion": 0.06925885999226011,
+      "scalar_diffusion": 0.07423399500839878,
+      "jmd95_parcel_potential": 2.0644271099881735,
+      "buoyancy_path_work": 28.704739494001842,
+      "banded_factor": 0.01918024697806686,
+      "banded_solve": 0.013019181991694495,
+      "dissipation_heat_inverse": 27.954915238005924
+    },
+    "unwrapped_s": 0.3026182451430941,
+    "limiter": {
+      "limited_pairs": 21980.0,
+      "semi_trials": 11.0,
+      "limited_interfaces": 21980.0,
+      "deferred_columns": 0.0,
+      "minimum_fraction": 0.11370210103401658,
+      "mixing_substeps": 4.0
+    },
+    "top_self": [
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+        "line": 13,
+        "function": "polynomial",
+        "calls": 10968,
+        "self_s": 30.358578576000003,
+        "cumulative_s": 31.228414061000002
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+        "line": 28,
+        "function": "jmd95_partials",
+        "calls": 397,
+        "self_s": 19.366965966000002,
+        "cumulative_s": 27.891182815
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+        "line": 38,
+        "function": "evaluate",
+        "calls": 1371,
+        "self_s": 10.042482249,
+        "cumulative_s": 48.761611517000006
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'pow' of 'torch._C.TensorBase' objects>",
+        "calls": 19591,
+        "self_s": 6.324502637,
+        "cumulative_s": 6.324502637
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'square' of 'torch._C.TensorBase' objects>",
+        "calls": 3192,
+        "self_s": 3.870779949,
+        "cumulative_s": 3.870779949
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+        "line": 103,
+        "function": "parcel_potential",
+        "calls": 186,
+        "self_s": 3.609205719,
+        "cumulative_s": 32.330287718
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+        "line": 18,
+        "function": "_polynomial",
+        "calls": 3970,
+        "self_s": 2.960210485,
+        "cumulative_s": 3.183389414
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'sum' of 'torch._C.TensorBase' objects>",
+        "calls": 1045,
+        "self_s": 1.206796256,
+        "cumulative_s": 1.206796256
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.zeros_like>",
+        "calls": 43709,
+        "self_s": 1.177204619,
+        "cumulative_s": 1.177204619
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.isfinite>",
+        "calls": 4385,
+        "self_s": 0.650526307,
+        "cumulative_s": 0.650526307
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch._C._special.special_xlogy>",
+        "calls": 1371,
+        "self_s": 0.48150819300000003,
+        "cumulative_s": 0.48150819300000003
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.where>",
+        "calls": 2885,
+        "self_s": 0.47312125600000005,
+        "cumulative_s": 0.47312125600000005
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/torch/_tensor.py",
+        "line": 1122,
+        "function": "__rdiv__",
+        "calls": 397,
+        "self_s": 0.413713818,
+        "cumulative_s": 0.7804022620000001
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+        "line": 78,
+        "function": "temperature_from_enthalpy",
+        "calls": 48,
+        "self_s": 0.39007378000000004,
+        "cumulative_s": 25.981184904000003
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.rsub>",
+        "calls": 474,
+        "self_s": 0.37480168700000005,
+        "cumulative_s": 0.37480168700000005
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'reciprocal' of 'torch._C.TensorBase' objects>",
+        "calls": 397,
+        "self_s": 0.366688444,
+        "cumulative_s": 0.366688444
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/profile_mixing.py",
+        "line": 24,
+        "function": "wrapped",
+        "calls": 1750,
+        "self_s": 0.328795229,
+        "cumulative_s": 83.713862983
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'any' of 'torch._C.TensorBase' objects>",
+        "calls": 7031,
+        "self_s": 0.24402534,
+        "cumulative_s": 0.24402534
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/faces.py",
+        "line": 99,
+        "function": "temperature_from_entropy",
+        "calls": 29,
+        "self_s": 0.2413838,
+        "cumulative_s": 15.988337963000001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'all' of 'torch._C.TensorBase' objects>",
+        "calls": 4381,
+        "self_s": 0.150793326,
+        "cumulative_s": 0.150793326
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 86,
+        "function": "trial",
+        "calls": 11,
+        "self_s": 0.09855909,
+        "cumulative_s": 46.322169981
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/state.py",
+        "line": 233,
+        "function": "salinity",
+        "calls": 93,
+        "self_s": 0.08947086,
+        "cumulative_s": 0.095509406
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/heating.py",
+        "line": 30,
+        "function": "derivative",
+        "calls": 112,
+        "self_s": 0.065572319,
+        "cumulative_s": 23.100489365
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke.py",
+        "line": 19,
+        "function": "diffuse",
+        "calls": 8,
+        "self_s": 0.057339181,
+        "cumulative_s": 0.06836431100000001
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/path_work.py",
+        "line": 34,
+        "function": "_buoyancy_work",
+        "calls": 11,
+        "self_s": 0.055859026000000006,
+        "cumulative_s": 28.703857952000003
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/path_work.py",
+        "line": 14,
+        "function": "conjugates",
+        "calls": 44,
+        "self_s": 0.050541198,
+        "cumulative_s": 10.112561770000001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.full_like>",
+        "calls": 526,
+        "self_s": 0.041895465,
+        "cumulative_s": 0.041895465
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 26,
+        "function": "solve",
+        "calls": 19,
+        "self_s": 0.039654351000000004,
+        "cumulative_s": 0.043859714
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 54,
+        "function": "apply",
+        "calls": 4,
+        "self_s": 0.035338285000000004,
+        "cumulative_s": 82.91803192600001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.cat>",
+        "calls": 336,
+        "self_s": 0.031696569,
+        "cumulative_s": 0.031696569
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 19,
+        "function": "__init__",
+        "calls": 19,
+        "self_s": 0.026534466000000003,
+        "cumulative_s": 0.042296472
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/heating.py",
+        "line": 7,
+        "function": "thermal_parts",
+        "calls": 19,
+        "self_s": 0.024494601,
+        "cumulative_s": 4.09360678
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/geometry/mesh/grid.py",
+        "line": 1619,
+        "function": "_cell_to_edge_values",
+        "calls": 19,
+        "self_s": 0.024155033000000003,
+        "cumulative_s": 0.024778002
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'sqrt' of 'torch._C.TensorBase' objects>",
+        "calls": 397,
+        "self_s": 0.024072903000000003,
+        "cumulative_s": 0.024072903000000003
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 77,
+        "function": "resistance",
+        "calls": 22,
+        "self_s": 0.022997233000000002,
+        "cumulative_s": 0.027118992
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/heating.py",
+        "line": 15,
+        "function": "apply_heat",
+        "calls": 4,
+        "self_s": 0.022660870000000003,
+        "cumulative_s": 27.954784873
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/heating.py",
+        "line": 38,
+        "function": "<genexpr>",
+        "calls": 96,
+        "self_s": 0.018240673000000002,
+        "cumulative_s": 14.935016766
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'clamp_min' of 'torch._C.TensorBase' objects>",
+        "calls": 277,
+        "self_s": 0.016935546000000003,
+        "cumulative_s": 0.016935546000000003
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+        "line": 98,
+        "function": "validate",
+        "calls": 25,
+        "self_s": 0.014228956000000001,
+        "cumulative_s": 14.199471245000002
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 38,
+        "function": "diffuse_many",
+        "calls": 11,
+        "self_s": 0.013984814000000002,
+        "cumulative_s": 0.07403731300000001
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/torch/_tensor.py",
+        "line": 32,
+        "function": "wrapped",
+        "calls": 871,
+        "self_s": 0.012316831,
+        "cumulative_s": 1.1716215140000001
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+        "line": 94,
+        "function": "height",
+        "calls": 63,
+        "self_s": 0.011574506,
+        "cumulative_s": 0.030484032
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'new_tensor' of 'torch._C.TensorBase' objects>",
+        "calls": 453,
+        "self_s": 0.011193738,
+        "cumulative_s": 0.011193738
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method torch.stack>",
+        "calls": 40,
+        "self_s": 0.011172271000000001,
+        "cumulative_s": 0.011172271000000001
+      },
+      {
+        "file": "/tmp/path-check/validation/ocean_column/lagged.py",
+        "line": 130,
+        "function": "<lambda>",
+        "calls": 44,
+        "self_s": 0.011141613,
+        "cumulative_s": 0.015193282
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/state.py",
+        "line": 230,
+        "function": "temperature",
+        "calls": 129,
+        "self_s": 0.010929050000000001,
+        "cumulative_s": 0.020668926
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'index_add' of 'torch._C.TensorBase' objects>",
+        "calls": 40,
+        "self_s": 0.010486993,
+        "cumulative_s": 0.010486993
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method builtins.sum>",
+        "calls": 43,
+        "self_s": 0.010219723,
+        "cumulative_s": 17.380646512000002
+      },
+      {
+        "file": "/tmp/linear-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+        "line": 30,
+        "function": "physical_state",
+        "calls": 29,
+        "self_s": 0.009953448,
+        "cumulative_s": 15.999691121000001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'abs' of 'torch._C.TensorBase' objects>",
+        "calls": 182,
+        "self_s": 0.007742822000000001,
+        "cumulative_s": 0.007742822000000001
+      }
+    ]
+  },
+  "energy_error_J_kg": -1.0268829302128538e-11,
+  "cost_budget": {
+    "mixing_to_dynamics": 5.555017532211715,
+    "mixing_fraction": 0.8474451067314548,
+    "scenarios": [
+      {
+        "target_mixing_fraction": 0.1,
+        "allowed_mixing_s": 2.4727579944444424,
+        "required_speedup": 49.995157789905434
+      },
+      {
+        "target_mixing_fraction": 0.2,
+        "allowed_mixing_s": 5.563705487499995,
+        "required_speedup": 22.22007012884686
+      },
+      {
+        "target_mixing_fraction": 0.3,
+        "allowed_mixing_s": 9.537780835714278,
+        "required_speedup": 12.961707575160668
+      }
+    ]
+  }
+}

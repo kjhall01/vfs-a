@@ -1,0 +1,21 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "steps": 5,
+  "dt_s": 60.0,
+  "samples": [
+    {
+      "cpu_s": 111.75111168999999,
+      "wall_s": 111.97367336100433
+    },
+    {
+      "cpu_s": 107.52883349199999,
+      "wall_s": 107.74817627599987
+    }
+  ],
+  "median_cpu_s": 109.63997259099999,
+  "scope": "dynamics and horizontal TKE transport only, no mixing/ALE/forcing"
+}

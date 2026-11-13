@@ -1,0 +1,22 @@
+{
+  "mixing_cpu_s": 123.6259261085,
+  "dynamics_interval_cpu_s": 109.63997259099999,
+  "mixing_fraction": 0.5299785643668325,
+  "scenarios": [
+    {
+      "target_fraction": 0.1,
+      "allowed_mixing_cpu_s": 12.182219176777778,
+      "required_speedup": 10.148062870528594
+    },
+    {
+      "target_fraction": 0.2,
+      "allowed_mixing_cpu_s": 27.409993147749997,
+      "required_speedup": 4.510250164679376
+    },
+    {
+      "target_fraction": 0.3,
+      "allowed_mixing_cpu_s": 46.98855968185714,
+      "required_speedup": 2.630979262729636
+    }
+  ]
+}
