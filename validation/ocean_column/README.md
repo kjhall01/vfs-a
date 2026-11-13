@@ -86,3 +86,33 @@ The runner uses parameter-based filenames; archived seed probes retain their
 original shorter names. Compare parameters and numerical records, not filenames
 or execution wall times. Profile comparison norms use the finer result as the
 denominator, with pair-averaging for vertical refinement.
+
+## Sustained limiter qualification
+
+```sh
+python -I validation/ocean_column/sustained_campaign.py --output /tmp/sustained-columns --workers 6
+python validation/ocean_column/analyze_sustained.py --input /tmp/sustained-columns --output /tmp/sustained-evidence
+```
+
+This requests 48 hours for all 18 primary forcing/layer/timestep combinations.
+Five additional 32-layer wind cases use dt=75 s, seeds 1e-6/1e-3 m²/s² at dt=150 s,
+or backtracking safety factors 0.25/0.75 at dt=150 s. All other inputs remain fixed.
+Existing result files are resumed; use a fresh output directory after code or
+parameter changes. Progress logs record every simulated hour. This campaign
+can take substantial CPU time; no failed case is silently shortened or retried.
+
+Hourly profiles retain cumulative limiter diagnostics. Analysis uses thickness-
+weighted RMS differences and conservative overlap averaging of the fine profile
+onto coarse layers, including rain-induced surface expansion. Velocity relative
+errors use the fine/reference vector norm. Absolute temperature/salinity RMS is
+more interpretable than a percentage of their large background values. The
+initial profiles are still centre sampled; no formal spatial order is claimed.
+Seed and safety comparisons use the primary 32-layer/dt=150 s case as reference.
+They are sensitivity tests, not comparisons with a known physical solution.
+
+The sustained runner saves atomic hourly tensor checkpoints and resumes in
+roughly two-minute execution segments (finishing the current simulated hour).
+Restarting the runner skips completed cases and resumes the others. Checkpoints
+validate the experiment parameters and TKE runtime source hash. A regression
+check verifies exact agreement between resumed and uninterrupted evolution.
+The local checkpoint files are not publication artifacts.

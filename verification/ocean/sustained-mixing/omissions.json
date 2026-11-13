@@ -1,0 +1,37 @@
+[
+  {
+    "file": "cooling-16-150-k0.0001-a0.5.json",
+    "bytes": 190907,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "cooling-16-300-k0.0001-a0.5.json",
+    "bytes": 190904,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "rain_heating-16-300-k0.0001-a0.5.json",
+    "bytes": 200476,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-16-150-k0.0001-a0.5.json",
+    "bytes": 190959,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-16-300-k0.0001-a0.5.json",
+    "bytes": 190957,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-150-k0.001-a0.5.json",
+    "bytes": 346092,
+    "reason": "raw profiles omitted; above 128 KiB"
+  },
+  {
+    "file": "wind-32-300-k0.0001-a0.5.json",
+    "bytes": 345671,
+    "reason": "raw profiles omitted; above 128 KiB"
+  }
+]

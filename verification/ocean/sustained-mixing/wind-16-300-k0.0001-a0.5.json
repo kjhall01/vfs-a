@@ -1,0 +1,1148 @@
+{
+  "layers": 16,
+  "dt_s": 300.0,
+  "requested_hours": 48.0,
+  "completed_hours": 48.0,
+  "limiter": {
+    "active_pairs": 13248.0,
+    "limited_pairs": 5504.0,
+    "zero_pairs": 0.0,
+    "proposed_exchange": 82.37728948566838,
+    "accepted_exchange": 55.71631567056328,
+    "proposed_salt": 3.3698022865352395,
+    "accepted_salt": 0.45971595675324095,
+    "proposed_enthalpy": 134860.3738422503,
+    "accepted_enthalpy": 18405.040154658807,
+    "minimum_fraction": 3.3826140753526546e-12
+  },
+  "limited_steps": 576,
+  "accepted_steps": 576,
+  "backtrack_safety": 0.5,
+  "scenario": "wind",
+  "seed_tke": 0.0001,
+  "mix_scalars": true,
+  "mixing_length_m": 2.0,
+  "status": "completed",
+  "failure": null,
+  "wall_s": 627.1894240379988,
+  "external_energy_J_m2": 752.6434421145622,
+  "energy_error_J_kg": -5.544075509355824e-11,
+  "mass_residual_kg_m2": 0.0,
+  "salt_relative_change": 0.0,
+  "passive_relative_change": 1.775553150222396e-16,
+  "transport": [
+    -0.9756455918566281,
+    -0.9744361458828663
+  ],
+  "analytic_wind_transport": [
+    -0.9756090055585355,
+    -0.974399604938482
+  ],
+  "limited_pair_fraction": 0.41545893719806765,
+  "accepted_fractions": {
+    "exchange": 0.6763552918338803,
+    "salt": 0.13642223420351207,
+    "enthalpy": 0.13647478225284815
+  },
+  "raw_sha256": "fd1bb9b32815c1aec1d39cc4c11a2b370a794dea4cf00d3a71801168535fb863",
+  "file": "wind-16-300-k0.0001-a0.5.json",
+  "initial_profile": {
+    "time_s": 0.0,
+    "limiter": {},
+    "u": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "v": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "temperature": [
+      14.994152448674722,
+      14.92968186478377,
+      14.259764009841552,
+      11.604106504123035,
+      10.186634436720647,
+      10.015863414212426,
+      10.001305951595477,
+      10.000107224742102,
+      10.000008801716065,
+      10.000000722490018,
+      10.000000059305602,
+      10.000000004868104,
+      10.000000000399597,
+      10.000000000032802,
+      10.000000000002693,
+      10.00000000000022
+    ],
+    "salinity": [
+      34.50058475513253,
+      34.50703181352162,
+      34.574023599015845,
+      34.8395893495877,
+      34.98133655632793,
+      34.998413658578755,
+      34.99986940484045,
+      34.99998927752579,
+      34.999999119828395,
+      34.999999927751,
+      34.99999999406944,
+      34.99999999951319,
+      34.99999999996004,
+      34.99999999999672,
+      34.99999999999973,
+      34.99999999999998
+    ],
+    "tke": [
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001,
+      0.0001
+    ],
+    "diffusivity": [
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002,
+      0.002
+    ],
+    "depth": [
+      3.125,
+      9.375,
+      15.625,
+      21.875,
+      28.125,
+      34.375,
+      40.625,
+      46.875,
+      53.125,
+      59.375,
+      65.625,
+      71.875,
+      78.125,
+      84.375,
+      90.625,
+      96.875
+    ],
+    "temperature_mld_m": 12.5,
+    "energy_minus_input_J_kg": 0.0
+  },
+  "final_profile": {
+    "time_s": 172800.0,
+    "limiter": {
+      "active_pairs": 13248.0,
+      "limited_pairs": 5504.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 82.37728948566838,
+      "accepted_exchange": 55.71631567056328,
+      "proposed_salt": 3.3698022865352395,
+      "accepted_salt": 0.45971595675324095,
+      "proposed_enthalpy": 134860.3738422503,
+      "accepted_enthalpy": 18405.040154658807,
+      "minimum_fraction": 3.3826140753526546e-12
+    },
+    "u": [
+      -0.00858494399909891,
+      -0.07370631640493604,
+      -0.04844927620134897,
+      -0.022266170910325546,
+      -0.0029747176091672028,
+      -0.00012167498505456013,
+      -1.9451533055395917e-07,
+      -7.176377571231112e-11,
+      -3.488996200803118e-14,
+      -5.979697815110265e-17,
+      -3.434835917191614e-19,
+      -3.9985594833095215e-21,
+      -7.779013850196895e-23,
+      -1.8024868010369455e-24,
+      -4.077567599236717e-26,
+      -8.687900727718977e-28
+    ],
+    "v": [
+      -0.1323656501706242,
+      -0.030079891319614565,
+      0.00448951036446511,
+      0.0016175185809056778,
+      0.0004056091795225591,
+      2.307638029083595e-05,
+      4.3625412107330226e-08,
+      1.8370955620775477e-11,
+      1.2805532174958822e-14,
+      1.1899997811933626e-16,
+      4.413521692584266e-18,
+      1.631362512421863e-19,
+      4.89589181380526e-21,
+      1.2536124862861003e-22,
+      2.8947722917137318e-24,
+      6.20464060652419e-26
+    ],
+    "temperature": [
+      14.767778939317989,
+      14.734711260004506,
+      14.608236898783229,
+      11.668917248346371,
+      10.189445804358762,
+      10.020455747992637,
+      10.001989958578259,
+      10.000248179347775,
+      10.000023395780444,
+      10.000003138679487,
+      10.000000334854397,
+      10.000000053215755,
+      10.000000027446562,
+      10.000000025264015,
+      10.000000025083713,
+      10.000000025067596
+    ],
+    "salinity": [
+      34.52322599770169,
+      34.52653319336818,
+      34.53918189919229,
+      34.83311271673565,
+      34.981055691086574,
+      34.997954448116026,
+      34.9998010073491,
+      34.99997518458883,
+      34.99999766292565,
+      34.999999688638155,
+      34.99999996902111,
+      34.999999997185206,
+      34.999999999761826,
+      34.999999999980105,
+      34.99999999999873,
+      34.99999999999998
+    ],
+    "tke": [
+      5.038679694095302e-05,
+      4.9735898605742284e-05,
+      7.565818519472328e-07,
+      1.440193464228935e-07,
+      8.693510693004278e-08,
+      3.4288080999437527e-10,
+      3.394992928715735e-12,
+      2.5746241764160227e-12,
+      5.348794695253276e-11,
+      1.333362469600504e-10,
+      7.438306515007944e-10,
+      1.043480622021375e-09,
+      9.27369700468984e-10,
+      9.387380949097543e-10,
+      1.1715594890821764e-09,
+      1.0881469286110703e-09
+    ],
+    "diffusivity": [
+      0.00141967315873694,
+      0.0014104736595306174,
+      0.00017396342741475668,
+      7.58997619028923e-05,
+      5.8969519899705065e-05,
+      3.7034082140340693e-06,
+      3.6851013167704006e-07,
+      3.2091270940341534e-07,
+      1.4627090886780293e-06,
+      2.309426309368198e-06,
+      5.4546517817393055e-06,
+      6.4605901341019155e-06,
+      6.0905490736681015e-06,
+      6.127766623851644e-06,
+      6.845610240386685e-06,
+      6.5974144287321236e-06
+    ],
+    "depth": [
+      3.125,
+      9.375,
+      15.625,
+      21.875,
+      28.125,
+      34.375,
+      40.625,
+      46.875,
+      53.125,
+      59.375,
+      65.625,
+      71.875,
+      78.125,
+      84.375,
+      90.625,
+      96.875
+    ],
+    "temperature_mld_m": 18.75,
+    "energy_minus_input_J_kg": -5.544075509355824e-11
+  },
+  "hourly": [
+    {
+      "time_s": 0.0,
+      "energy_minus_input_J_kg": 0.0,
+      "temperature_mld_m": 12.5,
+      "limiter": {}
+    },
+    {
+      "time_s": 3600.0,
+      "energy_minus_input_J_kg": 2.896513875362516e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 276.0,
+        "limited_pairs": 69.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 5.107926013938127,
+        "accepted_exchange": 4.561769057565057,
+        "proposed_salt": 0.08626519735447075,
+        "accepted_salt": 0.018220795160688336,
+        "proposed_enthalpy": 3451.2255076211204,
+        "accepted_enthalpy": 728.9233080172978,
+        "minimum_fraction": 1.880684626155012e-08
+      }
+    },
+    {
+      "time_s": 7200.0,
+      "energy_minus_input_J_kg": 1.0098973503528857e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 552.0,
+        "limited_pairs": 153.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 6.931579161289318,
+        "accepted_exchange": 6.057407898649653,
+        "proposed_salt": 0.11235057275605316,
+        "accepted_salt": 0.02095094629173107,
+        "proposed_enthalpy": 4495.518884595413,
+        "accepted_enthalpy": 838.2525285603103,
+        "minimum_fraction": 3.72574020272376e-09
+      }
+    },
+    {
+      "time_s": 10800.0,
+      "energy_minus_input_J_kg": 4.641572936301733e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 828.0,
+        "limited_pairs": 237.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 8.78154617670325,
+        "accepted_exchange": 7.406409546489436,
+        "proposed_salt": 0.1610430683441185,
+        "accepted_salt": 0.025106252409341726,
+        "proposed_enthalpy": 6444.729225720102,
+        "accepted_enthalpy": 1004.6505215456621,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 14400.0,
+      "energy_minus_input_J_kg": 2.414624180168974e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 1104.0,
+        "limited_pairs": 321.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 10.667805205036732,
+        "accepted_exchange": 8.69872650061141,
+        "proposed_salt": 0.22578762799766275,
+        "accepted_salt": 0.030572218098732177,
+        "proposed_enthalpy": 9036.381137548335,
+        "accepted_enthalpy": 1223.5254983151187,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 18000.0,
+      "energy_minus_input_J_kg": 2.307907912259774e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 1380.0,
+        "limited_pairs": 406.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 12.579506159385094,
+        "accepted_exchange": 9.965791019740537,
+        "proposed_salt": 0.30403352332603656,
+        "accepted_salt": 0.03832472340162254,
+        "proposed_enthalpy": 12168.338054982238,
+        "accepted_enthalpy": 1533.9498307325844,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 21600.0,
+      "energy_minus_input_J_kg": -7.62309621389183e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 1656.0,
+        "limited_pairs": 525.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 14.508311995053596,
+        "accepted_exchange": 11.214518913628048,
+        "proposed_salt": 0.39319846259420954,
+        "accepted_salt": 0.04918392169740326,
+        "proposed_enthalpy": 15737.225659257876,
+        "accepted_enthalpy": 1968.7613555167661,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 25200.0,
+      "energy_minus_input_J_kg": -1.5307895543029612e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 1932.0,
+        "limited_pairs": 645.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 16.453315218507253,
+        "accepted_exchange": 12.476062411346735,
+        "proposed_salt": 0.49046228799044816,
+        "accepted_salt": 0.06331864348834054,
+        "proposed_enthalpy": 19630.1609139208,
+        "accepted_enthalpy": 2534.7180841340073,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 28800.0,
+      "energy_minus_input_J_kg": -8.92768095981432e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 2208.0,
+        "limited_pairs": 765.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 18.39453960996287,
+        "accepted_exchange": 13.743900320966608,
+        "proposed_salt": 0.5929935952697654,
+        "accepted_salt": 0.0802508372556571,
+        "proposed_enthalpy": 23733.819824645314,
+        "accepted_enthalpy": 3212.676319851396,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 32400.0,
+      "energy_minus_input_J_kg": -8.212759339807146e-13,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 2484.0,
+        "limited_pairs": 885.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 20.314256068314535,
+        "accepted_exchange": 15.005626006309736,
+        "proposed_salt": 0.6981436634240622,
+        "accepted_salt": 0.09908529060737815,
+        "proposed_enthalpy": 27942.197243949682,
+        "accepted_enthalpy": 3966.7894815141076,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 36000.0,
+      "energy_minus_input_J_kg": 1.5198831600328715e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 2760.0,
+        "limited_pairs": 1005.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 22.197802783236067,
+        "accepted_exchange": 16.246863081109833,
+        "proposed_salt": 0.8035397289942037,
+        "accepted_salt": 0.11876255634877281,
+        "proposed_enthalpy": 32160.33932215039,
+        "accepted_enthalpy": 4754.636354166226,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 39600.0,
+      "energy_minus_input_J_kg": 1.1966912785371787e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 3036.0,
+        "limited_pairs": 1125.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 24.034360902002426,
+        "accepted_exchange": 17.453757363681355,
+        "proposed_salt": 0.9071490058707866,
+        "accepted_salt": 0.13825900577535913,
+        "proposed_enthalpy": 36306.90380850287,
+        "accepted_enthalpy": 5535.2318198984485,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 43200.0,
+      "energy_minus_input_J_kg": 2.328441418862118e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 3312.0,
+        "limited_pairs": 1245.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 25.81757835683149,
+        "accepted_exchange": 18.615606841871774,
+        "proposed_salt": 1.0073044324156766,
+        "accepted_salt": 0.15671793423761965,
+        "proposed_enthalpy": 40315.188919837405,
+        "accepted_enthalpy": 6274.276214573445,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 46800.0,
+      "energy_minus_input_J_kg": 3.3617589995229514e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 3588.0,
+        "limited_pairs": 1365.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 27.544940722556895,
+        "accepted_exchange": 19.72600792399762,
+        "proposed_salt": 1.1027109993467972,
+        "accepted_salt": 0.17351666929616205,
+        "proposed_enthalpy": 44133.38489143731,
+        "accepted_enthalpy": 6946.841687830499,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 50400.0,
+      "energy_minus_input_J_kg": 3.465294046291979e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 3864.0,
+        "limited_pairs": 1484.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 29.217968267692214,
+        "accepted_exchange": 20.783953373028783,
+        "proposed_salt": 1.1924447191885934,
+        "accepted_salt": 0.18828226549595012,
+        "proposed_enthalpy": 47724.5307650528,
+        "accepted_enthalpy": 7537.9997432363125,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 54000.0,
+      "energy_minus_input_J_kg": 1.0213509041222561e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 4140.0,
+        "limited_pairs": 1604.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 30.84211554000944,
+        "accepted_exchange": 21.79381641852634,
+        "proposed_salt": 1.2759473222316444,
+        "accepted_salt": 0.20087367035063525,
+        "proposed_enthalpy": 51066.30064115972,
+        "accepted_enthalpy": 8042.106360340665,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 57600.0,
+      "energy_minus_input_J_kg": 9.580117520959992e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 4416.0,
+        "limited_pairs": 1724.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 32.42451378827532,
+        "accepted_exchange": 22.763988121935068,
+        "proposed_salt": 1.3530567975313086,
+        "accepted_salt": 0.2113501324447142,
+        "proposed_enthalpy": 54152.22440150971,
+        "accepted_enthalpy": 8461.536494648208,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 61200.0,
+      "energy_minus_input_J_kg": 2.7040386069019428e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 4692.0,
+        "limited_pairs": 1844.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 33.97462900484193,
+        "accepted_exchange": 23.705130307301257,
+        "proposed_salt": 1.424106463427324,
+        "accepted_salt": 0.21994022404886124,
+        "proposed_enthalpy": 56995.65110156704,
+        "accepted_enthalpy": 8805.443454226282,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 64800.0,
+      "energy_minus_input_J_kg": 3.045878568117609e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 4968.0,
+        "limited_pairs": 1964.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 35.503248438714046,
+        "accepted_exchange": 24.629076241826823,
+        "proposed_salt": 1.490075703422976,
+        "accepted_salt": 0.22701114354454482,
+        "proposed_enthalpy": 59635.78021559164,
+        "accepted_enthalpy": 9088.529770630386,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 68400.0,
+      "energy_minus_input_J_kg": 2.3726323799964143e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 5244.0,
+        "limited_pairs": 2084.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 37.02301653737769,
+        "accepted_exchange": 25.54726324219486,
+        "proposed_salt": 1.5526347463881136,
+        "accepted_salt": 0.23302662087805273,
+        "proposed_enthalpy": 62139.453436158845,
+        "accepted_enthalpy": 9329.362076792131,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 72000.0,
+      "energy_minus_input_J_kg": 2.4755593962831104e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 5520.0,
+        "limited_pairs": 2204.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 38.54682859725061,
+        "accepted_exchange": 26.469950545043254,
+        "proposed_salt": 1.613833208196586,
+        "accepted_salt": 0.23848702883842943,
+        "proposed_enthalpy": 64588.69173585459,
+        "accepted_enthalpy": 9547.973786346865,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 75600.0,
+      "energy_minus_input_J_kg": 4.1266364461058044e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 5796.0,
+        "limited_pairs": 2324.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 40.0848223300405,
+        "accepted_exchange": 27.40478267048804,
+        "proposed_salt": 1.6754819633182885,
+        "accepted_salt": 0.24386573257155506,
+        "proposed_enthalpy": 67055.96067089733,
+        "accepted_enthalpy": 9763.317056904718,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 79200.0,
+      "energy_minus_input_J_kg": 4.4174165983660225e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 6072.0,
+        "limited_pairs": 2444.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 41.64221696087255,
+        "accepted_exchange": 28.35770303665726,
+        "proposed_salt": 1.7387460395635592,
+        "accepted_salt": 0.2495636913774381,
+        "proposed_enthalpy": 69587.87905484677,
+        "accepted_enthalpy": 9991.445066042843,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 82800.0,
+      "energy_minus_input_J_kg": 3.2703627678019095e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 6348.0,
+        "limited_pairs": 2564.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 43.219990935080595,
+        "accepted_exchange": 29.33169220320744,
+        "proposed_salt": 1.8042269816910808,
+        "accepted_salt": 0.25588501500843436,
+        "proposed_enthalpy": 72208.51312545246,
+        "accepted_enthalpy": 10244.532965300958,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 86400.0,
+      "energy_minus_input_J_kg": 2.927945610192582e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 6624.0,
+        "limited_pairs": 2682.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 44.81702322778385,
+        "accepted_exchange": 30.32737540373963,
+        "proposed_salt": 1.8722305805282975,
+        "accepted_salt": 0.26302390407738696,
+        "proposed_enthalpy": 74930.0892932675,
+        "accepted_enthalpy": 10530.354772531678,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 90000.0,
+      "energy_minus_input_J_kg": 2.1568402322683562e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 6900.0,
+        "limited_pairs": 2801.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 46.43086148191667,
+        "accepted_exchange": 31.343425763753544,
+        "proposed_salt": 1.9428535910788534,
+        "accepted_salt": 0.27105903742324083,
+        "proposed_enthalpy": 77756.466715168,
+        "accepted_enthalpy": 10852.058765887676,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 93600.0,
+      "energy_minus_input_J_kg": 1.6565437230072836e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 7176.0,
+        "limited_pairs": 2921.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 48.05796722813497,
+        "accepted_exchange": 32.376372148556165,
+        "proposed_salt": 2.0158960053262716,
+        "accepted_salt": 0.2799553314023562,
+        "proposed_enthalpy": 80679.63112565335,
+        "accepted_enthalpy": 11208.238310802397,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 97200.0,
+      "energy_minus_input_J_kg": -4.067943536494745e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 7452.0,
+        "limited_pairs": 3041.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 49.69317508251042,
+        "accepted_exchange": 33.421199939950114,
+        "proposed_salt": 2.0908273740344776,
+        "accepted_salt": 0.2895734837820724,
+        "proposed_enthalpy": 83678.34973414203,
+        "accepted_enthalpy": 11593.314458088196,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 100800.0,
+      "energy_minus_input_J_kg": -1.4963736647609393e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 7728.0,
+        "limited_pairs": 3161.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 51.33052049695029,
+        "accepted_exchange": 34.47218743602467,
+        "proposed_salt": 2.166871526844683,
+        "accepted_salt": 0.2996890899202882,
+        "proposed_enthalpy": 86721.56142428762,
+        "accepted_enthalpy": 11998.301715235433,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 104400.0,
+      "energy_minus_input_J_kg": -1.2389940953963982e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 8004.0,
+        "limited_pairs": 3281.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 52.964232151745044,
+        "accepted_exchange": 35.52271812251437,
+        "proposed_salt": 2.243128243997564,
+        "accepted_salt": 0.3100223277292376,
+        "proposed_enthalpy": 89773.24466059613,
+        "accepted_enthalpy": 12411.996768991792,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 108000.0,
+      "energy_minus_input_J_kg": -2.1508920814617673e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 8280.0,
+        "limited_pairs": 3401.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 54.589415090544335,
+        "accepted_exchange": 36.56668506070078,
+        "proposed_salt": 2.318686699061787,
+        "accepted_salt": 0.3202762361220014,
+        "proposed_enthalpy": 92796.95602909842,
+        "accepted_enthalpy": 12822.511021603123,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 111600.0,
+      "energy_minus_input_J_kg": -9.448346712061477e-12,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 8556.0,
+        "limited_pairs": 3520.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 56.2021774541506,
+        "accepted_exchange": 37.59907333836568,
+        "proposed_salt": 2.3927184107996164,
+        "accepted_salt": 0.33017746058161446,
+        "proposed_enthalpy": 95759.54893657997,
+        "accepted_enthalpy": 13218.90169796827,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 115200.0,
+      "energy_minus_input_J_kg": -2.205630796485887e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 8832.0,
+        "limited_pairs": 3639.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 57.80033586577477,
+        "accepted_exchange": 38.61690927793939,
+        "proposed_salt": 2.4645552020782096,
+        "accepted_salt": 0.33951209313686104,
+        "proposed_enthalpy": 98634.29243595885,
+        "accepted_enthalpy": 13592.606425710615,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 118800.0,
+      "energy_minus_input_J_kg": -2.794333518178929e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 9108.0,
+        "limited_pairs": 3759.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 59.38266093928621,
+        "accepted_exchange": 39.619017175350045,
+        "proposed_salt": 2.5337490657909867,
+        "accepted_salt": 0.34815028254324776,
+        "proposed_enthalpy": 101403.26617837216,
+        "accepted_enthalpy": 13938.428188054435,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 122400.0,
+      "energy_minus_input_J_kg": -2.68777279327368e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 9384.0,
+        "limited_pairs": 3879.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 60.950537378613326,
+        "accepted_exchange": 40.60743985908466,
+        "proposed_salt": 2.6001127259602668,
+        "accepted_salt": 0.3560563994297571,
+        "proposed_enthalpy": 104058.98298440874,
+        "accepted_enthalpy": 14254.942018761181,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 126000.0,
+      "energy_minus_input_J_kg": -4.038791347539234e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 9660.0,
+        "limited_pairs": 3997.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 62.50588685882494,
+        "accepted_exchange": 41.58591359239308,
+        "proposed_salt": 2.663727161094516,
+        "accepted_salt": 0.3632840155812582,
+        "proposed_enthalpy": 106604.68940051028,
+        "accepted_enthalpy": 14544.293834762344,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 129600.0,
+      "energy_minus_input_J_kg": -3.8293330540111084e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 9936.0,
+        "limited_pairs": 4117.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 64.05222606572815,
+        "accepted_exchange": 42.55996904324809,
+        "proposed_salt": 2.7248976558809974,
+        "accepted_salt": 0.36995855384506016,
+        "proposed_enthalpy": 109052.60697744452,
+        "accepted_enthalpy": 14811.505779113886,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 133200.0,
+      "energy_minus_input_J_kg": -5.7825080858026745e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 10212.0,
+        "limited_pairs": 4237.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 65.5931219206155,
+        "accepted_exchange": 43.53570019308881,
+        "proposed_salt": 2.7840713852470587,
+        "accepted_salt": 0.37625274730870406,
+        "proposed_enthalpy": 111420.63399429887,
+        "accepted_enthalpy": 15063.493744061856,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 136800.0,
+      "energy_minus_input_J_kg": -7.013996631629685e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 10488.0,
+        "limited_pairs": 4357.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 67.13150081141632,
+        "accepted_exchange": 44.51949826011783,
+        "proposed_salt": 2.8417316718943044,
+        "accepted_salt": 0.38236032733845704,
+        "proposed_enthalpy": 113728.11393680374,
+        "accepted_enthalpy": 15308.014001889991,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 140400.0,
+      "energy_minus_input_J_kg": -6.73133743520139e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 10764.0,
+        "limited_pairs": 4476.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 68.66932947345013,
+        "accepted_exchange": 45.51679959625272,
+        "proposed_salt": 2.898348791988499,
+        "accepted_salt": 0.3884729132637318,
+        "proposed_enthalpy": 115993.8660236355,
+        "accepted_enthalpy": 15552.737958904321,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 144000.0,
+      "energy_minus_input_J_kg": -5.686544194226948e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 11040.0,
+        "limited_pairs": 4590.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 70.20875338217473,
+        "accepted_exchange": 46.53252360257878,
+        "proposed_salt": 2.954425570240916,
+        "accepted_salt": 0.3947612483143491,
+        "proposed_enthalpy": 118238.00826635941,
+        "accepted_enthalpy": 15804.500873992847,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 147600.0,
+      "energy_minus_input_J_kg": -6.242560009080235e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 11316.0,
+        "limited_pairs": 4706.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 71.75615651655335,
+        "accepted_exchange": 47.57046156290247,
+        "proposed_salt": 3.0109325912741545,
+        "accepted_salt": 0.4013634946942725,
+        "proposed_enthalpy": 120499.36156951198,
+        "accepted_enthalpy": 16068.83312111702,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 151200.0,
+      "energy_minus_input_J_kg": -6.336324698101479e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 11592.0,
+        "limited_pairs": 4823.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 73.32578680601908,
+        "accepted_exchange": 48.63339552394236,
+        "proposed_salt": 3.0695104508664337,
+        "accepted_salt": 0.4083823762261231,
+        "proposed_enthalpy": 122843.53057665167,
+        "accepted_enthalpy": 16349.845313656939,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 154800.0,
+      "energy_minus_input_J_kg": -6.27699780413489e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 11868.0,
+        "limited_pairs": 4943.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 74.91186863316368,
+        "accepted_exchange": 49.72299387853533,
+        "proposed_salt": 3.129833050063337,
+        "accepted_salt": 0.4158538485475537,
+        "proposed_enthalpy": 125257.4779311414,
+        "accepted_enthalpy": 16648.975503610694,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 158400.0,
+      "energy_minus_input_J_kg": -4.425104767816686e-11,
+      "temperature_mld_m": 12.5,
+      "limiter": {
+        "active_pairs": 12144.0,
+        "limited_pairs": 5056.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 76.44560036124787,
+        "accepted_exchange": 50.87058317134134,
+        "proposed_salt": 3.1834255385637626,
+        "accepted_salt": 0.42429409697145487,
+        "proposed_enthalpy": 127402.13610645519,
+        "accepted_enthalpy": 16986.8926308981,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 162000.0,
+      "energy_minus_input_J_kg": -4.693818637617103e-11,
+      "temperature_mld_m": 18.75,
+      "limiter": {
+        "active_pairs": 12420.0,
+        "limited_pairs": 5166.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 77.93415371584257,
+        "accepted_exchange": 52.01991401285035,
+        "proposed_salt": 3.2307899111575944,
+        "accepted_salt": 0.432569428091954,
+        "proposed_enthalpy": 129297.55207329933,
+        "accepted_enthalpy": 17318.205968969167,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 165600.0,
+      "energy_minus_input_J_kg": -5.144669247362422e-11,
+      "temperature_mld_m": 18.75,
+      "limiter": {
+        "active_pairs": 12696.0,
+        "limited_pairs": 5280.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 79.41903294599493,
+        "accepted_exchange": 53.217066612963286,
+        "proposed_salt": 3.2776652250619542,
+        "accepted_salt": 0.4414451912177237,
+        "proposed_enthalpy": 131173.37449620882,
+        "accepted_enthalpy": 17673.556728874722,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 169200.0,
+      "energy_minus_input_J_kg": -5.836809245144051e-11,
+      "temperature_mld_m": 18.75,
+      "limiter": {
+        "active_pairs": 12972.0,
+        "limited_pairs": 5394.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 80.90721773811305,
+        "accepted_exchange": 54.46061887801458,
+        "proposed_salt": 3.3252087837506865,
+        "accepted_salt": 0.4507244983449775,
+        "proposed_enthalpy": 133075.9082492675,
+        "accepted_enthalpy": 18045.061410551843,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    },
+    {
+      "time_s": 172800.0,
+      "energy_minus_input_J_kg": -5.544075509355824e-11,
+      "temperature_mld_m": 18.75,
+      "limiter": {
+        "active_pairs": 13248.0,
+        "limited_pairs": 5504.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 82.37728948566838,
+        "accepted_exchange": 55.71631567056328,
+        "proposed_salt": 3.3698022865352395,
+        "accepted_salt": 0.45971595675324095,
+        "proposed_enthalpy": 134860.3738422503,
+        "accepted_enthalpy": 18405.040154658807,
+        "minimum_fraction": 3.3826140753526546e-12
+      }
+    }
+  ]
+}

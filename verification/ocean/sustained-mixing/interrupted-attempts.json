@@ -1,0 +1,242 @@
+[
+  {
+    "case": "rain_heating-32-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 1.0,
+      "limited_steps": 24,
+      "limiter": {
+        "active_pairs": 1128.0,
+        "limited_pairs": 294.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 19.983332723042682,
+        "accepted_exchange": 18.50944184357231,
+        "proposed_salt": 0.15207465304130197,
+        "accepted_salt": 0.06067363379649881,
+        "proposed_enthalpy": 5125.908344794234,
+        "accepted_enthalpy": 1485.1015625819612,
+        "minimum_fraction": 4.816492526703144e-11
+      }
+    }
+  },
+  {
+    "case": "rain_heating-64-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 1.0,
+      "limited_steps": 24,
+      "limiter": {
+        "active_pairs": 2280.0,
+        "limited_pairs": 574.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 78.8437193570741,
+        "accepted_exchange": 74.29921968780864,
+        "proposed_salt": 0.33805802491398435,
+        "accepted_salt": 0.16872534798573172,
+        "proposed_enthalpy": 9791.794272400042,
+        "accepted_enthalpy": 3022.677839146033,
+        "minimum_fraction": 8.394125853281695e-09
+      }
+    }
+  },
+  {
+    "case": "cooling-64-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 1.0,
+      "limited_steps": 24,
+      "limiter": {
+        "active_pairs": 2280.0,
+        "limited_pairs": 573.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 79.54109691092162,
+        "accepted_exchange": 74.96948920023682,
+        "proposed_salt": 0.2413143895477887,
+        "accepted_salt": 0.07197589366578826,
+        "proposed_enthalpy": 9741.622346333967,
+        "accepted_enthalpy": 2967.7313244862207,
+        "minimum_fraction": 2.654459809871857e-05
+      }
+    }
+  },
+  {
+    "case": "wind-64-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 1.0,
+      "limited_steps": 24,
+      "limiter": {
+        "active_pairs": 2280.0,
+        "limited_pairs": 573.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 79.43465705808468,
+        "accepted_exchange": 74.87525118171511,
+        "proposed_salt": 0.24120748687498828,
+        "accepted_salt": 0.07190632547090405,
+        "proposed_enthalpy": 9649.49397361834,
+        "accepted_enthalpy": 2876.656911433337,
+        "minimum_fraction": 9.796001422202544e-06
+      }
+    }
+  },
+  {
+    "case": "cooling-32-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 3.0,
+      "limited_steps": 72,
+      "limiter": {
+        "active_pairs": 3384.0,
+        "limited_pairs": 988.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 38.48324142567607,
+        "accepted_exchange": 35.43511525821595,
+        "proposed_salt": 0.1972425840758755,
+        "accepted_salt": 0.056642661671071036,
+        "proposed_enthalpy": 7797.513842119627,
+        "accepted_enthalpy": 2180.499821464794,
+        "minimum_fraction": 2.0393686787062484e-11
+      }
+    }
+  },
+  {
+    "case": "wind-32-150-k0.0001-a0.75",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 3.0,
+      "limited_steps": 72,
+      "limiter": {
+        "active_pairs": 3384.0,
+        "limited_pairs": 991.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 37.75334876007033,
+        "accepted_exchange": 35.29436666101353,
+        "proposed_salt": 0.15469849966993174,
+        "accepted_salt": 0.05714476103063122,
+        "proposed_enthalpy": 6190.896395428645,
+        "accepted_enthalpy": 2286.9121968491027,
+        "minimum_fraction": 9.799216544917059e-12
+      }
+    }
+  },
+  {
+    "case": "wind-32-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 10.0,
+      "limited_steps": 240,
+      "limiter": {
+        "active_pairs": 11280.0,
+        "limited_pairs": 3677.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 105.15742637095218,
+        "accepted_exchange": 95.87256824933256,
+        "proposed_salt": 0.8658779917273182,
+        "accepted_salt": 0.29999024182902095,
+        "proposed_enthalpy": 34661.08851341742,
+        "accepted_enthalpy": 12010.980839886312,
+        "minimum_fraction": 3.5302296591393124e-12
+      }
+    }
+  },
+  {
+    "case": "rain_heating-32-300-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 16.0,
+      "limited_steps": 192,
+      "limiter": {
+        "active_pairs": 9024.0,
+        "limited_pairs": 4125.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 136.36076546030534,
+        "accepted_exchange": 118.73649206563863,
+        "proposed_salt": 3.1472925746622686,
+        "accepted_salt": 1.7601363858062813,
+        "proposed_enthalpy": 72808.29444890672,
+        "accepted_enthalpy": 22332.555546772695,
+        "minimum_fraction": 9.324810859207872e-12
+      }
+    }
+  },
+  {
+    "case": "cooling-32-300-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 37.0,
+      "limited_steps": 444,
+      "limiter": {
+        "active_pairs": 20868.0,
+        "limited_pairs": 7797.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 311.6643536113276,
+        "accepted_exchange": 273.13345155032164,
+        "proposed_salt": 4.244516641147727,
+        "accepted_salt": 0.7923034839613483,
+        "proposed_enthalpy": 163106.84778054926,
+        "accepted_enthalpy": 29297.242126971436,
+        "minimum_fraction": 4.0927962611409453e-13
+      }
+    }
+  },
+  {
+    "case": "wind-32-150-k0.0001-a0.25",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 36.0,
+      "limited_steps": 864,
+      "limiter": {
+        "active_pairs": 40608.0,
+        "limited_pairs": 14815.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 351.8772309278219,
+        "accepted_exchange": 307.0458082018403,
+        "proposed_salt": 4.967073663546676,
+        "accepted_salt": 0.8194524183747004,
+        "proposed_enthalpy": 198784.8392409485,
+        "accepted_enthalpy": 32807.57142469373,
+        "minimum_fraction": 6.882298832519046e-14
+      }
+    }
+  },
+  {
+    "case": "wind-32-150-k1e-06-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 36.0,
+      "limited_steps": 864,
+      "limiter": {
+        "active_pairs": 40608.0,
+        "limited_pairs": 14648.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 318.30949791982266,
+        "accepted_exchange": 288.4612323056806,
+        "proposed_salt": 3.4999411631560724,
+        "accepted_salt": 0.7910748683572113,
+        "proposed_enthalpy": 140083.33564103817,
+        "accepted_enthalpy": 31673.10660188273,
+        "minimum_fraction": 2.6222734013960493e-12
+      }
+    }
+  },
+  {
+    "case": "rain_heating-16-150-k0.0001-a0.5",
+    "reason": "worker session lost; no restart state; this partial attempt is excluded from profile comparisons",
+    "last_progress": {
+      "hours": 32.0,
+      "limited_steps": 768,
+      "limiter": {
+        "active_pairs": 17664.0,
+        "limited_pairs": 11454.0,
+        "zero_pairs": 0.0,
+        "proposed_exchange": 58.37458638393933,
+        "accepted_exchange": 39.21618696512226,
+        "proposed_salt": 3.193061975967175,
+        "accepted_salt": 0.8815439022780202,
+        "proposed_enthalpy": 95537.44946870588,
+        "accepted_enthalpy": 18093.564403110464,
+        "minimum_fraction": 9.249158990469e-13
+      }
+    }
+  }
+]

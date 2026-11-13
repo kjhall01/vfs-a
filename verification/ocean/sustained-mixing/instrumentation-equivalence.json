@@ -1,0 +1,16 @@
+{
+  "case": "wind,16 layers,300 s,48 h",
+  "reference_commit": "9c317aac2141ea03b3bed6ee94dfe13e36a57ce7",
+  "final_profile_exact_checks": {
+    "time_s": true,
+    "u": true,
+    "v": true,
+    "temperature": true,
+    "salinity": true,
+    "tke": true,
+    "diffusivity": true,
+    "depth": true,
+    "temperature_mld_m": true,
+    "energy_minus_input_J_kg": true
+  }
+}

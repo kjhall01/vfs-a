@@ -1,0 +1,342 @@
+[
+  {
+    "layers": 16,
+    "dt_s": 150.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 26496.0,
+      "limited_pairs": 10270.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 94.1846537225203,
+      "accepted_exchange": 75.42394081619213,
+      "proposed_salt": 3.5209655270440456,
+      "accepted_salt": 0.567839500508595,
+      "proposed_enthalpy": 130851.8468759565,
+      "accepted_enthalpy": 16739.616331554556,
+      "minimum_fraction": 1.7344378607285039e-12
+    },
+    "limited_steps": 1152,
+    "accepted_steps": 1152,
+    "backtrack_safety": 0.5,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 1672.9114807989972,
+    "external_energy_J_m2": -17279217.513447084,
+    "energy_error_J_kg": -7.509458355787324e-10,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 3.551106300444792e-16,
+    "transport": [
+      -0.9756181519530583,
+      -0.9744087399947248
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.3876056763285024,
+    "accepted_fractions": {
+      "exchange": 0.8008092383967397,
+      "salt": 0.16127380292340238,
+      "enthalpy": 0.12792800966289145
+    },
+    "raw_sha256": "e8e453d8813d094995b836411ced4b662ebadf2c22e208b8777ed3bffc2225b7",
+    "file": "cooling-16-150-k0.0001-a0.5.json"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 13248.0,
+      "limited_pairs": 5302.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 84.578597600958,
+      "accepted_exchange": 63.36936475748098,
+      "proposed_salt": 3.5004406800059145,
+      "accepted_salt": 0.5295363285607821,
+      "proposed_enthalpy": 129198.8547760494,
+      "accepted_enthalpy": 14504.75545988939,
+      "minimum_fraction": 1.9400240966747645e-11
+    },
+    "limited_steps": 576,
+    "accepted_steps": 576,
+    "backtrack_safety": 0.5,
+    "scenario": "cooling",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 968.9317548200052,
+    "external_energy_J_m2": -17279243.61211087,
+    "energy_error_J_kg": 1.18809502299239e-10,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 1.3017278326570211e-16,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756455918566269,
+      -0.9744361458828684
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.4002113526570048,
+    "accepted_fractions": {
+      "exchange": 0.7492364091499575,
+      "salt": 0.15127704679740137,
+      "enthalpy": 0.11226690426189637
+    },
+    "raw_sha256": "ae9a0602751a2d04bc6c5ad9f54e83559c2b06488b0131ace10cd60a27100c43",
+    "file": "cooling-16-300-k0.0001-a0.5.json"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 13248.0,
+      "limited_pairs": 9864.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 79.76139743160827,
+      "accepted_exchange": 49.12642635848979,
+      "proposed_salt": 4.8164248473024776,
+      "accepted_salt": 0.9195644250877024,
+      "proposed_enthalpy": 156395.7780814388,
+      "accepted_enthalpy": 21952.248299499966,
+      "minimum_fraction": 4.4688803507954867e-13
+    },
+    "limited_steps": 576,
+    "accepted_steps": 576,
+    "backtrack_safety": 0.5,
+    "scenario": "rain_heating",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 1365.1286842269983,
+    "external_energy_J_m2": 26907692.211085103,
+    "energy_error_J_kg": 1.7888662291736138e-10,
+    "mass_residual_kg_m2": -2.5472957076999592e-11,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 3.551106300444792e-16,
+    "transport": [
+      -0.9756455918566196,
+      -0.9744361458828666
+    ],
+    "analytic_wind_transport": null,
+    "limited_pair_fraction": 0.7445652173913043,
+    "accepted_fractions": {
+      "exchange": 0.6159173226699474,
+      "salt": 0.19092261464491042,
+      "enthalpy": 0.14036343288032327
+    },
+    "raw_sha256": "a11a5392a1fbc35d5b04962a28b2719795baec7944253f62e4e9ab657fabf435",
+    "file": "rain_heating-16-300-k0.0001-a0.5.json"
+  },
+  {
+    "layers": 16,
+    "dt_s": 150.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 26496.0,
+      "limited_pairs": 10493.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 88.76168623124477,
+      "accepted_exchange": 69.45560620973349,
+      "proposed_salt": 2.9787598470952723,
+      "accepted_salt": 0.5374268114665235,
+      "proposed_enthalpy": 119213.1796837859,
+      "accepted_enthalpy": 21516.485351299645,
+      "minimum_fraction": 8.590090815389545e-12
+    },
+    "limited_steps": 1152,
+    "accepted_steps": 1152,
+    "backtrack_safety": 0.5,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 1627.5419455759984,
+    "external_energy_J_m2": 777.6915686097676,
+    "energy_error_J_kg": -7.280168829754807e-10,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": -1.3017278326570211e-16,
+    "passive_relative_change": 7.102212600889584e-16,
+    "transport": [
+      -0.9756181519530618,
+      -0.9744087399947222
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.3960220410628019,
+    "accepted_fractions": {
+      "exchange": 0.7824953440923321,
+      "salt": 0.18041965081226452,
+      "enthalpy": 0.180487471338088
+    },
+    "raw_sha256": "3633b566209f9a32409f4f5b67a3fb64bc8bb829007945423e7d980930e2d1ee",
+    "file": "wind-16-150-k0.0001-a0.5.json"
+  },
+  {
+    "layers": 16,
+    "dt_s": 300.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 13248.0,
+      "limited_pairs": 5504.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 82.37728948566838,
+      "accepted_exchange": 55.71631567056328,
+      "proposed_salt": 3.3698022865352395,
+      "accepted_salt": 0.45971595675324095,
+      "proposed_enthalpy": 134860.3738422503,
+      "accepted_enthalpy": 18405.040154658807,
+      "minimum_fraction": 3.3826140753526546e-12
+    },
+    "limited_steps": 576,
+    "accepted_steps": 576,
+    "backtrack_safety": 0.5,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 627.1894240379988,
+    "external_energy_J_m2": 752.6434421145622,
+    "energy_error_J_kg": -5.544075509355824e-11,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 1.775553150222396e-16,
+    "transport": [
+      -0.9756455918566281,
+      -0.9744361458828663
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.41545893719806765,
+    "accepted_fractions": {
+      "exchange": 0.6763552918338803,
+      "salt": 0.13642223420351207,
+      "enthalpy": 0.13647478225284815
+    },
+    "raw_sha256": "fd1bb9b32815c1aec1d39cc4c11a2b370a794dea4cf00d3a71801168535fb863",
+    "file": "wind-16-300-k0.0001-a0.5.json"
+  },
+  {
+    "layers": 32,
+    "dt_s": 150.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 54144.0,
+      "limited_pairs": 20319.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 458.0375012042463,
+      "accepted_exchange": 417.20242393039155,
+      "proposed_salt": 4.70426235334548,
+      "accepted_salt": 1.1592520293813806,
+      "proposed_enthalpy": 188275.50747009082,
+      "accepted_enthalpy": 46405.32896150793,
+      "minimum_fraction": 2.0024749746422748e-12
+    },
+    "limited_steps": 1151,
+    "accepted_steps": 1152,
+    "backtrack_safety": 0.5,
+    "scenario": "wind",
+    "seed_tke": 0.001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 1098.2749556810013,
+    "external_energy_J_m2": 1505.943693750126,
+    "energy_error_J_kg": -5.36083426573541e-10,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 0.0,
+    "transport": [
+      -0.9756181519530576,
+      -0.9744087399947247
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.3752770390070922,
+    "accepted_fractions": {
+      "exchange": 0.9108477424523244,
+      "salt": 0.24642588833443096,
+      "enthalpy": 0.24647565466729554
+    },
+    "raw_sha256": "15e2020c643c31b72ec2e1865fdc3af14223aeddc61573470b3dd6dcf9f42618",
+    "file": "wind-32-150-k0.001-a0.5.json"
+  },
+  {
+    "layers": 32,
+    "dt_s": 300.0,
+    "requested_hours": 48.0,
+    "completed_hours": 48.0,
+    "limiter": {
+      "active_pairs": 27072.0,
+      "limited_pairs": 10174.0,
+      "zero_pairs": 0.0,
+      "proposed_exchange": 391.8686872307197,
+      "accepted_exchange": 344.4506953038489,
+      "proposed_salt": 5.084648000175824,
+      "accepted_salt": 0.8493388976992238,
+      "proposed_enthalpy": 203493.36177702332,
+      "accepted_enthalpy": 34004.64216029726,
+      "minimum_fraction": 3.688744764797485e-12
+    },
+    "limited_steps": 576,
+    "accepted_steps": 576,
+    "backtrack_safety": 0.5,
+    "scenario": "wind",
+    "seed_tke": 0.0001,
+    "mix_scalars": true,
+    "mixing_length_m": 2.0,
+    "status": "completed",
+    "failure": null,
+    "wall_s": 903.3464529569974,
+    "external_energy_J_m2": 1585.0415166153336,
+    "energy_error_J_kg": -1.0538278064170921e-10,
+    "mass_residual_kg_m2": 0.0,
+    "salt_relative_change": 0.0,
+    "passive_relative_change": 3.5491085313037907e-16,
+    "transport": [
+      -0.975645591856627,
+      -0.9744361458828681
+    ],
+    "analytic_wind_transport": [
+      -0.9756090055585355,
+      -0.974399604938482
+    ],
+    "limited_pair_fraction": 0.37581264775413714,
+    "accepted_fractions": {
+      "exchange": 0.8789952005046205,
+      "salt": 0.16703986149480832,
+      "enthalpy": 0.16710442966467698
+    },
+    "raw_sha256": "3d70df8289f2861b2aa8c8aea5b7b17fec790c5364c9a5d2f027d0aec5d69377",
+    "file": "wind-32-300-k0.0001-a0.5.json"
+  }
+]

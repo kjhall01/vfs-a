@@ -1,0 +1,68 @@
+[
+  {
+    "kind": "timestep",
+    "scenario": "wind",
+    "layers": 16,
+    "metrics": {
+      "u": {
+        "rms_difference": 0.0012534499420299252,
+        "relative_l2": 0.05420772422891418
+      },
+      "v": {
+        "rms_difference": 0.0015438407516521944,
+        "relative_l2": 0.04656177019378595
+      },
+      "temperature": {
+        "rms_difference": 0.021697118156477957,
+        "relative_l2": 0.0019460106639312173
+      },
+      "salinity": {
+        "rms_difference": 0.0021698408918024276,
+        "relative_l2": 6.217215003385478e-05
+      },
+      "tke": {
+        "rms_difference": 7.053299075364779e-06,
+        "relative_l2": 0.29215419048048175
+      },
+      "diffusivity": {
+        "rms_difference": 0.00016634668410203551,
+        "relative_l2": 0.27199454552471547
+      },
+      "velocity_relative_l2": 0.049194575829740475,
+      "temperature_mld_difference_m": 0.0
+    }
+  },
+  {
+    "kind": "timestep",
+    "scenario": "cooling",
+    "layers": 16,
+    "metrics": {
+      "u": {
+        "rms_difference": 0.001246979471060219,
+        "relative_l2": 0.05452991616357764
+      },
+      "v": {
+        "rms_difference": 0.0015535190403311002,
+        "relative_l2": 0.04719479664858939
+      },
+      "temperature": {
+        "rms_difference": 0.005074562745791964,
+        "relative_l2": 0.00045741628062361515
+      },
+      "salinity": {
+        "rms_difference": 0.0007244467095309173,
+        "relative_l2": 2.0757471552373786e-05
+      },
+      "tke": {
+        "rms_difference": 6.3174727706954075e-06,
+        "relative_l2": 0.24670895943505552
+      },
+      "diffusivity": {
+        "rms_difference": 8.400559059200514e-05,
+        "relative_l2": 0.13211943287286715
+      },
+      "velocity_relative_l2": 0.04970148951905932,
+      "temperature_mld_difference_m": 0.0
+    }
+  }
+]

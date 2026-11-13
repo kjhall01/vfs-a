@@ -520,3 +520,10 @@ regression: 985 passed, one CUDA skip. Production code remains unchanged.
 See [local energy-limited mixing](../verification/ocean/ENERGY_LIMITED_MIXING.md)
 for the numerical change and separate evidence. Historical fixtures and guards
 are unchanged; this is a physics update, not packaging equivalence.
+
+## Sustained TKE qualification
+
+The [sustained campaign](../verification/ocean/SUSTAINED_MIXING.md) is in progress.
+Default mixing behavior is unchanged; limiter diagnostics and the existing trial
+factor are explicit. Installed-wheel portable suite: 990 passed, one CUDA skip;
+final checkpoint/column harness: five passed.

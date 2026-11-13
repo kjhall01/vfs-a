@@ -36,6 +36,11 @@ reduces conservative adjacent-layer exchanges to affordable Hamiltonian work.
 All 20 one-hour forcing/startup cases complete; exact-zero TKE still cannot
 bootstrap turbulence. Active profile convergence remains unqualified.
 
+The [sustained mixing campaign](../verification/ocean/SUSTAINED_MIXING.md)
+adds limiter diagnostics and a restartable 23-case matrix; it is in progress.
+See the [surface TKE startup design](../verification/ocean/TKE_STARTUP_DESIGN.md)
+for a proposed prescribed energy flux. No source is added in this branch.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---
