@@ -1,0 +1,175 @@
+{
+  "baseline_hashes": {
+    "equations": "013abda15e7a314b300b27dfb6dbb3f3c2e5ed0374e0c535299ae522fa14f069",
+    "transport": "692fbce697cb11367a72ae21f025eb6d7143cd7b113b2f22c10fd73ff88f1521"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "rows": [
+    {
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 128,
+        "layers": 16,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 2,
+      "repeats": 3,
+      "tensor_comparisons": 122,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          0.895197366499815,
+          0.9070577100001174,
+          0.8943330785000398
+        ],
+        "candidate": [
+          0.47769091049985946,
+          0.4702237599999535,
+          0.47019367250004507
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 0.895197366499815,
+        "candidate": 0.4702237599999535
+      },
+      "speedup": 1.903768891856727,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 50,
+          "SurfaceGibbs.evaluate": 792,
+          "JMD95Energy.gradients": 18
+        },
+        "candidate": {
+          "EntropyState.physical_state": 26,
+          "SurfaceGibbs.evaluate": 408,
+          "JMD95Energy.gradients": 6
+        }
+      },
+      "endpoint": {
+        "volume": 5.100644719097882e+16,
+        "salt": 1.8246285562758153e+21,
+        "total": 2.2935014509991512e+24,
+        "tke": 5228160837075330.0,
+        "min_tke": 9.999999999999992e-05,
+        "min_thickness": 5.344547025522896,
+        "min_tracer": 0.8975153583241543,
+        "passive_inventory": 8.342006356816619e+19,
+        "initial_mass_kg": 5.22816083707533e+19
+      }
+    },
+    {
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 16,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 2,
+      "repeats": 3,
+      "tensor_comparisons": 232,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          2.7452575100001013,
+          3.2553333209998527,
+          3.348457000000053
+        ],
+        "candidate": [
+          2.7942657895000593,
+          3.5324069489997783,
+          2.6303897920001873
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 3.2553333209998527,
+        "candidate": 2.7942657895000593
+      },
+      "speedup": 1.1650048943920563,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 80,
+          "SurfaceGibbs.evaluate": 1813,
+          "JMD95Energy.gradients": 18
+        },
+        "candidate": {
+          "EntropyState.physical_state": 56,
+          "SurfaceGibbs.evaluate": 1429,
+          "JMD95Energy.gradients": 6
+        }
+      },
+      "endpoint": {
+        "volume": 5.100644748955315e+16,
+        "salt": 1.8246285562758153e+21,
+        "total": 2.2935092372967847e+24,
+        "tke": 3017491319740486.0,
+        "min_tke": 4.8183220190035553e-08,
+        "min_thickness": 5.34454702552453,
+        "min_tracer": 0.8988544317464583,
+        "passive_inventory": 8.342006356816619e+19,
+        "initial_mass_kg": 5.22816083707533e+19
+      }
+    },
+    {
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 16,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 2,
+      "repeats": 3,
+      "tensor_comparisons": 280,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          3.457858306500384,
+          3.460562480500357,
+          3.5922348950002743
+        ],
+        "candidate": [
+          2.9666156860002957,
+          2.963528226499875,
+          2.9650976439997976
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 3.460562480500357,
+        "candidate": 2.9650976439997976
+      },
+      "speedup": 1.1670989950375454,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 104,
+          "SurfaceGibbs.evaluate": 2218,
+          "JMD95Energy.gradients": 18
+        },
+        "candidate": {
+          "EntropyState.physical_state": 80,
+          "SurfaceGibbs.evaluate": 1834,
+          "JMD95Energy.gradients": 6
+        }
+      },
+      "endpoint": {
+        "volume": 5.1006447489553144e+16,
+        "salt": 1.8246285562758153e+21,
+        "total": 2.2935092372967595e+24,
+        "tke": 2999219283998767.0,
+        "min_tke": 1.582563262768205e-06,
+        "min_thickness": 6.249998261954656,
+        "min_tracer": 0.9136866248957214,
+        "passive_inventory": 8.342006356816617e+19,
+        "initial_mass_kg": 5.22816083707533e+19
+      }
+    }
+  ]
+}

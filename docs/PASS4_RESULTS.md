@@ -655,3 +655,15 @@ Harness validation: 12 installed-wheel smoke cases and six 128×16 evolving-step
 cases pass; throughput accounting tests and both portable fixture comparisons
 pass. See `verification/performance/README.md`. These are execution checks,
 not M4 Pro measurements or global timestep qualification.
+
+## Ocean stage work reuse
+
+Transient RHS work avoids repeated physical-state inversions, Gibbs face
+calculation, JMD95 gradients and donor transport between the base and sharp-front
+transport calculations. Original expressions, guards, fixtures and tolerances
+remain. At 1024×64, single-thread CPU dynamics cost falls 27.22 → 14.20 s per
+step with exact state/report equality; full-ocean gains are smaller. See
+[measurements and reproduction](../verification/ocean/STAGE_REUSE.md).
+Installed-wheel portable suite: 1061 passed, one CUDA skip, one existing warning;
+corrected-Gibbs and dry portable comparisons pass. Focused reverse-mode and
+invalid-content checks pass; no full-model backward qualification is asserted.

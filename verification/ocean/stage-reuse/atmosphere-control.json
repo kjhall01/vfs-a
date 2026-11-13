@@ -1,0 +1,98 @@
+{
+  "baseline_hashes": {
+    "equations": "013abda15e7a314b300b27dfb6dbb3f3c2e5ed0374e0c535299ae522fa14f069",
+    "transport": "692fbce697cb11367a72ae21f025eb6d7143cd7b113b2f22c10fd73ff88f1521"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "rows": [
+    {
+      "config": {
+        "case": "dry",
+        "closure": "none",
+        "cells": 1024,
+        "layers": 24,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 3,
+      "repeats": 3,
+      "tensor_comparisons": 3,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          0.1621059256664618,
+          0.1807168980000521,
+          0.17297391266674822
+        ],
+        "candidate": [
+          0.15312803199988897,
+          0.16964404033327204,
+          0.15664415800013862
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 0.17297391266674822,
+        "candidate": 0.15664415800013862
+      },
+      "speedup": 1.104247454070998,
+      "calls_per_trajectory": {
+        "parent": {},
+        "candidate": {}
+      },
+      "endpoint": {
+        "mass": 4.941149610869144e+18,
+        "boundary_total_energy": 1.1925483580793394e+24
+      }
+    },
+    {
+      "config": {
+        "case": "moist",
+        "closure": "none",
+        "cells": 1024,
+        "layers": 24,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 3,
+      "repeats": 3,
+      "tensor_comparisons": 4,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          0.8911447999998927,
+          0.8947987383335203,
+          0.9580909276667929
+        ],
+        "candidate": [
+          0.871649865666465,
+          0.87475021900021,
+          0.9195844730002136
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 0.8947987383335203,
+        "candidate": 0.87475021900021
+      },
+      "speedup": 1.0229191361120489,
+      "calls_per_trajectory": {
+        "parent": {},
+        "candidate": {}
+      },
+      "endpoint": {
+        "mass": 4.941149610869143e+18,
+        "energy": 6.875396177909986e+22,
+        "min_vapor": 0.00999999999999998,
+        "min_liquid": 0.000999999999999998,
+        "min_ice": 9.999999999999982e-05,
+        "species_mass_kg": [
+          4.941149610869142e+16,
+          4941149610869143.0,
+          494114961086914.3
+        ]
+      }
+    }
+  ]
+}
