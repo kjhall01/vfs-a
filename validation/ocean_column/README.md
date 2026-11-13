@@ -193,3 +193,31 @@ alternative face choice using the final residual formulation.
 profiles. Six-minute filenames use `short-METHOD-DT.json`. Put the short and long outputs
 in the same selected directory to analyze them together. References
 are numerical, not analytic truth. See [equations and evidence](../../verification/ocean/COUPLED_COLUMN.md).
+
+## Linear EOS controls
+
+`linear_eos.py` supplies research-only column adapters: linear density with the
+existing caloric reference, or with constant heat capacity. Horizontal stepping is
+explicitly disabled. Linear coefficients match JMD95 partials at the documented
+reference state; this does not match the full initial nonlinear density profile.
+The installed ocean retains JMD95.
+
+From a copy of this directory outside the checkout, against an installed wheel:
+
+```bash
+python linear_matrix.py --output primary
+python linear_matrix.py --exact-work --output exact
+python linear_campaign.py --eos linear-cp --exact-work --hours 48 --dt 300 --output exact/48h.json
+python analyze_linear.py --input primary --exact-input exact --output analysis.json
+python benchmark_linear.py --output benchmark.json
+```
+
+Matrix execution is serial unless `--workers` is supplied. Each requested case is
+recorded as completed or rejected; there are no smaller-step replacements. The
+48-hour command is an intentionally retained failure case, not a qualified example.
+`--exact-work` uses the affine energy identity without changing solver tolerances,
+physical state clipping, or full-H acceptance. The research work hook in
+`coupled.py` returns the original finite-work expression by default. Custom ocean
+factories cannot resume the original campaign checkpoints.
+
+See [findings and limitations](../../verification/ocean/LINEAR_EOS_CONTROL.md).

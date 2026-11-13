@@ -30,16 +30,17 @@ def rotate(state,angle):
     c,s=math.cos(angle),math.sin(angle)
     return replace(state,ocean=replace(state.ocean,u_e=torch.stack((c*u+s*v,-s*u+c*v))))
 
-def run(layers=16,dt=300.,hours=48.,scenario='wind',seed=1e-4,mix_scalars=True,safety=.5,progress=False,checkpoint=None,wall_limit=None,closure=None):
+def run(layers=16,dt=300.,hours=48.,scenario='wind',seed=1e-4,mix_scalars=True,safety=.5,progress=False,checkpoint=None,wall_limit=None,closure=None,ocean_factory=None):
     if not math.isfinite(dt) or not math.isfinite(hours) or dt<=0 or hours<=0:
         raise ValueError("dt and requested hours must be finite and positive")
     if wall_limit is not None and (checkpoint is None or not math.isfinite(wall_limit) or wall_limit<=0):
         raise ValueError('wall_limit requires a checkpoint and a finite positive duration')
-    if closure is not None and checkpoint is not None:
+    if (closure is not None or ocean_factory is not None) and checkpoint is not None:
         raise ValueError("custom research closures do not support campaign checkpoints")
     torch.set_num_threads(1)
     mesh=ColumnMetric();depth=100.;rho=1025.;f=1e-4
-    ocean=StratifiedOcean(mesh,OceanColumn(layers,total_depth=depth))
+    factory=StratifiedOcean if ocean_factory is None else ocean_factory
+    ocean=factory(mesh,OceanColumn(layers,total_depth=depth))
     model=TKEOcean(ocean,closure=closure if closure is not None else TKEClosure(2.,mix_scalars=mix_scalars,mixing_backtrack_safety=safety),boundary=OceanBoundaryStress(),
         heating=OceanSurfaceHeating(.6,(.5,20.)),exchange=OceanSurfaceExchange())
     h=torch.full((1,layers),depth/layers,dtype=torch.float64)

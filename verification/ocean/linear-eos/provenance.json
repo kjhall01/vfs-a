@@ -1,0 +1,39 @@
+{
+  "parent_commit": "dcd20affef2ef5e03e8e70fec403062fb10fa3c6",
+  "dtype": "float64",
+  "device": "cpu",
+  "threads_per_case": 1,
+  "concurrent_matrix_workers": 2,
+  "alpha": 0.0001908821582383638,
+  "beta": 0.0007568878444130999,
+  "cp": 3990.0,
+  "coefficient_reference": {
+    "T_IPTS68_C": 12.5,
+    "SP": 34.75,
+    "p_dbar": 0.0
+  },
+  "source_hashes": {
+    "benchmark_linear.py": "0718742a3c0dba1bc489ba85d6b137b620795f078cb9357d693a10d5d110bc0e",
+    "analyze_linear.py": "3ff75f8badfe7942ed9bfb3645965cfad3779b9aafca4adc6a48b27cb99a407e",
+    "linear_matrix.py": "75d8cd808685103cca5bb668eb71e32adf2a2d648dd9be9b8a08c66c5991308f",
+    "linear_campaign.py": "f320d675c26da762b1b1fcf9ade8aea1e207c1301a59ba7bb44834871e28696a",
+    "linear_eos.py": "ef9357513ee1824bd9a084cb58ea48e611792e251551ce6d8610f2cf29e0ae92",
+    "sustained_campaign.py": "3d84f8d6ce68e8a6b1702218f8687e2539524b02694bff2150b0500d08676849",
+    "summarize.py": "d34415fac556530ec8f78dbb85c3d38a38798fbf249c7f9157fb962cd5bbf56d",
+    "run.py": "a1e190a1c2f334a34d512eb01a491c3f344c79d0c392e5396ccbfd01d6a91bb4",
+    "plot_sustained.py": "1609d4b0931944eb86bba942f30c83543ab7e96457163997080b5ab18d407094",
+    "mixing_cost.py": "da4ad9cdf77e70db4b7b0ccd50a29626cee9da808e0e4b5f7565f02dd06134cd",
+    "limited_campaign.py": "5a1f0b1bbef47264d3e09a018b4635e0d1b2cf5f39640acf45b46238be26a598",
+    "coupled_matrix.py": "14fed687ad83d423eecf51f9e81e064608a76c534ff9bb06156344fe72851c26",
+    "coupled_campaign.py": "4702b8a7d2983d69b970c8f28c9949a6c313bd3328097c375f077972efd74a9f",
+    "coupled.py": "16dc47b56f8fba189f0d5d54876eaab993bf0e8d591b4355eafd6730d4533292",
+    "campaign.py": "72a2992828b9573d4876765c748c7ded00a26cf2089d117d27b72f0a10379a36",
+    "budget_predictor.py": "5f36e9dddfd1ca8b544204d980a4e29c4b6e6f14bb01fd51577e6139097161d6",
+    "benchmark_mixing.py": "be043b49f1fcc530116f9d25e947e1b0f1abff133b0607963ea83d85c1a5b87b",
+    "analyze_sustained.py": "a99409997ec881c4d8b622052f6874b8fdbff3d0fc9e137cc14bc2648aac8fe0",
+    "analyze_mixing_cost.py": "63b13d449d5ed18cf71b1b6a7d1f9b870c2fc534d25f639aff221f13e9b4007f",
+    "analyze_coupled.py": "3e7f06f9f00e2852a76baf63a0d258f0776b8ef38b091b027cb04fd5463fb117"
+  },
+  "max_file_bytes": 131072,
+  "installed_wheel_suite": "1010 passed, one CUDA skip"
+}

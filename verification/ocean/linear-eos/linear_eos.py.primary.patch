@@ -1,0 +1,22 @@
+--- linear_eos.py
++++ linear_eos.py
+@@ -64,19 +63,0 @@
+-
+-
+-# Local research import; this module is never installed into the VFS package.
+-from coupled import CoupledClosure
+-
+-class ExactLinearWorkClosure(CoupledClosure):
+-    """Analytic interface work eliminates subtraction/inversion noise from B.
+-
+-    Only valid for the affine-density, constant-cp control at fixed geometry.
+-    The full actual-H check remains independent and unchanged.
+-    """
+-    def _buoyancy_work(self,ocean,before,after,enthalpy_flux,salt_flux,default_work):
+-        e=ocean.energy.base;ref=ocean.reference
+-        if not isinstance(e,LinearDensityEnergy) or not isinstance(ref,ConstantHeatCapacity):
+-            raise ValueError('exact linear work requires linear density and constant cp')
+-        h=before.h;z=e.height(before)
+-        w=ocean.energy.mass_area(before)*e.gravity*(z[:,:-1]-z[:,1:])*(-e.alpha*enthalpy_flux/ref.cp+e.beta*salt_flux)
+-        fraction=h[:,:-1]/(h[:,:-1]+h[:,1:]);zero=torch.zeros_like(h[:,:1])
+-        return torch.cat((fraction*w,zero),-1)+torch.cat((zero,(1-fraction)*w),-1)

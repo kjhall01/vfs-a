@@ -68,6 +68,10 @@ class CoupledClosure(TKEClosure):
         if self.budget_atol<=0 or self.budget_rtol<=0 or not math.isfinite(self.budget_atol+self.budget_rtol):raise ValueError('positive finite budget tolerances required')
         if not 0<self.relaxation<=1:raise ValueError('relaxation must lie in (0,1]')
 
+    def _buoyancy_work(self,ocean,before,after,enthalpy_flux,salt_flux,default_work):
+        """Research control hook; default retains the actual finite-H allocation."""
+        return default_work
+
     def apply(self,ocean,state,tke_h,dt):
         if not math.isfinite(dt) or dt<=0:raise ValueError('positive finite dt required')
         physical=ocean.check_state(state)
@@ -140,6 +144,7 @@ class CoupledClosure(TKEClosure):
             # algebraically, rather than making TKE pay inverse-roundtrip noise.
             # Full-H acceptance below independently checks that noise.
             work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
+            work=self._buoyancy_work(ocean,physical,after,fh,fs,work)
             reconstruction=change-div(flux)-work
             if self.interface_scheme=="resistance":
                 # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
