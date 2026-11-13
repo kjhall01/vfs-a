@@ -514,3 +514,9 @@ corrected-Gibbs and dry-helper portable comparisons pass outside checkout.
 See [campaign results](../verification/ocean/COLUMN_CAMPAIGN.md): 32 cases,
 26 active-mixing rejections, six 48-hour momentum controls. Installed-wheel
 regression: 985 passed, one CUDA skip. Production code remains unchanged.
+
+## Energy-limited mixing candidate
+
+See [local energy-limited mixing](../verification/ocean/ENERGY_LIMITED_MIXING.md)
+for the numerical change and separate evidence. Historical fixtures and guards
+are unchanged; this is a physics update, not packaging equivalence.

@@ -106,7 +106,7 @@ class TKEClosure:
         confused with the much larger heat transported between layers.
 
         No nonadjacent TKE can pay a pair's cost, even if the column total is
-        sufficient. The caller gets explicit rejection, never clipping.
+        sufficient. Unaffordable exchanges are reduced before committing their paired flux.
         Frozen diffusivities and pairwise BE keep overall first-order accuracy;
         symmetric sweep ordering does not make the BE method second order.
         """
@@ -130,33 +130,58 @@ class TKEClosure:
             old_psi, old_ref = self._thermal_parts(ocean, before)
             salt0, enthalpy0 = before.salinity(), old_ref['h0']
             coefficient = fraction*dt*g/(1+fraction*dt*g*(1/h[:, :-1]+1/h[:, 1:]))
-            def mix(q):
-                return q+divergence(coefficient*(q[:, 1:]-q[:, :-1]))/h
-            salt_h = state.salt_h+divergence(coefficient*(salt0[:, 1:]-salt0[:, :-1]))
-            salt, enthalpy = salt_h/h, mix(enthalpy0)
-            nodes = adjacent_sum(active.to(h.dtype)) > 0
-            theta = energy.reference.temperature_from_enthalpy(salt, enthalpy)
-            eta = energy.reference.evaluate(salt, theta, entropy_derivatives=True)['entropy']
-            # Subtract the same inverse/evaluate round trip at zero increment.
-            # Uniform fields then remain bitwise unchanged WITHOUT branching on
-            # their gradients (which would incorrectly erase the linearized
-            # diffusion response at a uniform state).
-            theta0 = energy.reference.temperature_from_enthalpy(salt0, enthalpy0)
-            eta0 = energy.reference.evaluate(salt0, theta0, entropy_derivatives=True)['entropy']
-            tracer = state.tracer_h
-            if tracer is not None and tracer.shape[-1] > 0:
-                tracer = torch.stack([tracer[..., j]+divergence(coefficient*
-                    ((tracer[..., j]/h)[:, 1:]-(tracer[..., j]/h)[:, :-1]))
-                    for j in range(tracer.shape[-1])], -1)
-            updated = replace(state, salt_h=salt_h,
-                entropy_h=torch.where(nodes, state.entropy_h+h*(eta-eta0), state.entropy_h), tracer_h=tracer)
-            after = ocean.check_state(updated)
-            new_psi, new_ref = self._thermal_parts(ocean, after)
-            change = mass*((new_psi-old_psi)+(new_ref['h0']-old_ref['h0']))
-            work = torch.where(active, change[:, :-1]+change[:, 1:], torch.zeros_like(g))
-            alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
-            upper_work, lower_work = alpha*work, (1-alpha)*work
-            debit = torch.cat((upper_work, zero), -1)+torch.cat((zero, lower_work), -1)
+            def candidate(coefficient):
+                def mix(q):
+                    return q+divergence(coefficient*(q[:, 1:]-q[:, :-1]))/h
+                salt_h = state.salt_h+divergence(coefficient*(salt0[:, 1:]-salt0[:, :-1]))
+                salt, enthalpy = salt_h/h, mix(enthalpy0)
+                nodes = adjacent_sum(active.to(h.dtype)) > 0
+                theta = energy.reference.temperature_from_enthalpy(salt, enthalpy)
+                eta = energy.reference.evaluate(salt, theta, entropy_derivatives=True)['entropy']
+                # Subtract the same inverse/evaluate round trip at zero increment.
+                # Uniform fields then remain bitwise unchanged WITHOUT branching on
+                # their gradients (which would incorrectly erase the linearized
+                # diffusion response at a uniform state).
+                theta0 = energy.reference.temperature_from_enthalpy(salt0, enthalpy0)
+                eta0 = energy.reference.evaluate(salt0, theta0, entropy_derivatives=True)['entropy']
+                tracer = state.tracer_h
+                if tracer is not None and tracer.shape[-1] > 0:
+                    tracer = torch.stack([tracer[..., j]+divergence(coefficient*
+                        ((tracer[..., j]/h)[:, 1:]-(tracer[..., j]/h)[:, :-1]))
+                        for j in range(tracer.shape[-1])], -1)
+                updated = replace(state, salt_h=salt_h,
+                    entropy_h=torch.where(nodes, state.entropy_h+h*(eta-eta0), state.entropy_h), tracer_h=tracer)
+                after = ocean.check_state(updated)
+                new_psi, new_ref = self._thermal_parts(ocean, after)
+                change = mass*((new_psi-old_psi)+(new_ref['h0']-old_ref['h0']))
+                work = torch.where(active, change[:, :-1]+change[:, 1:], torch.zeros_like(g))
+                alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
+                upper_work, lower_work = alpha*work, (1-alpha)*work
+                debit = torch.cat((upper_work, zero), -1)+torch.cat((zero, lower_work), -1)
+                return updated, change, work, upper_work, debit
+            updated, change, work, upper_work, debit = candidate(coefficient)
+            # Disjoint pairs compete only with their own two reservoirs. Each
+            # subsequent sweep sees the remaining energy. Reducing the exchange preserves
+            # convex pair mixing and never edits a negative reservoir afterward.
+            for _ in range(48):
+                bad_layer = debit > reservoir
+                bad_pair = active & (bad_layer[:, :-1] | bad_layer[:, 1:])
+                if not bad_pair.any():
+                    break
+                alpha = h[:, :-1]/(h[:, :-1]+h[:, 1:])
+                budget = torch.minimum(reservoir[:, :-1]/alpha,
+                                       reservoir[:, 1:]/(1-alpha))
+                # Work need not be linear in exchanged content: this ratio is
+                # only a trial reduction, always rechecked against the full H.
+                positive_work = torch.where(work > 0, work, torch.ones_like(work))
+                reduction = .5*(budget/positive_work).clamp(min=0, max=1)
+                coefficient = torch.where(bad_pair, coefficient*reduction, coefficient)
+                updated, change, work, upper_work, debit = candidate(coefficient)
+            else:
+                # Exact no-exchange fallback avoids unresolved thermodynamic
+                # roundoff at vanishing flux; no heat or TKE floor is inserted.
+                coefficient = torch.where(bad_pair, torch.zeros_like(coefficient), coefficient)
+                updated, change, work, upper_work, debit = candidate(coefficient)
             if (debit > reservoir).any():
                 raise ValueError('local buoyancy mixing exceeds available TKE in an adjacent layer; no nonlocal borrowing')
             flux = torch.where(active, change[:, :-1]-upper_work, torch.zeros_like(g))
@@ -180,7 +205,7 @@ class TKEClosure:
 
         Scalar mixing conserves potential enthalpy and salt, then debits the
         actual pair thermodynamic-energy change from adjacent layer TKE reservoirs.
-        A step that exhausts TKE rejects; callers must reduce dt explicitly.
+        Local scalar exchange is limited to the adjacent available TKE.
         """
         if not math.isfinite(float(dt)) or float(dt) <= 0:
             raise ValueError('dt must be finite and positive')

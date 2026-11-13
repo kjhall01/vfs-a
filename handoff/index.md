@@ -31,6 +31,11 @@ scalar mixing with positive local TKE; retain guards and rerun the fixed matrix.
 No production code changes accompany this evidence. Installed-wheel regression:
 985 passed, one CUDA skip.
 
+The [energy-limited mixing candidate](../verification/ocean/ENERGY_LIMITED_MIXING.md)
+reduces conservative adjacent-layer exchanges to affordable Hamiltonian work.
+All 20 one-hour forcing/startup cases complete; exact-zero TKE still cannot
+bootstrap turbulence. Active profile convergence remains unqualified.
+
 Earlier handoff entries below are historical records, not current instructions.
 
 ---

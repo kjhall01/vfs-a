@@ -195,3 +195,21 @@ The standard one-equation structure is described in the
 The finite-step transfers and adjacent-layer buoyancy allocation above are specific to
 this implementation. [Local qualification results](../verification/ocean/LOCAL_TKE_BUOYANCY.md)
 separate budget evidence from physical-validation gaps.
+
+## Energy-limited local scalar exchange
+
+The candidate update reduces an unaffordable interface exchange before applying
+it. Both salt and potential enthalpy (and passive tracer content) use the same
+reduced coefficient, retaining conservative paired transport and convex mixing.
+Each disjoint pair pays its measured Hamiltonian work from its two adjacent TKE
+reservoirs, weighted by thickness. Later sweeps see the remaining reservoirs.
+The available-energy ratio proposes a reduction; the nonlinear energy cost is
+always reevaluated. After 48 unsuccessful reductions, the affected exchange is
+zeroed and checked again. No negative TKE is clipped and no heat is inserted.
+
+This limiter is piecewise differentiable; backward behavior at switching points
+is not qualified. It does not establish a calibrated turbulence model. In
+particular, K_m proportional to sqrt(k) leaves exactly zero TKE invariant in a
+stable wind-driven column: finite shear alone cannot start this closure without
+nonzero turbulence or a separately justified source. The limiter addresses
+energy depletion, not this startup limitation.

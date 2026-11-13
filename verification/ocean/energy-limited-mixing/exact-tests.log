@@ -1,0 +1,159 @@
+........................................................................ [  7%]
+........................................................................ [ 14%]
+............................................................F........... [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+....................................F................................... [ 43%]
+..........F............................................................. [ 51%]
+......................................s................................. [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 80%]
+........................................................................ [ 87%]
+........................................................................ [ 94%]
+..................................................                       [100%]
+=================================== FAILURES ===================================
+_____________________________ test_archive_capture _____________________________
+
+fixture_mode = 'exact'
+
+    def test_archive_capture(fixture_mode):
+        torch.set_default_dtype(torch.float64)
+        actual = CAPTURE.capture(FIXTURES/'inputs.npz')
+        with np.load(FIXTURES/'archive_capture.npz',allow_pickle=False) as z:
+            assert actual.keys() == set(z.files)
+            for key,value in actual.items():
+                expected=z[key]
+                if fixture_mode=='exact' or value.dtype.kind not in 'fc':
+>                   assert np.array_equal(value,expected),key
+E                   AssertionError: global/source/restoring/temp_h
+E                   assert False
+E                    +  where False = <function array_equal at 0x7f3bb11c1d70>(array([[-0.00254532,  0.        ,  0.        ],\n       [-0.00159726,  0.        ,  0.        ],\n       [-0.00074711,  ...       ,  0.        ],\n       [-0.00161001,  0.        ,  0.        ],\n       [-0.00254109,  0.        ,  0.        ]]), array([[-0.00254532,  0.        ,  0.        ],\n       [-0.00159726,  0.        ,  0.        ],\n       [-0.00074711,  ...       ,  0.        ],\n       [-0.00161001,  0.        ,  0.        ],\n       [-0.00254109,  0.        ,  0.        ]]))
+E                    +    where <function array_equal at 0x7f3bb11c1d70> = np.array_equal
+
+tests/ocean/test_reference.py:37: AssertionError
+__________________________ test_expanded_dry_baseline __________________________
+
+fixture_mode = 'exact'
+
+    def test_expanded_dry_baseline(fixture_mode):
+        path = ROOT / 'tools/check_dry_helpers.py'
+        spec = importlib.util.spec_from_file_location('dry_helpers', path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+>       result = mod.check(mod.capture(), torch.load(ROOT/'tests/fixtures/dry_helpers_pass2.pt', weights_only=True), fixture_mode)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_dry_extraction.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/check_dry_helpers.py:71: in check
+    return policy.compare_selected(actual, expected, "dry_helpers_pass2.pt", mode, compare)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/fixture_regression.py:267: in compare_selected
+    return dict(tensor_comparisons=exact(actual, reference))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in compare
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in <genexpr>
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in compare
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in <genexpr>
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in compare
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_dry_helpers.py:56: in <genexpr>
+    return sum(compare(a[k],b[k],path+'/'+k) for k in b)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = tensor([[[-2.0287e+00,  9.5483e+00,  5.1943e-01],
+         [-2.9384e+00,  5.8867e+00,  7.5236e-01],
+         [-9.9717e...00, -1.5366e+00],
+         [ 2.3629e+00, -4.4923e+00,  1.2947e+00],
+         [-7.4310e+00, -7.2668e+00,  5.3597e-01]]])
+b = tensor([[[-2.0287e+00,  9.5483e+00,  5.1943e-01],
+         [-2.9384e+00,  5.8867e+00,  7.5236e-01],
+         [-9.9717e...00, -1.5366e+00],
+         [ 2.3629e+00, -4.4923e+00,  1.2947e+00],
+         [-7.4310e+00, -7.2668e+00,  5.3597e-01]]])
+path = 'dry/diagonal/wind_fields/cell_wind_vector'
+
+    def compare(a,b,path='dry'):
+        if isinstance(b,torch.Tensor):
+>           torch.testing.assert_close(a,b,rtol=0,atol=0,equal_nan=True,msg=lambda s:f'{path}: {s}')
+E           AssertionError: dry/diagonal/wind_fields/cell_wind_vector: Tensor-likes are not equal!
+E           
+E           Mismatched elements: 127 / 384 (33.1%)
+E           Greatest absolute difference: 3.552713678800501e-15 at index (11, 0, 2)
+E           Greatest relative difference: 1.3907541538645057e-14 at index (12, 3, 2)
+
+tools/check_dry_helpers.py:52: AssertionError
+________ test_checkpoint54_fixture_equivalence_without_runtime_autograd ________
+
+fixture_mode = 'exact'
+
+    def test_checkpoint54_fixture_equivalence_without_runtime_autograd(fixture_mode):
+        checker = load(ROOT / "tools/check_baseline.py")
+        with patch("torch.autograd.grad", side_effect=AssertionError("runtime autodiff")):
+            actual = checker.capture(checker.imports())
+        expected = checker.reference_policy().load_reference("corrected-gibbs-v1")
+>       assert checker.check(actual, expected, fixture_mode)["tensor_comparisons"] == 142
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_extraction.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/check_baseline.py:198: in check
+    return policy.compare_selected(actual, expected, "checkpoint54.pt", mode, compare)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools/fixture_regression.py:267: in compare_selected
+    return dict(tensor_comparisons=exact(actual, reference))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+tools/check_baseline.py:184: in compare
+    walk(actual, expected, "baseline")
+tools/check_baseline.py:180: in walk
+    walk(a[k], b[k], path + "/" + k)
+tools/check_baseline.py:180: in walk
+    walk(a[k], b[k], path + "/" + k)
+tools/check_baseline.py:180: in walk
+    walk(a[k], b[k], path + "/" + k)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = tensor([[ 6.7926,  6.7926,  6.7926,  6.7926,  6.7926,  6.7926],
+        [-3.8894, -3.8894, -3.8894, -3.8894, -3.8894, ...-9.4118, -9.4118, -9.4118, -9.4118, -9.4118, -9.4118],
+        [-9.6228, -9.6228, -9.6228, -9.6228, -9.6228, -9.6228]])
+b = tensor([[ 6.7926,  6.7926,  6.7926,  6.7926,  6.7926,  6.7926],
+        [-3.8894, -3.8894, -3.8894, -3.8894, -3.8894, ...-9.4118, -9.4118, -9.4118, -9.4118, -9.4118, -9.4118],
+        [-9.6228, -9.6228, -9.6228, -9.6228, -9.6228, -9.6228]])
+path = 'baseline/smooth/initial/u_e'
+
+    def walk(a, b, path):
+        nonlocal checked
+        if isinstance(b, torch.Tensor):
+>           torch.testing.assert_close(
+                a, b, rtol=0, atol=0, msg=lambda msg: f"{path}: {msg}"
+            )
+E           AssertionError: baseline/smooth/initial/u_e: Tensor-likes are not equal!
+E           
+E           Mismatched elements: 204 / 1116 (18.3%)
+E           Greatest absolute difference: 4.440892098500626e-15 at index (117, 0)
+E           Greatest relative difference: 7.036663749195448e-16 at index (117, 0)
+
+tools/check_baseline.py:173: AssertionError
+=============================== warnings summary ===============================
+tests/ocean/test_admissibility_investigation.py::test_stage_observer_delegates_exact_ssprk3_and_preserves_gradients
+  /tmp/polar-check/tests/ocean/test_admissibility_investigation.py:59: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+    dt=.1*float(a.carrier_rates(state)[2].min())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/ocean/test_reference.py::test_archive_capture - AssertionError: ...
+FAILED tests/test_dry_extraction.py::test_expanded_dry_baseline - AssertionEr...
+FAILED tests/test_extraction.py::test_checkpoint54_fixture_equivalence_without_runtime_autograd
+3 failed, 982 passed, 1 skipped, 1 warning in 231.01s (0:03:51)
