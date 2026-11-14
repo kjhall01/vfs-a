@@ -1,0 +1,728 @@
+{
+  "config": {
+    "cells": 1024,
+    "layers": 64,
+    "dtypes": [
+      "float64",
+      "float32"
+    ],
+    "cases": [
+      "dynamics",
+      "mixing",
+      "ale",
+      "forcing",
+      "full",
+      "full_ale"
+    ],
+    "compile": true,
+    "steps": 3,
+    "repeats": 3,
+    "dt": 60.0,
+    "device": "cpu",
+    "output": "verification/ocean/float32-audit/compiled1024.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "autograd": false,
+  "cases": {
+    "float64-dynamics": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        3.1365108040008636,
+        3.110103299997718,
+        2.627427972998703
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -1.0268829302128538e-11,
+          "native_energy_residual_J_kg": -1.0268829302128538e-11,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 1.965293249862909e-16,
+          "min_tke": 9.999999999999995e-05,
+          "min_salt": 34.50021869841837,
+          "min_tracer": 0.8312184409584501,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -1.0268829302128538e-11,
+          "native_energy_residual_J_kg": -1.0268829302128538e-11,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 0.0,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 9.999999999999992e-05,
+          "min_salt": 34.500218698418365,
+          "min_tracer": 0.8312184409584501,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -1.5403243953192807e-11,
+          "native_energy_residual_J_kg": -1.5403243953192807e-11,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": -1.965293249862909e-16,
+          "min_tke": 9.999999999999991e-05,
+          "min_salt": 34.50021869841837,
+          "min_tracer": 0.8312184409584502,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 3.110103299997718,
+      "sypd": 0.05285469509773397
+    },
+    "float64-mixing": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        8.811785377998604,
+        6.436136182001064,
+        7.955097590998776
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -5.134414651064269e-12,
+          "native_energy_residual_J_kg": -5.134414651064269e-12,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 0.0,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 2.122383535663611e-05,
+          "min_salt": 34.50022838600489,
+          "min_tracer": 0.833914426284065,
+          "local_budget_ratio": 3.2661701566852946e-07
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -5.134414651064269e-12,
+          "native_energy_residual_J_kg": -5.134414651064269e-12,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 0.0,
+          "tracer_residual_relative": 1.965293249862909e-16,
+          "min_tke": 1.2373604844834587e-08,
+          "min_salt": 34.500237091409765,
+          "min_tracer": 0.8362430957857038,
+          "local_budget_ratio": 3.1878881575213016e-07
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -1.0268829302128538e-11,
+          "native_energy_residual_J_kg": -1.0268829302128538e-11,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 0.0,
+          "tracer_residual_relative": 1.965293249862909e-16,
+          "min_tke": 1.3042680522269662e-12,
+          "min_salt": 34.500244999559726,
+          "min_tracer": 0.8382842960304889,
+          "local_budget_ratio": 2.6353936255920173e-07
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": 3.2661701566852946e-07,
+      "median_step_s": 7.955097590998776,
+      "sypd": 0.02066392772224897
+    },
+    "float64-ale": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        2.0956978180001897,
+        2.0178331740025897,
+        1.8528882570026326
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -5.134414651064269e-12,
+          "native_energy_residual_J_kg": -5.134414651064269e-12,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 9.999999999999907e-05,
+          "min_salt": 34.50022915926218,
+          "min_tracer": 0.8350582262914866,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -5.134414651064269e-12,
+          "native_energy_residual_J_kg": -5.134414651064269e-12,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 3.133798004799969e-16,
+          "salt_residual_relative": 1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 9.999999999999903e-05,
+          "min_salt": 34.50022915926218,
+          "min_tracer": 0.8479508228690517,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -5.134414651064269e-12,
+          "native_energy_residual_J_kg": -5.134414651064269e-12,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": 1.4366983906120415e-16,
+          "tracer_residual_relative": 1.965293249862909e-16,
+          "min_tke": 9.999999999999903e-05,
+          "min_salt": 34.50023068842504,
+          "min_tracer": 0.8479508228690517,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 2.0178331740025897,
+      "sypd": 0.08146538760573704
+    },
+    "float64-forcing": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        3.8376426249997166,
+        3.916109043999313,
+        3.992456674997811
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -9.946821764016575e-12,
+          "native_energy_residual_J_kg": -9.946821764016575e-12,
+          "external_energy_J_kg": 0.07446523673857876,
+          "mass_residual_relative": 1.8107827593873377e-16,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 1.965293249862909e-16,
+          "min_tke": 9.999997797454419e-05,
+          "min_salt": 34.50021109958794,
+          "min_tracer": 0.8312184409584501,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -1.3488787165822974e-11,
+          "native_energy_residual_J_kg": -1.3488787165822974e-11,
+          "external_energy_J_kg": 0.148930583901743,
+          "mass_residual_relative": 4.87767513974707e-17,
+          "salt_residual_relative": 0.0,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 9.999995594909835e-05,
+          "min_salt": 34.50020350076097,
+          "min_tracer": 0.83121844095845,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -1.1784294844774742e-11,
+          "native_energy_residual_J_kg": -1.1784294844774742e-11,
+          "external_energy_J_kg": 0.22339604148038222,
+          "mass_residual_relative": -8.352477256007702e-17,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": -1.965293249862909e-16,
+          "min_tke": 9.999993392366258e-05,
+          "min_salt": 34.500195901937445,
+          "min_tracer": 0.8312184409584498,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 3.916109043999313,
+      "sypd": 0.04197624728956972
+    },
+    "float64-full": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        9.708908769996924,
+        10.540262054000777,
+        10.975704471999052
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -9.946821764016575e-12,
+          "native_energy_residual_J_kg": -9.946821764016575e-12,
+          "external_energy_J_kg": 0.07446523673857876,
+          "mass_residual_relative": 1.8107827593873377e-16,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 2.1223765742145023e-05,
+          "min_salt": 34.50022124521186,
+          "min_tracer": 0.8339144262590005,
+          "local_budget_ratio": 3.4234709302527836e-07
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -1.997126378736454e-11,
+          "native_energy_residual_J_kg": -1.997126378736454e-11,
+          "external_energy_J_kg": 0.14893057829117584,
+          "mass_residual_relative": 4.87767513974707e-17,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 1.2369630441377712e-08,
+          "min_salt": 34.500223172600535,
+          "min_tracer": 0.8362430956812338,
+          "local_budget_ratio": 3.1786280180004756e-07
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -1.3301053079097927e-11,
+          "native_energy_residual_J_kg": -1.3301053079097927e-11,
+          "external_energy_J_kg": 0.22339602096991246,
+          "mass_residual_relative": -8.352477256007702e-17,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 1.3038615178891238e-12,
+          "min_salt": 34.50022462477794,
+          "min_tracer": 0.8382842957712098,
+          "local_budget_ratio": 2.821352364887619e-07
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": 3.4234709302527836e-07,
+      "median_step_s": 10.540262054000777,
+      "sypd": 0.015595775589036744
+    },
+    "float64-full_ale": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        11.544119128000602,
+        13.48611027899824,
+        12.569872453001153
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -4.812407112952307e-12,
+          "native_energy_residual_J_kg": -4.812407112952307e-12,
+          "external_energy_J_kg": 0.07446523673857876,
+          "mass_residual_relative": 2.438837569873535e-17,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 2.1593962603344617e-05,
+          "min_salt": 34.50023213331084,
+          "min_tracer": 0.8373774651050186,
+          "local_budget_ratio": 3.4234709302527836e-07
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -1.6254931905947318e-11,
+          "native_energy_residual_J_kg": -1.6254931905947318e-11,
+          "external_energy_J_kg": 0.14893057365621748,
+          "mass_residual_relative": 2.0546665163746913e-16,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 3.71484747462018e-08,
+          "min_salt": 34.500234491856105,
+          "min_tracer": 0.8394094245691825,
+          "local_budget_ratio": 2.535396844581031e-07
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -1.479481707056089e-11,
+          "native_energy_residual_J_kg": -1.479481707056089e-11,
+          "external_energy_J_kg": 0.22339601149327679,
+          "mass_residual_relative": 7.316512767992141e-17,
+          "salt_residual_relative": -1.4366983906120415e-16,
+          "tracer_residual_relative": 0.0,
+          "min_tke": 3.842918061494789e-12,
+          "min_salt": 34.50023635261816,
+          "min_tracer": 0.8412119923978199,
+          "local_budget_ratio": 2.7135824848223466e-07
+        }
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935267195773286e+24,
+        "mass": 5.228160837075329e+19,
+        "salt": 1.8246279226938174e+21,
+        "tracer": 8.336669350053934e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50021869841838,
+        "min_tracer": 0.8312184409584502,
+        "temperature_min": 10.000000000000083,
+        "temperature_max": 14.9978130158162
+      },
+      "first_step_local_budget_ratio": 3.4234709302527836e-07,
+      "median_step_s": 12.569872453001153,
+      "sypd": 0.013077583902180947
+    },
+    "float32-dynamics": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        1.5676376100018388,
+        1.7780004489977728,
+        1.8448148290008248
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": 0.0010888579066920278,
+          "native_energy_residual_J_kg": 0.00275651787316751,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 3.263955819885455e-08,
+          "salt_residual_relative": 2.2253046631813088e-08,
+          "tracer_residual_relative": 1.0736180830501925e-08,
+          "min_tke": 9.999995893772986e-05,
+          "min_salt": 34.50020997069002,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": 0.0013925818996780718,
+          "native_energy_residual_J_kg": 0.00275651787316751,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 4.710285044865593e-08,
+          "salt_residual_relative": 3.9466889468185245e-08,
+          "tracer_residual_relative": 1.869674892078866e-08,
+          "min_tke": 9.999993740859113e-05,
+          "min_salt": 34.50020549194275,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": 0.0014825799682109996,
+          "native_energy_residual_J_kg": 0.00275651787316751,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 5.464232171672296e-08,
+          "salt_residual_relative": 5.162698624802385e-08,
+          "tracer_residual_relative": 2.5357905993726226e-08,
+          "min_tke": 9.999991978606115e-05,
+          "min_salt": 34.500200707223335,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 1.7780004489977728,
+      "sypd": 0.09245417330265339
+    },
+    "float32-mixing": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 190.30198669433594,
+        "max_abs_residual_J_kg": 3.806044368559469e-11,
+        "max_tolerance_J_kg": 2.2300160307762995e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 63, in advance\n    s,k,r=model.closure.apply(model.ocean,state.ocean,state.tke_h,dt)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    },
+    "float32-ale": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        0.9039850909975939,
+        0.9141732129974116,
+        0.9198431479999272
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -0.0010221269823718843,
+          "native_energy_residual_J_kg": 0.0,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": -1.5727145044804352e-09,
+          "tracer_residual_relative": 9.221721923156831e-10,
+          "min_tke": 9.99992247670889e-05,
+          "min_salt": 34.500224609375,
+          "min_tracer": 0.8350581359863282,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -0.002985872375611833,
+          "native_energy_residual_J_kg": 0.0,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": -1.1920929991123025e-09,
+          "salt_residual_relative": -5.110290712237536e-08,
+          "tracer_residual_relative": -5.048749994026844e-08,
+          "min_tke": 9.999941841679491e-05,
+          "min_salt": 34.500224609375,
+          "min_tracer": 0.8479507446289063,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -0.003254614579871452,
+          "native_energy_residual_J_kg": -0.00275651787316751,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": -7.305889984024857e-08,
+          "tracer_residual_relative": -7.12095244310198e-08,
+          "min_tke": 9.999941103160382e-05,
+          "min_salt": 34.50022705078125,
+          "min_tracer": 0.8479507446289063,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.9141732129974116,
+      "sypd": 0.17981664667776812
+    },
+    "float32-forcing": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        2.5855865249977796,
+        2.1102414919987496,
+        2.061320942997554
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": 0.0011841713542216975,
+          "native_energy_residual_J_kg": 0.0027172634832014096,
+          "external_energy_J_kg": 0.07446523696548887,
+          "mass_residual_relative": 3.20969148460345e-08,
+          "salt_residual_relative": 2.2253046631813088e-08,
+          "tracer_residual_relative": 1.0736180830501925e-08,
+          "min_tke": 9.999994810912574e-05,
+          "min_salt": 34.50020379504502,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": 0.0023300543501361608,
+          "native_energy_residual_J_kg": 0.005434416503191271,
+          "external_energy_J_kg": 0.1489305843941893,
+          "mass_residual_relative": 4.620742332802167e-08,
+          "salt_residual_relative": 3.950718742129595e-08,
+          "tracer_residual_relative": 1.877653491341643e-08,
+          "min_tke": 9.999992884804029e-05,
+          "min_salt": 34.50019740302018,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": 0.003542799722549997,
+          "native_energy_residual_J_kg": 0.0026384233518858195,
+          "external_energy_J_kg": 0.22339604224785004,
+          "mass_residual_relative": 5.348018654459461e-08,
+          "salt_residual_relative": 5.1805023061737046e-08,
+          "tracer_residual_relative": 2.5567362034844175e-08,
+          "min_tke": 9.999989815616633e-05,
+          "min_salt": 34.500191396225354,
+          "min_tracer": 0.8312184054880593,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 2.1102414919987496,
+      "sypd": 0.07789798573628512
+    },
+    "float32-full": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 160.2987060546875,
+        "max_abs_residual_J_kg": 3.20993405467096e-11,
+        "max_tolerance_J_kg": 2.2300188768070023e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 70, in advance\n    end,r=model.step_with_report(state,dt,**forcing);local=None if r.turbulence is None else float(r.turbulence.budget_error)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/system.py\", line 55, in step_with_report\n    s,k,mixing=self.closure.apply(self.ocean,end.ocean,end.tke_h,dt)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    },
+    "float32-full_ale": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935267218512467e+24,
+        "mass": 5.228160843022336e+19,
+        "salt": 1.8246279248476903e+21,
+        "tracer": 8.33666935878311e+19,
+        "min_tke": 9.999999063284343e-05,
+        "min_salt": 34.500216370110586,
+        "min_tracer": 0.8312184054880593,
+        "temperature_min": 9.999999106389005,
+        "temperature_max": 14.997813538231867
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 160.2987060546875,
+        "max_abs_residual_J_kg": 3.20993405467096e-11,
+        "max_tolerance_J_kg": 2.2300188768070023e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 70, in advance\n    end,r=model.step_with_report(state,dt,**forcing);local=None if r.turbulence is None else float(r.turbulence.budget_error)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/system.py\", line 55, in step_with_report\n    s,k,mixing=self.closure.apply(self.ocean,end.ocean,end.tke_h,dt)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    }
+  }
+}

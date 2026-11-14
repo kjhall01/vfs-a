@@ -1,0 +1,297 @@
+{
+  "config": {
+    "cells": 128,
+    "layers": 16,
+    "dtypes": [
+      "float64",
+      "float32"
+    ],
+    "cases": [
+      "dynamics",
+      "ale",
+      "forcing"
+    ],
+    "compile": true,
+    "steps": 120,
+    "repeats": 1,
+    "dt": 60.0,
+    "device": "cpu",
+    "output": "verification/ocean/float32-audit/two-hour128.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "autograd": false,
+  "cases": {
+    "float64-dynamics": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.09299913100039703
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935014509991512e+24,
+        "mass": 5.22816083707533e+19,
+        "salt": 1.8246285562758153e+21,
+        "tracer": 8.342006356816619e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50048799068809,
+        "min_tracer": 0.8975153583241544,
+        "temperature_min": 10.000000000000185,
+        "temperature_max": 14.995120093119057
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.09299913100039703,
+      "sypd": 1.7675816953938401,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": -3.1319929371492035e-10,
+        "native_energy_residual_J_kg": -3.1319929371492035e-10,
+        "external_energy_J_kg": 0.0,
+        "mass_residual_relative": -7.991184912239919e-15,
+        "salt_residual_relative": -8.045508193713113e-15,
+        "tracer_residual_relative": -6.677722075155279e-15,
+        "min_tke": 9.999999999999944e-05,
+        "min_salt": 34.50048799068812,
+        "min_tracer": 0.8975153583241515,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 3.1319929371492035e-10,
+        "mass_residual_relative": 7.991184912239919e-15,
+        "salt_residual_relative": 8.045508193713113e-15,
+        "tracer_residual_relative": 6.677722075155279e-15
+      }
+    },
+    "float64-ale": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.06666954600223107
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935014509991512e+24,
+        "mass": 5.22816083707533e+19,
+        "salt": 1.8246285562758153e+21,
+        "tracer": 8.342006356816619e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50048799068809,
+        "min_tracer": 0.8975153583241544,
+        "temperature_min": 10.000000000000185,
+        "temperature_max": 14.995120093119057
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.06666954600223107,
+      "sypd": 2.46564693328397,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": -5.134414651064268e-12,
+        "native_energy_residual_J_kg": -5.134414651064268e-12,
+        "external_energy_J_kg": 0.0,
+        "mass_residual_relative": 1.5668990023999841e-16,
+        "salt_residual_relative": -4.884772831897247e-15,
+        "tracer_residual_relative": -4.5172825802521005e-15,
+        "min_tke": 9.99999999999857e-05,
+        "min_salt": 34.55539024869166,
+        "min_tracer": 1.262178388921176,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 1.0268829302128536e-11,
+        "mass_residual_relative": 1.5668990023999841e-16,
+        "salt_residual_relative": 4.884772831897247e-15,
+        "tracer_residual_relative": 4.5172825802521005e-15
+      }
+    },
+    "float64-forcing": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.13459436099947197
+      ],
+      "state_dtype": "torch.float64",
+      "mesh_float_dtypes": [
+        "torch.float64"
+      ],
+      "initial": {
+        "energy": 2.2935014509991512e+24,
+        "mass": 5.22816083707533e+19,
+        "salt": 1.8246285562758153e+21,
+        "tracer": 8.342006356816619e+19,
+        "min_tke": 9.999999999999999e-05,
+        "min_salt": 34.50048799068809,
+        "min_tracer": 0.8975153583241544,
+        "temperature_min": 10.000000000000185,
+        "temperature_max": 14.995120093119057
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.13459436099947197,
+      "sypd": 1.221325770434621,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": -3.033077736925697e-10,
+        "native_energy_residual_J_kg": -3.033077736925697e-10,
+        "external_energy_J_kg": 8.936011683524843,
+        "mass_residual_relative": -8.198376931935121e-15,
+        "salt_residual_relative": -8.045508193713113e-15,
+        "tracer_residual_relative": -7.070529256046766e-15,
+        "min_tke": 9.999934285221355e-05,
+        "min_salt": 34.500261271495,
+        "min_tracer": 0.897515358324152,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 3.033077736925697e-10,
+        "mass_residual_relative": 8.198376931935121e-15,
+        "salt_residual_relative": 8.045508193713113e-15,
+        "tracer_residual_relative": 7.070529256046766e-15
+      }
+    },
+    "float32-dynamics": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.06876067000121111
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935014428153138e+24,
+        "mass": 5.22816082018304e+19,
+        "salt": 1.8246285506009246e+21,
+        "tracer": 8.342006323598628e+19,
+        "min_tke": 9.999999102678227e-05,
+        "min_salt": 34.500488586776534,
+        "min_tracer": 0.897515391904608,
+        "temperature_min": 9.999999127802896,
+        "temperature_max": 14.995121395012832
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.06876067000121111,
+      "sypd": 2.3906625930337833,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": 0.015961525879015444,
+        "native_energy_residual_J_kg": 0.01653910731125639,
+        "external_energy_J_kg": 0.0,
+        "mass_residual_relative": 8.337441307977576e-07,
+        "salt_residual_relative": 4.4728995514334383e-07,
+        "tracer_residual_relative": 2.2083068512416478e-07,
+        "min_tke": 9.999733361271165e-05,
+        "min_salt": 34.5003539260506,
+        "min_tracer": 0.897515391904608,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 0.015961525879015444,
+        "mass_residual_relative": 8.337441307977576e-07,
+        "salt_residual_relative": 4.4728995514334383e-07,
+        "tracer_residual_relative": 2.2083068512416478e-07
+      }
+    },
+    "float32-ale": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.054760504001023946
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935014428153138e+24,
+        "mass": 5.22816082018304e+19,
+        "salt": 1.8246285506009246e+21,
+        "tracer": 8.342006323598628e+19,
+        "min_tke": 9.999999102678227e-05,
+        "min_salt": 34.500488586776534,
+        "min_tracer": 0.897515391904608,
+        "temperature_min": 9.999999127802896,
+        "temperature_max": 14.995121395012832
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.054760504001023946,
+      "sypd": 3.001863562847447,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": 0.007729995588171465,
+        "native_energy_residual_J_kg": 0.008269553655628195,
+        "external_energy_J_kg": 0.0,
+        "mass_residual_relative": -1.5668990074626654e-16,
+        "salt_residual_relative": -4.265651203454525e-07,
+        "tracer_residual_relative": -4.0282409949437514e-09,
+        "min_tke": 9.99998900076279e-05,
+        "min_salt": 34.555439453125,
+        "min_tracer": 1.26218017578125,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 0.007737839171604091,
+        "mass_residual_relative": 1.5668990074626654e-16,
+        "salt_residual_relative": 4.265651203454525e-07,
+        "tracer_residual_relative": 6.625380898210315e-08
+      }
+    },
+    "float32-forcing": {
+      "status": "completed",
+      "completed_steps": 120,
+      "samples_s": [
+        0.12024545600070269
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2935014428153138e+24,
+        "mass": 5.22816082018304e+19,
+        "salt": 1.8246285506009246e+21,
+        "tracer": 8.342006323598628e+19,
+        "min_tke": 9.999999102678227e-05,
+        "min_salt": 34.500488586776534,
+        "min_tracer": 0.897515391904608,
+        "temperature_min": 9.999999127802896,
+        "temperature_max": 14.995121395012832
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.12024545600070269,
+      "sypd": 1.3670667242750112,
+      "final": {
+        "step": 120,
+        "energy_residual_J_kg": 0.10329471792130138,
+        "native_energy_residual_J_kg": 0.10812339699772278,
+        "external_energy_J_kg": 8.936011784374314,
+        "mass_residual_relative": 1.1279436143857437e-06,
+        "salt_residual_relative": 6.002495605082401e-07,
+        "tracer_residual_relative": 3.2321337740632103e-07,
+        "min_tke": 9.999733361271165e-05,
+        "min_salt": 34.50010560592717,
+        "min_tracer": 0.897515391904608,
+        "local_budget_ratio": null
+      },
+      "max_abs_conservation": {
+        "energy_residual_J_kg": 0.10329471792130138,
+        "mass_residual_relative": 1.1279436143857437e-06,
+        "salt_residual_relative": 6.002495605082401e-07,
+        "tracer_residual_relative": 3.2321337740632103e-07
+      }
+    }
+  },
+  "raw_artifact": {
+    "path": "two-hour128.json",
+    "bytes": 400855,
+    "sha256": "028c22ee39fffc58b5f687fb5ed22bbe8f4914ec37efd25bd5a5bcfc122027f7",
+    "uploaded": false,
+    "reason": "Full per-step trajectory retained locally; aggregate summary published, whole raw file omitted."
+  }
+}

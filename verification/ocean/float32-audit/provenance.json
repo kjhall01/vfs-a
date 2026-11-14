@@ -1,0 +1,38 @@
+{
+  "parent_commit": "db51f522250eb06c60159750bf5d04f2384c8220",
+  "wheel_sha256": "8b235312dcb02ec412cc8023d996daefdef3a9f9ce49b52695f4ec8cb3c0e090",
+  "dtype_policy": "No production numerical/tolerance changes; geometry cast before model construction; no_grad; compiled thermo except initial 32x8 probe",
+  "audit": "Eager float64 evaluation of represented prognostic contents and rounded candidate geometry; prescribed report arrays reduced in float64; freshwater flux independent",
+  "timing": "Two warmup calls, then fixed-input repeats; diagnostic oracle outside timer. Per-report external-work ledger reductions remain in timer. Timing cases sequential; no overlapping tests.",
+  "artifacts": {
+    "probe32.json": {
+      "bytes": 15567,
+      "sha256": "109c867700217e462581ca91d60c4ce2ad59d211ca19b5466ac151256cd1fec6"
+    },
+    "compiled128.json": {
+      "bytes": 65235,
+      "sha256": "9e345adfc2ff5939cbb04fa568b234364b6491a9d4818b1e8bb48f464a8bf985"
+    },
+    "compiled1024.json": {
+      "bytes": 30730,
+      "sha256": "5b7c41ddb169f36e95b6e0bd89fdbf8aceed75ffa0827f184dfe1b0a6e990794"
+    },
+    "two-hour-summary.json": {
+      "bytes": 10200,
+      "sha256": "997ff4a78087a2adb16c453e9416b349a9e9a57c5fa3f6fc127c3f2de4bdaf4f"
+    }
+  },
+  "sources": {
+    "validation/temperature_coordinate/precision_campaign.py": "a307c4d001996e3fa19953ed1b6a8380148ea748dcf2196cb657c7da5b8b2a8c",
+    "tests/ocean/test_precision_campaign.py": "9406cc62ac099d959f837ee9977dbcd323fdd7d26f58a1f42ad2a10e43cda1ce"
+  },
+  "omitted": [
+    {
+      "path": "two-hour128.json",
+      "bytes": 400855,
+      "sha256": "028c22ee39fffc58b5f687fb5ed22bbe8f4914ec37efd25bd5a5bcfc122027f7",
+      "uploaded": false,
+      "reason": "Full per-step trajectory retained locally; aggregate summary published, whole raw file omitted."
+    }
+  ]
+}

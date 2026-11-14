@@ -1,0 +1,313 @@
+{
+  "config": {
+    "cells": 32,
+    "layers": 8,
+    "dtypes": [
+      "float32"
+    ],
+    "cases": [
+      "dynamics",
+      "mixing",
+      "ale",
+      "forcing",
+      "full",
+      "full_ale"
+    ],
+    "compile": false,
+    "steps": 3,
+    "repeats": 1,
+    "dt": 60.0,
+    "device": "cpu",
+    "output": "verification/ocean/float32-audit/probe32.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "autograd": false,
+  "cases": {
+    "float32-dynamics": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        0.04883799100207398
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": 0.0009900653664651874,
+          "native_energy_residual_J_kg": 0.0,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 2.8541430371045365e-08,
+          "salt_residual_relative": 2.1725177659931837e-08,
+          "tracer_residual_relative": 1.2871886256987278e-08,
+          "min_tke": 9.999997573350319e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": 0.001286693673418562,
+          "native_energy_residual_J_kg": 0.002756517902209711,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 3.952643290204757e-08,
+          "salt_residual_relative": 3.7661108694059376e-08,
+          "tracer_residual_relative": 2.2778428245382386e-08,
+          "min_tke": 9.999995325260954e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": 0.0014325355574405876,
+          "native_energy_residual_J_kg": 0.002756517902209711,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 4.490762479517006e-08,
+          "salt_residual_relative": 4.510680059293249e-08,
+          "tracer_residual_relative": 2.9363014888588424e-08,
+          "min_tke": 9.999993826535273e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.04883799100207398,
+      "sypd": 3.3658952440704373
+    },
+    "float32-mixing": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 120.43614196777344,
+        "max_abs_residual_J_kg": 2.4118436414699573e-11,
+        "max_tolerance_J_kg": 2.122269238602134e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 63, in advance\n    s,k,r=model.closure.apply(model.ocean,state.ocean,state.tke_h,dt)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    },
+    "float32-ale": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        0.06228073899910669
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": -0.0012132196958986635,
+          "native_energy_residual_J_kg": 0.002756517902209711,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": -2.4267494249350994e-09,
+          "salt_residual_relative": -5.482763279127937e-11,
+          "tracer_residual_relative": 5.208555811086653e-09,
+          "min_tke": 9.99999528825319e-05,
+          "min_salt": 34.50206768020114,
+          "min_tracer": 1.0167670440673828,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": -0.0017077265483186558,
+          "native_energy_residual_J_kg": 0.002756517902209711,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": -1.2418508144312537e-08,
+          "salt_residual_relative": -1.2354393161862865e-08,
+          "tracer_residual_relative": -9.07055239919327e-10,
+          "min_tke": 9.999994637334807e-05,
+          "min_salt": 34.50206768020114,
+          "min_tracer": 1.123594970703125,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": -0.001817867188520367,
+          "native_energy_residual_J_kg": 0.0,
+          "external_energy_J_kg": 0.0,
+          "mass_residual_relative": 0.0,
+          "salt_residual_relative": -1.032701899933942e-08,
+          "tracer_residual_relative": -4.880607645731923e-09,
+          "min_tke": 9.999994188547134e-05,
+          "min_salt": 34.51257568359375,
+          "min_tracer": 1.123594970703125,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.06228073899910669,
+      "sypd": 2.6393964536322123
+    },
+    "float32-forcing": {
+      "status": "completed",
+      "completed_steps": 3,
+      "samples_s": [
+        0.0916839740020805
+      ],
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_residual_J_kg": 0.0011644411749162386,
+          "native_energy_residual_J_kg": 0.0027173598007967916,
+          "external_energy_J_kg": 0.07446514146107512,
+          "mass_residual_relative": 2.561460117669061e-08,
+          "salt_residual_relative": 2.1725177659931837e-08,
+          "tracer_residual_relative": 1.2871886256987278e-08,
+          "min_tke": 9.999997573350319e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 2,
+          "energy_residual_J_kg": 0.0025218900575037753,
+          "native_energy_residual_J_kg": 0.00543470600738887,
+          "external_energy_J_kg": 0.14893029651635495,
+          "mass_residual_relative": 3.367277451333806e-08,
+          "salt_residual_relative": 3.845609227217568e-08,
+          "tracer_residual_relative": 2.296280783793035e-08,
+          "min_tke": 9.999995325260954e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        },
+        {
+          "step": 3,
+          "energy_residual_J_kg": 0.003730333733873726,
+          "native_energy_residual_J_kg": 0.0053955207424827055,
+          "external_energy_J_kg": 0.22339546514092332,
+          "mass_residual_relative": 3.613488208056764e-08,
+          "salt_residual_relative": 4.747168693201996e-08,
+          "tracer_residual_relative": 3.0614297504052926e-08,
+          "min_tke": 9.999993826535273e-05,
+          "min_salt": 34.5014551302452,
+          "min_tracer": 0.9886058203270868,
+          "local_budget_ratio": null
+        }
+      ],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "first_step_local_budget_ratio": null,
+      "median_step_s": 0.0916839740020805,
+      "sypd": 1.7929366984038606
+    },
+    "float32-full": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 125.99715423583984,
+        "max_abs_residual_J_kg": 2.519943455292495e-11,
+        "max_tolerance_J_kg": 2.1222715425317507e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 70, in advance\n    end,r=model.step_with_report(state,dt,**forcing);local=None if r.turbulence is None else float(r.turbulence.budget_error)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/system.py\", line 55, in step_with_report\n    s,k,mixing=self.closure.apply(self.ocean,end.ocean,end.tke_h,dt)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    },
+    "float32-full_ale": {
+      "status": "rejected",
+      "completed_steps": 0,
+      "samples_s": [],
+      "trajectory": [],
+      "state_dtype": "torch.float32",
+      "mesh_float_dtypes": [
+        "torch.float32"
+      ],
+      "initial": {
+        "energy": 2.2962801018906175e+24,
+        "mass": 5.228160787939328e+19,
+        "salt": 1.8245589397015023e+21,
+        "tracer": 8.359164063121844e+19,
+        "min_tke": 9.999999289383779e-05,
+        "min_salt": 34.5014551302452,
+        "min_tracer": 0.9886058203270868,
+        "temperature_min": 9.999999265547102,
+        "temperature_max": 14.985438121512829
+      },
+      "failure_local_budget": {
+        "normalized_ratio": 125.99715423583984,
+        "max_abs_residual_J_kg": 2.519943455292495e-11,
+        "max_tolerance_J_kg": 2.1222715425317507e-13
+      },
+      "error": "lagged local budget failed",
+      "error_type": "FloatingPointError",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 111, in main\n    end,external,water,local=advance(model,initial,forcing,case,a.dt)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/precision_campaign.py\", line 70, in advance\n    end,r=model.step_with_report(state,dt,**forcing);local=None if r.turbulence is None else float(r.turbulence.budget_error)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/system.py\", line 55, in step_with_report\n    s,k,mixing=self.closure.apply(self.ocean,end.ocean,end.tke_h,dt)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 265, in apply\n    state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/temperature_coordinate/physics.py\", line 54, in _apply\n    return super()._apply(ocean,state,tke_h,dt,physical=state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/c54520a742cf/vfs-a/validation/ocean_column/lagged.py\", line 232, in _apply\n    if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')\n                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFloatingPointError: lagged local budget failed\n"
+    }
+  }
+}
