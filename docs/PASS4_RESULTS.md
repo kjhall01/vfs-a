@@ -684,3 +684,21 @@ corrected-Gibbs and dry portable comparisons pass. Default captures match exactl
 L2 differences reach 3.16e-15 in these short tests; limiter reports can differ.
 Thirteen new focused checks and three warm CLI smoke cases pass. Inference
 geometry without mutation counters retains ordinary uncached indexing.
+
+## Cheaper ocean energy evaluation
+
+The opt-in quadrature campaign exposes orders 2 and 3 in `StratifiedOcean`, with
+order 4 unchanged by default. The EOS is unchanged; lower order defines a different
+discrete Hamiltonian whose derivatives and mixing/remap operations remain matched.
+Against order 12 on 100–6000 m states, maximum pressure-force relative L2 differences
+are 6.58e-6 (order 2), 1.35e-9 (3), and 1.11e-12 (4). Order 8 checks convergence.
+See [source, timings and limits](../verification/ocean/ENERGY_QUADRATURE.md).
+A pure surface-Gibbs kernel enables isolated compilation experiments beneath
+unchanged public guards; no compiled backend is enabled by default.
+
+Final per-model compiled full-step samples (1024×64, dt60, four mixing substeps,
+one CPU thread) improve eager q4 61.25 s to 18.70 s with q4 or 14.83 s with q2.
+These are short samples beyond #72, not Mac or long-run qualification. Final
+installed-wheel suite: 1084 passed, one CUDA skip; both portable fixtures and
+three compiled CLI smoke cases pass. Defaults remain eager q4. Compact evidence
+and source/wheel hashes are retained; oversized tensor captures are omitted.

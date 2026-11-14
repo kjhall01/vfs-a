@@ -84,6 +84,7 @@ class JMD95Energy:
         self.T0, self.S0 = float(T0), float(S0)
         self.domain = domain
         self.quadrature_order = quadrature_order
+        self._partials = jmd95_partials
         nodes, weights = np.polynomial.legendre.leggauss(quadrature_order)
         self.nodes, self.weights = (nodes+1)/2, weights/2
         self.mechanical = ConstantDensityEnergy(gravity=gravity, rho0=rho0, domain=domain)
@@ -98,7 +99,7 @@ class JMD95Energy:
 
     def density(self, state):
         pressure = -self.rho0*self.gravity*self.height(state)/1e4
-        return jmd95_partials(state.salinity(), state.temperature(), pressure)[0]
+        return self._partials(state.salinity(), state.temperature(), pressure)[0]
 
     def parcel_potential(self, temperature, salinity, z):
         """Psi and (Psi_T,Psi_S,Psi_z), m²/s² and corresponding partials.
@@ -110,8 +111,8 @@ class JMD95Energy:
         node, weight = self._quadrature(z)
         x = z[..., None]*node
         pressure = -self.rho0*self.gravity*x/1e4
-        rho, rt, rs, rp = jmd95_partials(salinity[..., None], temperature[..., None], pressure)
-        ref, _, _, refp = jmd95_partials(torch.full_like(salinity[..., None], self.S0),
+        rho, rt, rs, rp = self._partials(salinity[..., None], temperature[..., None], pressure)
+        ref, _, _, refp = self._partials(torch.full_like(salinity[..., None], self.S0),
                                         torch.full_like(temperature[..., None], self.T0), pressure)
         f = self.gravity/self.rho0*(rho-ref)
         fz = -self.gravity**2/1e4*(rp-refp)

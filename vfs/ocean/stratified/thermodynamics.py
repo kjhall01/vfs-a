@@ -48,6 +48,11 @@ class SurfaceGibbs:
             raise ValueError('temperature outside the surface-reference domain')
         if entropy_derivatives and (sp <= 0).any():
             raise ValueError('chemical/entropy salinity derivative requires positive salinity')
+        return self._values(sp, t, entropy_derivatives=entropy_derivatives)
+
+    def _values(self, sp, t, *, entropy_derivatives=False):
+        """Pure tensor kernel; public evaluate retains all input/domain checks."""
+        d = self.data
         sa = d['ups']*sp
         y = (t-d['temperature_midpoint'])/d['temperature_halfspan']
         g, gt, gtt = polynomial(y, d['pure_power_coefficients'])

@@ -12,6 +12,7 @@ import torch
 from ..model import Ocean
 from ..transport import HorizontalTransport
 from ..jmd95 import JMD95Dynamics
+from ..jmd95_energy import JMD95Energy
 from .thermodynamics import SurfaceGibbs
 from .equations import EntropyState, EntropyEnergy, validate
 from . import transport
@@ -31,9 +32,13 @@ class StratifiedOcean:
     No forcing, mixing, wetting/drying or implicit timestep. Salt must satisfy
     0 < SP < 42; temperature must lie strictly inside the fitted reference domain.
     Geometry is borrowed, states own tensors, and conversion is explicit.
+    quadrature_order selects each of the two nested energy quadratures (default
+    four, sixteen locations per layer). Lower order defines a different discrete
+    energy; forces and diabatic corrections use that same selected energy.
     """
-    def __init__(self, mesh, column, *, domain=None, remapper=None, warm_start=False):
-        dynamics = JMD95Dynamics(domain=domain, gravity=column.gravity, rho0=column.rho0)
+    def __init__(self, mesh, column, *, domain=None, remapper=None, warm_start=False, quadrature_order=4):
+        dynamics = JMD95Dynamics(domain=domain, gravity=column.gravity, rho0=column.rho0,
+                                 quadrature_order=quadrature_order)
         self.base = Ocean(mesh, column, domain=domain, dynamics=dynamics)
         self.mesh, self.column, self.domain = mesh, column, domain
         data = json.loads(files(__package__).joinpath('surface-gibbs-reference.json').read_text())
@@ -46,6 +51,26 @@ class StratifiedOcean:
         self.base._stratified_transport = HorizontalTransport(mesh, domain=domain,
             scheme='donor', min_thickness=dynamics.min_thickness)
         self.base._stratified_transport.prepare(column.n_layers)
+
+    def compile_thermodynamics(self, *, backend='inductor'):
+        """Opt-in per-model tensor-kernel compilation; all public guards remain.
+
+        Compilation is lazy: warm up before timing. CPU forward behavior has
+        limited qualification; accelerator and full-model backward performance
+        are not established. Returns self for explicit model construction.
+        """
+        if type(self.energy.base) is not JMD95Energy or type(self.reference) is not SurfaceGibbs:
+            raise TypeError('compilation requires the unmodified JMD95/SurfaceGibbs kernels')
+        options = dict(backend=backend, fullgraph=True, dynamic=True)
+        previous = getattr(self.reference, '_compile_options', None)
+        if previous is not None:
+            if previous != options:
+                raise ValueError('thermodynamics already compiled with another backend; rebuild the model')
+            return self
+        self.energy.base._partials = torch.compile(self.energy.base._partials, **options)
+        self.reference._values = torch.compile(self.reference._values, **options)
+        self.reference._compile_options = options
+        return self
 
     def check_state(self, state, *, _physical=None):
         if not isinstance(state, EntropyState):

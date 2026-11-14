@@ -140,3 +140,23 @@ For example, compare separate output directories with and without this flag:
 python -I validation/performance/run.py --sizes 1024x64 --threads 1 \
   --cases ocean full full_ale --dt 60 --warm-start --output perf-warm
 ```
+
+### Energy quadrature experiments
+
+`--energy-quadrature 2` selects four EOS locations per layer instead of the
+sixteen used by default (`4`). It changes the discrete Hamiltonian; operators,
+mixing and remap corrections use the same selected energy. Order `3` uses nine
+locations. The option applies to ocean cases and does not change atmosphere
+calculations. See `verification/ocean/ENERGY_QUADRATURE.md` for accuracy limits.
+The corresponding model constructor option is `quadrature_order=2`.
+
+The isolated `field_reuse.py` harness additionally accepts `--compile-thermo`
+and `--compile-gibbs` for research kernel-fusion experiments. The combined flags use per-model compilation; individual flags isolate kernels
+for research comparisons. Checks are retained. Compilation warm-up is excluded
+from step timings; compiled outputs may differ at roundoff.
+
+The main runner accepts `--compile-thermodynamics` to select the combined path.
+For direct use, call `ocean.compile_thermodynamics()` once after constructing the
+model. This returns the same model, leaves other model instances unchanged, and
+compiles lazily on first use. CPU forward qualification is limited; no Mac/MPS,
+GPU or full-model backward performance claim is made.

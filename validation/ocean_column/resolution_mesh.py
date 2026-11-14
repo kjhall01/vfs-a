@@ -12,9 +12,10 @@ from vfs.ocean.stratified import StratifiedOcean,TKEOcean
 from lagged import SubcycledLaggedClosure
 from consistent import ConsistentPathClosure
 
-def setup(cells,layers,patch=False):
+def setup(cells,layers,patch=False,quadrature_order=4):
     mesh=VoronoiMesh(n_cells=cells,lloyd_iters=0,rotation_scheme='compatible')
-    ocean=StratifiedOcean(mesh,OceanColumn(layers,total_depth=100.))
+    options={} if quadrature_order==4 else {'quadrature_order':quadrature_order}
+    ocean=StratifiedOcean(mesh,OceanColumn(layers,total_depth=100.),**options)
     r=torch.linspace(0,1,layers+1,dtype=torch.float64)[None]
     interfaces=100*(r+.15*mesh.cell_xyz[:,:1]*torch.sin(2*torch.pi*r)/(2*torch.pi))
     h=interfaces[:,1:]-interfaces[:,:-1];z=(interfaces[:,1:]+interfaces[:,:-1])/2
