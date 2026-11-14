@@ -39,6 +39,69 @@ class EddyReport:
     redi_local_energy_residual: torch.Tensor
 
 
+class _RediGradient:
+    """R = horizontal difference + relative slope * edge average * D_z.
+
+    Values have shape (cell, layer, field). The transpose reverses these
+    operations exactly; no edge x layer x stencil x field tensor is formed.
+    Absolute weights retain the original uncoalesced explicit-step bound.
+    """
+
+    def __init__(self, metrics, relative):
+        z, self.ids, self.weights, self.i, self.j, self.dc, _, _, _ = metrics
+        self.shape = z.shape
+        self.relative = relative
+
+    def vertical(self, values):
+        flat = values.reshape(-1, values.shape[-1])
+        result = torch.zeros_like(values)
+        for k in range(3):
+            result = result + self.weights[..., k, None] * flat[self.ids[..., k]]
+        return result
+
+    def apply(self, values):
+        dz = self.vertical(values)
+        return (values[self.j] - values[self.i]) / self.dc[
+            ..., None
+        ] + 0.5 * self.relative[..., None] * (dz[self.i] + dz[self.j])
+
+    def transpose(self, flux, *, absolute=False):
+        # Horizontal difference transpose uses the existing conservative ledger.
+        horizontal = flux / self.dc[..., None]
+        if absolute:
+            result = flux.new_zeros((*self.shape, flux.shape[-1]))
+            result = result.index_add(0, self.i, horizontal).index_add(
+                0, self.j, horizontal
+            )
+        else:
+            result = divergence(self.i, self.j, horizontal, self.shape[0])
+        slope = self.relative.abs() if absolute else self.relative
+        contribution = 0.5 * slope[..., None] * flux
+        column = (
+            torch.zeros_like(result)
+            .index_add(0, self.i, contribution)
+            .index_add(0, self.j, contribution)
+        )
+        weights = self.weights.abs() if absolute else self.weights
+        flat = result.reshape(-1, flux.shape[-1])
+        for k in range(3):
+            flat = flat.index_add(
+                0,
+                self.ids[..., k].flatten(),
+                (weights[..., k, None] * column).reshape_as(flat),
+            )
+        return flat.reshape_as(result)
+
+    def step_bound(self, measure):
+        # |R|^T M |R| 1, using the same eight entries as the original stencil,
+        # including repeated center entries rather than coalescing them.
+        vertical_sum = self.weights.abs().sum(-1)
+        row_sum = 2 / self.dc + 0.5 * self.relative.abs() * (
+            vertical_sum[self.i] + vertical_sum[self.j]
+        )
+        return self.transpose((measure * row_sum)[..., None], absolute=True)[..., 0]
+
+
 class GMRedi:
     """Optional first-order split step; coefficients in m²/s, N² floor in s⁻².
 
@@ -136,32 +199,13 @@ class GMRedi:
         # Relative slope in layer-index coordinates. This metric term is what
         # cancels spurious lateral mixing on a tilted computational grid.
         relative = slope - zn
-        rows = weights = measure = None
+        operator = measure = None
         if part != "gm":
-            rows = torch.cat(
-                (
-                    ids[i][..., None],
-                    ids[j][..., None],
-                    vertical_ids[i],
-                    vertical_ids[j],
-                ),
-                -1,
-            ).reshape(-1, 8)
-            weights = torch.cat(
-                (
-                    -torch.ones_like(h[i])[..., None] / dc[..., None],
-                    torch.ones_like(h[j])[..., None] / dc[..., None],
-                    0.5 * relative[..., None] * vertical_weights[i],
-                    0.5 * relative[..., None] * vertical_weights[j],
-                ),
-                -1,
-            ).reshape(-1, 8)
+            operator = _RediGradient(metrics, relative)
             # Suppress the ENTIRE rotated diffusion row in weak/unstable layers.
-            measure = (
-                self.kappa_redi * ell * dc * 0.5 * (h[i] + h[j]) * stable
-            ).flatten()
+            measure = self.kappa_redi * ell * dc * 0.5 * (h[i] + h[j]) * stable
         if part == "redi":
-            return slope, None, None, None, None, None, None, rows, weights, measure
+            return slope, None, None, None, None, None, None, operator, measure
         hi, hj = ids[i].flatten(), ids[j].flatten()
         # Psi at interfaces; exact zero at closed upper/lower boundaries.
         zero = torch.zeros_like(slope[:, :1])
@@ -182,7 +226,7 @@ class GMRedi:
         ii = torch.cat((hi, vi))
         jj = torch.cat((hj, vj))
         carrier = torch.cat((horizontal.flatten(), vertical[:, 1:-1].flatten()))
-        return slope, psi, horizontal, vertical, ii, jj, carrier, rows, weights, measure
+        return slope, psi, horizontal, vertical, ii, jj, carrier, operator, measure
 
     @staticmethod
     def _energy_change(model, before, after):
@@ -269,7 +313,7 @@ class GMRedi:
         rho0 = s.column.rho0
         metrics = self._metrics(model, state)
         geom = self._geometry(model, state, part="gm", metrics=metrics)
-        slope, psi, horizontal, vertical, i, j, carrier, _, _, _ = geom
+        slope, psi, horizontal, vertical, i, j, carrier, _, _ = geom
         initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
         outgoing = (
             torch.zeros_like(volume)
@@ -301,27 +345,13 @@ class GMRedi:
         # Redi follows the UPDATED density surfaces, not the pre-GM slopes.
         redi_geometry = self._geometry(model, gm, part="redi", metrics=metrics)
         redi_slope = redi_geometry[0]
-        rows, weights, measure = redi_geometry[-3:]
+        operator, measure = redi_geometry[-2:]
         values = (self._contents(gm) / h[..., None]).reshape_as(initial)
-        # Batched row dot products avoid materializing a second
-        # edge×layer×8×tracer array just to reduce it immediately.
-        gradient = torch.bmm(weights[:, None, :], values[rows]).squeeze(1)
-        flux = measure[:, None] * gradient
-        transfers = -dt * weights[..., None] * flux[:, None, :]
-        rate_amount = torch.zeros_like(values).index_add(
-            0, rows.flatten(), transfers.reshape(-1, values.shape[-1])
-        )
-        del transfers  # the transpose application above no longer needs this array
-        bound = (
-            torch.zeros_like(volume).index_add(
-                0,
-                rows.flatten(),
-                (
-                    weights.abs() * measure[:, None] * weights.abs().sum(1)[:, None]
-                ).flatten(),
-            )
-            / volume
-        )
+        column_values = values.reshape(*h.shape, -1)
+        gradient = operator.apply(column_values)
+        flux = measure[..., None] * gradient
+        rate_amount = operator.transpose(-dt * flux).reshape_as(values)
+        bound = operator.step_bound(measure).flatten() / volume
         step_number = dt * bound
         if (step_number > self.cfl).any():
             raise FloatingPointError("Redi explicit step exceeds bound; reduce dt")
@@ -332,15 +362,10 @@ class GMRedi:
         )
         # A single conjugate per row defines a conservative energy flux over
         # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
-        mu_face = 0.5 * (mu[rows[:, 0]] + mu[rows[:, 1]])
-        # Factor the row scalar product before distributing across its eight
-        # stencil entries. Avoid another edge×layer×8×tracer temporary.
-        energy_transfers = rho0 * (-dt * weights * (flux * mu_face).sum(-1)[:, None])
-        redi_inflow = (
-            torch.zeros_like(volume)
-            .index_add(0, rows.flatten(), energy_transfers.flatten())
-            .reshape_as(h)
-        )
+        column_mu = mu.reshape_as(column_values)
+        mu_face = 0.5 * (column_mu[operator.i] + column_mu[operator.j])
+        energy_flux = rho0 * (-dt * (flux * mu_face).sum(-1))
+        redi_inflow = operator.transpose(energy_flux[..., None])[..., 0]
         end, redi_exchange, redi_residual = self._settle(
             model, gm, redi_transport, redi_inflow, "Redi"
         )

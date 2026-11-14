@@ -107,11 +107,11 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
     s = s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h)
     state = EddyState(s, state.tke_h, state.eddy_h)
     eddy = GMRedi(1000.0, 1000.0)
-    slope, _, _, _, _, _, _, rows, weights, _ = eddy._geometry(m, state)
+    slope, _, _, _, _, _, _, operator, _ = eddy._geometry(m, state)
     assert slope.abs().max() < 1e-16
     torch.testing.assert_close(
-        (weights * sa.flatten()[rows]).sum(1),
-        torch.zeros(rows.shape[0]),
+        operator.apply(sa[..., None])[..., 0],
+        torch.zeros_like(slope),
         rtol=0,
         atol=1e-19,
     )
@@ -124,14 +124,14 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
         state.eddy_h,
     )
     geom = eddy._geometry(m, state)
-    rows, weights = geom[-3:-1]
+    operator = geom[-2]
     b = (
         -s.column.gravity
         / s.column.rho0
         * m.config.anomaly(ct, sa, torch.zeros_like(z))
     )
     assert geom[0].abs().max() > 1e-8
-    assert (weights * b.flatten()[rows]).sum(1).abs().max() < 1e-22
+    assert operator.apply(b[..., None]).abs().max() < 1e-22
 
 
 def test_disabled_identity_and_failure_guards(mesh):
@@ -222,3 +222,88 @@ def test_finite_energy_work_against_independent_midpoint_gradient(mesh):
     expected = sum(w.sum() for w in work)
     scale = sum(w.abs().sum() for w in work)
     assert abs(report.energy_change - expected) < 64 * torch.finfo(th.dtype).eps * scale
+
+
+@pytest.mark.parametrize("coast", [False, True])
+@pytest.mark.parametrize("fields", [1, 5])
+def test_factored_redi_matches_explicit_stencil_and_adjoint(mesh, coast, fields):
+    """Compare against the original eight-entry operator, including its bound."""
+    m, state = setup(mesh, coast)
+    eddy = GMRedi(0.0, 1000.0)
+    metrics = eddy._metrics(m, state)
+    z, vertical_ids, vertical_weights, i, j, dc, _, ids, zn = metrics
+    slope, *_, operator, measure = eddy._geometry(m, state, metrics=metrics)
+    relative = slope - zn
+    rows = torch.cat(
+        (ids[i][..., None], ids[j][..., None], vertical_ids[i], vertical_ids[j]), -1
+    ).reshape(-1, 8)
+    weights = torch.cat(
+        (
+            -torch.ones_like(z[i])[..., None] / dc[..., None],
+            torch.ones_like(z[j])[..., None] / dc[..., None],
+            0.5 * relative[..., None] * vertical_weights[i],
+            0.5 * relative[..., None] * vertical_weights[j],
+        ),
+        -1,
+    ).reshape(-1, 8)
+    generator = torch.Generator().manual_seed(902)
+    values = torch.randn((*z.shape, fields), generator=generator, dtype=z.dtype)
+    flux = torch.randn((*slope.shape, fields), generator=generator, dtype=z.dtype)
+    explicit = (weights[..., None] * values.reshape(-1, fields)[rows]).sum(1)
+    torch.testing.assert_close(
+        operator.apply(values).reshape_as(explicit), explicit, rtol=5e-13, atol=1e-18
+    )
+    transpose = (
+        torch.zeros_like(values)
+        .reshape(-1, fields)
+        .index_add(
+            0,
+            rows.flatten(),
+            (weights[..., None] * flux.reshape(-1, fields)[:, None]).reshape(
+                -1, fields
+            ),
+        )
+    )
+    torch.testing.assert_close(
+        operator.transpose(flux).reshape_as(transpose),
+        transpose,
+        rtol=5e-13,
+        atol=1e-18,
+    )
+    bound = (
+        torch.zeros_like(z)
+        .flatten()
+        .index_add(
+            0,
+            rows.flatten(),
+            (
+                weights.abs()
+                * measure.flatten()[:, None]
+                * weights.abs().sum(1)[:, None]
+            ).flatten(),
+        )
+    )
+    torch.testing.assert_close(
+        operator.step_bound(measure).flatten(), bound, rtol=5e-13, atol=1e-18
+    )
+    torch.testing.assert_close(
+        (operator.apply(values) * flux).sum(),
+        (values * operator.transpose(flux)).sum(),
+        rtol=5e-13,
+        atol=1e-18,
+    )
+    # Closed-boundary constant nullspace and non-positive variance production.
+    torch.testing.assert_close(
+        operator.transpose(flux).sum((0, 1)),
+        torch.zeros(fields, dtype=z.dtype),
+        rtol=0,
+        atol=1e-17,
+    )
+    gradient = operator.apply(values)
+    tendency = operator.transpose(-measure[..., None] * gradient)
+    torch.testing.assert_close(
+        (values * tendency).sum(),
+        -(measure[..., None] * gradient.square()).sum(),
+        rtol=5e-13,
+        atol=1e-17,
+    )

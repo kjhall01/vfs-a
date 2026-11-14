@@ -189,3 +189,9 @@ Validation of unchanged fields is reused; reservoir and funding checks remain
 explicit after each exchange. See [equivalence and timing](../../verification/ocean/gmredi/optimization/README.md).
 Algebraic regrouping can change roundoff, but no physical coefficient or limiter
 policy changes. No model/state cache survives into a later call.
+
+The [factored Redi implementation](../../verification/ocean/gmredi/factored/README.md)
+now computes vertical derivatives per column, averages them onto active edges,
+and applies the matching transpose for both tracer and Hamiltonian energy flux.
+It avoids the eight-entry edge/tracer expansion while retaining the same
+mathematical stencil, explicit bound and local funding checks.

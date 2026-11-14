@@ -14,6 +14,17 @@ of unchanged fields. Redi slope refresh and local funding checks remain intact.
 Reference comparison covers all outputs in 18 five-step cases, plus backward
 sensitivity. Installed-wheel regression: 1186 passed, 2 skipped.
 
+The [factored Redi pass](../verification/ocean/gmredi/factored/README.md) replaces
+expanded edge/stencil/tracer arrays with column derivatives, edge averaging and
+the matching conservative transpose. The same transpose supplies Hamiltonian
+energy inflow; the original absolute-stencil timestep bound is retained.
+Reference states agree at roundoff, and operator/transpose/variance checks
+cover both coastal and open geometry. Combined installed-wheel coverage is
+1190 passing tests with 2 skipped, using the established portable fixture policy.
+Closure time decreases 28–48% across two CPU timing pairs; closure-only peak
+process memory decreases 26%, while full-process peak remains about 3.3 GB.
+Production defaults remain unchanged.
+
 The [documentation index](../docs/README.md) describes the atmospheric and ocean
 APIs, state ownership, stepping, forcing and verification scope. The stratified
 ocean API is available on main. Run `examples/ocean_stratified.py` for explicit

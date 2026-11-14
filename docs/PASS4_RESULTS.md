@@ -823,3 +823,29 @@ Sequential 16384×40 eager one-thread CPU timing: funded closure median
 (7.4% less). Estimated full step remains about 20 s (19.835 → 20.040 s);
 unchanged-control and reservoir-dynamics timing variation precludes a claim of
 end-to-end speedup. Three samples per operation are retained in the report.
+
+The [factored Redi pass](../verification/ocean/gmredi/factored/README.md) computes
+column vertical derivatives once and averages them to edges, then reverses those
+operations for the transpose. Tracer and Hamiltonian energy flux use the same
+transpose; the old absolute eight-entry bound is algebraically retained. Four
+new explicit-stencil/adjoint/variance tests pass, alongside the 28 existing
+GM–Redi/reservoir checks with unchanged tolerances. In 18 five-step cases,
+velocity, h, CT content, SA content and TKE remain bitwise identical; maximum
+passive and reservoir content differences are 1.42e-14 and 8.53e-14 respectively.
+One backward sensitivity differs by 1.00e-18. Extensive energy-report differences
+from cancellation are retained in comparison.json; these are not a claim of
+bitwise equivalence. CPU float64 only; no compiled/GPU/long-rollout claim.
+
+Installed-wheel tests outside checkout: 1189 passed, 2 skipped and one known
+exact atmospheric-fixture mismatch (max 4.44e-15 initial velocity). The affected
+extraction file passes all 3 tests under the existing portable policy; combined
+coverage is 1190 distinct passing tests. Standalone portable comparisons pass
+142 corrected-Gibbs and 93 dry-helper tensors. Both test logs are retained.
+
+At 16384×40, uncompiled single-thread CPU float64, closure medians decrease
+3.184 → 1.649 s in the full benchmark (48.2%) and 3.614 → 2.587 s in a separate
+closure-only process pair (28.4%). Closure-only peak process RSS decreases
+2.396 → 1.765 GB (26.3%); full-process peak remains about 3.3 GB. Summed component
+medians decrease 20.803 → 18.493 s, with unchanged dynamics also timing 4.4–7.0%
+faster; no precise end-to-end speedup is attributed from those sums. Raw timing
+samples, source hashes and reproduction commands accompany the report.

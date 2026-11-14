@@ -1,0 +1,26 @@
+{
+  "driver_sha256": "e48c50bb2950eae623a11ef989dba4e7261e2ad408658699467142d5fabb372c",
+  "source_sha256": {
+    "eddy.py": "83d80561e54e23e8bc4be80689913d185823cdbd199e9a99cb275672e3cc3082",
+    "roquet.py": "12fa354e20af225a409802d2b648f51ff8acb5d425f81d7d9777da1f21247821",
+    "eddy_energy.py": "d7757bf5e66567104f62cbba1d76c296dc68161611b0377d91cb27329fadd024"
+  },
+  "peak_rss_bytes": 1764667392,
+  "revision": "working-tree",
+  "cells": 16384,
+  "layers": 40,
+  "dt": 120.0,
+  "compiled": false,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "samples_s": {
+    "funded_eddy": [
+      2.6984233250004763,
+      2.395388212000398,
+      2.587313133000862
+    ]
+  },
+  "medians_s": {
+    "funded_eddy": 2.587313133000862
+  }
+}

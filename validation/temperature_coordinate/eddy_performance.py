@@ -113,6 +113,11 @@ def checks():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--revision")
+    parser.add_argument(
+        "--closure-only",
+        action="store_true",
+        help="Time only the closure, isolating its process memory from dynamics",
+    )
     parser.add_argument("--mode", choices=("check", "time"), required=True)
     parser.add_argument("--cells", type=int, default=16384)
     parser.add_argument("--layers", type=int, default=40)
@@ -156,6 +161,8 @@ def main():
             dynamics_reservoir=lambda: model.step_with_report(funded, 120.0),
             funded_eddy=lambda: eddy.apply(model, funded, 120.0),
         )
+        if args.closure_only:
+            operations = {"funded_eddy": operations["funded_eddy"]}
         samples = {name: [] for name in operations}
         for name, operation in operations.items():
             out = operation()
