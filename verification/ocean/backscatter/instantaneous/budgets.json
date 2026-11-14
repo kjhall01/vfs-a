@@ -1,0 +1,50 @@
+[
+  {
+    "dynamics": false,
+    "viscosity": 10000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "integrated_backscatter_power_J_kg": 2.90337293583472e-08,
+    "integrated_pairing_residual_J_kg": -8.86368964576503e-27,
+    "max_local_power_residual_W_kg": 4.851639252592314e-24,
+    "direct_total_energy_change_J_kg": 7.157536385942408e-11,
+    "minimum_eddy_energy_J_kg": 0.09999908700244321,
+    "minimum_vertex_scale": 1.0
+  },
+  {
+    "dynamics": true,
+    "viscosity": 10000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "integrated_backscatter_power_J_kg": 2.9328499413178522e-08,
+    "integrated_pairing_residual_J_kg": -1.0449257821891394e-25,
+    "max_local_power_residual_W_kg": 4.85163925785991e-24,
+    "direct_total_energy_change_J_kg": 2.385845461980806e-11,
+    "minimum_eddy_energy_J_kg": 0.09999907141607076,
+    "minimum_vertex_scale": 1.0
+  },
+  {
+    "dynamics": false,
+    "viscosity": 1000000000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "integrated_backscatter_power_J_kg": 3.112970517556342e-05,
+    "integrated_pairing_residual_J_kg": 3.6358488247716773e-23,
+    "max_local_power_residual_W_kg": 3.932059210631211e-23,
+    "direct_total_energy_change_J_kg": 1.1236298259562723e-06,
+    "minimum_eddy_energy_J_kg": 0.09994218719169683,
+    "minimum_vertex_scale": 6.489252197198777e-07
+  },
+  {
+    "dynamics": true,
+    "viscosity": 1000000000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "integrated_backscatter_power_J_kg": 3.112199082650798e-05,
+    "integrated_pairing_residual_J_kg": 1.2375142523395553e-23,
+    "max_local_power_residual_W_kg": 3.9320592193331277e-23,
+    "direct_total_energy_change_J_kg": 1.1236139203198606e-06,
+    "minimum_eddy_energy_J_kg": 0.09994218719824052,
+    "minimum_vertex_scale": 6.489135868101799e-07
+  }
+]

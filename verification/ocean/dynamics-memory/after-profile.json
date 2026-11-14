@@ -1,0 +1,289 @@
+{
+  "maximum": {
+    "rss_bytes": 2747928576,
+    "function": "vfs/ocean/transport.py:divergence",
+    "line": 16
+  },
+  "function_peaks": {
+    "vfs/ocean/stratified/equations.py:mass_area": {
+      "rss_bytes": 2202615808,
+      "line": 63,
+      "local_tensor_storage_bytes": {
+        "state": 52426880
+      }
+    },
+    "/workspace/scratch/cb460db1b799/gmredi-wheel-check/validation/temperature_coordinate/model.py:fields": {
+      "rss_bytes": 1793699840,
+      "line": 20,
+      "local_tensor_storage_bytes": {
+        "state": 52426880
+      }
+    },
+    "vfs/ocean/stratified/equations.py:validate": {
+      "rss_bytes": 1793699840,
+      "line": 108,
+      "local_tensor_storage_bytes": {
+        "state": 52426880,
+        "physical": 52426880
+      }
+    },
+    "/workspace/scratch/cb460db1b799/gmredi-wheel-check/validation/temperature_coordinate/model.py:step": {
+      "rss_bytes": 1295798272,
+      "line": 81,
+      "local_tensor_storage_bytes": {
+        "third": 52426880,
+        "state": 47184000,
+        "middle": 47184000
+      }
+    },
+    "/workspace/scratch/cb460db1b799/gmredi-wheel-check/validation/temperature_coordinate/model.py:euler": {
+      "rss_bytes": 1793699840,
+      "line": 61,
+      "local_tensor_storage_bytes": {
+        "report": 592378240,
+        "rhs": 52426880,
+        "state": 47184000
+      }
+    },
+    "/workspace/scratch/cb460db1b799/gmredi-wheel-check/validation/temperature_coordinate/model.py:tendency_with_report": {
+      "rss_bytes": 1793699840,
+      "line": 52,
+      "local_tensor_storage_bytes": {
+        "report": 592378240,
+        "rhs": 52426880,
+        "state": 47184000,
+        "entropy": 47184000,
+        "ref": 41943040
+      }
+    },
+    "vfs/ocean/stratified/transport.py:evaluate": {
+      "rss_bytes": 2695376896,
+      "line": 111,
+      "local_tensor_storage_bytes": {
+        "low": 555691520,
+        "target": 398414720,
+        "high": 78633600,
+        "change": 78633600,
+        "beta": 78633600,
+        "anti": 78633600,
+        "original_rhs": 52426880,
+        "state": 47184000,
+        "physical": 47184000,
+        "g": 31455360,
+        "jump": 31453440,
+        "amounts": 26214400,
+        "added_work": 15726720,
+        "cap": 15726720,
+        "fraction": 15726720,
+        "original_force": 15726720,
+        "original_face_work": 15726720,
+        "gibbs_identity": 15726720,
+        "area": 131072
+      }
+    },
+    "vfs/ocean/stratified/equations.py:__init__": {
+      "rss_bytes": 1410994176,
+      "line": 254,
+      "local_tensor_storage_bytes": {
+        "self": 125817600,
+        "state": 47184000,
+        "physical": 47184000
+      }
+    },
+    "vfs/ocean/stratified/equations.py:high_traces": {
+      "rss_bytes": 1410994176,
+      "line": 137,
+      "local_tensor_storage_bytes": {
+        "physical": 47184000,
+        "audit": 47180160,
+        "eta": 15726720,
+        "salt": 15726720,
+        "i": 786336,
+        "j": 786336
+      }
+    },
+    "vfs/ocean/stratified/equations.py:_gradients": {
+      "rss_bytes": 1410994176,
+      "line": 85,
+      "local_tensor_storage_bytes": {
+        "state": 47184000,
+        "physical": 47184000,
+        "old": 47184000,
+        "ref": 41943040
+      }
+    },
+    "vfs/ocean/stratified/equations.py:transport_for": {
+      "rss_bytes": 2045345792,
+      "line": 126,
+      "local_tensor_storage_bytes": {}
+    },
+    "vfs/ocean/stratified/equations.py:transport_view": {
+      "rss_bytes": 1410994176,
+      "line": 37,
+      "local_tensor_storage_bytes": {
+        "self": 47184000
+      }
+    },
+    "vfs/ocean/transport.py:advance": {
+      "rss_bytes": 2045345792,
+      "line": 193,
+      "local_tensor_storage_bytes": {
+        "low_flux": 78633600,
+        "high_flux": 78633600,
+        "anti": 78633600,
+        "beta": 78633600,
+        "trace_change": 78633600,
+        "prepared": 68936096,
+        "state": 52426880,
+        "fields": 31457280,
+        "q": 26214400,
+        "low": 26214400,
+        "qmin": 26214400,
+        "lower": 26214400,
+        "upper": 26214400,
+        "amounts": 26214400,
+        "i": 15726720,
+        "j": 15726720,
+        "flux": 15726720,
+        "G": 15726720,
+        "volume": 5242880,
+        "outgoing": 5242880,
+        "floor": 5242880,
+        "remaining": 5242880,
+        "incoming": 5242880,
+        "new_volume": 5242880
+      }
+    },
+    "vfs/ocean/transport.py:graph": {
+      "rss_bytes": 1410994176,
+      "line": 110,
+      "local_tensor_storage_bytes": {
+        "state": 47184000
+      }
+    },
+    "vfs/ocean/transport.py:_indices": {
+      "rss_bytes": 1410994176,
+      "line": 95,
+      "local_tensor_storage_bytes": {}
+    },
+    "vfs/ocean/transport.py:ratio": {
+      "rss_bytes": 1830400000,
+      "line": 183,
+      "local_tensor_storage_bytes": {
+        "budget": 26214400,
+        "demand": 26214400,
+        "denominator": 26214400
+      }
+    },
+    "vfs/ocean/transport.py:divergence": {
+      "rss_bytes": 2747928576,
+      "line": 16,
+      "local_tensor_storage_bytes": {
+        "transfer": 78633600,
+        "i": 15726720,
+        "j": 15726720
+      }
+    },
+    "vfs/ocean/stratified/equations.py:evaluate": {
+      "rss_bytes": 2202615808,
+      "line": 270,
+      "local_tensor_storage_bytes": {
+        "_stage": 733936000,
+        "stage": 733936000,
+        "ledger": 398414720,
+        "state": 52426880,
+        "physical": 52426880,
+        "face": 47180160,
+        "eta": 15726720,
+        "salt": 15726720,
+        "velocity": 15726720
+      }
+    },
+    "vfs/ocean/stratified/equations.py:momentum": {
+      "rss_bytes": 1966710784,
+      "line": 143,
+      "local_tensor_storage_bytes": {
+        "state": 52426880,
+        "physical": 52426880,
+        "gradient": 31455360,
+        "eta": 15726720,
+        "salt": 15726720
+      }
+    },
+    "vfs/ocean/stratified/equations.py:bounded_transport": {
+      "rss_bytes": 2359885824,
+      "line": 224,
+      "local_tensor_storage_bytes": {
+        "low": 555691520,
+        "high": 78633600,
+        "donor": 78633600,
+        "high_flux": 78633600,
+        "anti": 78633600,
+        "beta": 78633600,
+        "flux": 78633600,
+        "trace_change": 78633600,
+        "prepared": 68936096,
+        "state": 52426880,
+        "scalars": 31457280,
+        "q": 26214400,
+        "baseline": 26214400,
+        "amounts": 26214400,
+        "eta_high": 15726720,
+        "salt_high": 15726720,
+        "composition_entropy": 15726720,
+        "delta_eta": 15726720,
+        "salt_upper": 5242880
+      }
+    },
+    "vfs/ocean/stratified/equations.py:ratio": {
+      "rss_bytes": 2228944896,
+      "line": 190,
+      "local_tensor_storage_bytes": {
+        "budget": 62906880,
+        "demand": 62906880,
+        "denominator": 62906880
+      }
+    },
+    "vfs/ocean/stratified/transport.py:local_target": {
+      "rss_bytes": 2464858112,
+      "line": 58,
+      "local_tensor_storage_bytes": {
+        "low": 555691520,
+        "baseline": 398414720,
+        "anti": 78633600,
+        "beta": 78633600,
+        "high": 78633600,
+        "change": 78633600,
+        "flux": 78633600,
+        "state": 52426880,
+        "amount": 26214400,
+        "eta_high": 15726720,
+        "salt_high": 15726720,
+        "composition_entropy": 15726720
+      }
+    },
+    "vfs/ocean/stratified/transport.py:ratio": {
+      "rss_bytes": 2328432640,
+      "line": 39,
+      "local_tensor_storage_bytes": {
+        "room": 26214400,
+        "demand": 26214400,
+        "safe": 26214400
+      }
+    }
+  },
+  "note": "RSS includes allocator and interpreter; locals share storage and cannot be added across names. Python-boundary sampling may miss within-kernel peaks.",
+  "cells": 16384,
+  "layers": 40,
+  "threads": 1,
+  "compiled": false,
+  "torch": "2.15.0+cpu",
+  "package": "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs",
+  "peak_rss_bytes": 2852257792,
+  "source_sha256": {
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/transport.py": "d63937e926f9e287bc0d962ff4900ce45d8be40b76e2c0bc5411ca854ea0d0b2",
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/stratified/transport.py": "10e11a48fe875e5a3a79ed6a2774416e6887ccc6e9ffbbd94fa7e7111132451e",
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py": "8773d777e78f82db5f3c18063aa4797c98feba5e6fe2204f4975401bacb6b61d",
+    "/workspace/scratch/cb460db1b799/gmredi-wheel-check/validation/temperature_coordinate/model.py": "5f31bb3b81e3da0826759592e89d133b51e89b97b4488b04a7c23ae01586f06f"
+  }
+}

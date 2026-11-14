@@ -1,0 +1,365 @@
+[
+  {
+    "case": "density",
+    "dt_s": 120.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 3.894862619754818e-06,
+    "redi_reservoir_exchange_J_kg": 1.0646679752916464e-18,
+    "dissipated_J_kg": 0.00013879527715665796,
+    "cumulative_closure_residual_J_kg": 2.541087378685805e-13,
+    "maximum_local_closure_residual_J_kg": 3.631766919316715e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 0.0,
+    "minimum_eddy_energy_J_kg": 0.09968824265829744,
+    "maximum_eddy_energy_J_kg": 0.10007054928737551,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.7661428385825,
+      316.3232439429936
+    ]
+  },
+  {
+    "case": "density",
+    "dt_s": 60.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 3.894816613834415e-06,
+    "redi_reservoir_exchange_J_kg": 3.064074407319346e-18,
+    "dissipated_J_kg": 0.00013879523207710963,
+    "cumulative_closure_residual_J_kg": 1.264745542389077e-12,
+    "maximum_local_closure_residual_J_kg": 3.6314598368322737e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 0.0,
+    "minimum_eddy_energy_J_kg": 0.09968824268563035,
+    "maximum_eddy_energy_J_kg": 0.10007055144286366,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.7581864316595,
+      316.324890747398
+    ]
+  },
+  {
+    "case": "density",
+    "dt_s": 30.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 3.894793610093459e-06,
+    "redi_reservoir_exchange_J_kg": 1.5799675236668482e-18,
+    "dissipated_J_kg": 0.00013879520953746774,
+    "cumulative_closure_residual_J_kg": 1.6613997598358213e-12,
+    "maximum_local_closure_residual_J_kg": 3.6316760479958297e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 0.0,
+    "minimum_eddy_energy_J_kg": 0.09968824269918222,
+    "maximum_eddy_energy_J_kg": 0.10007055252049844,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.75420826165805,
+      316.32571415774106
+    ]
+  },
+  {
+    "case": "cold",
+    "dt_s": 120.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 5.928671270270552e-06,
+    "redi_reservoir_exchange_J_kg": -1.8346782688274228e-07,
+    "dissipated_J_kg": 0.00013879660459463895,
+    "cumulative_closure_residual_J_kg": -2.929096998330553e-14,
+    "maximum_local_closure_residual_J_kg": 2.2682073493734966e-13,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -5.087989439253879e-13,
+    "minimum_eddy_energy_J_kg": 0.09943919055668679,
+    "maximum_eddy_energy_J_kg": 0.10033876228128973,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.3853486663301,
+      316.69198214164885
+    ]
+  },
+  {
+    "case": "cold",
+    "dt_s": 60.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 5.928605030924977e-06,
+    "redi_reservoir_exchange_J_kg": -1.8346857417204984e-07,
+    "dissipated_J_kg": 0.00013879653809958697,
+    "cumulative_closure_residual_J_kg": -1.8683965428642273e-15,
+    "maximum_local_closure_residual_J_kg": 2.269226694572024e-13,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -2.5439947196269397e-13,
+    "minimum_eddy_energy_J_kg": 0.09943919458416772,
+    "maximum_eddy_energy_J_kg": 0.10033877169303727,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.37083438069305,
+      316.69998853943605
+    ]
+  },
+  {
+    "case": "cold",
+    "dt_s": 30.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 5.928571743801173e-06,
+    "redi_reservoir_exchange_J_kg": -1.834692481497036e-07,
+    "dissipated_J_kg": 0.00013879650485199566,
+    "cumulative_closure_residual_J_kg": 1.3794545929300773e-14,
+    "maximum_local_closure_residual_J_kg": 2.2691423436430048e-13,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -2.5439947196269397e-13,
+    "minimum_eddy_energy_J_kg": 0.09943919659797719,
+    "maximum_eddy_energy_J_kg": 0.10033877639788953,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.36357736034415,
+      316.70399176981806
+    ]
+  },
+  {
+    "case": "warm",
+    "dt_s": 120.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 1.5073061041013726e-06,
+    "redi_reservoir_exchange_J_kg": 1.0736991376103062e-07,
+    "dissipated_J_kg": 0.0001387936413775125,
+    "cumulative_closure_residual_J_kg": -8.634175311379156e-13,
+    "maximum_local_closure_residual_J_kg": 3.631521885288924e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -1.6281566205612414e-11,
+    "minimum_eddy_energy_J_kg": 0.09972572772966276,
+    "maximum_eddy_energy_J_kg": 0.10002745038299368,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.80927393124165,
+      316.24396026657956
+    ]
+  },
+  {
+    "case": "warm",
+    "dt_s": 60.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 1.5072838565970731e-06,
+    "redi_reservoir_exchange_J_kg": 1.0736779149017308e-07,
+    "dissipated_J_kg": 0.0001387936226871306,
+    "cumulative_closure_residual_J_kg": 9.641434029706478e-14,
+    "maximum_local_closure_residual_J_kg": 3.631435913694497e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -8.140783102806207e-12,
+    "minimum_eddy_energy_J_kg": 0.09972572757509592,
+    "maximum_eddy_energy_J_kg": 0.10002745190020136,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.8020606858584,
+      316.24424003439003
+    ]
+  },
+  {
+    "case": "warm",
+    "dt_s": 30.0,
+    "duration_s": 3600.0,
+    "dynamics": false,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": 1.5072726781714136e-06,
+    "redi_reservoir_exchange_J_kg": 1.073668058386913e-07,
+    "dissipated_J_kg": 0.0001387936133411293,
+    "cumulative_closure_residual_J_kg": 8.5887683587576e-13,
+    "maximum_local_closure_residual_J_kg": 3.6315763937699863e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 0.0,
+    "minimum_eddy_energy_J_kg": 0.09972572753440163,
+    "maximum_eddy_energy_J_kg": 0.10002745262488205,
+    "initial_kappa_range": [
+      316.22776601683796,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      315.79845416788015,
+      316.2443799036043
+    ]
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 60.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": false,
+    "decay": false,
+    "gm_reservoir_exchange_J_kg": -1.8026732500188497e-09,
+    "redi_reservoir_exchange_J_kg": 9.181794807754278e-19,
+    "dissipated_J_kg": 0.0,
+    "cumulative_closure_residual_J_kg": 9.892122821384974e-20,
+    "maximum_local_closure_residual_J_kg": 7.105340854120589e-18,
+    "resolved_step_energy_change_J_kg": -3.1811272826410703e-11,
+    "direct_total_energy_change_J_kg": -3.1811272826410703e-11,
+    "minimum_eddy_energy_J_kg": 0.09999995297715418,
+    "maximum_eddy_energy_J_kg": 0.10000005486773311,
+    "initial_kappa_range": null,
+    "final_kappa_range": null
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 30.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": false,
+    "decay": false,
+    "gm_reservoir_exchange_J_kg": -1.8027253121123617e-09,
+    "redi_reservoir_exchange_J_kg": 7.53432255884365e-18,
+    "dissipated_J_kg": 0.0,
+    "cumulative_closure_residual_J_kg": -7.700827169781328e-19,
+    "maximum_local_closure_residual_J_kg": 7.105027137353642e-18,
+    "resolved_step_energy_change_J_kg": -4.771690923961605e-11,
+    "direct_total_energy_change_J_kg": -4.771690923961605e-11,
+    "minimum_eddy_energy_J_kg": 0.09999995297740591,
+    "maximum_eddy_energy_J_kg": 0.10000005486812555,
+    "initial_kappa_range": null,
+    "final_kappa_range": null
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 60.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": true,
+    "decay": false,
+    "gm_reservoir_exchange_J_kg": -1.8026729673482394e-09,
+    "redi_reservoir_exchange_J_kg": 9.181794807754278e-19,
+    "dissipated_J_kg": 0.0,
+    "cumulative_closure_residual_J_kg": 2.162069907557539e-19,
+    "maximum_local_closure_residual_J_kg": 7.105135190744799e-18,
+    "resolved_step_energy_change_J_kg": -3.1811272826410703e-11,
+    "direct_total_energy_change_J_kg": -3.1811272826410703e-11,
+    "minimum_eddy_energy_J_kg": 0.09999995297715895,
+    "maximum_eddy_energy_J_kg": 0.10000005486774129,
+    "initial_kappa_range": [
+      316.2277660168379,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      316.22770629279154,
+      316.2278388642111
+    ]
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 30.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": true,
+    "decay": false,
+    "gm_reservoir_exchange_J_kg": -1.8027252299537702e-09,
+    "redi_reservoir_exchange_J_kg": 7.53432255884365e-18,
+    "dissipated_J_kg": 0.0,
+    "cumulative_closure_residual_J_kg": -1.0033949150665614e-18,
+    "maximum_local_closure_residual_J_kg": 7.104755548559514e-18,
+    "resolved_step_energy_change_J_kg": -4.771690923961605e-11,
+    "direct_total_energy_change_J_kg": -4.771690923961605e-11,
+    "minimum_eddy_energy_J_kg": 0.09999995297741093,
+    "maximum_eddy_energy_J_kg": 0.10000005486813408,
+    "initial_kappa_range": [
+      316.2277660168379,
+      316.227766016838
+    ],
+    "final_kappa_range": [
+      316.22770297465826,
+      316.2278429111525
+    ]
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 60.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": -1.8025846687918069e-09,
+    "redi_reservoir_exchange_J_kg": -4.013257104085897e-19,
+    "dissipated_J_kg": 2.3145468941568437e-05,
+    "cumulative_closure_residual_J_kg": -9.640376616438352e-13,
+    "maximum_local_closure_residual_J_kg": 3.630457791597291e-12,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": -2.3858454619808024e-11,
+    "minimum_eddy_energy_J_kg": 0.09997680751635098,
+    "maximum_eddy_energy_J_kg": 0.09997690938883452,
+    "initial_kappa_range": [
+      316.2277660168379,
+      316.22776601683796
+    ],
+    "final_kappa_range": [
+      316.19476761942656,
+      316.19490018327605
+    ]
+  },
+  {
+    "case": "zonal_band",
+    "dt_s": 30.0,
+    "duration_s": 600.0,
+    "dynamics": true,
+    "feedback": true,
+    "decay": true,
+    "gm_reservoir_exchange_J_kg": -1.8025963762993149e-09,
+    "redi_reservoir_exchange_J_kg": 8.409376204016331e-18,
+    "dissipated_J_kg": 2.314546895199705e-05,
+    "cumulative_closure_residual_J_kg": -5.198827226934449e-13,
+    "maximum_local_closure_residual_J_kg": 3.6276708256267885e-12,
+    "resolved_step_energy_change_J_kg": -3.1811272826410703e-11,
+    "direct_total_energy_change_J_kg": -3.9764091033013376e-11,
+    "minimum_eddy_energy_J_kg": 0.09997680751624462,
+    "maximum_eddy_energy_J_kg": 0.09997690938938948,
+    "initial_kappa_range": [
+      316.2277660168379,
+      316.227766016838
+    ],
+    "final_kappa_range": [
+      316.1929344759831,
+      316.1930744042132
+    ]
+  }
+]

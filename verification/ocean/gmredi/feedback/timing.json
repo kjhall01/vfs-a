@@ -1,0 +1,57 @@
+{
+  "driver_sha256": "85b0cc09e95c4c8203c644ef24c971687b20a404590b06f0bba1d6a16c589f29",
+  "source_sha256": {
+    "eddy.py": "24469991d2b8f86c85770a1b2ac735a081b0b255e1c59dfff6aeae6b5b90c6a1",
+    "roquet.py": "12fa354e20af225a409802d2b648f51ff8acb5d425f81d7d9777da1f21247821",
+    "eddy_energy.py": "728822f706ff01a138ac1b0796d3940fb23de2d8703b5030af5fb79a02084dc3"
+  },
+  "peak_rss_bytes": 3234467840,
+  "revision": "working-tree",
+  "cells": 16384,
+  "layers": 40,
+  "dt": 120.0,
+  "compiled": false,
+  "feedback": true,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "samples_s": {
+    "dynamics": [
+      14.361492995001754,
+      14.13829405299839,
+      15.166827741999441
+    ],
+    "dynamics_reservoir": [
+      16.13762101500106,
+      18.12161986400315,
+      16.517428117000236
+    ],
+    "funded_eddy": [
+      2.217667815999448,
+      2.456002923001506,
+      2.187233202999778
+    ],
+    "prescribed_eddy": [
+      2.419961304000026,
+      2.4599662529981288,
+      2.3727127320016734
+    ],
+    "eddy_dissipation": [
+      0.3089203939998697,
+      0.17157465100171976,
+      0.1645354740030598
+    ],
+    "eddy_with_decay": [
+      2.4998030880014994,
+      2.3650622540008044,
+      2.4966603020002367
+    ]
+  },
+  "medians_s": {
+    "dynamics": 14.361492995001754,
+    "dynamics_reservoir": 16.517428117000236,
+    "funded_eddy": 2.217667815999448,
+    "prescribed_eddy": 2.419961304000026,
+    "eddy_dissipation": 0.17157465100171976,
+    "eddy_with_decay": 2.4966603020002367
+  }
+}

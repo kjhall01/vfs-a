@@ -114,6 +114,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--revision")
     parser.add_argument(
+        "--feedback",
+        action="store_true",
+        help="Time energy-dependent GM and eddy decay to heat",
+    )
+    parser.add_argument(
         "--closure-only",
         action="store_true",
         help="Time only the closure, isolating its process memory from dynamics",
@@ -163,6 +168,27 @@ def main():
         )
         if args.closure_only:
             operations = {"funded_eddy": operations["funded_eddy"]}
+        if args.feedback:
+            prescribed = eddy
+            operations["prescribed_eddy"] = lambda: prescribed.apply(
+                model, funded, 120.0
+            )
+            from eddy_energy import EddyMixingLength, EddyDissipation
+
+            # Uniform E=.1 gives kappa=1000, matching the prescribed reference.
+            eddy = GMRedi(
+                kappa_redi=1000.0,
+                energy_closure=EddyMixingLength(10000.0 / math.sqrt(0.1), 0.1, 0.5),
+            )
+            decay = EddyDissipation(30 * 86400.0)
+
+            def complete_eddy():
+                transported, transport_report = eddy.apply(model, funded, 120.0)
+                end, decay_report = decay.apply(model, transported, 120.0)
+                return end, transport_report, decay_report
+
+            operations["eddy_dissipation"] = lambda: decay.apply(model, funded, 120.0)
+            operations["eddy_with_decay"] = complete_eddy
         samples = {name: [] for name in operations}
         for name, operation in operations.items():
             out = operation()
@@ -195,6 +221,7 @@ def main():
             layers=args.layers,
             dt=120.0,
             compiled=False,
+            feedback=args.feedback,
             threads=1,
             torch=torch.__version__,
             samples_s=samples,

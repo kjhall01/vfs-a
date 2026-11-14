@@ -164,7 +164,7 @@ class RoquetExchange(FastSurfaceExchange):
 
 
 class RoquetOcean(TemperatureSystem):
-    def __init__(self,mesh,column,*,config=None,domain=None,closure=None,boundary=None,heating=None,exchange=None):
+    def __init__(self,mesh,column,*,config=None,domain=None,closure=None,boundary=None,heating=None,exchange=None,backscatter=None):
         config=RoquetFreezingEOS() if config is None else config
         if not isinstance(config,RoquetFreezingEOS):raise TypeError('RoquetFreezingEOS required')
         for value,kind in ((closure,RoquetMixing),(heating,RoquetHeating),(exchange,RoquetExchange)):
@@ -176,6 +176,10 @@ class RoquetOcean(TemperatureSystem):
         super().__init__(ocean,closure=closure,boundary=boundary,heating=heating,exchange=exchange)
         self.config=config;self.remapper=LinearRemapper()
         self.hamiltonian=RoquetHamiltonian(self.energy)
+        from backscatter import EddyBackscatter
+        if backscatter is not None and not isinstance(backscatter, EddyBackscatter):
+            raise TypeError('backscatter must be EddyBackscatter or None')
+        self.backscatter = backscatter
 
     def compile_thermodynamics(self, *, backend='inductor'):
         """Compile selected pure kernels; validation and timestep control stay eager."""
@@ -264,9 +268,29 @@ class RoquetOcean(TemperatureSystem):
 
     def step_with_report(self, state, dt, **forcing):
         if not isinstance(state, EddyState):
+            if self.backscatter is not None:
+                raise TypeError('enabled backscatter requires EddyState')
             return super().step_with_report(state, dt, **forcing)
         self._check_eddy(state)
+        reports = []
+        if self.backscatter is not None:
+            if dt*self.backscatter.fraction > self.backscatter.timescale:
+                raise ValueError('backscatter source positivity requires dt*fraction <= timescale')
+            def extra(packed):
+                q = packed.tracer_h
+                physical = packed.with_tensors(packed.u_e, packed.h, packed.temp_h,
+                    packed.salt_h, None if q.shape[-1] == 2 else q[..., :-2])
+                stage = EddyState(physical, q[..., -1], q[..., -2])
+                du, de, report = self.backscatter.tendency(self, stage)
+                reports.append(report)
+                dq = torch.cat((torch.zeros_like(q[..., :-2]), de[..., None],
+                                torch.zeros_like(q[..., -1:])), -1)
+                return du, dq
+            forcing['_extra_tendency'] = extra
         end, report = super().step_with_report(self._carry_eddy(state), dt, **forcing)
+        if self.backscatter is not None:
+            from backscatter import BackscatterStepReport
+            report = BackscatterStepReport(**vars(report), backscatter=tuple(reports))
         end = self._recover_eddy(end, state)
         self._check_eddy(end)
         return end, report

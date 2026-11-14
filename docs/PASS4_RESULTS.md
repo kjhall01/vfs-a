@@ -849,3 +849,136 @@ closure-only process pair (28.4%). Closure-only peak process RSS decreases
 medians decrease 20.803 → 18.493 s, with unchanged dynamics also timing 4.4–7.0%
 faster; no precise end-to-end speedup is attributed from those sums. Raw timing
 samples, source hashes and reproduction commands accompany the report.
+
+## Optional eddy energy feedback and decay to heat
+
+The [feedback report](../verification/ocean/gmredi/feedback/README.md) adds
+`kappa_GM = c L sqrt(2 f E_edge)` with explicit mixing length, efficiency and
+kinetic fraction. Prescribed GM, Redi and installed production defaults remain
+unchanged: all 487 reference outputs match bitwise. A separate exponential
+reservoir decay uses the existing exact Roquet thermal quadratic solve and
+reports actual stored reservoir debit, thermal gain and local full-H residual.
+No direct identification with turbulent TKE or hidden energy seed is made.
+
+45 focused tests pass (13 new), including coast/zero-energy cases, decay from
+dt/tau=1e-6 to 1000, independent polynomial energy accounting, entropy increase,
+invalid inputs and a backward finite-difference check. Fifteen one-hour-front
+and ten-minute-zonal-band experiments have maximum local closure residual
+3.64e-12 J/kg and cumulative residual 1.67e-12 J/kg, at stored-CT rounding scale.
+Resolved-step drift is measured separately. The masked spherical channel is a
+short coupled budget check, not a balanced Eady/eddy-saturation benchmark.
+Long channel calibration, backscatter, GPU/MPS, float32, compiled timing and
+long backward rollouts remain open.
+
+Installed-wheel portable regression outside checkout: **1203 passed, 2 skipped**
+in 194.72 s. Corrected-Gibbs and dry-helper comparisons pass 142 and 93 tensors.
+Production VFS source/defaults and installed wheel remain unchanged.
+
+Same-process interleaved timing at 16384×40: prescribed closure median 2.420 s,
+energy-dependent GM–Redi plus decay 2.497 s; dissipation alone 0.172 s.
+Estimated full step (same 16.517 s dynamics median) is 18.937 → 19.014 s,
+about 0.4% difference within timing variation. Whole-process peak RSS 3.234 GB.
+This supports no large eager CPU overhead, not a universal performance guarantee.
+
+## Ocean dynamics tensor lifetimes
+
+The [dynamics memory report](../verification/ocean/dynamics-memory/README.md)
+profiles the 16384×40 resolved step and identifies overlap of donor/original/
+target/final ledgers with large temporary edge arrays. The optimization drops
+consumed edge gathers and limiter budgets, superseded ledgers, endpoint reports
+before validation, and dead RK state references. It preserves numerical
+expressions, all guards, full diagnostic contents and autograd graphs.
+
+Six front/coast cases capture tendencies and reports, three successive resolved
+steps with reservoir transport, donor/FCT ledgers and one-step derivatives.
+All **486 tensors match bitwise** across separate before/after installed-wheel
+executions. No tolerance changes. Production ocean transport modules are edited;
+atmospheric source and all frozen fixtures are unchanged.
+
+Rebuilt installed-wheel portable suite: **1203 passed, 2 skipped**, 202.79 s,
+from outside the checkout. All 142 corrected-Gibbs and 93 dry-helper comparisons
+pass. Wheel hashes, strict equivalence result and full logs are retained.
+
+At 16384×40, one-thread eager CPU float64, the unprofiled dynamics benchmark
+peak RSS decreases **3.298 → 2.669 GB (19.1%, 629 MB)**. Median step timing is
+18.442 → 17.966 s; overlapping samples do not establish a reliable speedup.
+This measures resolved dynamics plus reservoir transport, not a combined long
+GM–Redi/decay integration. All 486 reference tensors remain bitwise identical.
+
+## Skip discarded donor-reference limiter work
+
+The [donor-work report](../verification/ocean/donor-work/README.md) moves inner
+FCT budget/ratio/limiter evaluation into the FCT branch. Donor mode creates its
+identical zero limiter directly; all amount expressions, returned bounds and
+fluxes, admissibility checks and outer energy-consistent corrections remain.
+All 486 same-environment comparison tensors, including backward gradients and
+both donor/FCT reports, remain bitwise identical. No default or tolerance changes.
+
+Installed-wheel portable suite: **1203 passed, 2 skipped**, 199.34 s, outside
+the checkout. All 142 corrected-Gibbs and 93 dry-helper comparisons pass.
+
+At 16384×40, one-thread eager CPU float64, median step time falls
+18.433 → 17.233 s (6.5%) and peak RSS falls 2.654 → 2.600 GB
+(2.0%, 54 MB). Three timed samples follow one warm-up per fresh process.
+
+## Reuse transport work and omit overwritten target ledgers
+
+The [transport reuse report](../verification/ocean/transport-reuse/README.md)
+separates target limiter/trace construction from target amount/flux materialization.
+The energy-constrained path skips the latter, which it replaced immediately;
+public prescribed-carrier transport still returns its complete ledger. Repeated
+correction products and local antidiffusive sign splits are reused. Carrier
+clamps remain separate to preserve backward accumulation exactly.
+
+All 486 captured state/tendency/ledger/backward tensors match `214da28` bitwise.
+Installed-wheel portable tests outside the checkout: **1203 passed, 2 skipped**,
+196.90 s. All 142 corrected-Gibbs and 93 dry-helper comparisons pass. No checks,
+numerical defaults, fixtures or tolerances change.
+
+Median step time falls **17.359 → 15.063 s (13.2%)**. Peak process RSS falls **2.658 → 2.574 GB (3.2%, 85 MB)**.
+Measured at 16384×40, one-thread eager CPU float64, three timed steps.
+
+## Historical finite-step backscatter prototype (superseded)
+
+The opt-in [backscatter prototype](../validation/temperature_coordinate/BACKSCATTER.md)
+uses rotational negative viscosity, the existing adjoint curl pair and the full
+Roquet Hamiltonian's mechanical metric. Exact finite kinetic work debits the
+mesoscale reservoir, with an explicit fraction/exponential-timescale allowance.
+The conservative funding limiter uses one amplitude per layer; a depleted cell
+can restrict remote cells in that layer. This is not yet a calibrated local,
+resolution-aware closure and no new grid-scale dissipative operator is supplied.
+
+Four 20-step channel cases, including coupled dynamics and strong funding caps,
+retain local backscatter residuals below 7.11e-18 J/kg. All 486 default-path
+comparison tensors remain bitwise identical. See the [verification report](../verification/ocean/backscatter/README.md)
+for tests, measurements, usage and scientific limitations.
+
+Installed-wheel portable regression: **1218 passed, 2 skipped**, 201.10 s,
+including 15 new backscatter cases. Both frozen-fixture comparisons pass.
+
+Isolated backscatter median: 0.4755 s at 16384×40, one-thread eager CPU
+float64; about 3.2% of the preceding dynamics median (estimated incremental
+cost, not a combined-step timing). Isolated-process peak RSS is 0.802 GB.
+
+## Instantaneous local backscatter
+
+The [current formulation](../validation/temperature_coordinate/BACKSCATTER.md)
+replaces the split kick with dt-independent Hamiltonian-paired momentum and
+reservoir tendencies. A local vertex power limiter replaces the layer minimum.
+`RoquetOcean(..., backscatter=...)` evaluates both sources within every SSPRK3
+stage; source/transport positivity failures reject rather than clip. No finite
+quadratic correction or hidden thermal repair remains. Existing defaults are
+unchanged. The old `apply` API is removed; use `tendency` or model integration.
+
+Independent full-H gradient contractions and a distant-forcing locality test
+pass. Channel power residuals stay below 3.933e-23 W/kg; finite-step energy
+errors are reported separately and approach third-order convergence in the
+smooth isolated test. See [current evidence](../verification/ocean/backscatter/instantaneous/README.md).
+
+Current installed-wheel suite: **1217 passed, 2 skipped**, 200.33 s, including
+14 instantaneous backscatter cases. Both frozen comparisons pass; all 486
+default-path state/ledger/backward tensors match `34cc640` bitwise.
+
+Isolated tendency median at 16384×40: 0.3811 s, eager one-thread CPU float64.
+Three RK evaluations imply about 1.14 s estimated incremental step cost (7.6%
+of the prior dynamics benchmark), not a measured combined-step speed claim.

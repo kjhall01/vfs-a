@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import math
 import torch
 from vfs.ocean.transport import divergence
-from eddy_energy import EddyState
+from eddy_energy import EddyState, EddyMixingLength
 
 
 @dataclass(frozen=True)
@@ -37,6 +37,7 @@ class EddyReport:
     redi_energy_flux_divergence: torch.Tensor
     gm_local_energy_residual: torch.Tensor
     redi_local_energy_residual: torch.Tensor
+    gm_diffusivity: torch.Tensor | None = None  # active edge × layer, feedback only
 
 
 class _RediGradient:
@@ -112,7 +113,14 @@ class GMRedi:
     """
 
     def __init__(
-        self, kappa_gm=0.0, kappa_redi=0.0, *, max_slope=0.01, min_n2=1e-8, cfl=0.8
+        self,
+        kappa_gm=0.0,
+        kappa_redi=0.0,
+        *,
+        max_slope=0.01,
+        min_n2=1e-8,
+        cfl=0.8,
+        energy_closure=None,
     ):
         values = (kappa_gm, kappa_redi, max_slope, min_n2, cfl)
         if not all(math.isfinite(x) for x in values):
@@ -124,6 +132,12 @@ class GMRedi:
             or not 0 < cfl < 1
         ):
             raise ValueError("invalid eddy parameters")
+        if energy_closure is not None:
+            if not isinstance(energy_closure, EddyMixingLength):
+                raise TypeError("energy_closure must be EddyMixingLength")
+            if kappa_gm != 0:
+                raise ValueError("choose prescribed kappa_gm OR energy_closure")
+        self.energy_closure = energy_closure
         self.kappa_gm, self.kappa_redi = kappa_gm, kappa_redi
         self.max_slope, self.min_n2, self.cfl = max_slope, min_n2, cfl
 
@@ -170,7 +184,7 @@ class GMRedi:
         ids = torch.arange(h.numel(), device=h.device).reshape_as(h)
         return z, vertical_ids, vertical_weights, i, j, dc, ell, ids, (z[j] - z[i]) / dc
 
-    def _geometry(self, model, state, *, part="all", metrics=None):
+    def _geometry(self, model, state, *, part="all", metrics=None, gm_diffusivity=None):
         s = state.ocean
         mesh = s.mesh
         h = s.h
@@ -209,9 +223,18 @@ class GMRedi:
         hi, hj = ids[i].flatten(), ids[j].flatten()
         # Psi at interfaces; exact zero at closed upper/lower boundaries.
         zero = torch.zeros_like(slope[:, :1])
-        psi = torch.cat(
-            (zero, self.kappa_gm * 0.5 * (slope[:, :-1] + slope[:, 1:]), zero), 1
-        )
+        if self.energy_closure is None:
+            # Preserve the prescribed-coefficient expression and reduction order.
+            interior = self.kappa_gm * 0.5 * (slope[:, :-1] + slope[:, 1:])
+        else:
+            kappa = (
+                self.energy_closure.diffusivity(state, i, j)
+                if gm_diffusivity is None
+                else gm_diffusivity
+            )
+            transport = kappa * slope
+            interior = 0.5 * (transport[:, :-1] + transport[:, 1:])
+        psi = torch.cat((zero, interior, zero), 1)
         horizontal = ell * psi.diff(dim=1)
         hdiv = divergence(hi, hj, horizontal.flatten(), h.numel()).reshape_as(h)
         vertical = torch.cat(
@@ -312,7 +335,14 @@ class GMRedi:
         volume = (s.mesh.cell_area[:, None] * h).flatten()
         rho0 = s.column.rho0
         metrics = self._metrics(model, state)
-        geom = self._geometry(model, state, part="gm", metrics=metrics)
+        gm_diffusivity = (
+            None
+            if self.energy_closure is None
+            else self.energy_closure.diffusivity(state, metrics[3], metrics[4])
+        )
+        geom = self._geometry(
+            model, state, part="gm", metrics=metrics, gm_diffusivity=gm_diffusivity
+        )
         slope, psi, horizontal, vertical, i, j, carrier, _, _ = geom
         initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
         outgoing = (
@@ -400,5 +430,6 @@ class GMRedi:
             redi_inflow,
             gm_residual,
             redi_residual,
+            gm_diffusivity,
         )
         return end, report

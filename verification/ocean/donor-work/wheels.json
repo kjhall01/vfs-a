@@ -1,0 +1,10 @@
+{
+  "before": {
+    "filename": "vfs-1.0.0+extraction4-py3-none-any.whl",
+    "sha256": "1f18ddefecc35e738ba4c9f11f81cf3276441f0e6b52e270b379990df8f4db63"
+  },
+  "after": {
+    "filename": "vfs-1.0.0+extraction4-py3-none-any.whl",
+    "sha256": "e5431da08dd958fb64b9a311c17b915f7509360712970f79873db311dc5f764b"
+  }
+}
