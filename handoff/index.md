@@ -1813,3 +1813,10 @@ and [qualification](../verification/ocean/linear-configuration/README.md).
 The inherited local TKE funding retries and acceptance constraints remain.
 No claim of realistic seawater thermodynamics, globally admissible large steps,
 GPU qualification or climate accuracy follows from this configuration.
+
+The [matched-buoyancy EOS campaign](../verification/ocean/matched-eos/README.md)
+compares the linear candidate with JMD95 using identical initial h/u/S and
+matched midpoint density anomalies. It includes full internal-wave periods,
+rotating-flow mesh refinement, and forced-column vertical refinement. It is a
+model comparison, not climate validation; fixed-alpha cold/warm response errors
+and unresolved mixed-layer resolution sensitivity are explicitly documented.

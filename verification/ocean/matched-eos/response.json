@@ -1,0 +1,95 @@
+{
+  "reference": "implemented JMD95 partials at S=35, fixed pressure; same rho0=1025",
+  "rows": [
+    {
+      "T68_C": 0.0,
+      "pressure_dbar": 0.0,
+      "jmd95_boussinesq_alpha": 5.271284704427713e-05,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": 2.6211695808808964,
+      "jmd95_boussinesq_beta": 0.0007878160800617771,
+      "haline_response_relative_difference": -0.03925819291001509
+    },
+    {
+      "T68_C": 5.0,
+      "pressure_dbar": 0.0,
+      "jmd95_boussinesq_alpha": 0.00011390613136202426,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": 0.6757847532516847,
+      "jmd95_boussinesq_beta": 0.0007737013840352307,
+      "haline_response_relative_difference": -0.021731303535273527
+    },
+    {
+      "T68_C": 15.0,
+      "pressure_dbar": 0.0,
+      "jmd95_boussinesq_alpha": 0.00021433927811946978,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.10943920352307657,
+      "jmd95_boussinesq_beta": 0.0007523518581898931,
+      "haline_response_relative_difference": 0.006029075589871091
+    },
+    {
+      "T68_C": 25.0,
+      "pressure_dbar": 0.0,
+      "jmd95_boussinesq_alpha": 0.0002965031825354519,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.35622222801760095,
+      "jmd95_boussinesq_beta": 0.0007373353287516434,
+      "haline_response_relative_difference": 0.026517806619357653
+    },
+    {
+      "T68_C": 30.0,
+      "pressure_dbar": 0.0,
+      "jmd95_boussinesq_alpha": 0.00033306640819466245,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.4268945965670554,
+      "jmd95_boussinesq_beta": 0.0007314325337217617,
+      "haline_response_relative_difference": 0.03480199405653095
+    },
+    {
+      "T68_C": 0.0,
+      "pressure_dbar": 3000.0,
+      "jmd95_boussinesq_alpha": 0.00013740745257103025,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": 0.3891688890723799,
+      "jmd95_boussinesq_beta": 0.0007631056890615543,
+      "haline_response_relative_difference": -0.00814807796296324
+    },
+    {
+      "T68_C": 5.0,
+      "pressure_dbar": 3000.0,
+      "jmd95_boussinesq_alpha": 0.00018555695288928893,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": 0.02869849534688207,
+      "jmd95_boussinesq_beta": 0.0007512694841735944,
+      "haline_response_relative_difference": 0.007478488555522578
+    },
+    {
+      "T68_C": 15.0,
+      "pressure_dbar": 3000.0,
+      "jmd95_boussinesq_alpha": 0.0002660837793686693,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.2826238461763231,
+      "jmd95_boussinesq_beta": 0.0007334118986535074,
+      "haline_response_relative_difference": 0.03200922401544437
+    },
+    {
+      "T68_C": 25.0,
+      "pressure_dbar": 3000.0,
+      "jmd95_boussinesq_alpha": 0.00033377628952057254,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.42811348729251586,
+      "jmd95_boussinesq_beta": 0.0007210136889948219,
+      "haline_response_relative_difference": 0.04975516549247616
+    },
+    {
+      "T68_C": 30.0,
+      "pressure_dbar": 3000.0,
+      "jmd95_boussinesq_alpha": 0.0003644318897455562,
+      "linear_alpha": 0.0001908821582383638,
+      "thermal_response_relative_difference": -0.4762199368127844,
+      "jmd95_boussinesq_beta": 0.0007162332306856433,
+      "haline_response_relative_difference": 0.05676169714792256
+    }
+  ]
+}

@@ -746,3 +746,8 @@ and [measured qualification](../verification/ocean/linear-configuration/README.m
 Supported JMD95 defaults and atmospheric expressions remain unchanged. The only
 package extension is optional reference-owned analytic face/inverse dispatch;
 research-only mixing/remap reconstruction hooks retain their prior defaults.
+
+The subsequent [matched-EOS qualification](../verification/ocean/matched-eos/README.md)
+adds reproducible wave, rotating-flow and isolated mixing comparisons plus EOS
+response diagnostics. Runtime code/defaults are unchanged. Close matched warm
+cases do not establish accurate cold-water formation or global climate behavior.

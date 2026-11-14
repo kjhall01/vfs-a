@@ -1,0 +1,784 @@
+{
+  "config": {
+    "kind": "jet",
+    "cells": 128,
+    "layers": 4,
+    "dt": 600.0,
+    "hours": 24.0,
+    "periods": 1.0,
+    "compile": true,
+    "output": "/tmp/matched-jet.json"
+  },
+  "metadata": {
+    "speed_m_s": 5.0,
+    "reference": "continuum solid-body gradient-wind balance with flat internal interfaces"
+  },
+  "steps": 144,
+  "dt_s": 600.0,
+  "torch": "2.15.0+cpu",
+  "source_sha256": "ab868349d45be90225e76bdee5737347381debd5808a28ab843365cb745a36db",
+  "initial_anomaly_mismatch_kg_m3": 1.1368683772161603e-13,
+  "initial_temperature_difference_rms_C": 0.3066356960220377,
+  "cases": {
+    "jmd95": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 144,
+      "wall_s": 9.474416090000886,
+      "initial_acceleration_rms_m_s2": 7.857940865682835e-06,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0
+        },
+        {
+          "time_s": 1200.0,
+          "energy_minus_inputs_J_kg": -2.247954837060167e-08,
+          "velocity_change_rms": 0.009400621174688954
+        },
+        {
+          "time_s": 2400.0,
+          "energy_minus_inputs_J_kg": -4.4970347766413847e-08,
+          "velocity_change_rms": 0.018630029309727646
+        },
+        {
+          "time_s": 3600.0,
+          "energy_minus_inputs_J_kg": -6.746677267483129e-08,
+          "velocity_change_rms": 0.027527847201832753
+        },
+        {
+          "time_s": 4800.0,
+          "energy_minus_inputs_J_kg": -8.997444860845923e-08,
+          "velocity_change_rms": 0.035954458335959165
+        },
+        {
+          "time_s": 6000.0,
+          "energy_minus_inputs_J_kg": -1.1249900107990294e-07,
+          "velocity_change_rms": 0.0437994892286969
+        },
+        {
+          "time_s": 7200.0,
+          "energy_minus_inputs_J_kg": -1.3504043008916244e-07,
+          "velocity_change_rms": 0.050988059397601815
+        },
+        {
+          "time_s": 8400.0,
+          "energy_minus_inputs_J_kg": -1.5759873563623768e-07,
+          "velocity_change_rms": 0.05748414084135293
+        },
+        {
+          "time_s": 9600.0,
+          "energy_minus_inputs_J_kg": -1.801851687463392e-07,
+          "velocity_change_rms": 0.06329048995932905
+        },
+        {
+          "time_s": 10800.0,
+          "energy_minus_inputs_J_kg": -2.02777227369046e-07,
+          "velocity_change_rms": 0.06844483448346814
+        },
+        {
+          "time_s": 12000.0,
+          "energy_minus_inputs_J_kg": -2.2539741355477906e-07,
+          "velocity_change_rms": 0.07301235899699321
+        },
+        {
+          "time_s": 13200.0,
+          "energy_minus_inputs_J_kg": -2.480175997405121e-07,
+          "velocity_change_rms": 0.07707505410014404
+        },
+        {
+          "time_s": 14400.0,
+          "energy_minus_inputs_J_kg": -2.706490369514557e-07,
+          "velocity_change_rms": 0.08071912875847993
+        },
+        {
+          "time_s": 15600.0,
+          "energy_minus_inputs_J_kg": -2.93297350700215e-07,
+          "velocity_change_rms": 0.08402228232837504
+        },
+        {
+          "time_s": 16800.0,
+          "energy_minus_inputs_J_kg": -3.159287879111586e-07,
+          "velocity_change_rms": 0.08704295368205868
+        },
+        {
+          "time_s": 18000.0,
+          "energy_minus_inputs_J_kg": -3.385714761473127e-07,
+          "velocity_change_rms": 0.08981348351747057
+        },
+        {
+          "time_s": 19200.0,
+          "energy_minus_inputs_J_kg": -3.6120291335825625e-07,
+          "velocity_change_rms": 0.09233838044076474
+        },
+        {
+          "time_s": 20400.0,
+          "energy_minus_inputs_J_kg": -3.838118485187788e-07,
+          "velocity_change_rms": 0.09459776533525747
+        },
+        {
+          "time_s": 21600.0,
+          "energy_minus_inputs_J_kg": -4.0640953265409085e-07,
+          "velocity_change_rms": 0.09655495994286382
+        },
+        {
+          "time_s": 22800.0,
+          "energy_minus_inputs_J_kg": -4.290015912767976e-07,
+          "velocity_change_rms": 0.09816644414200115
+        },
+        {
+          "time_s": 24000.0,
+          "energy_minus_inputs_J_kg": -4.5157677336168865e-07,
+          "velocity_change_rms": 0.09939219244665222
+        },
+        {
+          "time_s": 25200.0,
+          "energy_minus_inputs_J_kg": -4.741238278835534e-07,
+          "velocity_change_rms": 0.1002046429908109
+        },
+        {
+          "time_s": 26400.0,
+          "energy_minus_inputs_J_kg": -4.966708824054181e-07,
+          "velocity_change_rms": 0.1005950540659387
+        },
+        {
+          "time_s": 27600.0,
+          "energy_minus_inputs_J_kg": -5.191898093642566e-07,
+          "velocity_change_rms": 0.10057657187109806
+        },
+        {
+          "time_s": 28800.0,
+          "energy_minus_inputs_J_kg": -5.417143618357003e-07,
+          "velocity_change_rms": 0.10018385515084835
+        },
+        {
+          "time_s": 30000.0,
+          "energy_minus_inputs_J_kg": -5.642220377693282e-07,
+          "velocity_change_rms": 0.09946954514328618
+        },
+        {
+          "time_s": 31200.0,
+          "energy_minus_inputs_J_kg": -5.867297137029562e-07,
+          "velocity_change_rms": 0.09849824253302873
+        },
+        {
+          "time_s": 32400.0,
+          "energy_minus_inputs_J_kg": -6.092430151491894e-07,
+          "velocity_change_rms": 0.09733896472261849
+        },
+        {
+          "time_s": 33600.0,
+          "energy_minus_inputs_J_kg": -6.317675676206331e-07,
+          "velocity_change_rms": 0.09605728169049016
+        },
+        {
+          "time_s": 34800.0,
+          "energy_minus_inputs_J_kg": -6.542921200920769e-07,
+          "velocity_change_rms": 0.09470840335584112
+        },
+        {
+          "time_s": 36000.0,
+          "energy_minus_inputs_J_kg": -6.768391746139416e-07,
+          "velocity_change_rms": 0.0933323399026867
+        },
+        {
+          "time_s": 37200.0,
+          "energy_minus_inputs_J_kg": -6.993918546484116e-07,
+          "velocity_change_rms": 0.09195184440700231
+        },
+        {
+          "time_s": 38400.0,
+          "energy_minus_inputs_J_kg": -7.219557857080921e-07,
+          "velocity_change_rms": 0.0905732333365361
+        },
+        {
+          "time_s": 39600.0,
+          "energy_minus_inputs_J_kg": -7.445478443307988e-07,
+          "velocity_change_rms": 0.08918952589452464
+        },
+        {
+          "time_s": 40800.0,
+          "energy_minus_inputs_J_kg": -7.671511539787162e-07,
+          "velocity_change_rms": 0.08778485318487161
+        },
+        {
+          "time_s": 42000.0,
+          "energy_minus_inputs_J_kg": -7.897657146518439e-07,
+          "velocity_change_rms": 0.08633891837904616
+        },
+        {
+          "time_s": 43200.0,
+          "energy_minus_inputs_J_kg": -8.123971518627875e-07,
+          "velocity_change_rms": 0.08483047584720471
+        },
+        {
+          "time_s": 44400.0,
+          "energy_minus_inputs_J_kg": -8.350454656115468e-07,
+          "velocity_change_rms": 0.08323925519985989
+        },
+        {
+          "time_s": 45600.0,
+          "energy_minus_inputs_J_kg": -8.576994048729114e-07,
+          "velocity_change_rms": 0.08154633067095793
+        },
+        {
+          "time_s": 46800.0,
+          "energy_minus_inputs_J_kg": -8.803589696468813e-07,
+          "velocity_change_rms": 0.07973346662501624
+        },
+        {
+          "time_s": 48000.0,
+          "energy_minus_inputs_J_kg": -9.030241599334564e-07,
+          "velocity_change_rms": 0.07778233179118475
+        },
+        {
+          "time_s": 49200.0,
+          "energy_minus_inputs_J_kg": -9.25678099194821e-07,
+          "velocity_change_rms": 0.07567459865528316
+        },
+        {
+          "time_s": 50400.0,
+          "energy_minus_inputs_J_kg": -9.483320384561856e-07,
+          "velocity_change_rms": 0.07339382271750938
+        },
+        {
+          "time_s": 51600.0,
+          "energy_minus_inputs_J_kg": -9.709691011797344e-07,
+          "velocity_change_rms": 0.07092968188883086
+        },
+        {
+          "time_s": 52800.0,
+          "energy_minus_inputs_J_kg": -9.93578036340257e-07,
+          "velocity_change_rms": 0.06828474266250761
+        },
+        {
+          "time_s": 54000.0,
+          "energy_minus_inputs_J_kg": -1.0161813459881744e-06,
+          "velocity_change_rms": 0.06548349300666077
+        },
+        {
+          "time_s": 55200.0,
+          "energy_minus_inputs_J_kg": -1.0387677790982757e-06,
+          "velocity_change_rms": 0.06258294664970068
+        },
+        {
+          "time_s": 56400.0,
+          "energy_minus_inputs_J_kg": -1.0613373356705616e-06,
+          "velocity_change_rms": 0.05968351785690534
+        },
+        {
+          "time_s": 57600.0,
+          "energy_minus_inputs_J_kg": -1.0838900157050315e-06,
+          "velocity_change_rms": 0.05693771348293912
+        },
+        {
+          "time_s": 58800.0,
+          "energy_minus_inputs_J_kg": -1.1064201936890806e-06,
+          "velocity_change_rms": 0.05455205500958788
+        },
+        {
+          "time_s": 60000.0,
+          "energy_minus_inputs_J_kg": -1.1289503716731294e-06,
+          "velocity_change_rms": 0.052774842802400516
+        },
+        {
+          "time_s": 61200.0,
+          "energy_minus_inputs_J_kg": -1.151469298631968e-06,
+          "velocity_change_rms": 0.051861800389360196
+        },
+        {
+          "time_s": 62400.0,
+          "energy_minus_inputs_J_kg": -1.1739769745655959e-06,
+          "velocity_change_rms": 0.05201947251238837
+        },
+        {
+          "time_s": 63600.0,
+          "energy_minus_inputs_J_kg": -1.1964846504992238e-06,
+          "velocity_change_rms": 0.05334477456138269
+        },
+        {
+          "time_s": 64800.0,
+          "energy_minus_inputs_J_kg": -1.2189867009202466e-06,
+          "velocity_change_rms": 0.05579312644100356
+        },
+        {
+          "time_s": 66000.0,
+          "energy_minus_inputs_J_kg": -1.241505627879085e-06,
+          "velocity_change_rms": 0.05919418962827513
+        },
+        {
+          "time_s": 67200.0,
+          "energy_minus_inputs_J_kg": -1.2640245548379235e-06,
+          "velocity_change_rms": 0.0633014637403155
+        },
+        {
+          "time_s": 68400.0,
+          "energy_minus_inputs_J_kg": -1.286565983847183e-06,
+          "velocity_change_rms": 0.06784564695665805
+        },
+        {
+          "time_s": 69600.0,
+          "energy_minus_inputs_J_kg": -1.309101787343837e-06,
+          "velocity_change_rms": 0.07257230335021292
+        },
+        {
+          "time_s": 70800.0,
+          "energy_minus_inputs_J_kg": -1.3316825949413334e-06,
+          "velocity_change_rms": 0.07726134111764403
+        },
+        {
+          "time_s": 72000.0,
+          "energy_minus_inputs_J_kg": -1.354269028051435e-06,
+          "velocity_change_rms": 0.08173392715801266
+        },
+        {
+          "time_s": 73200.0,
+          "energy_minus_inputs_J_kg": -1.3768835887245629e-06,
+          "velocity_change_rms": 0.08585275311953723
+        },
+        {
+          "time_s": 74400.0,
+          "energy_minus_inputs_J_kg": -1.3995150259355063e-06,
+          "velocity_change_rms": 0.08951937997054091
+        },
+        {
+          "time_s": 75600.0,
+          "energy_minus_inputs_J_kg": -1.4221633396842656e-06,
+          "velocity_change_rms": 0.09267051977759874
+        },
+        {
+          "time_s": 76800.0,
+          "energy_minus_inputs_J_kg": -1.4448172789456302e-06,
+          "velocity_change_rms": 0.09527407714563707
+        },
+        {
+          "time_s": 78000.0,
+          "energy_minus_inputs_J_kg": -1.4674880947448106e-06,
+          "velocity_change_rms": 0.09732531433613223
+        },
+        {
+          "time_s": 79200.0,
+          "energy_minus_inputs_J_kg": -1.4901420340061752e-06,
+          "velocity_change_rms": 0.09884332366420175
+        },
+        {
+          "time_s": 80400.0,
+          "energy_minus_inputs_J_kg": -1.5127959732675399e-06,
+          "velocity_change_rms": 0.09986790149046738
+        },
+        {
+          "time_s": 81600.0,
+          "energy_minus_inputs_J_kg": -1.5354442870162992e-06,
+          "velocity_change_rms": 0.10045682875404302
+        },
+        {
+          "time_s": 82800.0,
+          "energy_minus_inputs_J_kg": -1.5580700987146374e-06,
+          "velocity_change_rms": 0.10068344131556911
+        },
+        {
+          "time_s": 84000.0,
+          "energy_minus_inputs_J_kg": -1.5806734083625547e-06,
+          "velocity_change_rms": 0.10063422361405229
+        },
+        {
+          "time_s": 85200.0,
+          "energy_minus_inputs_J_kg": -1.6032598414726563e-06,
+          "velocity_change_rms": 0.10040601231581468
+        },
+        {
+          "time_s": 86400.0,
+          "energy_minus_inputs_J_kg": -1.6258181470197315e-06,
+          "velocity_change_rms": 0.10010230688852165
+        }
+      ],
+      "energy_minus_inputs_J_kg": -1.6258181470197315e-06,
+      "salt_relative_change": -9.837559229551678e-15,
+      "min_tke": 0.0
+    },
+    "linear": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 144,
+      "wall_s": 3.6381689199988614,
+      "initial_acceleration_rms_m_s2": 7.857244902674815e-06,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0
+        },
+        {
+          "time_s": 1200.0,
+          "energy_minus_inputs_J_kg": -2.2473922857996414e-08,
+          "velocity_change_rms": 0.009399787856124827
+        },
+        {
+          "time_s": 2400.0,
+          "energy_minus_inputs_J_kg": -4.4964722253808595e-08,
+          "velocity_change_rms": 0.01862837348005914
+        },
+        {
+          "time_s": 3600.0,
+          "energy_minus_inputs_J_kg": -6.745552164962078e-08,
+          "velocity_change_rms": 0.027525389445919278
+        },
+        {
+          "time_s": 4800.0,
+          "energy_minus_inputs_J_kg": -8.996319758324873e-08,
+          "velocity_change_rms": 0.03595122715006508
+        },
+        {
+          "time_s": 6000.0,
+          "energy_minus_inputs_J_kg": -1.1248212454208718e-07,
+          "velocity_change_rms": 0.04379551866222023
+        },
+        {
+          "time_s": 7200.0,
+          "energy_minus_inputs_J_kg": -1.350179280387414e-07,
+          "velocity_change_rms": 0.05098338668194935
+        },
+        {
+          "time_s": 8400.0,
+          "energy_minus_inputs_J_kg": -1.575706080732114e-07,
+          "velocity_change_rms": 0.05747880455426476
+        },
+        {
+          "time_s": 9600.0,
+          "energy_minus_inputs_J_kg": -1.8015141567070767e-07,
+          "velocity_change_rms": 0.06328452924798639
+        },
+        {
+          "time_s": 10800.0,
+          "energy_minus_inputs_J_kg": -2.0274909980601972e-07,
+          "velocity_change_rms": 0.06843828971857996
+        },
+        {
+          "time_s": 12000.0,
+          "energy_minus_inputs_J_kg": -2.2536366047914752e-07,
+          "velocity_change_rms": 0.07300527393701002
+        },
+        {
+          "time_s": 13200.0,
+          "energy_minus_inputs_J_kg": -2.4797822115227533e-07,
+          "velocity_change_rms": 0.0770674792363431
+        },
+        {
+          "time_s": 14400.0,
+          "energy_minus_inputs_J_kg": -2.706096583632189e-07,
+          "velocity_change_rms": 0.08071112507956475
+        },
+        {
+          "time_s": 15600.0,
+          "energy_minus_inputs_J_kg": -2.932467210867677e-07,
+          "velocity_change_rms": 0.08401392443806964
+        },
+        {
+          "time_s": 16800.0,
+          "energy_minus_inputs_J_kg": -3.158781582977113e-07,
+          "velocity_change_rms": 0.08703433117790489
+        },
+        {
+          "time_s": 18000.0,
+          "energy_minus_inputs_J_kg": -3.385152210212601e-07,
+          "velocity_change_rms": 0.08980469985709025
+        },
+        {
+          "time_s": 19200.0,
+          "energy_minus_inputs_J_kg": -3.6114103271959843e-07,
+          "velocity_change_rms": 0.09232954909478255
+        },
+        {
+          "time_s": 20400.0,
+          "energy_minus_inputs_J_kg": -3.83749967880121e-07,
+          "velocity_change_rms": 0.09458900364639067
+        },
+        {
+          "time_s": 21600.0,
+          "energy_minus_inputs_J_kg": -4.0634765201543303e-07,
+          "velocity_change_rms": 0.09654638156954382
+        },
+        {
+          "time_s": 22800.0,
+          "energy_minus_inputs_J_kg": -4.2893408512553453e-07,
+          "velocity_change_rms": 0.09815815116289577
+        },
+        {
+          "time_s": 24000.0,
+          "energy_minus_inputs_J_kg": -4.515036416978203e-07,
+          "velocity_change_rms": 0.0993842681707677
+        },
+        {
+          "time_s": 25200.0,
+          "energy_minus_inputs_J_kg": -4.740563217322903e-07,
+          "velocity_change_rms": 0.10019714635484483
+        },
+        {
+          "time_s": 26400.0,
+          "energy_minus_inputs_J_kg": -4.965921252289445e-07,
+          "velocity_change_rms": 0.10058801629291958
+        },
+        {
+          "time_s": 27600.0,
+          "energy_minus_inputs_J_kg": -5.190998011625725e-07,
+          "velocity_change_rms": 0.10056999584719709
+        },
+        {
+          "time_s": 28800.0,
+          "energy_minus_inputs_J_kg": -5.416299791466214e-07,
+          "velocity_change_rms": 0.10017771773900666
+        },
+        {
+          "time_s": 30000.0,
+          "energy_minus_inputs_J_kg": -5.641376550802494e-07,
+          "velocity_change_rms": 0.09946380236269262
+        },
+        {
+          "time_s": 31200.0,
+          "energy_minus_inputs_J_kg": -5.86639705501272e-07,
+          "velocity_change_rms": 0.09849283717575774
+        },
+        {
+          "time_s": 32400.0,
+          "energy_minus_inputs_J_kg": -6.091473814349e-07,
+          "velocity_change_rms": 0.09733383557754195
+        },
+        {
+          "time_s": 33600.0,
+          "energy_minus_inputs_J_kg": -6.316719339063437e-07,
+          "velocity_change_rms": 0.09605237318201637
+        },
+        {
+          "time_s": 34800.0,
+          "energy_minus_inputs_J_kg": -6.541964863777875e-07,
+          "velocity_change_rms": 0.0947036742111205
+        },
+        {
+          "time_s": 36000.0,
+          "energy_minus_inputs_J_kg": -6.767266643618365e-07,
+          "velocity_change_rms": 0.09332776956553905
+        },
+        {
+          "time_s": 37200.0,
+          "energy_minus_inputs_J_kg": -6.992793443963064e-07,
+          "velocity_change_rms": 0.09194743637243011
+        },
+        {
+          "time_s": 38400.0,
+          "energy_minus_inputs_J_kg": -7.218432754559869e-07,
+          "velocity_change_rms": 0.09056901529866626
+        },
+        {
+          "time_s": 39600.0,
+          "energy_minus_inputs_J_kg": -7.444240830534832e-07,
+          "velocity_change_rms": 0.08918554736283033
+        },
+        {
+          "time_s": 40800.0,
+          "energy_minus_inputs_J_kg": -7.670273927014005e-07,
+          "velocity_change_rms": 0.08778118176668923
+        },
+        {
+          "time_s": 42000.0,
+          "energy_minus_inputs_J_kg": -7.896419533745283e-07,
+          "velocity_change_rms": 0.08633563606959363
+        },
+        {
+          "time_s": 43200.0,
+          "energy_minus_inputs_J_kg": -8.122677650728666e-07,
+          "velocity_change_rms": 0.08482767638535944
+        },
+        {
+          "time_s": 44400.0,
+          "energy_minus_inputs_J_kg": -8.349104533090208e-07,
+          "velocity_change_rms": 0.08323704295639955
+        },
+        {
+          "time_s": 45600.0,
+          "energy_minus_inputs_J_kg": -8.575700180829905e-07,
+          "velocity_change_rms": 0.08154482082901976
+        },
+        {
+          "time_s": 46800.0,
+          "energy_minus_inputs_J_kg": -8.802183318317499e-07,
+          "velocity_change_rms": 0.07973278578775532
+        },
+        {
+          "time_s": 48000.0,
+          "energy_minus_inputs_J_kg": -9.02883522118325e-07,
+          "velocity_change_rms": 0.07778261775805662
+        },
+        {
+          "time_s": 49200.0,
+          "energy_minus_inputs_J_kg": -9.255374613796896e-07,
+          "velocity_change_rms": 0.07567599801426529
+        },
+        {
+          "time_s": 50400.0,
+          "energy_minus_inputs_J_kg": -9.481801496158436e-07,
+          "velocity_change_rms": 0.07339648507509144
+        },
+        {
+          "time_s": 51600.0,
+          "energy_minus_inputs_J_kg": -9.708115868267874e-07,
+          "velocity_change_rms": 0.07093374987425774
+        },
+        {
+          "time_s": 52800.0,
+          "energy_minus_inputs_J_kg": -9.934373985251255e-07,
+          "velocity_change_rms": 0.06829033711144572
+        },
+        {
+          "time_s": 54000.0,
+          "energy_minus_inputs_J_kg": -1.0160294571478324e-06,
+          "velocity_change_rms": 0.0654906927975807
+        },
+        {
+          "time_s": 55200.0,
+          "energy_minus_inputs_J_kg": -1.0386215157705392e-06,
+          "velocity_change_rms": 0.06259176256419591
+        },
+        {
+          "time_s": 56400.0,
+          "energy_minus_inputs_J_kg": -1.0611798213176143e-06,
+          "velocity_change_rms": 0.059693860043043064
+        },
+        {
+          "time_s": 57600.0,
+          "energy_minus_inputs_J_kg": -1.083721250326874e-06,
+          "velocity_change_rms": 0.056949353964967184
+        },
+        {
+          "time_s": 58800.0,
+          "energy_minus_inputs_J_kg": -1.1062514283109228e-06,
+          "velocity_change_rms": 0.05456459264265305
+        },
+        {
+          "time_s": 60000.0,
+          "energy_minus_inputs_J_kg": -1.128781606294972e-06,
+          "velocity_change_rms": 0.052787689914186295
+        },
+        {
+          "time_s": 61200.0,
+          "energy_minus_inputs_J_kg": -1.1512892822285998e-06,
+          "velocity_change_rms": 0.05187422240940159
+        },
+        {
+          "time_s": 62400.0,
+          "energy_minus_inputs_J_kg": -1.1737969581622276e-06,
+          "velocity_change_rms": 0.05203070316801551
+        },
+        {
+          "time_s": 63600.0,
+          "energy_minus_inputs_J_kg": -1.196310259608461e-06,
+          "velocity_change_rms": 0.053354180700056396
+        },
+        {
+          "time_s": 64800.0,
+          "energy_minus_inputs_J_kg": -1.2188123100294836e-06,
+          "velocity_change_rms": 0.055800341686998475
+        },
+        {
+          "time_s": 66000.0,
+          "energy_minus_inputs_J_kg": -1.2413199859631115e-06,
+          "velocity_change_rms": 0.05919914787925413
+        },
+        {
+          "time_s": 67200.0,
+          "energy_minus_inputs_J_kg": -1.26383891292195e-06,
+          "velocity_change_rms": 0.06330433843779418
+        },
+        {
+          "time_s": 68400.0,
+          "energy_minus_inputs_J_kg": -1.2863803419312094e-06,
+          "velocity_change_rms": 0.06784675326745958
+        },
+        {
+          "time_s": 69600.0,
+          "energy_minus_inputs_J_kg": -1.3089161454278638e-06,
+          "velocity_change_rms": 0.07257201162918717
+        },
+        {
+          "time_s": 70800.0,
+          "energy_minus_inputs_J_kg": -1.3314857020001494e-06,
+          "velocity_change_rms": 0.07726001892606026
+        },
+        {
+          "time_s": 72000.0,
+          "energy_minus_inputs_J_kg": -1.3540665095976457e-06,
+          "velocity_change_rms": 0.08173190718991676
+        },
+        {
+          "time_s": 73200.0,
+          "energy_minus_inputs_J_kg": -1.3766754447581683e-06,
+          "velocity_change_rms": 0.08585031883851231
+        },
+        {
+          "time_s": 74400.0,
+          "energy_minus_inputs_J_kg": -1.399306881969112e-06,
+          "velocity_change_rms": 0.08951676184516401
+        },
+        {
+          "time_s": 75600.0,
+          "energy_minus_inputs_J_kg": -1.4219495702052659e-06,
+          "velocity_change_rms": 0.09266789734441856
+        },
+        {
+          "time_s": 76800.0,
+          "energy_minus_inputs_J_kg": -1.4446035094666305e-06,
+          "velocity_change_rms": 0.09527158390477035
+        },
+        {
+          "time_s": 78000.0,
+          "energy_minus_inputs_J_kg": -1.467257448727995e-06,
+          "velocity_change_rms": 0.09732304354283645
+        },
+        {
+          "time_s": 79200.0,
+          "energy_minus_inputs_J_kg": -1.4899282645271755e-06,
+          "velocity_change_rms": 0.09884133369753192
+        },
+        {
+          "time_s": 80400.0,
+          "energy_minus_inputs_J_kg": -1.5125709527633296e-06,
+          "velocity_change_rms": 0.09986621992686903
+        },
+        {
+          "time_s": 81600.0,
+          "energy_minus_inputs_J_kg": -1.535219266512089e-06,
+          "velocity_change_rms": 0.1004554547181643
+        },
+        {
+          "time_s": 82800.0,
+          "energy_minus_inputs_J_kg": -1.5578450782104273e-06,
+          "velocity_change_rms": 0.10068234619494155
+        },
+        {
+          "time_s": 84000.0,
+          "energy_minus_inputs_J_kg": -1.5804483878583445e-06,
+          "velocity_change_rms": 0.10063335080133996
+        },
+        {
+          "time_s": 85200.0,
+          "energy_minus_inputs_J_kg": -1.6030291954558408e-06,
+          "velocity_change_rms": 0.1004052772061292
+        },
+        {
+          "time_s": 86400.0,
+          "energy_minus_inputs_J_kg": -1.625581875490311e-06,
+          "velocity_change_rms": 0.10010159876931582
+        }
+      ],
+      "energy_minus_inputs_J_kg": -1.625581875490311e-06,
+      "salt_relative_change": -9.911259546672576e-15,
+      "min_tke": 0.0
+    }
+  },
+  "final_difference": {
+    "velocity_rms_m_s": 4.8060730369687016e-05,
+    "thickness_rms_m": 0.0008497475108016248,
+    "density_anomaly_rms_kg_m3": 0.0001411444534262819,
+    "temperature_rms_C": 0.3066318458000435
+  }
+}
