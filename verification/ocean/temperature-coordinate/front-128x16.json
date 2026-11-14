@@ -1,0 +1,62 @@
+{
+  "cells": 128,
+  "layers": 16,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "compiled": false,
+  "quadrature": 4,
+  "front": true,
+  "scope": "unforced dynamics only",
+  "timings": {
+    "entropy": {
+      "samples_s": [
+        0.19987197099908371,
+        0.19110492700201576,
+        0.19705434599745786
+      ],
+      "median_s": 0.19705434599745786,
+      "inverse_calls": 6
+    },
+    "temperature": {
+      "samples_s": [
+        0.11789990200122702,
+        0.14412137399995117,
+        0.11956980600007228
+      ],
+      "median_s": 0.11956980600007228,
+      "inverse_calls": 0
+    }
+  },
+  "comparisons": [
+    {
+      "dt": 60.0,
+      "duration": 120.0,
+      "temperature_rms_C": 1.2120486628444364e-10,
+      "velocity_rms_m_s": 1.0346098766891264e-15,
+      "temperature_energy_change_J_kg": -2.763341965202789e-08,
+      "entropy_energy_change_J_kg": -4.5203386587969815e-08,
+      "min_salt": 33.99999999999998,
+      "min_tracer": 4.796842452395424
+    },
+    {
+      "dt": 30.0,
+      "duration": 120.0,
+      "temperature_rms_C": 3.050483014046794e-11,
+      "velocity_rms_m_s": 1.065419472775195e-15,
+      "temperature_energy_change_J_kg": -3.861079817600329e-09,
+      "entropy_energy_change_J_kg": -7.57839602497086e-09,
+      "min_salt": 33.99999999999997,
+      "min_tracer": 4.796842452395374
+    },
+    {
+      "dt": 15.0,
+      "duration": 120.0,
+      "temperature_rms_C": 7.611899203729277e-12,
+      "velocity_rms_m_s": 1.0424917364087513e-15,
+      "temperature_energy_change_J_kg": -5.955920995234551e-10,
+      "entropy_energy_change_J_kg": -1.5249211513660876e-09,
+      "min_salt": 33.99999999999994,
+      "min_tracer": 4.796842452395365
+    }
+  ]
+}

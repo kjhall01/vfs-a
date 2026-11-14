@@ -1,0 +1,10 @@
+{
+  "parent": "6ff95531b04bf3cb02f2fc2d6ba56be4da687a95",
+  "source_sha256": {
+    "validation/temperature_coordinate/model.py": "936ec72ed7aaa74dbbfecba8dbfba3de1417b0b12bde66bcf8c20161946b4446",
+    "validation/temperature_coordinate/run.py": "69ef52d0a92c52163f1154b84453f8a8a3eda09b7830f7f7e82550a562f8ef3d",
+    "tests/ocean/test_temperature_coordinate.py": "fa2f435486a57f5950a2bec0ac372af4884ffae25fdcbbb9e26682a164688479"
+  },
+  "runtime": "installed /tmp/vfs-opt-env, final PR73 wheel; no production source edits",
+  "scope": "research dynamics, not full-ocean performance"
+}
