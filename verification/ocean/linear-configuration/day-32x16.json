@@ -1,0 +1,43 @@
+{
+  "config": {
+    "cells": 32,
+    "layers": 16,
+    "dt": 600.0,
+    "steps": 144,
+    "mixing_substeps": 8,
+    "repeats": 3,
+    "compare_jmd95": false,
+    "ale": true,
+    "output": "/tmp/linear-day.json"
+  },
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "threads": 1,
+  "geometry": "Fibonacci Voronoi, zero Lloyd iterations, compatible rotation",
+  "source_sha256": {
+    "linear.py": "34d21bb7916ebb2dfb3e498d608b6788f97f4d3976e4405e32d9319576073f53",
+    "linear_campaign.py": "f491daf1bad262d0cb7fe9d8019e876dfb46e72a43cdb39ea5bbf0039fbe8b4b"
+  },
+  "cases": {
+    "linear": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 144,
+      "simulated_seconds": 86400.0,
+      "samples_s": [
+        0.12238176300161285,
+        0.1534340340003837,
+        0.1475117890004185
+      ],
+      "median_step_s": 0.1475117890004185,
+      "energy_minus_inputs_J_kg": -1.9153913799488024e-08,
+      "mass_minus_inputs_relative": -9.838756826344143e-15,
+      "salt_relative_change": -8.387334534100494e-15,
+      "passive_relative_change": -7.694935266920176e-15,
+      "min_tke": 9.078221028937178e-21,
+      "min_salt": 34.508560366999234,
+      "min_tracer": 5.862837717907034,
+      "max_local_budget_ratio": 3.568243658932554e-07
+    }
+  }
+}

@@ -50,6 +50,8 @@ def gibbs_face(reference, si, ti, sj, tj):
     eta*=-D_T G-dS*D_T mu. D_S mu>0 is checked, not assumed.
     Positive salinity is required. These are thermodynamic means, not bounds.
     """
+    if hasattr(reference, 'face_means'):
+        return reference.face_means(si, ti, sj, tj)
     vi = reference.evaluate(si, ti, entropy_derivatives=True)
     vj = reference.evaluate(sj, tj, entropy_derivatives=True)
     d = reference.data
@@ -98,6 +100,8 @@ def gibbs_face(reference, si, ti, sj, tj):
 
 def temperature_from_entropy(reference, sp, entropy, *, guess=None):
     """Explicit analytic bracketed Newton inversion; no clipping or forward AD."""
+    if hasattr(reference, 'inverse_entropy'):
+        return reference.inverse_entropy(sp, entropy, guess=guess)
     lo, hi = [torch.full_like(entropy, t/reference.to_90) for t in reference.data['temperature_ITS90_range_C']]
     el, eh = reference.evaluate(sp, lo)['entropy'], reference.evaluate(sp, hi)['entropy']
     if not torch.isfinite(entropy).all() or ((entropy < el)|(entropy > eh)).any():

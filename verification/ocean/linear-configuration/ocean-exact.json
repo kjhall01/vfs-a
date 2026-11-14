@@ -1,0 +1,28 @@
+{
+  "torch": "2.15.0+cpu",
+  "input_sha256": "6e70183565daa1b686b4583be91e61e46d6539ec312f95b8566a15d9d30253a6",
+  "arrays": 1416,
+  "exact": 1411,
+  "differences": [
+    {
+      "key": "global/source/restoring/temp_h",
+      "max_abs": 1.3010426069826053e-18
+    },
+    {
+      "key": "global/source/flux/temp_h",
+      "max_abs": 3.3881317890172014e-21
+    },
+    {
+      "key": "global/source/flux/salt_h",
+      "max_abs": 1.0587911840678754e-22
+    },
+    {
+      "key": "global/source/composite/temp_h",
+      "max_abs": 3.3881317890172014e-21
+    },
+    {
+      "key": "global/source/composite/salt_h",
+      "max_abs": 1.0587911840678754e-22
+    }
+  ]
+}
