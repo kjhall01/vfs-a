@@ -758,3 +758,10 @@ Independent derivative/work checks and the installed-wheel portable suite are
 recorded in [its qualification report](../verification/ocean/roquet/README.md).
 Density coefficients are published; the accompanying constant-cp entropy model
 is explicitly idealized. This does not constitute TEOS-10 or climate qualification.
+
+The [Roquet timestep campaign](../validation/timestep/README.md) separates
+finite-duration completion, conservation and reference-relative temporal error.
+It supports saved meshes, explicit resolution/layer/depth choices, fixed maximum
+mixing substeps, isolated timeouts and resumable completed trials. It does not
+assign a universal or climate-safe timestep. Compact implementation checks and
+target-resolution attempt results are retained under `verification/ocean/timestep`.

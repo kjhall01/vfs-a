@@ -1,0 +1,195 @@
+{
+  "provenance": {
+    "source_sha256": "e424398db02d07fd216e3bc9fe3d46342f48c33d4303dfda01ea2851316ae55d",
+    "torch": "2.15.0+cpu",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "mesh_file_sha256": null
+  },
+  "limits": {
+    "u": 0.001,
+    "CT": 0.01,
+    "SA": 0.001,
+    "h": 0.1,
+    "k": 1e-05,
+    "energy": 0.001,
+    "inventory": 1e-10
+  },
+  "scope": "finite-duration Roquet CPU float64; no climate guarantee",
+  "results": [
+    {
+      "cells": 32,
+      "case": "rest",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 1.5965932756640192e-17,
+        "CT": 0.0,
+        "SA": 5.082695066584396e-16,
+        "h": 1.6765884656341147e-14,
+        "k": 0.0
+      }
+    },
+    {
+      "cells": 32,
+      "case": "rest",
+      "dt": 30.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.5965932756640192e-17,
+        "CT": 0.0,
+        "SA": 5.082695066584396e-16,
+        "h": 1.6765884656341147e-14,
+        "k": 0.0
+      },
+      "result": "32x4-rest-dt30.json"
+    },
+    {
+      "cells": 32,
+      "case": "rest",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.5773828481462586e-17,
+        "CT": 1.4532725812136193e-16,
+        "SA": 1.6681109968351508e-15,
+        "h": 7.266528989222641e-14,
+        "k": 0.0
+      },
+      "result": "32x4-rest-dt60.json"
+    },
+    {
+      "cells": 32,
+      "case": "wave",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 9.751788614355769e-15,
+        "CT": 1.446744186150407e-15,
+        "SA": 8.49709409995446e-15,
+        "h": 6.337358148449018e-13,
+        "k": 0.0
+      }
+    },
+    {
+      "cells": 32,
+      "case": "wave",
+      "dt": 30.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 9.751788614355769e-15,
+        "CT": 1.446744186150407e-15,
+        "SA": 8.49709409995446e-15,
+        "h": 6.337358148449018e-13,
+        "k": 0.0
+      },
+      "result": "32x4-wave-dt30.json"
+    },
+    {
+      "cells": 32,
+      "case": "wave",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 8.775091965636932e-14,
+        "CT": 1.3195839827843409e-15,
+        "SA": 9.176246106204392e-15,
+        "h": 6.322745978988272e-12,
+        "k": 0.0
+      },
+      "result": "32x4-wave-dt60.json"
+    },
+    {
+      "cells": 32,
+      "case": "front",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 1.9397283459545837e-12,
+        "CT": 1.5649584086275524e-08,
+        "SA": 1.156805174966747e-14,
+        "h": 1.7565508523647891e-12,
+        "k": 0.0
+      }
+    },
+    {
+      "cells": 32,
+      "case": "front",
+      "dt": 30.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.9397283459545837e-12,
+        "CT": 1.5649584086275524e-08,
+        "SA": 1.156805174966747e-14,
+        "h": 1.7565508523647891e-12,
+        "k": 0.0
+      },
+      "result": "32x4-front-dt30.json"
+    },
+    {
+      "cells": 32,
+      "case": "front",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 4.501693209644091e-12,
+        "CT": 4.9308522428741404e-08,
+        "SA": 1.0682320327182517e-14,
+        "h": 1.484989893833666e-11,
+        "k": 0.0
+      },
+      "result": "32x4-front-dt60.json"
+    },
+    {
+      "cells": 32,
+      "case": "forced",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 1.9186130555180962e-09,
+        "CT": 5.230075310786047e-08,
+        "SA": 2.3209914039337483e-09,
+        "h": 2.4430392393264863e-11,
+        "k": 5.506908842272661e-07
+      }
+    },
+    {
+      "cells": 32,
+      "case": "forced",
+      "dt": 30.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.9186130555180962e-09,
+        "CT": 5.230075310786047e-08,
+        "SA": 2.3209914039337483e-09,
+        "h": 2.4430392393264863e-11,
+        "k": 5.506908842272661e-07
+      },
+      "result": "32x4-forced-dt30.json"
+    },
+    {
+      "cells": 32,
+      "case": "forced",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 5.752253226545701e-09,
+        "CT": 1.554830126525912e-07,
+        "SA": 6.9015047027996e-09,
+        "h": 7.19441816138838e-11,
+        "k": 1.5561298367746813e-06
+      },
+      "result": "32x4-forced-dt60.json"
+    }
+  ],
+  "largest_tested_qualified_dt": {
+    "32": 60.0
+  }
+}
