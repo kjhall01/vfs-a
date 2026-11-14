@@ -1749,3 +1749,14 @@ These are short samples beyond #72, not Mac or long-run qualification. Final
 installed-wheel suite: 1084 passed, one CUDA skip; both portable fixtures and
 three compiled CLI smoke cases pass. Defaults remain eager q4. Compact evidence
 and source/wheel hashes are retained; oversized tensor captures are omitted.
+
+## Temperature-coordinate first pass
+
+Research-only `validation/temperature_coordinate/TemperatureOcean` (class in
+model.py) evolves h*T with the same full Hamiltonian and a chain-rule transform
+of the current entropy RHS. No inverse-temperature calls in dynamics. Four new
+checks plus ten quadrature checks pass; compiled 128×16 dynamics short samples
+improve 0.1177 -> 0.0803 s. See validation/temperature_coordinate/README.md for
+energy derivatives, sharp-front dt refinement and limits. No TKE, heating,
+forcing or ALE conversion yet; no defaults changed. Previous TKE packing probe
+files remain separate, uncommitted work and are not part of this candidate.
