@@ -109,3 +109,7 @@ inventories, sharp-front backward smoke and domain rejection. Together with the
 ten existing quadrature tests, 14 focused checks pass. This is not a rerun of the
 full suite or full-model differentiability qualification. Source and compact raw
 results are retained under verification/ocean/temperature-coordinate.
+
+A separate [linear-density, constant-heat-capacity configuration](LINEAR.md)
+provides matching Hamiltonian derivatives, analytic mixing costs and algebraic
+heating/temperature recovery. It is explicitly selected and changes the EOS.

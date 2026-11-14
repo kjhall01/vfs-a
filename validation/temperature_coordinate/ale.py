@@ -40,6 +40,9 @@ class TemperatureEnthalpyRemapper:
             raise ValueError('method must be pcm or plm')
         self.method = method
 
+    def _temperature(self,reference,salt,enthalpy,guess):
+        return Caloric(reference,salt).inverse(enthalpy,guess,'h0')
+
     def remap_with_report(self, model, state, target_h, energy):
         physical = validate(model, state, energy)
         if target_h.shape != state.h.shape:
@@ -70,7 +73,7 @@ class TemperatureEnthalpyRemapper:
             if domain is not None:
                 active = active & domain.active_edge
             u = torch.where(active[:,None], momentum/new_edge, state.u_e)
-            theta = Caloric(reference,mapped[...,1]/target_h).inverse(mapped[...,0]/target_h,physical.temperature(),'h0')
+            theta = self._temperature(reference,mapped[...,1]/target_h,mapped[...,0]/target_h,physical.temperature())
             temp_h=torch.where(changed[:,None],target_h*theta,state.temp_h)
             end=state.with_tensors(u,target_h,temp_h,mapped[...,1],
                                   None if state.tracer_h is None else mapped[...,2:])

@@ -735,3 +735,14 @@ skip**, one existing warning. Thirteen new composition checks pass.
 An alternating 1024×64 follow-up (three samples each, same compiled kernels)
 measures 21.728 → 9.709 s including ALE, **2.24×**. The earlier noisy
 single-sample comparison remains recorded; no Mac/global extrapolation.
+
+## Explicit linear-density ocean configuration
+
+The separate research `LinearOcean` configuration uses one affine-density,
+constant-cp Hamiltonian across dynamics, mixing, heating and ALE. It retains
+active T/S, TKE, conservative inventories and existing acceptance guards.
+See [equations and runnable example](../validation/temperature_coordinate/LINEAR.md)
+and [measured qualification](../verification/ocean/linear-configuration/README.md).
+Supported JMD95 defaults and atmospheric expressions remain unchanged. The only
+package extension is optional reference-owned analytic face/inverse dispatch;
+research-only mixing/remap reconstruction hooks retain their prior defaults.

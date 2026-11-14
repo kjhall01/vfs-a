@@ -1801,3 +1801,15 @@ skip**, one existing warning. Thirteen new composition checks pass.
 An alternating 1024×64 follow-up (three samples each, same compiled kernels)
 measures 21.728 → 9.709 s including ALE, **2.24×**. The earlier noisy
 single-sample comparison remains recorded; no Mac/global extrapolation.
+
+## Separate linear-density ocean configuration
+
+`validation/temperature_coordinate/linear.py` supplies the opt-in `LinearOcean`
+research composition: affine density, constant-cp calorics, matching Hamiltonian
+forces, exact fixed-geometry scalar-mixing work, algebraic heating, prescribed
+surface fluxes and adaptive ALE. JMD95 defaults are unchanged. Read
+[configuration and equations](../validation/temperature_coordinate/LINEAR.md)
+and [qualification](../verification/ocean/linear-configuration/README.md).
+The inherited local TKE funding retries and acceptance constraints remain.
+No claim of realistic seawater thermodynamics, globally admissible large steps,
+GPU qualification or climate accuracy follows from this configuration.

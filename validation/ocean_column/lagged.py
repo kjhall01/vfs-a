@@ -60,6 +60,12 @@ class LaggedClosure(PathWorkClosure):
         from fast_thermo import MixingThermodynamics
         return MixingThermodynamics(ocean,physical)
 
+    def _enthalpy_temperature(self,energy,workbuf,salt,enthalpy,guess):
+        if workbuf:
+            from fast_thermo import Caloric
+            return Caloric(energy.reference,salt).inverse(enthalpy,guess,'h0')
+        return energy.reference.temperature_from_enthalpy(salt,enthalpy)
+
     def _baseline_entropy(self,energy,workbuf,salt,theta,enthalpy):
         if workbuf:
             from fast_thermo import Caloric
@@ -138,7 +144,7 @@ class LaggedClosure(PathWorkClosure):
             fs=dt*gh*(salt[:,1:]-salt[:,:-1]);fh=dt*gh*(enthalpy[:,1:]-enthalpy[:,:-1])
             salt_h=state.salt_h+div(fs);salt=salt_h/h
             enthalpy=H0+div(fh)/h
-            theta=Caloric(energy.reference,salt).inverse(enthalpy,theta0,'h0') if workbuf else energy.reference.temperature_from_enthalpy(salt,enthalpy)
+            theta=self._enthalpy_temperature(energy,workbuf,salt,enthalpy,theta0)
             tracer=state.tracer_h
             if tracer is not None:
                 q=solutions[...,2:]
