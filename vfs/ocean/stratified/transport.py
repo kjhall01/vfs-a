@@ -21,6 +21,26 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
     are paired through the unchanged energy functional, not post-step clipping.
     Salt/passive antidiffusion never exceeds the parent's per-incidence budget.
     """
+    baseline, low, high, beta, change = _local_target_fields(
+        model, state, dt, eta_high, salt_high, composition_entropy,
+        baseline=baseline, low=low)
+    anti = baseline.high_integrated_flux-low.donor_integrated_flux
+    correction = beta*anti
+    amount = low.low_amounts.reshape(state.h.numel(), -1)
+    flux = low.donor_integrated_flux+correction
+    amounts = amount+divergence(low.i, low.j, correction, amount.shape[0])
+    target = replace(baseline, amounts=amounts.reshape_as(baseline.amounts),
+                     integrated_flux=flux, trace_change=change, beta=beta)
+    return target, low, high
+
+
+def _local_target_fields(model, state, dt, eta_high, salt_high,
+                         composition_entropy, *, baseline=None, low=None):
+    """Target limiter and traces, before materializing a transport ledger.
+
+    The work-constrained path consumes only these fields and constructs its
+    own final amounts/fluxes. The public prescribed-carrier path needs both.
+    """
     if baseline is None:
         baseline = parent.bounded_transport(model, state, dt, eta_high,
                                              salt_high, composition_entropy)
@@ -29,10 +49,12 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
     anti = baseline.high_integrated_flux-low.donor_integrated_flux
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
-    positive = torch.zeros_like(amount).index_add(0, low.j, anti.clamp_min(0))
-    positive = positive.index_add(0, low.i, (-anti).clamp_min(0))
-    negative = torch.zeros_like(amount).index_add(0, low.i, anti.clamp_min(0))
-    negative = negative.index_add(0, low.j, (-anti).clamp_min(0))
+    anti_positive, anti_negative = anti.clamp_min(0), (-anti).clamp_min(0)
+    positive = torch.zeros_like(amount).index_add(0, low.j, anti_positive)
+    positive = positive.index_add(0, low.i, anti_negative)
+    negative = torch.zeros_like(amount).index_add(0, low.i, anti_positive)
+    negative = negative.index_add(0, low.j, anti_negative)
+    del anti_positive, anti_negative
     def ratio(room, demand):
         safe = torch.where(demand > 0, demand, torch.ones_like(demand))
         return torch.where(demand > 0, room.clamp_min(0)/safe,
@@ -43,6 +65,7 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
                        torch.minimum(upper[low.i], lower[low.j]))
     beta = torch.cat([beta[:, :1], torch.minimum(beta[:, 1:], baseline.beta[:, 1:])], -1)
     beta = torch.where(beta < 1, beta*(1-64*torch.finfo(beta.dtype).eps), beta)
+    del positive, negative, upper, lower
     fields = [state.entropy_h[..., None], state.salt_h[..., None]]
     if state.tracer_h is not None:
         fields.append(state.tracer_h)
@@ -52,11 +75,8 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
                       .5*(q[low.i, 2:]+q[low.j, 2:])], -1)
     donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
     change = (1-beta)*(donor-high)
-    flux = low.donor_integrated_flux+beta*anti
-    amounts = amount+divergence(low.i, low.j, beta*anti, amount.shape[0])
-    target = replace(baseline, amounts=amounts.reshape_as(baseline.amounts),
-                     integrated_flux=flux, trace_change=change, beta=beta)
-    return target, low, high
+    del donor, q, fields
+    return baseline, low, high, beta, change
 
 
 def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy):
@@ -76,13 +96,17 @@ def evaluate(model, state, dt, energy, *, physical=None):
     stage = parent._StageEvaluation(model, state, dt, energy, physical=physical)
     original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
     eta, salt, face = stage.eta, stage.salt, stage.face
-    target, low, high = local_target(model, state, dt, eta, salt,
-                                     face['composition_entropy'], original.transport, low=stage.low)
+    baseline, low, high, target_beta, target_change = _local_target_fields(model, state, dt, eta, salt,
+                                     face['composition_entropy'], baseline=original.transport, low=stage.low)
+    del baseline  # original owns it until its final fields have been consumed
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
     g = stage.gradient
+    # The shared stage has served the parent and local target. Its unused
+    # dynamic gradients and face thermodynamics need not survive this stage.
+    del stage, eta, salt, face
     covector = torch.stack([g[k]/area for k in ('entropy_h', 'salt_h')], -1).reshape(nodes, 2)
     jump = covector[low.j]-covector[low.i]
-    delta = target.trace_change[:, :2]-original.transport.trace_change[:, :2]
+    delta = target_change[:, :2]-original.transport.trace_change[:, :2]
     added_work = low.carrier*(jump*delta).sum(-1)
     active = slice(None) if model.domain is None else model.domain.active_edge
     kinetic = (.5*g['u_e']*state.u_e)[active].flatten()
@@ -94,34 +118,46 @@ def evaluate(model, state, dt, energy, *, physical=None):
     safe = torch.where(added_work > 0, added_work, torch.ones_like(added_work))
     fraction = torch.where(added_work > 0, (room/safe).clamp(max=1), torch.ones_like(safe))
     active_change = original.transport.trace_change[:, :2]+fraction[:, None]*delta
-    change = torch.cat([active_change, target.trace_change[:, 2:]], -1)
-    beta_salt = original.transport.beta[:, 1]+fraction*(target.beta[:, 1]-original.transport.beta[:, 1])
-    beta = torch.cat([target.beta[:, :1], beta_salt[:, None], target.beta[:, 2:]], -1)
+    change = torch.cat([active_change, target_change[:, 2:]], -1)
+    beta_salt = original.transport.beta[:, 1]+fraction*(target_beta[:, 1]-original.transport.beta[:, 1])
+    beta = torch.cat([target_beta[:, :1], beta_salt[:, None], target_beta[:, 2:]], -1)
     anti = original.transport.high_integrated_flux-low.donor_integrated_flux
-    amounts = low.low_amounts.reshape(nodes, -1)+divergence(low.i, low.j, beta*anti, nodes)
+    original_force = original.force_correction
+    original_face_work = original.face_work
+    gibbs_identity = original.gibbs_identity
+    high_integrated_flux = original.transport.high_integrated_flux
+    del original, covector, delta, active_change, kinetic, room, safe, beta_salt
+    correction_flux = beta*anti
+    amounts = low.low_amounts.reshape(nodes, -1)+divergence(low.i, low.j, correction_flux, nodes)
     flux = (dt*low.carrier)[:, None]*(high+change)
+    del high
     initial_entropy = (area*state.entropy_h).flatten()
     entropy_amount = initial_entropy+divergence(low.i, low.j, flux[:, 0], nodes)
     amounts = torch.cat([entropy_amount[:, None], amounts[:, 1:]], -1)
     # Store the exact flux corresponding to authoritative salt/passive amounts.
-    flux = torch.cat([flux[:, :1], (low.donor_integrated_flux+beta*anti)[:, 1:]], -1)
-    ledger = replace(target, amounts=amounts.reshape_as(target.amounts),
-                     integrated_flux=flux, trace_change=change, beta=beta)
+    flux = torch.cat([flux[:, :1], (low.donor_integrated_flux+correction_flux)[:, 1:]], -1)
+    ledger = parent.AdmissibleLedger(
+        low.volume, amounts.reshape(*state.h.shape, -1), flux,
+        high_integrated_flux, change, beta, low.i, low.j, low.carrier,
+        low.outflow_fraction)
+    # The final ledger owns all returned fields. Release superseded ledgers
+    # before constructing forces/rates; graph dependencies remain under autograd.
+    del target_change, low, anti, correction_flux, initial_entropy, entropy_amount, amounts
     per_carrier = (jump*change[:, :2]).sum(-1)
-    work = low.carrier*per_carrier
+    work = ledger.carrier*per_carrier
     heat = (-work).clamp_min(0)
     coefficient = g['entropy_h'].flatten()
-    source = torch.zeros_like(coefficient).index_add(0, low.i, .5*heat/coefficient[low.i])
-    source = source.index_add(0, low.j, .5*heat/coefficient[low.j]).reshape_as(state.h)
+    source = torch.zeros_like(coefficient).index_add(0, ledger.i, .5*heat/coefficient[ledger.i])
+    source = source.index_add(0, ledger.j, .5*heat/coefficient[ledger.j]).reshape_as(state.h)
     mechanical = torch.where(work > 0, per_carrier, torch.zeros_like(work))
     correction = torch.zeros_like(state.u_e)
     correction[active] = -mechanical.reshape_as(correction[active])/(model.dynamics.rho0*model.mesh.dc_edge[active, None])
-    rates = divergence(low.i, low.j, flux/dt, nodes).reshape_as(ledger.amounts)/area[..., None]
-    rhs = replace(original_rhs, u_e=original_rhs.u_e-original.force_correction+correction,
+    rates = divergence(ledger.i, ledger.j, flux/dt, nodes).reshape_as(ledger.amounts)/area[..., None]
+    rhs = replace(original_rhs, u_e=original_rhs.u_e-original_force+correction,
                   entropy_h=rates[..., 0]+source, salt_h=rates[..., 1],
                   tracer_h=None if state.tracer_h is None else rates[..., 2:])
-    return rhs, FrontWorkLedger(ledger, work, heat, source, correction, original.gibbs_identity,
-        target.beta, fraction, original.face_work+added_work, cap)
+    return rhs, FrontWorkLedger(ledger, work, heat, source, correction, gibbs_identity,
+        target_beta, fraction, original_face_work+added_work, cap)
 
 
 def euler(model, state, dt, energy):

@@ -1,0 +1,94 @@
+[
+  {
+    "dynamics": false,
+    "viscosity": 10000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "backscatter_KE_gain_J_kg": 1.4189850242352912e-08,
+    "backscatter_residual_J_kg": -6.408346067303503e-19,
+    "max_local_backscatter_residual_J_kg": 7.105141797854822e-18,
+    "other_closure_residual_J_kg": 1.2122722416761133e-13,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 7.952818206602676e-12,
+    "minimum_eddy_energy_J_kg": 0.09997674513825433,
+    "final_layer_scale": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "dynamics": true,
+    "viscosity": 10000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "backscatter_KE_gain_J_kg": 1.4256469133940292e-08,
+    "backscatter_residual_J_kg": 2.317882697361812e-19,
+    "max_local_backscatter_residual_J_kg": 7.104321352265454e-18,
+    "other_closure_residual_J_kg": 1.6606455308480016e-13,
+    "resolved_step_energy_change_J_kg": -6.36225456528214e-11,
+    "direct_total_energy_change_J_kg": -3.9764091033013376e-11,
+    "minimum_eddy_energy_J_kg": 0.0999767422812824,
+    "final_layer_scale": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "dynamics": false,
+    "viscosity": 1000000000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "backscatter_KE_gain_J_kg": 4.044060069590062e-06,
+    "backscatter_residual_J_kg": 4.1733242634603416e-19,
+    "max_local_backscatter_residual_J_kg": 7.105380282269662e-18,
+    "other_closure_residual_J_kg": -3.8089804279342924e-13,
+    "resolved_step_energy_change_J_kg": 0.0,
+    "direct_total_energy_change_J_kg": 0.0,
+    "minimum_eddy_energy_J_kg": 0.09992185897488867,
+    "final_layer_scale": [
+      7.823418119775971e-07,
+      7.830965876875655e-07,
+      7.83838641885154e-07,
+      7.84568952708895e-07,
+      7.85288393781301e-07,
+      7.859977302660275e-07,
+      7.866976170246236e-07,
+      7.873885973762253e-07
+    ]
+  },
+  {
+    "dynamics": true,
+    "viscosity": 1000000000000.0,
+    "steps": 20,
+    "dt": 10.0,
+    "backscatter_KE_gain_J_kg": 4.041778400789385e-06,
+    "backscatter_residual_J_kg": 8.392887906798886e-19,
+    "max_local_backscatter_residual_J_kg": 7.105271271784318e-18,
+    "other_closure_residual_J_kg": -2.9839404021057955e-13,
+    "resolved_step_energy_change_J_kg": -5.566972744621872e-11,
+    "direct_total_energy_change_J_kg": -4.771690923961605e-11,
+    "minimum_eddy_energy_J_kg": 0.09992185910941899,
+    "final_layer_scale": [
+      7.823338681789736e-07,
+      7.830884438932115e-07,
+      7.838303406965721e-07,
+      7.845605372738528e-07,
+      7.852799150988706e-07,
+      7.859892688037739e-07,
+      7.866893760077209e-07,
+      7.873819337532247e-07
+    ]
+  }
+]

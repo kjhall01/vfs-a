@@ -1,0 +1,11 @@
+{
+  "wheel_sha256": "a8046752b103c914d53ee885151d125b08f7fc59d4b0da451872d12acd870ed0",
+  "research_sha256": {
+    "backscatter.py": "50c41eff685e5aca290ebf9de1b06f95f06f22300e675af0d498d8f1c0c444fa",
+    "backscatter_campaign.py": "709ae5a2e719160057e91d2719eee9e831696fbd361989f2ae43fa9cce932122",
+    "eddy_energy.py": "8d1ee1f297f3f6704bbe63adee459c52997bb853057d8b1268eec59e57af9166",
+    "model.py": "b237f730bf4059f407c5f2e3e029f43a41c30ee886b27200cfc89fb46d6736e6",
+    "system.py": "b15576d9252d489de4bb7d553a46dad058011e02ec5bdc5a852b2c44abb6b9d5",
+    "roquet.py": "6568a488fdd860c741803723e4d8cc90bc68092661fbe01431bae66b8af41058"
+  }
+}

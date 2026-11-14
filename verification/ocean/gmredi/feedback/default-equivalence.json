@@ -1,0 +1,25 @@
+{
+  "reference": "ebab9dd961d4cf3f167276d38c45c174057917b3",
+  "tensors_compared": 487,
+  "all_bitwise_equal": true,
+  "new_optional_report_fields": [
+    "density/False/(1000.0, 0.0)/report/gm_diffusivity",
+    "density/False/(0.0, 1000.0)/report/gm_diffusivity",
+    "density/False/(1000.0, 1000.0)/report/gm_diffusivity",
+    "density/True/(1000.0, 0.0)/report/gm_diffusivity",
+    "density/True/(0.0, 1000.0)/report/gm_diffusivity",
+    "density/True/(1000.0, 1000.0)/report/gm_diffusivity",
+    "cold/False/(1000.0, 0.0)/report/gm_diffusivity",
+    "cold/False/(0.0, 1000.0)/report/gm_diffusivity",
+    "cold/False/(1000.0, 1000.0)/report/gm_diffusivity",
+    "cold/True/(1000.0, 0.0)/report/gm_diffusivity",
+    "cold/True/(0.0, 1000.0)/report/gm_diffusivity",
+    "cold/True/(1000.0, 1000.0)/report/gm_diffusivity",
+    "warm/False/(1000.0, 0.0)/report/gm_diffusivity",
+    "warm/False/(0.0, 1000.0)/report/gm_diffusivity",
+    "warm/False/(1000.0, 1000.0)/report/gm_diffusivity",
+    "warm/True/(1000.0, 0.0)/report/gm_diffusivity",
+    "warm/True/(0.0, 1000.0)/report/gm_diffusivity",
+    "warm/True/(1000.0, 1000.0)/report/gm_diffusivity"
+  ]
+}

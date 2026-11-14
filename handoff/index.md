@@ -6,7 +6,8 @@ TKE. One full Roquet Hamiltonian supplies totals, discrete conjugates and finite
 work; local conservative energy fluxes pair with reservoir exchange for both
 GM and Redi. Redi refreshes slopes after GM. See [energy qualification](../verification/ocean/gmredi/ENERGY_RESERVOIR.md).
 Unaffordable local withdrawals and negative rotated-diffusion updates reject;
-positivity-preserving Redi, exact neutral geometry and backscatter remain open.
+positivity-preserving Redi and exact neutral geometry remain open; the optional
+first backscatter stage is described below.
 
 The [GM–Redi optimization](../verification/ocean/gmredi/optimization/README.md)
 shares per-call geometry, avoids redundant stencil tensors and reuses validation
@@ -24,6 +25,33 @@ cover both coastal and open geometry. Combined installed-wheel coverage is
 Closure time decreases 28–48% across two CPU timing pairs; closure-only peak
 process memory decreases 26%, while full-process peak remains about 3.3 GB.
 Production defaults remain unchanged.
+
+The [energy feedback pass](../verification/ocean/gmredi/feedback/README.md)
+adds optional `EddyMixingLength` GM strength and `EddyDissipation` directly to
+full-H thermal energy. The kinetic fraction, length, efficiency and decay time
+are explicit uncalibrated choices. No implicit seed/floor or TKE transfer is
+introduced. Prescribed behavior matches all 487 reference tensors bitwise.
+Fifteen front/channel experiments retain local closure within 3.64e-12 J/kg;
+the short channel run is not baroclinic-instability/climate qualification.
+Installed-wheel portable suite: 1203 passed, 2 skipped. At 16384×40,
+prescribed/feedback-plus-decay closure medians are 2.420/2.497 s; estimated
+full-step difference is about 0.4%, within timing variation. CPU float64 only.
+
+The [dynamics memory pass](../verification/ocean/dynamics-memory/README.md)
+shortens temporary tensor lifetimes in production ocean transport and the
+research temperature integrator. Arithmetic, bounds, energy pairing and returned
+reports are preserved. All 486 captured state/tendency/ledger/backward tensors
+match the preceding installed wheel bitwise. This pass does change production
+transport source; its candidate is tested through a rebuilt installed wheel.
+Portable suite: 1203 passed, 2 skipped. Dynamics peak RSS at 16384×40 falls
+3.298 → 2.669 GB (19.1%); timing samples overlap (medians 18.442/17.966 s).
+These are uncompiled CPU float64 measurements, not GPU/backward-memory claims.
+
+The [donor-reference work pass](../verification/ocean/donor-work/README.md)
+skips discarded inner FCT budgets when the selected reference scheme is donor.
+It retains all returned fluxes/bounds/checks and the outer energy-consistent
+higher-order corrections. All 486 captured output/backward tensors are bitwise
+identical to the preceding memory-optimized wheel.
 
 The [documentation index](../docs/README.md) describes the atmospheric and ocean
 APIs, state ownership, stepping, forcing and verification scope. The stratified
@@ -1868,3 +1896,53 @@ and `--verbose` for live per-step timing/ETA/budget output, also retained in log
 Domain checks remain eager; compiler errors never silently fall back. The
 coordinator tees worker output while preserving timeout enforcement. Compilation
 startup is included in setup/run timings, so initial ETA is not warmed throughput.
+
+The donor-reference optimization measured 18.433 → 17.233 s per step
+(6.5% less time) and 2.654 → 2.600 GB peak RSS (2.0% less) at 16384×40,
+one-thread eager CPU float64. See the [measurement report](../verification/ocean/donor-work/README.md).
+
+The [transport reuse pass](../verification/ocean/transport-reuse/README.md)
+skips overwritten target amounts/fluxes in the energy-constrained path and
+reuses correction products and local antidiffusive sign splits. Public target
+ledgers remain complete. All 486 comparison tensors, including backward
+sensitivities, match `214da28` bitwise. Installed-wheel suite: 1203 passed,
+2 skipped; both frozen-fixture comparisons pass.
+
+Median step time falls **17.359 → 15.063 s (13.2%)**. Peak process RSS falls **2.658 → 2.574 GB (3.2%, 85 MB)**.
+Measured at 16384×40, one-thread eager CPU float64, three timed steps.
+
+## Historical finite-step backscatter prototype (superseded)
+
+The opt-in [backscatter prototype](../validation/temperature_coordinate/BACKSCATTER.md)
+uses rotational negative viscosity, the existing adjoint curl pair and the full
+Roquet Hamiltonian's mechanical metric. Exact finite kinetic work debits the
+mesoscale reservoir, with an explicit fraction/exponential-timescale allowance.
+The conservative funding limiter uses one amplitude per layer; a depleted cell
+can restrict remote cells in that layer. This is not yet a calibrated local,
+resolution-aware closure and no new grid-scale dissipative operator is supplied.
+
+Four 20-step channel cases, including coupled dynamics and strong funding caps,
+retain local backscatter residuals below 7.11e-18 J/kg. All 486 default-path
+comparison tensors remain bitwise identical. See the [verification report](../verification/ocean/backscatter/README.md)
+for tests, measurements, usage and scientific limitations.
+
+Backscatter installed-wheel regression: 1218 passed, 2 skipped; both frozen
+comparisons pass. Unchanged defaults are bitwise verified including gradients.
+
+## Instantaneous local backscatter
+
+The [current formulation](../validation/temperature_coordinate/BACKSCATTER.md)
+replaces the split kick with dt-independent Hamiltonian-paired momentum and
+reservoir tendencies. A local vertex power limiter replaces the layer minimum.
+`RoquetOcean(..., backscatter=...)` evaluates both sources within every SSPRK3
+stage; source/transport positivity failures reject rather than clip. No finite
+quadratic correction or hidden thermal repair remains. Existing defaults are
+unchanged. The old `apply` API is removed; use `tendency` or model integration.
+
+Independent full-H gradient contractions and a distant-forcing locality test
+pass. Channel power residuals stay below 3.933e-23 W/kg; finite-step energy
+errors are reported separately and approach third-order convergence in the
+smooth isolated test. See [current evidence](../verification/ocean/backscatter/instantaneous/README.md).
+
+Current installed-wheel regression: 1217 passed, 2 skipped; both frozen
+comparisons and all 486 default-path bitwise comparisons pass.

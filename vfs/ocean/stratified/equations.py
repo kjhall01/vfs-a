@@ -212,10 +212,14 @@ def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy
     beta = torch.cat([torch.minimum(beta[:, 0], ratio(receiving, demand[:, 0]))[:, None], beta[:, 1:]], -1)
     beta = torch.where(beta < 1, beta*(1-64*torch.finfo(q.dtype).eps), beta)
     beta = torch.cat([beta[:, :1], beta], -1)
-    amounts = baseline+divergence(low.i, low.j, beta*anti, q.shape[0])
+    # The limiter has consumed its face budgets; retain only the final beta.
+    del demand, losing, receiving, lower_capacity, upper_capacity, degree, room, upper_margin
+    correction_flux = beta*anti
+    amounts = baseline+divergence(low.i, low.j, correction_flux, q.shape[0])
     if not torch.isfinite(amounts).all() or (amounts[:, 1] <= 0).any() or (amounts[:, 1] >= salt_upper).any() or (amounts[:, 2:] < 0).any():
         raise FloatingPointError('admissible amount ledger failed; no clipping')
-    flux = low.donor_integrated_flux+beta*anti
+    flux = low.donor_integrated_flux+correction_flux
+    del correction_flux
     trace_change = (1-beta)*(donor-high)
     delta_eta = composition_entropy[active].flatten()*trace_change[:, 1]
     trace_change = torch.cat([delta_eta[:, None], trace_change[:, 1:]], -1)

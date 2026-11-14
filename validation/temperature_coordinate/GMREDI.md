@@ -195,3 +195,22 @@ now computes vertical derivatives per column, averages them onto active edges,
 and applies the matching transpose for both tracer and Hamiltonian energy flux.
 It avoids the eight-entry edge/tracer expansion while retaining the same
 mathematical stencil, explicit bound and local funding checks.
+
+## Optional energy feedback and dissipation
+
+`GMRedi(kappa_redi=..., energy_closure=EddyMixingLength(length=..., efficiency=...,
+kinetic_fraction=...))` replaces prescribed GM with `c L sqrt(2 f E_edge)`.
+Do not also specify nonzero `kappa_gm`. All parameters are explicit; Redi keeps
+its separate coefficient and the original funding/CFL guards remain active.
+`EddyDissipation(timescale=...)` is a separate exponential decay-to-heat stage.
+It reuses the exact Roquet full-H heat solve, not heat/cp, and leaves turbulent
+TKE unchanged. See [feedback equations, usage, tests and timing](../../verification/ocean/gmredi/feedback/README.md).
+These closures are uncalibrated and opt-in; see the optional backscatter stage below.
+
+## Optional deterministic backscatter
+
+A first [reservoir-funded rotational negative-viscosity stage](BACKSCATTER.md)
+is now available as `EddyBackscatter(viscosity=..., timescale=..., fraction=...)`.
+Configure `RoquetOcean(..., backscatter=...)` to pair its momentum and reservoir
+tendencies within each resolved RK stage. GM/Redi and decay remain separately
+composed; their paths and defaults are unchanged.

@@ -1,0 +1,15 @@
+{
+  "cells": 16384,
+  "layers": 40,
+  "samples_s": [
+    0.41506197299895575,
+    0.3797756220010342,
+    0.3810979949994362
+  ],
+  "median_s": 0.3810979949994362,
+  "peak_rss_bytes": 777154560,
+  "threads": 1,
+  "compiled": false,
+  "dtype": "float64",
+  "torch": "2.15.0+cpu"
+}

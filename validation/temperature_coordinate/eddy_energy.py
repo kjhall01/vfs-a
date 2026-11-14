@@ -44,6 +44,33 @@ class RoquetHamiltonian:
         )
         return terms
 
+    def kinetic_power(self, state, acceleration):
+        """Instantaneous dH/du · acceleration, allocated to cells [W]."""
+        mechanical = self.base.mechanical
+        s = state.ocean
+        edge_power = mechanical.metric(s)*mechanical.velocity(s)*acceleration
+        return mechanical.interpolation_transpose(s.mesh, edge_power)
+
+    def kinetic_change(self, before, after):
+        """Finite KE change [J/cell/layer] from this Hamiltonian's own metric.
+
+        Thickness is fixed. Edge work is allocated by the same geometric
+        interpolation transpose used for the kinetic thickness derivative.
+        Summing it gives the full KE change without subtracting large H totals.
+        """
+        s, t = before.ocean, after.ocean
+        if (
+            s.mesh is not t.mesh
+            or s.column is not t.column
+            or (s.h is not t.h and not torch.equal(s.h, t.h))
+        ):
+            raise ValueError("finite kinetic work requires fixed geometry")
+        mechanical = self.base.mechanical
+        u, v = mechanical.velocity(s), mechanical.velocity(t)
+        delta = v - u
+        edge_work = mechanical.metric(s) * (u + 0.5 * delta) * delta
+        return mechanical.interpolation_transpose(s.mesh, edge_work)
+
     @staticmethod
     def _fixed_geometry(before, after):
         s, t = before.ocean, after.ocean
@@ -90,3 +117,106 @@ class RoquetHamiltonian:
         if include_eddy and isinstance(before, EddyState):
             work = work + (after.eddy_h - before.eddy_h)
         return self.mass_area(s) * work
+
+
+@dataclass(frozen=True)
+class EddyMixingLength:
+    """GM diffusivity c L sqrt(2 f E) [m²/s], with explicitly supplied scales.
+
+    E is total mesoscale energy; f is an assumed kinetic fraction, not a second
+    prognostic reservoir. This is a mixing-length closure, not GEOMETRIC.
+    No diffusivity/energy floor, seed, clipping or automatic funding limiter.
+    """
+
+    length: float
+    efficiency: float
+    kinetic_fraction: float
+
+    def __post_init__(self):
+        import math
+
+        if (
+            not all(
+                math.isfinite(x)
+                for x in (self.length, self.efficiency, self.kinetic_fraction)
+            )
+            or self.length <= 0
+            or self.efficiency <= 0
+            or not 0 < self.kinetic_fraction <= 1
+        ):
+            raise ValueError(
+                "positive finite mixing length/efficiency and 0 < kinetic_fraction <= 1 required"
+            )
+
+    def diffusivity(self, state, i, j):
+        # Average specific energy onto the same active edges as GM's slopes.
+        e = state.specific_eddy_energy()
+        edge = 0.5 * (e[i] + e[j])
+        if not torch.isfinite(edge).all() or (edge < 0).any():
+            raise ValueError("finite nonnegative eddy energy required")
+        # sqrt has a singular derivative at zero. Evaluate only its positive
+        # branch and explicitly select the zero subgradient at exactly E=0.
+        positive = edge > 0
+        speed = torch.sqrt(
+            2
+            * self.kinetic_fraction
+            * torch.where(positive, edge, torch.ones_like(edge))
+        )
+        kappa = (
+            self.efficiency
+            * self.length
+            * torch.where(positive, speed, torch.zeros_like(speed))
+        )
+        if not torch.isfinite(kappa).all():
+            raise ValueError("nonfinite energy-dependent GM diffusivity")
+        return kappa
+
+
+@dataclass(frozen=True)
+class EddyDissipationReport:
+    dissipated_energy: torch.Tensor  # J, nonnegative reservoir debit
+    thermal_energy_gain: torch.Tensor  # J, includes thermodynamic PE change
+    local_energy_residual: torch.Tensor  # J per cell/layer
+
+
+@dataclass(frozen=True)
+class EddyDissipation:
+    """Exact exponential reservoir decay to full-H thermal energy.
+
+    Timescale [s] is explicit and uncalibrated. All dissipated mesoscale energy
+    heats the same cell/layer; turbulent TKE and momentum are unchanged.
+    """
+
+    timescale: float
+
+    def __post_init__(self):
+        import math
+
+        if not math.isfinite(self.timescale) or self.timescale <= 0:
+            raise ValueError("positive finite eddy dissipation timescale required")
+
+    def apply(self, model, state, dt):
+        import math
+        from roquet import RoquetOcean, RoquetWorkspace
+
+        if not isinstance(model, RoquetOcean) or not isinstance(state, EddyState):
+            raise TypeError("eddy dissipation requires RoquetOcean and EddyState")
+        if not math.isfinite(float(dt)) or dt <= 0:
+            raise ValueError("positive finite dt required")
+        model.check(state)
+        # expm1 preserves small physical decay fractions; no explicit sink CFL.
+        removed = state.eddy_h * (-math.expm1(-dt / self.timescale))
+        remaining = state.eddy_h - removed
+        s = state.ocean
+        # This existing algebraic quadratic solve includes cp*CT AND the exact
+        # Roquet potential-energy change; adding removed/(h*cp) would not close H.
+        heated, _, _ = RoquetWorkspace(model.ocean, s).heat(s, s, removed / s.h)
+        end = EddyState(heated, state.tke_h, remaining)
+        model._check_eddy(end)  # other fields validated by the matched heat solve
+        H = model.hamiltonian
+        thermal = H.finite_change(state, end, include_eddy=False)
+        return end, EddyDissipationReport(
+            (H.mass_area(s) * (state.eddy_h - end.eddy_h)).sum(),
+            thermal.sum(),
+            H.finite_change(state, end),
+        )

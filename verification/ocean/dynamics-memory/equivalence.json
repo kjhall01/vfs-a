@@ -1,0 +1,6 @@
+{
+  "reference": "a62c199",
+  "tensors_compared": 486,
+  "bitwise_equal": 486,
+  "state_report_and_backward_all_equal": true
+}

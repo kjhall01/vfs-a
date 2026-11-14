@@ -1,0 +1,21 @@
+{
+  "samples_s": [
+    14.666377506997378,
+    16.261327833002724,
+    15.063076458005526
+  ],
+  "median_s": 15.063076458005526,
+  "cells": 16384,
+  "layers": 40,
+  "threads": 1,
+  "compiled": false,
+  "torch": "2.15.0+cpu",
+  "package": "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs",
+  "peak_rss_bytes": 2573631488,
+  "source_sha256": {
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/transport.py": "1c640f7ab395e4be6c7a4dd050b22854c73f570f69178b97a25db21d6b6145a0",
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/stratified/transport.py": "2e940586909e2207583fca15991b8191e5d14178919d2c53f517e07143da8385",
+    "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py": "da47829ae0cb49b55deaefa5b03eaa51f20d3a255c8631cd69a6eab4e1e3eb9b",
+    "/workspace/scratch/cb460db1b799/vfs-a/validation/temperature_coordinate/model.py": "5f31bb3b81e3da0826759592e89d133b51e89b97b4488b04a7c23ae01586f06f"
+  }
+}

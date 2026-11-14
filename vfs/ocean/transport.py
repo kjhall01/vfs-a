@@ -172,19 +172,29 @@ class HorizontalTransport:
         qmin = q.scatter_reduce(0,neighbors,values,reduce='amin',include_self=True)
         qmax = q.scatter_reduce(0,neighbors,values,reduce='amax',include_self=True)
         lower, upper = new_volume[:,None]*qmin,new_volume[:,None]*qmax
+        # Extrema are now cell-local; release the doubled edge gather before
+        # allocating antidiffusive budgets. This changes no tensor expression.
+        del values, neighbors, qi, qj, qmax, positive, negative
         anti = high_flux-low_flux
-        plus = torch.zeros_like(low).index_add(0,j,anti.clamp_min(0)).index_add(0,i,(-anti).clamp_min(0))
-        minus = torch.zeros_like(low).index_add(0,i,anti.clamp_min(0)).index_add(0,j,(-anti).clamp_min(0))
-        def ratio(budget,demand):
-            denominator = torch.where(demand > 0,demand,torch.ones_like(demand))
-            return torch.where(demand > 0,budget.clamp_min(0)/denominator,torch.ones_like(demand)).clamp(max=1)
-        rp, rm = ratio(upper-low,plus),ratio(low-lower,minus)
-        beta = torch.where(anti >= 0,torch.minimum(rm[i],rp[j]),torch.minimum(rp[i],rm[j]))
         if self.scheme == 'donor':
-            beta = torch.zeros_like(beta)
+            # The outer energy-consistent transport constructs its own limiter.
+            # Its donor reference still needs bounds and full flux diagnostics,
+            # but not FCT budgets whose limiter would be discarded here.
+            beta = torch.zeros_like(anti)
         else:
+            plus = torch.zeros_like(low).index_add(0,j,anti.clamp_min(0)).index_add(0,i,(-anti).clamp_min(0))
+            minus = torch.zeros_like(low).index_add(0,i,anti.clamp_min(0)).index_add(0,j,(-anti).clamp_min(0))
+            def ratio(budget,demand):
+                denominator = torch.where(demand > 0,demand,torch.ones_like(demand))
+                return torch.where(demand > 0,budget.clamp_min(0)/denominator,torch.ones_like(demand)).clamp(max=1)
+            rp, rm = ratio(upper-low,plus),ratio(low-lower,minus)
+            beta = torch.where(anti >= 0,torch.minimum(rm[i],rp[j]),torch.minimum(rp[i],rm[j]))
             beta = torch.where(beta < 1,beta*(1-64*torch.finfo(q.dtype).eps),beta)
-        amounts = low+divergence(i,j,beta*anti,volume.numel())
+            del plus, minus, rp, rm
+        trace_change = (1-beta)*(donor-centered)
+        del donor, centered
+        correction = beta*anti
+        amounts = low+divergence(i,j,correction,volume.numel())
         tolerance = 256*torch.finfo(q.dtype).eps*new_volume[:,None]*q.abs().amax(0)
         if not torch.isfinite(amounts).all().item() or ((amounts < lower-tolerance)|(amounts > upper+tolerance)).any().item():
             raise FloatingPointError('bounded ledger failed its stage bounds')
@@ -194,5 +204,5 @@ class HorizontalTransport:
             raise FloatingPointError('negative concentration in bounded ledger')
         return TransportLedger(new_volume.reshape_as(state.h),
             amounts.reshape(*state.h.shape,-1),low.reshape(*state.h.shape,-1),
-            low_flux+beta*anti,high_flux,low_flux,beta,lower,upper,i,j,flux,
-            (1-beta)*(donor-centered),(outgoing/volume).reshape_as(state.h))
+            low_flux+correction,high_flux,low_flux,beta,lower,upper,i,j,flux,
+            trace_change,(outgoing/volume).reshape_as(state.h))

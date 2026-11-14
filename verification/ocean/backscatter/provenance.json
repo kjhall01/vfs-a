@@ -1,0 +1,9 @@
+{
+  "reference": "9dce3b5",
+  "wheel_sha256": "6731af71e9ff10a85ed37c3bc018828ac2050eabd7a74be264c8b62e2fbcdc87",
+  "research_sha256": {
+    "validation/temperature_coordinate/backscatter.py": "756726480bbab73243d8f7fb6b211612f05ba1d39d088fbf073292feba8721ab",
+    "validation/temperature_coordinate/eddy_energy.py": "8fba25248878466edccfd70844dd2fa89d8d4bed75657da13a3b233cdbb16d11",
+    "validation/temperature_coordinate/backscatter_campaign.py": "2b053fd7c6cebbc7250886aaa0f6bd012840c09249c8bcf3f5f5f0e135ff68c3"
+  }
+}
