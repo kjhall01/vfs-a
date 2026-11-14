@@ -1,0 +1,52 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "dt_s": 60,
+  "compiled": true,
+  "threads": 1,
+  "mixing_substeps": 4,
+  "ale_every": 1,
+  "sequence": [
+    {
+      "name": "entropy",
+      "seconds": 21.72844006300147
+    },
+    {
+      "name": "temperature_ts3",
+      "seconds": 9.709413587999734
+    },
+    {
+      "name": "temperature_ts3",
+      "seconds": 9.978685994999978
+    },
+    {
+      "name": "entropy",
+      "seconds": 18.91388788399854
+    },
+    {
+      "name": "entropy",
+      "seconds": 28.293414416002634
+    },
+    {
+      "name": "temperature_ts3",
+      "seconds": 9.30317530100001
+    }
+  ],
+  "samples": {
+    "entropy": [
+      21.72844006300147,
+      18.91388788399854,
+      28.293414416002634
+    ],
+    "temperature_ts3": [
+      9.709413587999734,
+      9.978685994999978,
+      9.30317530100001
+    ]
+  },
+  "median_s": {
+    "entropy": 21.72844006300147,
+    "temperature_ts3": 9.709413587999734
+  },
+  "baseline_over_candidate": 2.237873571464352
+}

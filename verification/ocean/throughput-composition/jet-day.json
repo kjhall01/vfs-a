@@ -1,0 +1,1483 @@
+{
+  "kind": "jet",
+  "cells": 128,
+  "steps": 144,
+  "dt_s": 600.0,
+  "duration_s": 86400.0,
+  "scope": "unforced dynamics; no mixing/forcing/ALE",
+  "cases": {
+    "entropy": {
+      "status": "completed",
+      "samples": [
+        {
+          "time_s": 0.0,
+          "max_velocity": 36.138639491165094,
+          "energy_drift_J_kg": 0.0
+        },
+        {
+          "time_s": 600.0,
+          "max_velocity": 36.13951884038872,
+          "energy_drift_J_kg": -5.482564032772451e-07
+        },
+        {
+          "time_s": 1200.0,
+          "max_velocity": 36.14058507406812,
+          "energy_drift_J_kg": -1.0965406188284388e-06
+        },
+        {
+          "time_s": 1800.0,
+          "max_velocity": 36.1418139556107,
+          "energy_drift_J_kg": -1.6449430365439133e-06
+        },
+        {
+          "time_s": 2400.0,
+          "max_velocity": 36.143180493391384,
+          "energy_drift_J_kg": -2.193547093245514e-06
+        },
+        {
+          "time_s": 3000.0,
+          "max_velocity": 36.14465926990578,
+          "energy_drift_J_kg": -2.7424431788235734e-06
+        },
+        {
+          "time_s": 3600.0,
+          "max_velocity": 36.146224766680334,
+          "energy_drift_J_kg": -3.291735589305398e-06
+        },
+        {
+          "time_s": 4200.0,
+          "max_velocity": 36.147851681001875,
+          "energy_drift_J_kg": -3.841542526855269e-06
+        },
+        {
+          "time_s": 4800.0,
+          "max_velocity": 36.14951523079657,
+          "energy_drift_J_kg": -4.392003052842929e-06
+        },
+        {
+          "time_s": 5400.0,
+          "max_velocity": 36.151191444292685,
+          "energy_drift_J_kg": -4.943228416364171e-06
+        },
+        {
+          "time_s": 6000.0,
+          "max_velocity": 36.15285743143691,
+          "energy_drift_J_kg": -5.4953854910626854e-06
+        },
+        {
+          "time_s": 6600.0,
+          "max_velocity": 36.154491634391704,
+          "energy_drift_J_kg": -6.048571619897293e-06
+        },
+        {
+          "time_s": 7200.0,
+          "max_velocity": 36.156074054816,
+          "energy_drift_J_kg": -6.602918911169248e-06
+        },
+        {
+          "time_s": 7800.0,
+          "max_velocity": 36.15758645601548,
+          "energy_drift_J_kg": -7.158510801700396e-06
+        },
+        {
+          "time_s": 8400.0,
+          "max_velocity": 36.159012538436826,
+          "energy_drift_J_kg": -7.715416822175608e-06
+        },
+        {
+          "time_s": 9000.0,
+          "max_velocity": 36.16033808736638,
+          "energy_drift_J_kg": -8.273699550211268e-06
+        },
+        {
+          "time_s": 9600.0,
+          "max_velocity": 36.16224052288429,
+          "energy_drift_J_kg": -8.833317267396454e-06
+        },
+        {
+          "time_s": 10200.0,
+          "max_velocity": 36.16615310979472,
+          "energy_drift_J_kg": -9.394297786005114e-06
+        },
+        {
+          "time_s": 10800.0,
+          "max_velocity": 36.17027050029245,
+          "energy_drift_J_kg": -9.956502044667506e-06
+        },
+        {
+          "time_s": 11400.0,
+          "max_velocity": 36.17456455387911,
+          "energy_drift_J_kg": -1.0519881371904219e-05
+        },
+        {
+          "time_s": 12000.0,
+          "max_velocity": 36.17900486486274,
+          "energy_drift_J_kg": -1.1084268894071562e-05
+        },
+        {
+          "time_s": 12600.0,
+          "max_velocity": 36.183559101001975,
+          "energy_drift_J_kg": -1.1649518596731308e-05
+        },
+        {
+          "time_s": 13200.0,
+          "max_velocity": 36.188193374219075,
+          "energy_drift_J_kg": -1.2215442747034304e-05
+        },
+        {
+          "time_s": 13800.0,
+          "max_velocity": 36.192872638882264,
+          "energy_drift_J_kg": -1.278187447133686e-05
+        },
+        {
+          "time_s": 14400.0,
+          "max_velocity": 36.19756111267645,
+          "energy_drift_J_kg": -1.3348612130652847e-05
+        },
+        {
+          "time_s": 15000.0,
+          "max_velocity": 36.202222714666036,
+          "energy_drift_J_kg": -1.391546103906463e-05
+        },
+        {
+          "time_s": 15600.0,
+          "max_velocity": 36.20682151481063,
+          "energy_drift_J_kg": -1.4482254322928515e-05
+        },
+        {
+          "time_s": 16200.0,
+          "max_velocity": 36.211322188929756,
+          "energy_drift_J_kg": -1.5048832061669299e-05
+        },
+        {
+          "time_s": 16800.0,
+          "max_velocity": 36.21569047292937,
+          "energy_drift_J_kg": -1.5615062146985727e-05
+        },
+        {
+          "time_s": 17400.0,
+          "max_velocity": 36.219893610004874,
+          "energy_drift_J_kg": -1.618079856443957e-05
+        },
+        {
+          "time_s": 18000.0,
+          "max_velocity": 36.224068082609016,
+          "energy_drift_J_kg": -1.674597178334596e-05
+        },
+        {
+          "time_s": 18600.0,
+          "max_velocity": 36.22797479532945,
+          "energy_drift_J_kg": -1.7310449695403638e-05
+        },
+        {
+          "time_s": 19200.0,
+          "max_velocity": 36.23133374882036,
+          "energy_drift_J_kg": -1.7874169722996218e-05
+        },
+        {
+          "time_s": 19800.0,
+          "max_velocity": 36.23447601003627,
+          "energy_drift_J_kg": -1.8437083194644295e-05
+        },
+        {
+          "time_s": 20400.0,
+          "max_velocity": 36.237443925163134,
+          "energy_drift_J_kg": -1.8999113626594508e-05
+        },
+        {
+          "time_s": 21000.0,
+          "max_velocity": 36.240104402975305,
+          "energy_drift_J_kg": -1.9560198441230474e-05
+        },
+        {
+          "time_s": 21600.0,
+          "max_velocity": 36.24244588352873,
+          "energy_drift_J_kg": -2.0120316779346732e-05
+        },
+        {
+          "time_s": 22200.0,
+          "max_velocity": 36.24446092006492,
+          "energy_drift_J_kg": -2.067937825105295e-05
+        },
+        {
+          "time_s": 22800.0,
+          "max_velocity": 36.2461463059422,
+          "energy_drift_J_kg": -2.1237355044075178e-05
+        },
+        {
+          "time_s": 23400.0,
+          "max_velocity": 36.24750314461463,
+          "energy_drift_J_kg": -2.1794177627728544e-05
+        },
+        {
+          "time_s": 24000.0,
+          "max_velocity": 36.24853686056758,
+          "energy_drift_J_kg": -2.2349832095876074e-05
+        },
+        {
+          "time_s": 24600.0,
+          "max_velocity": 36.24925714987094,
+          "energy_drift_J_kg": -2.290428368317534e-05
+        },
+        {
+          "time_s": 25200.0,
+          "max_velocity": 36.249677869796606,
+          "energy_drift_J_kg": -2.3457497624283894e-05
+        },
+        {
+          "time_s": 25800.0,
+          "max_velocity": 36.24981686775728,
+          "energy_drift_J_kg": -2.4009501731475692e-05
+        },
+        {
+          "time_s": 26400.0,
+          "max_velocity": 36.24969575065095,
+          "energy_drift_J_kg": -2.4560330770093168e-05
+        },
+        {
+          "time_s": 27000.0,
+          "max_velocity": 36.24933959652925,
+          "energy_drift_J_kg": -2.5110054270821193e-05
+        },
+        {
+          "time_s": 27600.0,
+          "max_velocity": 36.24877661133965,
+          "energy_drift_J_kg": -2.5658762623550103e-05
+        },
+        {
+          "time_s": 28200.0,
+          "max_velocity": 36.248037734309705,
+          "energy_drift_J_kg": -2.620660184271812e-05
+        },
+        {
+          "time_s": 28800.0,
+          "max_velocity": 36.24715619633722,
+          "energy_drift_J_kg": -2.6753731848900454e-05
+        },
+        {
+          "time_s": 29400.0,
+          "max_velocity": 36.24616703651114,
+          "energy_drift_J_kg": -2.7300354281083226e-05
+        },
+        {
+          "time_s": 30000.0,
+          "max_velocity": 36.24510658260419,
+          "energy_drift_J_kg": -2.784669163745803e-05
+        },
+        {
+          "time_s": 30600.0,
+          "max_velocity": 36.24401190203807,
+          "energy_drift_J_kg": -2.8393001181558883e-05
+        },
+        {
+          "time_s": 31200.0,
+          "max_velocity": 36.24292023041454,
+          "energy_drift_J_kg": -2.8939533223851326e-05
+        },
+        {
+          "time_s": 31800.0,
+          "max_velocity": 36.241868385220386,
+          "energy_drift_J_kg": -2.9486524168663916e-05
+        },
+        {
+          "time_s": 32400.0,
+          "max_velocity": 36.24089217274009,
+          "energy_drift_J_kg": -3.0034238232599166e-05
+        },
+        {
+          "time_s": 33000.0,
+          "max_velocity": 36.24002579653836,
+          "energy_drift_J_kg": -3.058288400771169e-05
+        },
+        {
+          "time_s": 33600.0,
+          "max_velocity": 36.2393012760953,
+          "energy_drift_J_kg": -3.113269789833005e-05
+        },
+        {
+          "time_s": 34200.0,
+          "max_velocity": 36.238747884283555,
+          "energy_drift_J_kg": -3.168383982502945e-05
+        },
+        {
+          "time_s": 34800.0,
+          "max_velocity": 36.238391612361994,
+          "energy_drift_J_kg": -3.2236455802248105e-05
+        },
+        {
+          "time_s": 35400.0,
+          "max_velocity": 36.238254671019845,
+          "energy_drift_J_kg": -3.2790622313739395e-05
+        },
+        {
+          "time_s": 36000.0,
+          "max_velocity": 36.242224901146464,
+          "energy_drift_J_kg": -3.3346415843256675e-05
+        },
+        {
+          "time_s": 36600.0,
+          "max_velocity": 36.245958626678814,
+          "energy_drift_J_kg": -3.3903857250005394e-05
+        },
+        {
+          "time_s": 37200.0,
+          "max_velocity": 36.24934695375821,
+          "energy_drift_J_kg": -3.446293262784858e-05
+        },
+        {
+          "time_s": 37800.0,
+          "max_velocity": 36.25236311124621,
+          "energy_drift_J_kg": -3.5023579399169864e-05
+        },
+        {
+          "time_s": 38400.0,
+          "max_velocity": 36.254983793533256,
+          "energy_drift_J_kg": -3.558576279862679e-05
+        },
+        {
+          "time_s": 39000.0,
+          "max_velocity": 36.25718937037938,
+          "energy_drift_J_kg": -3.614937157712358e-05
+        },
+        {
+          "time_s": 39600.0,
+          "max_velocity": 36.25896405005831,
+          "energy_drift_J_kg": -3.671431534476989e-05
+        },
+        {
+          "time_s": 40200.0,
+          "max_velocity": 36.26029599514068,
+          "energy_drift_J_kg": -3.728048285246994e-05
+        },
+        {
+          "time_s": 40800.0,
+          "max_velocity": 36.261177390944376,
+          "energy_drift_J_kg": -3.784779066340187e-05
+        },
+        {
+          "time_s": 41400.0,
+          "max_velocity": 36.26160446734616,
+          "energy_drift_J_kg": -3.841610666926443e-05
+        },
+        {
+          "time_s": 42000.0,
+          "max_velocity": 36.26157747527841,
+          "energy_drift_J_kg": -3.898536829244124e-05
+        },
+        {
+          "time_s": 42600.0,
+          "max_velocity": 36.26110061981825,
+          "energy_drift_J_kg": -3.955545733076802e-05
+        },
+        {
+          "time_s": 43200.0,
+          "max_velocity": 36.26928025242404,
+          "energy_drift_J_kg": -4.0126297300491403e-05
+        },
+        {
+          "time_s": 43800.0,
+          "max_velocity": 36.28187880095425,
+          "energy_drift_J_kg": -4.069780476478955e-05
+        },
+        {
+          "time_s": 44400.0,
+          "max_velocity": 36.2944046730087,
+          "energy_drift_J_kg": -4.1269889333772126e-05
+        },
+        {
+          "time_s": 45000.0,
+          "max_velocity": 36.30672552266569,
+          "energy_drift_J_kg": -4.184247452368578e-05
+        },
+        {
+          "time_s": 45600.0,
+          "max_velocity": 36.31870561941598,
+          "energy_drift_J_kg": -4.241545603850319e-05
+        },
+        {
+          "time_s": 46200.0,
+          "max_velocity": 36.33020746961981,
+          "energy_drift_J_kg": -4.298874348833404e-05
+        },
+        {
+          "time_s": 46800.0,
+          "max_velocity": 36.34109351233472,
+          "energy_drift_J_kg": -4.3562183905671596e-05
+        },
+        {
+          "time_s": 47400.0,
+          "max_velocity": 36.351227868925214,
+          "energy_drift_J_kg": -4.413567299448857e-05
+        },
+        {
+          "time_s": 48000.0,
+          "max_velocity": 36.360478124579245,
+          "energy_drift_J_kg": -4.470902997500429e-05
+        },
+        {
+          "time_s": 48600.0,
+          "max_velocity": 36.368717118847215,
+          "energy_drift_J_kg": -4.528209492664355e-05
+        },
+        {
+          "time_s": 49200.0,
+          "max_velocity": 36.3758247216078,
+          "energy_drift_J_kg": -4.585469402269417e-05
+        },
+        {
+          "time_s": 49800.0,
+          "max_velocity": 36.38168957046996,
+          "energy_drift_J_kg": -4.6426625624170036e-05
+        },
+        {
+          "time_s": 50400.0,
+          "max_velocity": 36.38942216897651,
+          "energy_drift_J_kg": -4.6997695045153495e-05
+        },
+        {
+          "time_s": 51000.0,
+          "max_velocity": 36.40252876889559,
+          "energy_drift_J_kg": -4.7567707599726914e-05
+        },
+        {
+          "time_s": 51600.0,
+          "max_velocity": 36.41458673333845,
+          "energy_drift_J_kg": -4.8136475555041135e-05
+        },
+        {
+          "time_s": 52200.0,
+          "max_velocity": 36.42544665126026,
+          "energy_drift_J_kg": -4.870382508438399e-05
+        },
+        {
+          "time_s": 52800.0,
+          "max_velocity": 36.43496999004292,
+          "energy_drift_J_kg": -4.926961712638573e-05
+        },
+        {
+          "time_s": 53400.0,
+          "max_velocity": 36.44303085219548,
+          "energy_drift_J_kg": -4.983373347888208e-05
+        },
+        {
+          "time_s": 54000.0,
+          "max_velocity": 36.44951759112445,
+          "energy_drift_J_kg": -5.039607679891421e-05
+        },
+        {
+          "time_s": 54600.0,
+          "max_velocity": 36.45433426536779,
+          "energy_drift_J_kg": -5.0956584508865745e-05
+        },
+        {
+          "time_s": 55200.0,
+          "max_velocity": 36.45740191268955,
+          "energy_drift_J_kg": -5.151526356180517e-05
+        },
+        {
+          "time_s": 55800.0,
+          "max_velocity": 36.45865962767763,
+          "energy_drift_J_kg": -5.207213481693795e-05
+        },
+        {
+          "time_s": 56400.0,
+          "max_velocity": 36.45806542894684,
+          "energy_drift_J_kg": -5.2627274758017434e-05
+        },
+        {
+          "time_s": 57000.0,
+          "max_velocity": 36.455596904689614,
+          "energy_drift_J_kg": -5.318078072800245e-05
+        },
+        {
+          "time_s": 57600.0,
+          "max_velocity": 36.45125162810543,
+          "energy_drift_J_kg": -5.3732791788262735e-05
+        },
+        {
+          "time_s": 58200.0,
+          "max_velocity": 36.44504733713869,
+          "energy_drift_J_kg": -5.42834678593735e-05
+        },
+        {
+          "time_s": 58800.0,
+          "max_velocity": 36.4370218759273,
+          "energy_drift_J_kg": -5.4833010580320855e-05
+        },
+        {
+          "time_s": 59400.0,
+          "max_velocity": 36.42723289837129,
+          "energy_drift_J_kg": -5.5381614637022455e-05
+        },
+        {
+          "time_s": 60000.0,
+          "max_velocity": 36.4157573372324,
+          "energy_drift_J_kg": -5.592950252766989e-05
+        },
+        {
+          "time_s": 60600.0,
+          "max_velocity": 36.402690645133525,
+          "energy_drift_J_kg": -5.6476889797386243e-05
+        },
+        {
+          "time_s": 61200.0,
+          "max_velocity": 36.388145816700955,
+          "energy_drift_J_kg": -5.7023971132089166e-05
+        },
+        {
+          "time_s": 61800.0,
+          "max_velocity": 36.372252203845505,
+          "energy_drift_J_kg": -5.757097598303873e-05
+        },
+        {
+          "time_s": 62400.0,
+          "max_velocity": 36.35515413877353,
+          "energy_drift_J_kg": -5.81180851300156e-05
+        },
+        {
+          "time_s": 63000.0,
+          "max_velocity": 36.3370093817219,
+          "energy_drift_J_kg": -5.8665486305868935e-05
+        },
+        {
+          "time_s": 63600.0,
+          "max_velocity": 36.31798741258887,
+          "energy_drift_J_kg": -5.921333943117393e-05
+        },
+        {
+          "time_s": 64200.0,
+          "max_velocity": 36.298267587558016,
+          "energy_drift_J_kg": -5.976176966116335e-05
+        },
+        {
+          "time_s": 64800.0,
+          "max_velocity": 36.27803718345749,
+          "energy_drift_J_kg": -6.031090215106997e-05
+        },
+        {
+          "time_s": 65400.0,
+          "max_velocity": 36.2574893539417,
+          "energy_drift_J_kg": -6.086087596226353e-05
+        },
+        {
+          "time_s": 66000.0,
+          "max_velocity": 36.2368210226074,
+          "energy_drift_J_kg": -6.14117675784974e-05
+        },
+        {
+          "time_s": 66600.0,
+          "max_velocity": 36.21623073884969,
+          "energy_drift_J_kg": -6.196366738966189e-05
+        },
+        {
+          "time_s": 67200.0,
+          "max_velocity": 36.1959165226151,
+          "energy_drift_J_kg": -6.251662406723641e-05
+        },
+        {
+          "time_s": 67800.0,
+          "max_velocity": 36.176073724216295,
+          "energy_drift_J_kg": -6.307073495417981e-05
+        },
+        {
+          "time_s": 68400.0,
+          "max_velocity": 36.17027717434449,
+          "energy_drift_J_kg": -6.362604176890298e-05
+        },
+        {
+          "time_s": 69000.0,
+          "max_velocity": 36.173552637569074,
+          "energy_drift_J_kg": -6.418260013595385e-05
+        },
+        {
+          "time_s": 69600.0,
+          "max_velocity": 36.177104055495434,
+          "energy_drift_J_kg": -6.47404517737433e-05
+        },
+        {
+          "time_s": 70200.0,
+          "max_velocity": 36.18090877735767,
+          "energy_drift_J_kg": -6.529965230681926e-05
+        },
+        {
+          "time_s": 70800.0,
+          "max_velocity": 36.184942111368585,
+          "energy_drift_J_kg": -6.586022259438717e-05
+        },
+        {
+          "time_s": 71400.0,
+          "max_velocity": 36.1891773831793,
+          "energy_drift_J_kg": -6.642217654258404e-05
+        },
+        {
+          "time_s": 72000.0,
+          "max_velocity": 36.19358600452222,
+          "energy_drift_J_kg": -6.698552110447832e-05
+        },
+        {
+          "time_s": 72600.0,
+          "max_velocity": 36.198137553594414,
+          "energy_drift_J_kg": -6.755024237393303e-05
+        },
+        {
+          "time_s": 73200.0,
+          "max_velocity": 36.2027998687722,
+          "energy_drift_J_kg": -6.811631253867426e-05
+        },
+        {
+          "time_s": 73800.0,
+          "max_velocity": 36.207539157240205,
+          "energy_drift_J_kg": -6.868364816188014e-05
+        },
+        {
+          "time_s": 74400.0,
+          "max_velocity": 36.21232012006713,
+          "energy_drift_J_kg": -6.925217971286581e-05
+        },
+        {
+          "time_s": 75000.0,
+          "max_velocity": 36.21710609516434,
+          "energy_drift_J_kg": -6.982176117719302e-05
+        },
+        {
+          "time_s": 75600.0,
+          "max_velocity": 36.22185921942054,
+          "energy_drift_J_kg": -7.039226044656054e-05
+        },
+        {
+          "time_s": 76200.0,
+          "max_velocity": 36.226540611116825,
+          "energy_drift_J_kg": -7.09634897881192e-05
+        },
+        {
+          "time_s": 76800.0,
+          "max_velocity": 36.23111057349071,
+          "energy_drift_J_kg": -7.153524060981439e-05
+        },
+        {
+          "time_s": 77400.0,
+          "max_velocity": 36.235528820037395,
+          "energy_drift_J_kg": -7.210731127266e-05
+        },
+        {
+          "time_s": 78000.0,
+          "max_velocity": 36.24995876301118,
+          "energy_drift_J_kg": -7.26794375600535e-05
+        },
+        {
+          "time_s": 78600.0,
+          "max_velocity": 36.26545685946851,
+          "energy_drift_J_kg": -7.325139002073482e-05
+        },
+        {
+          "time_s": 79200.0,
+          "max_velocity": 36.28099024575325,
+          "energy_drift_J_kg": -7.382291834423844e-05
+        },
+        {
+          "time_s": 79800.0,
+          "max_velocity": 36.29640876796398,
+          "energy_drift_J_kg": -7.439377222009878e-05
+        },
+        {
+          "time_s": 80400.0,
+          "max_velocity": 36.311560398140934,
+          "energy_drift_J_kg": -7.49637361031928e-05
+        },
+        {
+          "time_s": 81000.0,
+          "max_velocity": 36.32629286019984,
+          "energy_drift_J_kg": -7.553261530760281e-05
+        },
+        {
+          "time_s": 81600.0,
+          "max_velocity": 36.3404552863803,
+          "energy_drift_J_kg": -7.610022905354818e-05
+        },
+        {
+          "time_s": 82200.0,
+          "max_velocity": 36.363356756376625,
+          "energy_drift_J_kg": -7.666642437352218e-05
+        },
+        {
+          "time_s": 82800.0,
+          "max_velocity": 36.385464978385144,
+          "energy_drift_J_kg": -7.723111783070295e-05
+        },
+        {
+          "time_s": 83400.0,
+          "max_velocity": 36.406367056942,
+          "energy_drift_J_kg": -7.779423294133715e-05
+        },
+        {
+          "time_s": 84000.0,
+          "max_velocity": 36.42583988699178,
+          "energy_drift_J_kg": -7.835572798701386e-05
+        },
+        {
+          "time_s": 84600.0,
+          "max_velocity": 36.44367523097931,
+          "energy_drift_J_kg": -7.891560992080155e-05
+        },
+        {
+          "time_s": 85200.0,
+          "max_velocity": 36.46772979634917,
+          "energy_drift_J_kg": -7.947392741417965e-05
+        },
+        {
+          "time_s": 85800.0,
+          "max_velocity": 36.501198613582964,
+          "energy_drift_J_kg": -8.003074999783302e-05
+        },
+        {
+          "time_s": 86400.0,
+          "max_velocity": 36.533682707357045,
+          "energy_drift_J_kg": -8.058614720244653e-05
+        }
+      ],
+      "min_salt": 34.99999999999984,
+      "min_h": 1133.4099319041666,
+      "velocity_change_rms": 0.9806327317735948,
+      "height_change_rms": 10.354640481500072
+    },
+    "temperature": {
+      "status": "completed",
+      "samples": [
+        {
+          "time_s": 0.0,
+          "max_velocity": 36.138639491165094,
+          "energy_drift_J_kg": 0.0
+        },
+        {
+          "time_s": 600.0,
+          "max_velocity": 36.13951884038872,
+          "energy_drift_J_kg": -5.482564032772451e-07
+        },
+        {
+          "time_s": 1200.0,
+          "max_velocity": 36.14058507406812,
+          "energy_drift_J_kg": -1.0965406188284388e-06
+        },
+        {
+          "time_s": 1800.0,
+          "max_velocity": 36.1418139556107,
+          "energy_drift_J_kg": -1.6449430365439133e-06
+        },
+        {
+          "time_s": 2400.0,
+          "max_velocity": 36.143180493391384,
+          "energy_drift_J_kg": -2.193540140177027e-06
+        },
+        {
+          "time_s": 3000.0,
+          "max_velocity": 36.14465926990578,
+          "energy_drift_J_kg": -2.7424362257550865e-06
+        },
+        {
+          "time_s": 3600.0,
+          "max_velocity": 36.146224766680334,
+          "energy_drift_J_kg": -3.291735589305398e-06
+        },
+        {
+          "time_s": 4200.0,
+          "max_velocity": 36.147851681001875,
+          "energy_drift_J_kg": -3.841542526855269e-06
+        },
+        {
+          "time_s": 4800.0,
+          "max_velocity": 36.14951523079657,
+          "energy_drift_J_kg": -4.392003052842929e-06
+        },
+        {
+          "time_s": 5400.0,
+          "max_velocity": 36.151191444292685,
+          "energy_drift_J_kg": -4.943228416364171e-06
+        },
+        {
+          "time_s": 6000.0,
+          "max_velocity": 36.15285743143691,
+          "energy_drift_J_kg": -5.4953785379941985e-06
+        },
+        {
+          "time_s": 6600.0,
+          "max_velocity": 36.154491634391704,
+          "energy_drift_J_kg": -6.048571619897293e-06
+        },
+        {
+          "time_s": 7200.0,
+          "max_velocity": 36.156074054816,
+          "energy_drift_J_kg": -6.602911958100761e-06
+        },
+        {
+          "time_s": 7800.0,
+          "max_velocity": 36.15758645601548,
+          "energy_drift_J_kg": -7.158510801700396e-06
+        },
+        {
+          "time_s": 8400.0,
+          "max_velocity": 36.159012538436826,
+          "energy_drift_J_kg": -7.715416822175608e-06
+        },
+        {
+          "time_s": 9000.0,
+          "max_velocity": 36.16033808736638,
+          "energy_drift_J_kg": -8.273692597142781e-06
+        },
+        {
+          "time_s": 9600.0,
+          "max_velocity": 36.16224052288429,
+          "energy_drift_J_kg": -8.833317267396454e-06
+        },
+        {
+          "time_s": 10200.0,
+          "max_velocity": 36.16615310979472,
+          "energy_drift_J_kg": -9.394297786005114e-06
+        },
+        {
+          "time_s": 10800.0,
+          "max_velocity": 36.17027050029245,
+          "energy_drift_J_kg": -9.956508997735993e-06
+        },
+        {
+          "time_s": 11400.0,
+          "max_velocity": 36.17456455387911,
+          "energy_drift_J_kg": -1.0519874418835732e-05
+        },
+        {
+          "time_s": 12000.0,
+          "max_velocity": 36.17900486486274,
+          "energy_drift_J_kg": -1.1084268894071562e-05
+        },
+        {
+          "time_s": 12600.0,
+          "max_velocity": 36.183559101001975,
+          "energy_drift_J_kg": -1.1649518596731308e-05
+        },
+        {
+          "time_s": 13200.0,
+          "max_velocity": 36.188193374219075,
+          "energy_drift_J_kg": -1.2215442747034304e-05
+        },
+        {
+          "time_s": 13800.0,
+          "max_velocity": 36.192872638882264,
+          "energy_drift_J_kg": -1.2781881424405347e-05
+        },
+        {
+          "time_s": 14400.0,
+          "max_velocity": 36.19756111267645,
+          "energy_drift_J_kg": -1.3348612130652847e-05
+        },
+        {
+          "time_s": 15000.0,
+          "max_velocity": 36.202222714666036,
+          "energy_drift_J_kg": -1.391546103906463e-05
+        },
+        {
+          "time_s": 15600.0,
+          "max_velocity": 36.20682151481063,
+          "energy_drift_J_kg": -1.4482254322928515e-05
+        },
+        {
+          "time_s": 16200.0,
+          "max_velocity": 36.211322188929756,
+          "energy_drift_J_kg": -1.5048832061669299e-05
+        },
+        {
+          "time_s": 16800.0,
+          "max_velocity": 36.21569047292937,
+          "energy_drift_J_kg": -1.5615062146985727e-05
+        },
+        {
+          "time_s": 17400.0,
+          "max_velocity": 36.219893610004874,
+          "energy_drift_J_kg": -1.618080551750806e-05
+        },
+        {
+          "time_s": 18000.0,
+          "max_velocity": 36.224068082609016,
+          "energy_drift_J_kg": -1.6745964830277474e-05
+        },
+        {
+          "time_s": 18600.0,
+          "max_velocity": 36.22797479532945,
+          "energy_drift_J_kg": -1.7310449695403638e-05
+        },
+        {
+          "time_s": 19200.0,
+          "max_velocity": 36.23133374882036,
+          "energy_drift_J_kg": -1.7874169722996218e-05
+        },
+        {
+          "time_s": 19800.0,
+          "max_velocity": 36.23447601003627,
+          "energy_drift_J_kg": -1.8437083194644295e-05
+        },
+        {
+          "time_s": 20400.0,
+          "max_velocity": 36.237443925163134,
+          "energy_drift_J_kg": -1.8999113626594508e-05
+        },
+        {
+          "time_s": 21000.0,
+          "max_velocity": 36.240104402975305,
+          "energy_drift_J_kg": -1.9560205394298963e-05
+        },
+        {
+          "time_s": 21600.0,
+          "max_velocity": 36.24244588352873,
+          "energy_drift_J_kg": -2.0120316779346732e-05
+        },
+        {
+          "time_s": 22200.0,
+          "max_velocity": 36.24446092006492,
+          "energy_drift_J_kg": -2.067937825105295e-05
+        },
+        {
+          "time_s": 22800.0,
+          "max_velocity": 36.2461463059422,
+          "energy_drift_J_kg": -2.123734809100669e-05
+        },
+        {
+          "time_s": 23400.0,
+          "max_velocity": 36.24750314461463,
+          "energy_drift_J_kg": -2.1794177627728544e-05
+        },
+        {
+          "time_s": 24000.0,
+          "max_velocity": 36.24853686056758,
+          "energy_drift_J_kg": -2.2349832095876074e-05
+        },
+        {
+          "time_s": 24600.0,
+          "max_velocity": 36.24925714987094,
+          "energy_drift_J_kg": -2.290428368317534e-05
+        },
+        {
+          "time_s": 25200.0,
+          "max_velocity": 36.249677869796606,
+          "energy_drift_J_kg": -2.3457497624283894e-05
+        },
+        {
+          "time_s": 25800.0,
+          "max_velocity": 36.24981686775728,
+          "energy_drift_J_kg": -2.4009501731475692e-05
+        },
+        {
+          "time_s": 26400.0,
+          "max_velocity": 36.24969575065095,
+          "energy_drift_J_kg": -2.4560330770093168e-05
+        },
+        {
+          "time_s": 27000.0,
+          "max_velocity": 36.24933959652925,
+          "energy_drift_J_kg": -2.5110054270821193e-05
+        },
+        {
+          "time_s": 27600.0,
+          "max_velocity": 36.24877661133965,
+          "energy_drift_J_kg": -2.5658762623550103e-05
+        },
+        {
+          "time_s": 28200.0,
+          "max_velocity": 36.248037734309705,
+          "energy_drift_J_kg": -2.620660184271812e-05
+        },
+        {
+          "time_s": 28800.0,
+          "max_velocity": 36.24715619633722,
+          "energy_drift_J_kg": -2.6753731848900454e-05
+        },
+        {
+          "time_s": 29400.0,
+          "max_velocity": 36.24616703651114,
+          "energy_drift_J_kg": -2.7300354281083226e-05
+        },
+        {
+          "time_s": 30000.0,
+          "max_velocity": 36.24510658260419,
+          "energy_drift_J_kg": -2.7846705543595004e-05
+        },
+        {
+          "time_s": 30600.0,
+          "max_velocity": 36.24401190203807,
+          "energy_drift_J_kg": -2.8393015087695857e-05
+        },
+        {
+          "time_s": 31200.0,
+          "max_velocity": 36.24292023041454,
+          "energy_drift_J_kg": -2.8939533223851326e-05
+        },
+        {
+          "time_s": 31800.0,
+          "max_velocity": 36.241868385220386,
+          "energy_drift_J_kg": -2.9486524168663916e-05
+        },
+        {
+          "time_s": 32400.0,
+          "max_velocity": 36.2408921727401,
+          "energy_drift_J_kg": -3.0034238232599166e-05
+        },
+        {
+          "time_s": 33000.0,
+          "max_velocity": 36.24002579653837,
+          "energy_drift_J_kg": -3.058288400771169e-05
+        },
+        {
+          "time_s": 33600.0,
+          "max_velocity": 36.239301276095304,
+          "energy_drift_J_kg": -3.113270485139853e-05
+        },
+        {
+          "time_s": 34200.0,
+          "max_velocity": 36.238747884283555,
+          "energy_drift_J_kg": -3.168384677809793e-05
+        },
+        {
+          "time_s": 34800.0,
+          "max_velocity": 36.238391612361994,
+          "energy_drift_J_kg": -3.2236441896111135e-05
+        },
+        {
+          "time_s": 35400.0,
+          "max_velocity": 36.238254671019845,
+          "energy_drift_J_kg": -3.2790622313739395e-05
+        },
+        {
+          "time_s": 36000.0,
+          "max_velocity": 36.24222490114646,
+          "energy_drift_J_kg": -3.3346415843256675e-05
+        },
+        {
+          "time_s": 36600.0,
+          "max_velocity": 36.2459586266788,
+          "energy_drift_J_kg": -3.3903857250005394e-05
+        },
+        {
+          "time_s": 37200.0,
+          "max_velocity": 36.2493469537582,
+          "energy_drift_J_kg": -3.446293262784858e-05
+        },
+        {
+          "time_s": 37800.0,
+          "max_velocity": 36.2523631112462,
+          "energy_drift_J_kg": -3.5023593305306834e-05
+        },
+        {
+          "time_s": 38400.0,
+          "max_velocity": 36.254983793533235,
+          "energy_drift_J_kg": -3.558576975169528e-05
+        },
+        {
+          "time_s": 39000.0,
+          "max_velocity": 36.25718937037935,
+          "energy_drift_J_kg": -3.614937157712358e-05
+        },
+        {
+          "time_s": 39600.0,
+          "max_velocity": 36.25896405005828,
+          "energy_drift_J_kg": -3.671431534476989e-05
+        },
+        {
+          "time_s": 40200.0,
+          "max_velocity": 36.26029599514065,
+          "energy_drift_J_kg": -3.728048285246994e-05
+        },
+        {
+          "time_s": 40800.0,
+          "max_velocity": 36.26117739094434,
+          "energy_drift_J_kg": -3.784779066340187e-05
+        },
+        {
+          "time_s": 41400.0,
+          "max_velocity": 36.26160446734612,
+          "energy_drift_J_kg": -3.8416113622332916e-05
+        },
+        {
+          "time_s": 42000.0,
+          "max_velocity": 36.26157747527836,
+          "energy_drift_J_kg": -3.898536829244124e-05
+        },
+        {
+          "time_s": 42600.0,
+          "max_velocity": 36.26110061981821,
+          "energy_drift_J_kg": -3.955545037769953e-05
+        },
+        {
+          "time_s": 43200.0,
+          "max_velocity": 36.269280252424004,
+          "energy_drift_J_kg": -4.012629034742291e-05
+        },
+        {
+          "time_s": 43800.0,
+          "max_velocity": 36.28187880095422,
+          "energy_drift_J_kg": -4.0697790858652574e-05
+        },
+        {
+          "time_s": 44400.0,
+          "max_velocity": 36.29440467300867,
+          "energy_drift_J_kg": -4.1269889333772126e-05
+        },
+        {
+          "time_s": 45000.0,
+          "max_velocity": 36.30672552266566,
+          "energy_drift_J_kg": -4.184247452368578e-05
+        },
+        {
+          "time_s": 45600.0,
+          "max_velocity": 36.31870561941595,
+          "energy_drift_J_kg": -4.241545603850319e-05
+        },
+        {
+          "time_s": 46200.0,
+          "max_velocity": 36.330207469619786,
+          "energy_drift_J_kg": -4.298874348833404e-05
+        },
+        {
+          "time_s": 46800.0,
+          "max_velocity": 36.34109351233471,
+          "energy_drift_J_kg": -4.356217695260311e-05
+        },
+        {
+          "time_s": 47400.0,
+          "max_velocity": 36.35122786892521,
+          "energy_drift_J_kg": -4.413567299448857e-05
+        },
+        {
+          "time_s": 48000.0,
+          "max_velocity": 36.36047812457924,
+          "energy_drift_J_kg": -4.470902997500429e-05
+        },
+        {
+          "time_s": 48600.0,
+          "max_velocity": 36.368717118847215,
+          "energy_drift_J_kg": -4.528209492664355e-05
+        },
+        {
+          "time_s": 49200.0,
+          "max_velocity": 36.3758247216078,
+          "energy_drift_J_kg": -4.5854687069625686e-05
+        },
+        {
+          "time_s": 49800.0,
+          "max_velocity": 36.381689570469966,
+          "energy_drift_J_kg": -4.642661867110155e-05
+        },
+        {
+          "time_s": 50400.0,
+          "max_velocity": 36.389422168976566,
+          "energy_drift_J_kg": -4.6997688092085003e-05
+        },
+        {
+          "time_s": 51000.0,
+          "max_velocity": 36.40252876889566,
+          "energy_drift_J_kg": -4.7567707599726914e-05
+        },
+        {
+          "time_s": 51600.0,
+          "max_velocity": 36.414586733338524,
+          "energy_drift_J_kg": -4.8136475555041135e-05
+        },
+        {
+          "time_s": 52200.0,
+          "max_velocity": 36.42544665126033,
+          "energy_drift_J_kg": -4.870382508438399e-05
+        },
+        {
+          "time_s": 52800.0,
+          "max_velocity": 36.434969990042994,
+          "energy_drift_J_kg": -4.926961712638573e-05
+        },
+        {
+          "time_s": 53400.0,
+          "max_velocity": 36.443030852195555,
+          "energy_drift_J_kg": -4.983373347888208e-05
+        },
+        {
+          "time_s": 54000.0,
+          "max_velocity": 36.44951759112452,
+          "energy_drift_J_kg": -5.039606289277724e-05
+        },
+        {
+          "time_s": 54600.0,
+          "max_velocity": 36.45433426536786,
+          "energy_drift_J_kg": -5.0956584508865745e-05
+        },
+        {
+          "time_s": 55200.0,
+          "max_velocity": 36.45740191268961,
+          "energy_drift_J_kg": -5.151526356180517e-05
+        },
+        {
+          "time_s": 55800.0,
+          "max_velocity": 36.458659627677704,
+          "energy_drift_J_kg": -5.207213481693795e-05
+        },
+        {
+          "time_s": 56400.0,
+          "max_velocity": 36.45806542894691,
+          "energy_drift_J_kg": -5.262726780494895e-05
+        },
+        {
+          "time_s": 57000.0,
+          "max_velocity": 36.45559690468968,
+          "energy_drift_J_kg": -5.318078072800245e-05
+        },
+        {
+          "time_s": 57600.0,
+          "max_velocity": 36.451251628105496,
+          "energy_drift_J_kg": -5.373277788212576e-05
+        },
+        {
+          "time_s": 58200.0,
+          "max_velocity": 36.445047337138746,
+          "energy_drift_J_kg": -5.42834678593735e-05
+        },
+        {
+          "time_s": 58800.0,
+          "max_velocity": 36.43702187592736,
+          "energy_drift_J_kg": -5.4833010580320855e-05
+        },
+        {
+          "time_s": 59400.0,
+          "max_velocity": 36.427232898371344,
+          "energy_drift_J_kg": -5.5381614637022455e-05
+        },
+        {
+          "time_s": 60000.0,
+          "max_velocity": 36.41575733723245,
+          "energy_drift_J_kg": -5.592950948073837e-05
+        },
+        {
+          "time_s": 60600.0,
+          "max_velocity": 36.402690645133575,
+          "energy_drift_J_kg": -5.6476875891249266e-05
+        },
+        {
+          "time_s": 61200.0,
+          "max_velocity": 36.38814581670101,
+          "energy_drift_J_kg": -5.702397808515765e-05
+        },
+        {
+          "time_s": 61800.0,
+          "max_velocity": 36.37225220384556,
+          "energy_drift_J_kg": -5.7570982936107216e-05
+        },
+        {
+          "time_s": 62400.0,
+          "max_velocity": 36.355154138773585,
+          "energy_drift_J_kg": -5.8118092083084086e-05
+        },
+        {
+          "time_s": 63000.0,
+          "max_velocity": 36.33700938172195,
+          "energy_drift_J_kg": -5.866549325893742e-05
+        },
+        {
+          "time_s": 63600.0,
+          "max_velocity": 36.31798741258892,
+          "energy_drift_J_kg": -5.921332552503695e-05
+        },
+        {
+          "time_s": 64200.0,
+          "max_velocity": 36.29826758755806,
+          "energy_drift_J_kg": -5.976176270809486e-05
+        },
+        {
+          "time_s": 64800.0,
+          "max_velocity": 36.278037183457535,
+          "energy_drift_J_kg": -6.0310909104138456e-05
+        },
+        {
+          "time_s": 65400.0,
+          "max_velocity": 36.25748935394174,
+          "energy_drift_J_kg": -6.086087596226353e-05
+        },
+        {
+          "time_s": 66000.0,
+          "max_velocity": 36.23682102260745,
+          "energy_drift_J_kg": -6.14117675784974e-05
+        },
+        {
+          "time_s": 66600.0,
+          "max_velocity": 36.21623073884973,
+          "energy_drift_J_kg": -6.19636604365934e-05
+        },
+        {
+          "time_s": 67200.0,
+          "max_velocity": 36.195916522615136,
+          "energy_drift_J_kg": -6.251661711416792e-05
+        },
+        {
+          "time_s": 67800.0,
+          "max_velocity": 36.17607372421632,
+          "energy_drift_J_kg": -6.307073495417981e-05
+        },
+        {
+          "time_s": 68400.0,
+          "max_velocity": 36.17027717434459,
+          "energy_drift_J_kg": -6.362602786276601e-05
+        },
+        {
+          "time_s": 69000.0,
+          "max_velocity": 36.173552637569166,
+          "energy_drift_J_kg": -6.418259318288536e-05
+        },
+        {
+          "time_s": 69600.0,
+          "max_velocity": 36.17710405549552,
+          "energy_drift_J_kg": -6.474045872681179e-05
+        },
+        {
+          "time_s": 70200.0,
+          "max_velocity": 36.18090877735775,
+          "energy_drift_J_kg": -6.529964535375077e-05
+        },
+        {
+          "time_s": 70800.0,
+          "max_velocity": 36.184942111368656,
+          "energy_drift_J_kg": -6.586022259438717e-05
+        },
+        {
+          "time_s": 71400.0,
+          "max_velocity": 36.18917738317936,
+          "energy_drift_J_kg": -6.642216958951555e-05
+        },
+        {
+          "time_s": 72000.0,
+          "max_velocity": 36.19358600452228,
+          "energy_drift_J_kg": -6.698552110447832e-05
+        },
+        {
+          "time_s": 72600.0,
+          "max_velocity": 36.19813755359447,
+          "energy_drift_J_kg": -6.755024237393303e-05
+        },
+        {
+          "time_s": 73200.0,
+          "max_velocity": 36.202799868772246,
+          "energy_drift_J_kg": -6.811631253867426e-05
+        },
+        {
+          "time_s": 73800.0,
+          "max_velocity": 36.207539157240234,
+          "energy_drift_J_kg": -6.868365511494864e-05
+        },
+        {
+          "time_s": 74400.0,
+          "max_velocity": 36.212320120067155,
+          "energy_drift_J_kg": -6.925217971286581e-05
+        },
+        {
+          "time_s": 75000.0,
+          "max_velocity": 36.217106095164354,
+          "energy_drift_J_kg": -6.982176117719302e-05
+        },
+        {
+          "time_s": 75600.0,
+          "max_velocity": 36.221859219420544,
+          "energy_drift_J_kg": -7.039225349349205e-05
+        },
+        {
+          "time_s": 76200.0,
+          "max_velocity": 36.22654061111683,
+          "energy_drift_J_kg": -7.096348283505071e-05
+        },
+        {
+          "time_s": 76800.0,
+          "max_velocity": 36.23111057349071,
+          "energy_drift_J_kg": -7.153523365674591e-05
+        },
+        {
+          "time_s": 77400.0,
+          "max_velocity": 36.235528820037395,
+          "energy_drift_J_kg": -7.210730431959152e-05
+        },
+        {
+          "time_s": 78000.0,
+          "max_velocity": 36.24995876301111,
+          "energy_drift_J_kg": -7.2679430606985e-05
+        },
+        {
+          "time_s": 78600.0,
+          "max_velocity": 36.265456859468436,
+          "energy_drift_J_kg": -7.325139002073482e-05
+        },
+        {
+          "time_s": 79200.0,
+          "max_velocity": 36.28099024575318,
+          "energy_drift_J_kg": -7.382291139116994e-05
+        },
+        {
+          "time_s": 79800.0,
+          "max_velocity": 36.29640876796392,
+          "energy_drift_J_kg": -7.43937652670303e-05
+        },
+        {
+          "time_s": 80400.0,
+          "max_velocity": 36.311560398140884,
+          "energy_drift_J_kg": -7.49637291501243e-05
+        },
+        {
+          "time_s": 81000.0,
+          "max_velocity": 36.3262928601998,
+          "energy_drift_J_kg": -7.553261530760281e-05
+        },
+        {
+          "time_s": 81600.0,
+          "max_velocity": 36.34045528638027,
+          "energy_drift_J_kg": -7.61002221004797e-05
+        },
+        {
+          "time_s": 82200.0,
+          "max_velocity": 36.36335675637653,
+          "energy_drift_J_kg": -7.666642437352218e-05
+        },
+        {
+          "time_s": 82800.0,
+          "max_velocity": 36.38546497838507,
+          "energy_drift_J_kg": -7.723111087763446e-05
+        },
+        {
+          "time_s": 83400.0,
+          "max_velocity": 36.406367056941946,
+          "energy_drift_J_kg": -7.779421903520018e-05
+        },
+        {
+          "time_s": 84000.0,
+          "max_velocity": 36.42583988699174,
+          "energy_drift_J_kg": -7.835572103394536e-05
+        },
+        {
+          "time_s": 84600.0,
+          "max_velocity": 36.443675230979295,
+          "energy_drift_J_kg": -7.891560296773306e-05
+        },
+        {
+          "time_s": 85200.0,
+          "max_velocity": 36.46772979634919,
+          "energy_drift_J_kg": -7.947392741417965e-05
+        },
+        {
+          "time_s": 85800.0,
+          "max_velocity": 36.50119861358297,
+          "energy_drift_J_kg": -8.003074304476453e-05
+        },
+        {
+          "time_s": 86400.0,
+          "max_velocity": 36.53368270735704,
+          "energy_drift_J_kg": -8.058614024937803e-05
+        }
+      ],
+      "min_salt": 34.99999999999979,
+      "min_h": 1133.409931904168,
+      "velocity_change_rms": 0.9806327317735903,
+      "height_change_rms": 10.354640481500182
+    }
+  },
+  "coordinate_difference": {
+    "temperature_rms_C": 1.9269327111402073e-14,
+    "velocity_rms_m_s": 8.958476424589789e-14,
+    "height_rms_m": 2.044783485485476e-12
+  }
+}

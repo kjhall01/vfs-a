@@ -161,7 +161,7 @@ class LaggedClosure(PathWorkClosure):
             # The h0 transfer is conservative by construction. Cancel it
             # algebraically, rather than making TKE pay inverse-roundtrip noise.
             # Full-H acceptance below independently checks that noise.
-            if workbuf:work=workbuf.path_work(self,physical,H0,fh,fs,(a,b))
+            if workbuf:work=workbuf.path_work(self,physical,H0,fh,fs,(a,b),after=after)
             else:
                 work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
                 work=self._buoyancy_work(ocean,physical,after,fh,fs,work)

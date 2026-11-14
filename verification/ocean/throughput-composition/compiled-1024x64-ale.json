@@ -1,0 +1,149 @@
+{
+  "config": {
+    "cells": 1024,
+    "layers": 64,
+    "compile": true,
+    "ale": true,
+    "repeats": 1,
+    "variants": null,
+    "steps": 1,
+    "dt": 60.0,
+    "output": "verification/ocean/throughput-composition/compiled-1024x64-ale.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "cases": {
+    "entropy": {
+      "status": "completed",
+      "median_step_s": 20.240606847997697,
+      "samples_s": [
+        20.240606847997697
+      ],
+      "inverse_calls": {
+        "h0": 36,
+        "entropy": 12
+      },
+      "state_inverse_calls": 28,
+      "max_local_budget_ratio": 3.40990408291054e-07,
+      "min_salt": 34.50023213331084,
+      "min_tracer": 1.3084022899733987,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": -4.812426699189837e-12,
+          "min_tke": 2.1593962603344614e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 0.0,
+        "velocity_rms_m_s": 0.0,
+        "tke_max_abs": 0.0
+      }
+    },
+    "fast_surface_entropy": {
+      "status": "completed",
+      "median_step_s": 56.95491739300269,
+      "samples_s": [
+        56.95491739300269
+      ],
+      "inverse_calls": {
+        "entropy": 14,
+        "h0": 36
+      },
+      "state_inverse_calls": 29,
+      "max_local_budget_ratio": 3.40990408291054e-07,
+      "min_salt": 34.50023213331084,
+      "min_tracer": 1.3084022899733987,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": -4.812426699189837e-12,
+          "min_tke": 2.1593962603344614e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 7.317553012828107e-15,
+        "velocity_rms_m_s": 1.7351215302673863e-19,
+        "tke_max_abs": 2.17653586126465e-17
+      }
+    },
+    "temperature_h_path": {
+      "status": "completed",
+      "median_step_s": 11.693483743001707,
+      "samples_s": [
+        11.693483743001707
+      ],
+      "inverse_calls": {
+        "h0": 33
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 3.4234709302527836e-07,
+      "min_salt": 34.50023213331084,
+      "min_tracer": 1.3084022899733987,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": -4.812426699189837e-12,
+          "min_tke": 2.1593962603344607e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 1.1467894651372086e-14,
+        "velocity_rms_m_s": 4.048753082023804e-19,
+        "tke_max_abs": 2.824346659324739e-17
+      }
+    },
+    "temperature_ts3": {
+      "status": "completed",
+      "median_step_s": 18.617714651001734,
+      "samples_s": [
+        18.617714651001734
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 3.4234709302527836e-07,
+      "min_salt": 34.50023213331084,
+      "min_tracer": 1.3084022899733987,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": -4.812426699189837e-12,
+          "min_tke": 2.1593962603344617e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 1.14670486172676e-14,
+        "velocity_rms_m_s": 4.048664304476575e-19,
+        "tke_max_abs": 2.824346659324739e-17
+      }
+    },
+    "temperature_ts1": {
+      "status": "completed",
+      "median_step_s": 7.610173508001026,
+      "samples_s": [
+        7.610173508001026
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 3.4234709302527836e-07,
+      "min_salt": 34.50023213331084,
+      "min_tracer": 1.3084022899733987,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 3.2198795187443176e-13,
+          "min_tke": 2.1593962603022538e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 3.070048690133954e-13,
+        "velocity_rms_m_s": 6.190893480741741e-17,
+        "tke_max_abs": 2.7990928802221204e-14
+      }
+    }
+  }
+}

@@ -718,3 +718,20 @@ ALE remain outside the temperature-native composition. See
 Final outside-checkout portable regression: 1102 passed, one CUDA skip, one
 existing warning. Old entropy research helper outputs matched 24 state/report
 tensors bitwise in each of ordinary and fast mode on the recorded small case.
+
+## Temperature-native complete research composition
+
+Optional research adapters now cover prescribed surface exchange, radiation,
+stress, mixing and adaptive ALE while retaining the same Hamiltonian and
+acceptance budgets. T/S-path work removes intermediate enthalpy inversions;
+the complete 1024×64 step including ALE uses nine enthalpy and zero entropy
+inversions. Small-case timing improves 2.55×; a noisy large-case single sample
+improves only 1.09×. No supported default changes or global speedup claim.
+See [qualification and raw results](../verification/ocean/throughput-composition/README.md).
+
+Installed-wheel, outside-checkout portable regression: **1115 passed, one CUDA
+skip**, one existing warning. Thirteen new composition checks pass.
+
+An alternating 1024×64 follow-up (three samples each, same compiled kernels)
+measures 21.728 → 9.709 s including ALE, **2.24×**. The earlier noisy
+single-sample comparison remains recorded; no Mac/global extrapolation.

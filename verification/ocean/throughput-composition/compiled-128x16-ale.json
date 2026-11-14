@@ -1,0 +1,158 @@
+{
+  "config": {
+    "cells": 128,
+    "layers": 16,
+    "compile": true,
+    "ale": true,
+    "repeats": 3,
+    "steps": 1,
+    "dt": 60.0,
+    "output": "verification/ocean/throughput-composition/compiled-128x16-ale.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "cases": {
+    "entropy": {
+      "status": "completed",
+      "median_step_s": 1.1404160059973947,
+      "samples_s": [
+        1.1922599380013708,
+        1.1404160059973947,
+        0.9976152679992083
+      ],
+      "inverse_calls": {
+        "h0": 36,
+        "entropy": 12
+      },
+      "state_inverse_calls": 28,
+      "max_local_budget_ratio": 2.8104076470198094e-07,
+      "min_salt": 34.5006019519238,
+      "min_tracer": 5.707129212043869,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 6.160899980655262e-12,
+          "min_tke": 3.250452398081071e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 0.0,
+        "velocity_rms_m_s": 0.0,
+        "tke_max_abs": 0.0
+      }
+    },
+    "fast_surface_entropy": {
+      "status": "completed",
+      "median_step_s": 0.9227322240003559,
+      "samples_s": [
+        1.1676212009988376,
+        0.8754666709974117,
+        0.9227322240003559
+      ],
+      "inverse_calls": {
+        "entropy": 14,
+        "h0": 36
+      },
+      "state_inverse_calls": 29,
+      "max_local_budget_ratio": 2.8104076470198094e-07,
+      "min_salt": 34.5006019519238,
+      "min_tracer": 5.707129212043869,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 6.160899980655262e-12,
+          "min_tke": 3.250452398081071e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 4.612438892568569e-15,
+        "velocity_rms_m_s": 1.5772820711271085e-20,
+        "tke_max_abs": 5.204170427930421e-18
+      }
+    },
+    "temperature_h_path": {
+      "status": "completed",
+      "median_step_s": 0.5438228319981135,
+      "samples_s": [
+        0.558710172001156,
+        0.5246662479985389,
+        0.5438228319981135
+      ],
+      "inverse_calls": {
+        "h0": 33
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 2.498261582581496e-07,
+      "min_salt": 34.5006019519238,
+      "min_tracer": 5.707129212043869,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 1.0264853295909945e-12,
+          "min_tke": 3.250452398081071e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 9.273768751300676e-15,
+        "velocity_rms_m_s": 6.26575702131821e-19,
+        "tke_max_abs": 7.37257477290143e-18
+      }
+    },
+    "temperature_ts3": {
+      "status": "completed",
+      "median_step_s": 0.4477030880007078,
+      "samples_s": [
+        0.43475320899960934,
+        0.49391567400016356,
+        0.4477030880007078
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 2.498261582581496e-07,
+      "min_salt": 34.5006019519238,
+      "min_tracer": 5.707129212043869,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 1.0264853295909945e-12,
+          "min_tke": 3.250452398081073e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 9.273768751300676e-15,
+        "velocity_rms_m_s": 6.26575702131821e-19,
+        "tke_max_abs": 7.37257477290143e-18
+      }
+    },
+    "temperature_ts1": {
+      "status": "completed",
+      "median_step_s": 0.4071144519984955,
+      "samples_s": [
+        0.3971612549976271,
+        0.4169694560005155,
+        0.4071144519984955
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 2.8369461594552857e-07,
+      "min_salt": 34.5006019519238,
+      "min_tracer": 5.707129212043869,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": -4.107929321473273e-12,
+          "min_tke": 3.250452397890788e-05
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 2.881504672257578e-14,
+        "velocity_rms_m_s": 1.0662265334303982e-17,
+        "tke_max_abs": 3.940538216909428e-14
+      }
+    }
+  }
+}

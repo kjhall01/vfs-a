@@ -1,0 +1,250 @@
+{
+  "config": {
+    "cells": 32,
+    "layers": 8,
+    "compile": true,
+    "ale": true,
+    "repeats": 1,
+    "variants": [
+      "entropy",
+      "temperature_ts3",
+      "temperature_ts1"
+    ],
+    "steps": 60,
+    "dt": 60.0,
+    "output": "verification/ocean/throughput-composition/one-hour-composed.json"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "cases": {
+    "entropy": {
+      "status": "completed",
+      "median_step_s": 0.7690968480019365,
+      "samples_s": [
+        0.7690968480019365
+      ],
+      "inverse_calls": {
+        "h0": 36,
+        "entropy": 12
+      },
+      "state_inverse_calls": 28,
+      "max_local_budget_ratio": 2.636554735926003e-07,
+      "min_salt": 34.502262235034664,
+      "min_tracer": 12.782686486389085,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 7.394098461137873e-13,
+          "min_tke": 4.554878720996758e-05
+        },
+        {
+          "step": 7,
+          "energy_minus_inputs_J_kg": -1.3042553916176986e-11,
+          "min_tke": 1.9474517098573319e-10
+        },
+        {
+          "step": 13,
+          "energy_minus_inputs_J_kg": -3.661263215977874e-11,
+          "min_tke": 7.333427306765258e-11
+        },
+        {
+          "step": 19,
+          "energy_minus_inputs_J_kg": -4.8819872217776295e-11,
+          "min_tke": 3.3356387854984496e-11
+        },
+        {
+          "step": 25,
+          "energy_minus_inputs_J_kg": -6.962609731104472e-11,
+          "min_tke": 1.950446381808313e-11
+        },
+        {
+          "step": 31,
+          "energy_minus_inputs_J_kg": -8.044083422560941e-11,
+          "min_tke": 1.2893950997054707e-11
+        },
+        {
+          "step": 37,
+          "energy_minus_inputs_J_kg": -1.0201734686845767e-10,
+          "min_tke": 7.766239243245443e-12
+        },
+        {
+          "step": 43,
+          "energy_minus_inputs_J_kg": -1.082457704029976e-10,
+          "min_tke": 3.994221311211837e-12
+        },
+        {
+          "step": 49,
+          "energy_minus_inputs_J_kg": -1.3000059615231898e-10,
+          "min_tke": 1.7566983038525087e-12
+        },
+        {
+          "step": 55,
+          "energy_minus_inputs_J_kg": -1.3831330873985136e-10,
+          "min_tke": 1.146172209901875e-12
+        },
+        {
+          "step": 60,
+          "energy_minus_inputs_J_kg": -1.5052571956455686e-10,
+          "min_tke": 8.268651535830732e-13
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 0.0,
+        "velocity_rms_m_s": 0.0,
+        "tke_max_abs": 0.0
+      }
+    },
+    "temperature_ts3": {
+      "status": "completed",
+      "median_step_s": 0.20710855700235697,
+      "samples_s": [
+        0.20710855700235697
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 2.553012528652955e-07,
+      "min_salt": 34.502262235034664,
+      "min_tracer": 12.782686486389085,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 7.394098461137873e-13,
+          "min_tke": 4.5548787209967675e-05
+        },
+        {
+          "step": 7,
+          "energy_minus_inputs_J_kg": -1.3042553916176986e-11,
+          "min_tke": 1.9474517098573319e-10
+        },
+        {
+          "step": 13,
+          "energy_minus_inputs_J_kg": -2.6343802857650208e-11,
+          "min_tke": 7.333427306765383e-11
+        },
+        {
+          "step": 19,
+          "energy_minus_inputs_J_kg": -3.855104291564776e-11,
+          "min_tke": 3.335638785498553e-11
+        },
+        {
+          "step": 25,
+          "energy_minus_inputs_J_kg": -5.935726800891618e-11,
+          "min_tke": 1.950446381808313e-11
+        },
+        {
+          "step": 31,
+          "energy_minus_inputs_J_kg": -7.017200492348087e-11,
+          "min_tke": 1.2893950997054673e-11
+        },
+        {
+          "step": 37,
+          "energy_minus_inputs_J_kg": -8.661410291526487e-11,
+          "min_tke": 7.766239243209209e-12
+        },
+        {
+          "step": 43,
+          "energy_minus_inputs_J_kg": -8.770811179874053e-11,
+          "min_tke": 3.994221311189689e-12
+        },
+        {
+          "step": 49,
+          "energy_minus_inputs_J_kg": -1.0946293754806192e-10,
+          "min_tke": 1.7566983038557766e-12
+        },
+        {
+          "step": 55,
+          "energy_minus_inputs_J_kg": -1.331788940887871e-10,
+          "min_tke": 1.1461722098990994e-12
+        },
+        {
+          "step": 60,
+          "energy_minus_inputs_J_kg": -1.5052571956455686e-10,
+          "min_tke": 8.268651535811048e-13
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 7.863216784123675e-14,
+        "velocity_rms_m_s": 4.802753210936583e-18,
+        "tke_max_abs": 5.150129725895597e-17
+      }
+    },
+    "temperature_ts1": {
+      "status": "completed",
+      "median_step_s": 0.2579034420014068,
+      "samples_s": [
+        0.2579034420014068
+      ],
+      "inverse_calls": {
+        "h0": 9
+      },
+      "state_inverse_calls": 0,
+      "max_local_budget_ratio": 2.553012528652955e-07,
+      "min_salt": 34.502262235034664,
+      "min_tracer": 12.782686486389089,
+      "trajectory": [
+        {
+          "step": 1,
+          "energy_minus_inputs_J_kg": 7.394098461137873e-13,
+          "min_tke": 4.554878721004426e-05
+        },
+        {
+          "step": 7,
+          "energy_minus_inputs_J_kg": -1.3042553916176986e-11,
+          "min_tke": 1.9474517098440326e-10
+        },
+        {
+          "step": 13,
+          "energy_minus_inputs_J_kg": -3.1478217508714476e-11,
+          "min_tke": 7.333427306730571e-11
+        },
+        {
+          "step": 19,
+          "energy_minus_inputs_J_kg": -3.855104291564776e-11,
+          "min_tke": 3.3356387854929766e-11
+        },
+        {
+          "step": 25,
+          "energy_minus_inputs_J_kg": -4.395402405572339e-11,
+          "min_tke": 1.9504463818083133e-11
+        },
+        {
+          "step": 31,
+          "energy_minus_inputs_J_kg": -7.017200492348087e-11,
+          "min_tke": 1.2893950997068149e-11
+        },
+        {
+          "step": 37,
+          "energy_minus_inputs_J_kg": -8.661410291526487e-11,
+          "min_tke": 7.766239244591844e-12
+        },
+        {
+          "step": 43,
+          "energy_minus_inputs_J_kg": -9.797694110086907e-11,
+          "min_tke": 3.994221312004984e-12
+        },
+        {
+          "step": 49,
+          "energy_minus_inputs_J_kg": -1.1973176685019043e-10,
+          "min_tke": 1.7566983039782375e-12
+        },
+        {
+          "step": 55,
+          "energy_minus_inputs_J_kg": -1.4344772339091565e-10,
+          "min_tke": 1.1461722098883596e-12
+        },
+        {
+          "step": 60,
+          "energy_minus_inputs_J_kg": -1.5052571956455686e-10,
+          "min_tke": 8.268651536508957e-13
+        }
+      ],
+      "versus_entropy": {
+        "temperature_rms_C": 8.105167964759312e-14,
+        "velocity_rms_m_s": 2.77990801390184e-17,
+        "tke_max_abs": 6.686511966943337e-16
+      }
+    }
+  }
+}

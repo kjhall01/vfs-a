@@ -68,6 +68,9 @@ class OceanBoundaryStress:
         if not math.isfinite(self.bottom_drag_coefficient) or self.bottom_drag_coefficient < 0:
             raise ValueError('bottom_drag_coefficient must be finite and nonnegative')
 
+    def _velocity_state(self,state,velocity):
+        return replace(state,u_e=velocity)
+
     def apply(self, ocean, state, tke_h, dt, *, surface_stress=None, _physical=None, _return_physical=False):
         if not math.isfinite(float(dt)) or float(dt) <= 0:
             raise ValueError('dt must be finite and positive')
@@ -121,7 +124,7 @@ class OceanBoundaryStress:
         gain=allocate(edge_loss)
         safe_mass=torch.where(mass_area > 0,mass_area,torch.ones_like(mass_area))
         end_tke=tke_h+gain/safe_mass
-        end=replace(state,u_e=velocity)
+        end=self._velocity_state(state,velocity)
         final=physical.with_tensors(end.u_e,physical.h,physical.temp_h,physical.salt_h,physical.tracer_h)
         final = (ocean.check_state(end) if _physical is None else
                  ocean.check_state(end, _physical=final))

@@ -44,6 +44,10 @@ class OceanSurfaceHeating:
         if self.bottom not in ('export','absorb'):
             raise ValueError("bottom must be 'export' or 'absorb'")
 
+    def _thermal_update(self,ocean,state,specific,physical):
+        end,residual=apply_heat(ocean,state,specific,allow_cooling=True)
+        return end,residual,ocean.check_state(end)
+
     def apply(self, ocean, state, dt, *, shortwave=None, surface_heat=None, _physical=None, _return_physical=False):
         """Heat an EntropyState directly; does not require a TKE state/closure."""
         if not math.isfinite(float(dt)) or float(dt) <= 0:
@@ -82,8 +86,7 @@ class OceanSurfaceHeating:
         flux_residual=layer_heat.sum(-1)-incoming
         mass=mass_area*h
         safe_mass=torch.where(mass > 0,mass,torch.ones_like(mass))
-        end,inversion=apply_heat(ocean,state,layer_heat/safe_mass,allow_cooling=True)
-        final=ocean.check_state(end)
+        end,inversion,final=self._thermal_update(ocean,state,layer_heat/safe_mass,physical)
         old_psi,old_ref=thermal_parts(ocean,physical)
         new_psi,new_ref=thermal_parts(ocean,final)
         measured=mass*((new_psi-old_psi)+(new_ref['h0']-old_ref['h0']))
