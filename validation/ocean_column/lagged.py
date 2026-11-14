@@ -55,6 +55,27 @@ class LaggedClosure(PathWorkClosure):
     def apply(self,ocean,state,tke_h,dt):
         return self._apply(ocean,state,tke_h,dt)[:3]
 
+    def _workspace(self,ocean,physical):
+        if not self.fast_thermodynamics:return None
+        from fast_thermo import MixingThermodynamics
+        return MixingThermodynamics(ocean,physical)
+
+    def _baseline_entropy(self,energy,workbuf,salt,theta,enthalpy):
+        if workbuf:
+            from fast_thermo import Caloric
+            recovered=Caloric(energy.reference,salt).inverse(enthalpy,theta,'h0')
+        else:recovered=energy.reference.temperature_from_enthalpy(salt,enthalpy)
+        return energy.reference.evaluate(salt,recovered,entropy_derivatives=True)['entropy']
+
+    def _mixed_state(self,ocean,state,u,salt_h,tracer,theta,baseline,workbuf):
+        eta=ocean.reference.evaluate(salt_h/state.h,theta,entropy_derivatives=True)['entropy']
+        mixed=replace(state,u_e=u,salt_h=salt_h,entropy_h=state.entropy_h+state.h*(eta-baseline),tracer_h=tracer)
+        after=workbuf.physical(mixed,theta) if workbuf else ocean.check_state(mixed)
+        return mixed,after
+
+    def _entropy_content(self,ocean,state):
+        return state.entropy_h
+
     def _apply(self,ocean,state,tke_h,dt,physical=None):
         if not math.isfinite(dt) or dt<=0:raise ValueError('positive finite dt required')
         if physical is None:physical=ocean.check_state(state)
@@ -70,10 +91,7 @@ class LaggedClosure(PathWorkClosure):
         he=mesh.cell_to_edge(h);mechanical=energy.base.mechanical
         metric=mechanical.metric(physical)
         allocate=lambda e:h*mechanical.interpolation_transpose(mesh,e/he)
-        workbuf=None
-        if self.fast_thermodynamics:
-            from fast_thermo import MixingThermodynamics
-            workbuf=MixingThermodynamics(ocean,physical)
+        workbuf=self._workspace(ocean,physical)
         parts=workbuf.parts if workbuf else lambda p:thermal_parts(ocean,p)
         psi0,ref0=parts(physical)
         s0=physical.salinity();theta0=physical.temperature();H0=ref0['h0']
@@ -82,9 +100,7 @@ class LaggedClosure(PathWorkClosure):
         alpha=h[:,:-1]/(h[:,:-1]+h[:,1:])
         if workbuf:
             from fast_thermo import Caloric
-            theta_round=Caloric(energy.reference,s0).inverse(H0,theta0,'h0')
-        else:theta_round=energy.reference.temperature_from_enthalpy(s0,H0)
-        eta_round=energy.reference.evaluate(s0,theta_round,entropy_derivatives=True)['entropy']
+        eta_round=self._baseline_entropy(energy,workbuf,s0,theta0,H0)
 
         def resistance(diffusivity, thickness):
             upper,lower=diffusivity[:,:-1],diffusivity[:,1:]
@@ -123,15 +139,13 @@ class LaggedClosure(PathWorkClosure):
             salt_h=state.salt_h+div(fs);salt=salt_h/h
             enthalpy=H0+div(fh)/h
             theta=Caloric(energy.reference,salt).inverse(enthalpy,theta0,'h0') if workbuf else energy.reference.temperature_from_enthalpy(salt,enthalpy)
-            eta=energy.reference.evaluate(salt,theta,entropy_derivatives=True)['entropy']
             tracer=state.tracer_h
             if tracer is not None:
                 q=solutions[...,2:]
                 f=dt*gh[...,None]*(q[:,1:]-q[:,:-1])
                 tz=torch.zeros_like(tracer[:,:1])
                 tracer=tracer+torch.cat((f,tz),1)-torch.cat((tz,f),1)
-            mixed=replace(state,u_e=u,salt_h=salt_h,entropy_h=state.entropy_h+h*(eta-eta_round),tracer_h=tracer)
-            after=workbuf.physical(mixed,theta) if workbuf else ocean.check_state(mixed)
+            mixed,after=self._mixed_state(ocean,state,u,salt_h,tracer,theta,eta_round,workbuf)
             psi1,ref1=parts(after)
             change=mass*((psi1-psi0)+(ref1['h0']-H0))
             # Centred conjugate energy flux defines the local work allocation;
@@ -225,10 +239,10 @@ class LaggedClosure(PathWorkClosure):
         local_ke=allocate(.5*metric*(end.u_e-state.u_e)*(end.u_e+state.u_e))
         exchange=local_ke+production
         column=(mass*((psi2-psi0)+(ref2['h0']-H0))+local_ke+mass*(final-k0)).sum(-1)-exchange.sum(-1)
-        entropy=(area*(end.entropy_h-state.entropy_h)).sum(-1)
+        entropy=(area*(self._entropy_content(ocean,end)-self._entropy_content(ocean,state))).sum(-1)
         tol=1024*torch.finfo(h.dtype).eps*(mass*(psi0.abs()+H0.abs())+area*tke_h+local_ke.abs()).sum(-1).clamp_min(1)
         if (column.abs()>tol).any():raise FloatingPointError('coupled full-H closure failed')
-        stol=512*torch.finfo(h.dtype).eps*(area*state.entropy_h.abs()).sum(-1).clamp_min(1)
+        stol=512*torch.finfo(h.dtype).eps*(area*self._entropy_content(ocean,state).abs()).sum(-1).clamp_min(1)
         if (entropy < -stol).any():raise ValueError('coupled update decreases column entropy')
         tkeflux=dt*g*(transport_k[:,1:]-transport_k[:,:-1])
         residual=mass*(final-k0)-production+work+heat-div(tkeflux)
@@ -248,7 +262,7 @@ class SubcycledLaggedClosure(LaggedClosure):
     def apply(self,ocean,state,tke_h,dt):
         reports=[];physical=None
         for _ in range(self.substeps):
-            state,tke_h,r,physical=super()._apply(ocean,state,tke_h,dt/self.substeps,
+            state,tke_h,r,physical=self._apply(ocean,state,tke_h,dt/self.substeps,
                 physical=physical if self.fast_thermodynamics else None)
             reports.append(r)
         summed={name:sum(getattr(r,name) for r in reports) for name in ('global_energy_residual','column_energy_residual','kinetic_column_exchange','buoyancy_layer_work','buoyancy_energy_flux','tke_energy_flux','dissipated_heat','entropy_change','local_tke_residual','caloric_reconstruction_residual')}

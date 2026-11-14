@@ -149,6 +149,13 @@ class MixingThermodynamics:
         return paired+div(area*(face(a_bar-a_mid)*fh+face(b_bar-b_mid)*fs))
     def heat(self,state,physical,heat):
         if not torch.any(heat!=0):return state,torch.zeros_like(heat),physical
+        theta,residual=self.heat_temperature(physical,heat)
+        eta=self.reference.evaluate(physical.salinity(),theta,entropy_derivatives=True)['entropy']
+        end=replace(state,entropy_h=torch.where(heat!=0,state.h*eta,state.entropy_h))
+        return end,residual,self.physical(end,theta)
+
+    def heat_temperature(self,physical,heat,*,allow_cooling=False):
+        """Solve only the finite thermal increment, without changing coordinates."""
         t0,s=physical.temperature(),physical.salinity();cal=Caloric(self.reference,s)
         def derivative(t):return cal.evaluate(t)['h_theta']+self.temperature_derivative(t,s)
         nodes=(.5-math.sqrt(15)/10,.5,.5+math.sqrt(15)/10);weights=(5/18,4/9,5/18)
@@ -160,7 +167,5 @@ class MixingThermodynamics:
             if (residual.abs()<=tolerance).all():break
             if iteration==6:raise FloatingPointError('fast heat increment residual failed')
             delta=delta-residual/derivative(t0+delta)
-        if not torch.isfinite(delta).all() or (delta<0).any():raise FloatingPointError('invalid fast heating increment')
-        theta=t0+delta;eta=self.reference.evaluate(s,theta,entropy_derivatives=True)['entropy']
-        end=replace(state,entropy_h=torch.where(heat!=0,state.h*eta,state.entropy_h))
-        return end,residual,self.physical(end,theta)
+        if not torch.isfinite(delta).all() or (not allow_cooling and (delta<0).any()):raise FloatingPointError('invalid fast heating increment')
+        return t0+delta,residual

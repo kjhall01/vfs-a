@@ -1760,3 +1760,23 @@ improve 0.1177 -> 0.0803 s. See validation/temperature_coordinate/README.md for
 energy derivatives, sharp-front dt refinement and limits. No TKE, heating,
 forcing or ALE conversion yet; no defaults changed. Previous TKE packing probe
 files remain separate, uncommitted work and are not part of this candidate.
+
+## Temperature-native heating and vertical TKE mixing
+
+`validation/temperature_coordinate/physics.py` adds prescribed layer-energy
+heating/cooling and a temperature-storage subclass of the existing research
+lagged closure. Shared numerical kernels and acceptance budgets are retained;
+only storage/reconstruction hooks differ. All entropy inversions and the
+enthalpy roundtrip baseline are removed from this path. Enthalpy inversions for
+mixing candidates and energy-path work remain. No production default changes,
+surface boundary adapter, ALE conversion or full-ocean qualification.
+
+The 1024×64 compiled heating+mixing sample is effectively unchanged in speed
+(10.074 -> 10.034 s). Inverse counts drop from 15 entropy + 36 enthalpy to zero
+entropy + 32 enthalpy. Endpoint temperatures agree to 4.59e-15°C RMS; energy
+minus supplied heat is -5.93e-12 J/kg in both. See the temperature-mixing campaign
+for raw timings, limits and validation. Separate uncommitted packing probe files
+remain untouched.
+Final outside-checkout portable regression: 1102 passed, one CUDA skip, one
+existing warning. Production package remains the installed unchanged wheel;
+candidate research helpers and tests were copied into the check workspace.

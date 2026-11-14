@@ -1,0 +1,64 @@
+{
+  "cells": 1024,
+  "layers": 64,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "compiled": true,
+  "dt": 60.0,
+  "mixing_substeps": 4,
+  "heat_J_kg": 0.1,
+  "scope": "layer heating then mixing only; no dynamics/forcing/ALE",
+  "cases": {
+    "entropy": {
+      "median_s": 10.073820023997541,
+      "samples_s": [
+        10.073820023997541
+      ],
+      "caloric_inverse_calls": {
+        "entropy": 13,
+        "h0": 36
+      },
+      "state_entropy_inverse_calls": 2,
+      "energy_minus_heat_J_kg": -5.9315157598226705e-12,
+      "max_local_budget_ratio": 3.4684795345855113e-07,
+      "min_tke": 2.122377712003224e-05,
+      "min_tracer": 1.1081380575865691,
+      "limiter": {
+        "limited_pairs": 0.0,
+        "semi_trials": 8.0,
+        "limited_interfaces": 0.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 1.0,
+        "mixing_substeps": 4.0
+      }
+    },
+    "temperature": {
+      "median_s": 10.03429013099958,
+      "samples_s": [
+        10.03429013099958
+      ],
+      "caloric_inverse_calls": {
+        "h0": 32
+      },
+      "state_entropy_inverse_calls": 0,
+      "energy_minus_heat_J_kg": -5.9315157598226705e-12,
+      "max_local_budget_ratio": 3.4684795345855113e-07,
+      "min_tke": 2.1223777120032397e-05,
+      "min_tracer": 1.1081380575865691,
+      "limiter": {
+        "limited_pairs": 0.0,
+        "semi_trials": 8.0,
+        "limited_interfaces": 0.0,
+        "deferred_columns": 0.0,
+        "minimum_fraction": 1.0,
+        "mixing_substeps": 4.0
+      }
+    }
+  },
+  "difference": {
+    "temperature_rms_C": 4.586803071420109e-15,
+    "tke_max_abs": 2.358139725155972e-18,
+    "velocity_max_abs": 8.673617379884035e-19,
+    "salt_max_abs": 7.105427357601002e-15
+  }
+}
