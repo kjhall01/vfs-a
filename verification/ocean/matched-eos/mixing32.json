@@ -1,0 +1,1495 @@
+{
+  "config": {
+    "kind": "mixing",
+    "cells": 32,
+    "layers": 32,
+    "dt": 600.0,
+    "hours": 24.0,
+    "periods": 1.0,
+    "compile": true,
+    "output": "/tmp/matched-mixing32.json"
+  },
+  "metadata": {},
+  "steps": 144,
+  "dt_s": 600.0,
+  "torch": "2.15.0+cpu",
+  "source_sha256": "ab868349d45be90225e76bdee5737347381debd5808a28ab843365cb745a36db",
+  "initial_anomaly_mismatch_kg_m3": 0.0,
+  "initial_temperature_difference_rms_C": 0.03757886451752097,
+  "cases": {
+    "jmd95": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 144,
+      "wall_s": 123.00721736899868,
+      "initial_acceleration_rms_m_s2": 3.6266352597280894e-13,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.99686832920945,
+          "min_tke": 0.0001
+        },
+        {
+          "time_s": 1200.0,
+          "energy_minus_inputs_J_kg": 8.71597884387126e-12,
+          "velocity_change_rms": 0.0021945248995774934,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.985611827106986,
+          "min_tke": 4.4167768700767625e-20
+        },
+        {
+          "time_s": 2400.0,
+          "energy_minus_inputs_J_kg": 6.090429171913528e-12,
+          "velocity_change_rms": 0.004249239984115489,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.975432566786658,
+          "min_tke": 9.498970854996409e-22
+        },
+        {
+          "time_s": 3600.0,
+          "energy_minus_inputs_J_kg": 7.705477121699612e-12,
+          "velocity_change_rms": 0.006018789951288461,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.966820567488973,
+          "min_tke": 9.155767498308816e-22
+        },
+        {
+          "time_s": 4800.0,
+          "energy_minus_inputs_J_kg": 1.6689455530773537e-12,
+          "velocity_change_rms": 0.007581732038691051,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.959578952391425,
+          "min_tke": 9.173542231368868e-22
+        },
+        {
+          "time_s": 6000.0,
+          "energy_minus_inputs_J_kg": -2.964994897337199e-12,
+          "velocity_change_rms": 0.009023377671712922,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.95315338282531,
+          "min_tke": 9.858113474645095e-22
+        },
+        {
+          "time_s": 7200.0,
+          "energy_minus_inputs_J_kg": -8.128510635904348e-13,
+          "velocity_change_rms": 0.010379937713347784,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.94726557685809,
+          "min_tke": 1.0925698595301046e-21
+        },
+        {
+          "time_s": 8400.0,
+          "energy_minus_inputs_J_kg": -6.912680980264068e-12,
+          "velocity_change_rms": 0.011680614595135936,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.941803671240997,
+          "min_tke": 1.1283025228301936e-21
+        },
+        {
+          "time_s": 9600.0,
+          "energy_minus_inputs_J_kg": -5.766416835848566e-12,
+          "velocity_change_rms": 0.012949144611237053,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.936703963481634,
+          "min_tke": 1.1551396942797885e-21
+        },
+        {
+          "time_s": 10800.0,
+          "energy_minus_inputs_J_kg": -4.4014286966812825e-12,
+          "velocity_change_rms": 0.014199715225844492,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.931909683916942,
+          "min_tke": 1.1711834393693004e-21
+        },
+        {
+          "time_s": 12000.0,
+          "energy_minus_inputs_J_kg": -1.4611264222472935e-11,
+          "velocity_change_rms": 0.015433249479754052,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.927357229913966,
+          "min_tke": 1.179041789562929e-21
+        },
+        {
+          "time_s": 13200.0,
+          "energy_minus_inputs_J_kg": -9.034742430778495e-12,
+          "velocity_change_rms": 0.016632470890489456,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.92296753042221,
+          "min_tke": 1.1888888800048206e-21
+        },
+        {
+          "time_s": 14400.0,
+          "energy_minus_inputs_J_kg": -7.877824108968207e-12,
+          "velocity_change_rms": 0.017783574222708695,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.918645902610589,
+          "min_tke": 6.173955420144586e-22
+        },
+        {
+          "time_s": 15600.0,
+          "energy_minus_inputs_J_kg": -1.8864161151944554e-12,
+          "velocity_change_rms": 0.018895342384592704,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.914306539934298,
+          "min_tke": 7.32846531812529e-22
+        },
+        {
+          "time_s": 16800.0,
+          "energy_minus_inputs_J_kg": -7.515582077545485e-12,
+          "velocity_change_rms": 0.01998174809943464,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.909906247682937,
+          "min_tke": 7.926090975206086e-22
+        },
+        {
+          "time_s": 18000.0,
+          "energy_minus_inputs_J_kg": -5.1265394758440685e-12,
+          "velocity_change_rms": 0.021053499887290234,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.905452599068216,
+          "min_tke": 8.299214896123165e-22
+        },
+        {
+          "time_s": 19200.0,
+          "energy_minus_inputs_J_kg": 1.183240407138582e-12,
+          "velocity_change_rms": 0.022118027183002043,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.900985090351277,
+          "min_tke": 8.574216348071718e-22
+        },
+        {
+          "time_s": 20400.0,
+          "energy_minus_inputs_J_kg": -7.07813408804192e-12,
+          "velocity_change_rms": 0.02318021080351942,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.896552454375758,
+          "min_tke": 8.792914049726962e-22
+        },
+        {
+          "time_s": 21600.0,
+          "energy_minus_inputs_J_kg": -7.461684474254214e-12,
+          "velocity_change_rms": 0.024242923240350704,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.892197812896267,
+          "min_tke": 8.968516096546766e-22
+        },
+        {
+          "time_s": 22800.0,
+          "energy_minus_inputs_J_kg": -5.7808313111473946e-12,
+          "velocity_change_rms": 0.025307449118966128,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.887951969673427,
+          "min_tke": 9.104365652210977e-22
+        },
+        {
+          "time_s": 24000.0,
+          "energy_minus_inputs_J_kg": -6.064107086585233e-12,
+          "velocity_change_rms": 0.02637382245688618,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.883831884363408,
+          "min_tke": 9.202769839854042e-22
+        },
+        {
+          "time_s": 25200.0,
+          "energy_minus_inputs_J_kg": -4.309301398032251e-12,
+          "velocity_change_rms": 0.027441235010400213,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.879841588552454,
+          "min_tke": 9.268938481241157e-22
+        },
+        {
+          "time_s": 26400.0,
+          "energy_minus_inputs_J_kg": -1.5306919334720724e-11,
+          "velocity_change_rms": 0.02850860560247592,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.875973877028786,
+          "min_tke": 9.30540979756921e-22
+        },
+        {
+          "time_s": 27600.0,
+          "energy_minus_inputs_J_kg": -2.311329778351213e-12,
+          "velocity_change_rms": 0.02956483934767353,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.87221209084867,
+          "min_tke": 9.357619945589523e-22
+        },
+        {
+          "time_s": 28800.0,
+          "energy_minus_inputs_J_kg": -7.425334927848474e-12,
+          "velocity_change_rms": 0.030576601300455693,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.868526388558374,
+          "min_tke": 9.442516436669481e-22
+        },
+        {
+          "time_s": 30000.0,
+          "energy_minus_inputs_J_kg": -4.838249969867507e-12,
+          "velocity_change_rms": 0.031548521704232245,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.864856219089827,
+          "min_tke": 1.074410954774018e-21
+        },
+        {
+          "time_s": 31200.0,
+          "energy_minus_inputs_J_kg": -1.4289132035359995e-13,
+          "velocity_change_rms": 0.03250299361859379,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.861108800451927,
+          "min_tke": 1.0965704072251057e-21
+        },
+        {
+          "time_s": 32400.0,
+          "energy_minus_inputs_J_kg": 9.200195538556347e-13,
+          "velocity_change_rms": 0.03344855777408757,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.857191715423458,
+          "min_tke": 6.364631626966393e-22
+        },
+        {
+          "time_s": 33600.0,
+          "energy_minus_inputs_J_kg": -1.7297370358593678e-12,
+          "velocity_change_rms": 0.03438793739583585,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.853043487160566,
+          "min_tke": 6.962058480203154e-22
+        },
+        {
+          "time_s": 34800.0,
+          "energy_minus_inputs_J_kg": 4.763044011786665e-13,
+          "velocity_change_rms": 0.03532306667201838,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.848642874244067,
+          "min_tke": 7.549293009062462e-22
+        },
+        {
+          "time_s": 36000.0,
+          "energy_minus_inputs_J_kg": -1.9077244699840273e-12,
+          "velocity_change_rms": 0.03625575797281415,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.844003781293987,
+          "min_tke": 8.031412890936235e-22
+        },
+        {
+          "time_s": 37200.0,
+          "energy_minus_inputs_J_kg": -1.599380041852575e-12,
+          "velocity_change_rms": 0.03718752948525102,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.83916471751019,
+          "min_tke": 8.415057083673048e-22
+        },
+        {
+          "time_s": 38400.0,
+          "energy_minus_inputs_J_kg": -3.30655529028769e-12,
+          "velocity_change_rms": 0.03811946378446339,
+          "mld_density_003_mean_m": 14.850275488320264,
+          "surface_temperature_C": 14.834177819773673,
+          "min_tke": 8.704757292367374e-22
+        },
+        {
+          "time_s": 39600.0,
+          "energy_minus_inputs_J_kg": -2.2837542603882377e-12,
+          "velocity_change_rms": 0.03905216772952848,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.829099660039123,
+          "min_tke": 8.910513885266907e-22
+        },
+        {
+          "time_s": 40800.0,
+          "energy_minus_inputs_J_kg": -1.4589955867683364e-12,
+          "velocity_change_rms": 0.039985807474497585,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.82398452873697,
+          "min_tke": 9.04844229633892e-22
+        },
+        {
+          "time_s": 42000.0,
+          "energy_minus_inputs_J_kg": 3.0934717423919707e-12,
+          "velocity_change_rms": 0.04092019661180727,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.818880101308627,
+          "min_tke": 9.136909361788015e-22
+        },
+        {
+          "time_s": 43200.0,
+          "energy_minus_inputs_J_kg": 6.141819909935436e-13,
+          "velocity_change_rms": 0.04185491547992967,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.813825050974556,
+          "min_tke": 9.19220871748295e-22
+        },
+        {
+          "time_s": 44400.0,
+          "energy_minus_inputs_J_kg": -1.2045487619281539e-11,
+          "velocity_change_rms": 0.042789436122231336,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.808848091026825,
+          "min_tke": 9.226481050517768e-22
+        },
+        {
+          "time_s": 45600.0,
+          "energy_minus_inputs_J_kg": 4.2366023052207704e-13,
+          "velocity_change_rms": 0.04372322899370608,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.803967989718785,
+          "min_tke": 9.24781031989848e-22
+        },
+        {
+          "time_s": 46800.0,
+          "energy_minus_inputs_J_kg": 4.296767071685444e-12,
+          "velocity_change_rms": 0.04465583601368208,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.799194211451592,
+          "min_tke": 9.261249916864206e-22
+        },
+        {
+          "time_s": 48000.0,
+          "energy_minus_inputs_J_kg": -1.0483710556469386e-11,
+          "velocity_change_rms": 0.045586906033740326,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.794527944567228,
+          "min_tke": 9.269881789566881e-22
+        },
+        {
+          "time_s": 49200.0,
+          "energy_minus_inputs_J_kg": -3.4293916884863987e-12,
+          "velocity_change_rms": 0.04651619830444558,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.789963353813707,
+          "min_tke": 9.275606056624258e-22
+        },
+        {
+          "time_s": 50400.0,
+          "energy_minus_inputs_J_kg": 4.23660230522077e-12,
+          "velocity_change_rms": 0.047443564397699305,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.78548894186307,
+          "min_tke": 9.279672844642337e-22
+        },
+        {
+          "time_s": 51600.0,
+          "energy_minus_inputs_J_kg": 9.952255119364768e-12,
+          "velocity_change_rms": 0.048368919354661484,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.781088928700736,
+          "min_tke": 9.283068559503296e-22
+        },
+        {
+          "time_s": 52800.0,
+          "energy_minus_inputs_J_kg": -2.3263709699673815e-12,
+          "velocity_change_rms": 0.049292306548647094,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.776744572508017,
+          "min_tke": 9.28688824241517e-22
+        },
+        {
+          "time_s": 54000.0,
+          "energy_minus_inputs_J_kg": 4.712906706399437e-13,
+          "velocity_change_rms": 0.05021580304660415,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.77243538826399,
+          "min_tke": 9.291903523622332e-22
+        },
+        {
+          "time_s": 55200.0,
+          "energy_minus_inputs_J_kg": -5.615378203369542e-13,
+          "velocity_change_rms": 0.05114001214386978,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.768140460011207,
+          "min_tke": 9.298538374331002e-22
+        },
+        {
+          "time_s": 56400.0,
+          "energy_minus_inputs_J_kg": -2.1007530957248552e-12,
+          "velocity_change_rms": 0.052060159195954143,
+          "mld_density_003_mean_m": 16.791262260387146,
+          "surface_temperature_C": 14.763839871352854,
+          "min_tke": 9.329894482529861e-22
+        },
+        {
+          "time_s": 57600.0,
+          "energy_minus_inputs_J_kg": -9.425813412798874e-13,
+          "velocity_change_rms": 0.05295872440027541,
+          "mld_density_003_mean_m": 15.423880941754183,
+          "surface_temperature_C": 14.759515440077529,
+          "min_tke": 9.701522436048216e-22
+        },
+        {
+          "time_s": 58800.0,
+          "energy_minus_inputs_J_kg": 5.675542969834216e-12,
+          "velocity_change_rms": 0.05383707270908434,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.755147790877402,
+          "min_tke": 1.1952526970402908e-21
+        },
+        {
+          "time_s": 60000.0,
+          "energy_minus_inputs_J_kg": 9.726637245122243e-13,
+          "velocity_change_rms": 0.05471170137619285,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.750711109187183,
+          "min_tke": 1.408167924339219e-21
+        },
+        {
+          "time_s": 61200.0,
+          "energy_minus_inputs_J_kg": 2.707414490910315e-12,
+          "velocity_change_rms": 0.0555848227711154,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.746172903288867,
+          "min_tke": 9.307899563625162e-22
+        },
+        {
+          "time_s": 62400.0,
+          "energy_minus_inputs_J_kg": 7.1445660176799975e-12,
+          "velocity_change_rms": 0.05645384539757192,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.74149922582319,
+          "min_tke": 8.69139051791036e-22
+        },
+        {
+          "time_s": 63600.0,
+          "energy_minus_inputs_J_kg": 5.8008862333022856e-12,
+          "velocity_change_rms": 0.057318014148915464,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.736659823452811,
+          "min_tke": 9.667693599645378e-22
+        },
+        {
+          "time_s": 64800.0,
+          "energy_minus_inputs_J_kg": -1.3186111316840978e-12,
+          "velocity_change_rms": 0.058177547382874256,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.731631255196968,
+          "min_tke": 1.0335469814752365e-21
+        },
+        {
+          "time_s": 66000.0,
+          "energy_minus_inputs_J_kg": 4.2616709579143846e-13,
+          "velocity_change_rms": 0.05903260940695705,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.7263984217678,
+          "min_tke": 1.0760405795092652e-21
+        },
+        {
+          "time_s": 67200.0,
+          "energy_minus_inputs_J_kg": -2.9982108621562375e-12,
+          "velocity_change_rms": 0.059883246546627356,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.720955077812647,
+          "min_tke": 1.1015284906200642e-21
+        },
+        {
+          "time_s": 68400.0,
+          "energy_minus_inputs_J_kg": -4.93351085010324e-12,
+          "velocity_change_rms": 0.06072951560670794,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.715303597011713,
+          "min_tke": 1.11631247284776e-21
+        },
+        {
+          "time_s": 69600.0,
+          "energy_minus_inputs_J_kg": -2.9280186346141182e-12,
+          "velocity_change_rms": 0.0615715593010367,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.709454164332449,
+          "min_tke": 1.124809069912471e-21
+        },
+        {
+          "time_s": 70800.0,
+          "energy_minus_inputs_J_kg": -1.0077598382832838e-11,
+          "velocity_change_rms": 0.06240964212566356,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.703423534655833,
+          "min_tke": 1.1297234517531096e-21
+        },
+        {
+          "time_s": 72000.0,
+          "energy_minus_inputs_J_kg": -4.392027951921178e-12,
+          "velocity_change_rms": 0.06324415951454525,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.697233493506362,
+          "min_tke": 1.1326023946476162e-21
+        },
+        {
+          "time_s": 73200.0,
+          "energy_minus_inputs_J_kg": -1.2168324017480248e-11,
+          "velocity_change_rms": 0.06407561844335788,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.690909158436861,
+          "min_tke": 1.1343104704333997e-21
+        },
+        {
+          "time_s": 74400.0,
+          "energy_minus_inputs_J_kg": -1.1270866251048866e-11,
+          "velocity_change_rms": 0.06490459398780489,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.684477250590918,
+          "min_tke": 1.1353346049184721e-21
+        },
+        {
+          "time_s": 75600.0,
+          "energy_minus_inputs_J_kg": -1.9368041071086196e-11,
+          "velocity_change_rms": 0.06573167420909296,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.677964467872865,
+          "min_tke": 1.1359579219645085e-21
+        },
+        {
+          "time_s": 76800.0,
+          "energy_minus_inputs_J_kg": -1.9423192107012146e-11,
+          "velocity_change_rms": 0.0665574076597107,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.67139607844205,
+          "min_tke": 1.1363568869567573e-21
+        },
+        {
+          "time_s": 78000.0,
+          "energy_minus_inputs_J_kg": -1.5522509747885805e-11,
+          "velocity_change_rms": 0.06738226400482587,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.664794822550922,
+          "min_tke": 1.136660715990932e-21
+        },
+        {
+          "time_s": 79200.0,
+          "energy_minus_inputs_J_kg": -2.2316114627855207e-11,
+          "velocity_change_rms": 0.06820661201537444,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.658180166498697,
+          "min_tke": 1.1370016443308705e-21
+        },
+        {
+          "time_s": 80400.0,
+          "energy_minus_inputs_J_kg": -1.9829304280648694e-11,
+          "velocity_change_rms": 0.06903071357109904,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.651567905834938,
+          "min_tke": 1.137589231251518e-21
+        },
+        {
+          "time_s": 81600.0,
+          "energy_minus_inputs_J_kg": -2.8999417435972705e-11,
+          "velocity_change_rms": 0.06985472900303007,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.644970076750235,
+          "min_tke": 1.1388778309470927e-21
+        },
+        {
+          "time_s": 82800.0,
+          "energy_minus_inputs_J_kg": -1.9844345472264864e-11,
+          "velocity_change_rms": 0.07067872838218246,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.638395111022943,
+          "min_tke": 1.1420172649413961e-21
+        },
+        {
+          "time_s": 84000.0,
+          "energy_minus_inputs_J_kg": -1.4274090843743827e-11,
+          "velocity_change_rms": 0.07150270457991277,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.631848161514363,
+          "min_tke": 1.1501475260814295e-21
+        },
+        {
+          "time_s": 85200.0,
+          "energy_minus_inputs_J_kg": -1.1842431532463266e-11,
+          "velocity_change_rms": 0.0723265860266928,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.625331528694637,
+          "min_tke": 1.172164711954304e-21
+        },
+        {
+          "time_s": 86400.0,
+          "energy_minus_inputs_J_kg": -1.3517017532396683e-11,
+          "velocity_change_rms": 0.07315024896539987,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.618845129342267,
+          "min_tke": 1.2331904050462291e-21
+        }
+      ],
+      "energy_minus_inputs_J_kg": -1.3517017532396683e-11,
+      "salt_relative_change": 1.1265913452105353e-15,
+      "min_tke": 1.2331904050462291e-21,
+      "final_profiles": {
+        "temperature": [
+          14.618845129342269,
+          14.633068540189127,
+          14.623417150736218,
+          14.582263320151139,
+          14.491428105050836,
+          14.269941811683385,
+          12.756763378260793,
+          11.037414147979355,
+          10.365392528165069,
+          10.12415980189635,
+          10.049598149766453,
+          10.024241586939299,
+          10.01538413987872,
+          10.011297708744593,
+          10.009132756644416,
+          10.007608106683145,
+          10.006460125821846,
+          10.005504194503796,
+          10.004705320493567,
+          10.004022130037779,
+          10.003440815398228,
+          10.002942479529475,
+          10.00251736545718,
+          10.002152904397125,
+          10.001841884460948,
+          10.001575227799337,
+          10.001347682796775,
+          10.001152565900245,
+          10.00098609823932,
+          10.000843330989468,
+          10.000721775965765,
+          10.000623391277239
+        ],
+        "salinity": [
+          34.52193115108364,
+          34.5238636555049,
+          34.52770274766288,
+          34.53440816874578,
+          34.545850443621845,
+          34.57039519488632,
+          34.72647515609829,
+          34.898879479781826,
+          34.96570265139093,
+          34.989501482882076,
+          34.99668021729542,
+          34.998978329027324,
+          34.99966127407414,
+          34.99989563340671,
+          34.99996456724408,
+          34.999989326435625,
+          34.99999655394748,
+          34.9999989879501,
+          34.999999697910596,
+          34.999999912686384,
+          34.99999997450713,
+          34.99999999264559,
+          34.99999999786082,
+          34.99999999938265,
+          34.99999999982058,
+          34.999999999948145,
+          34.99999999998504,
+          34.99999999999601,
+          34.99999999999915,
+          34.99999999999983,
+          34.99999999999995,
+          34.99999999999999
+        ],
+        "density_anomaly": [
+          -1.2656855218192078,
+          -1.2675414206525701,
+          -1.262782162539132,
+          -1.2490271566206843,
+          -1.2209619670505134,
+          -1.155005173993274,
+          -0.7234872516392485,
+          -0.26242437306179767,
+          -0.09023518341346914,
+          -0.029621533473928707,
+          -0.011135605831512407,
+          -0.004972031375444885,
+          -0.002913926881674911,
+          -0.002027711979877722,
+          -0.0016014610083203706,
+          -0.0013198547314630105,
+          -0.0011167196370536203,
+          -0.0009503198365052867,
+          -0.0008122528404186369,
+          -0.0006944439226970189,
+          -0.0005942622245669327,
+          -0.0005083763214202008,
+          -0.00043509141127628936,
+          -0.0003722409930446702,
+          -0.000318587248969493,
+          -0.00027256912537154676,
+          -0.0002332860508857948,
+          -0.00019958826838717414,
+          -0.00017082753821284768,
+          -0.0001461518916840987,
+          -0.0001251346757413785,
+          -0.00010811975884905678
+        ],
+        "tke": [
+          0.00010752132556482461,
+          0.0001424061001239689,
+          0.00011072791756111213,
+          7.614753490123863e-05,
+          4.0270181493868815e-05,
+          1.1861927789290148e-05,
+          8.323600446259747e-07,
+          3.0341913947346946e-09,
+          6.281376742400564e-14,
+          1.5795205436851977e-21,
+          1.3326761560539329e-20,
+          1.4444095327639205e-20,
+          2.78213438963375e-20,
+          1.122689829421865e-20,
+          7.843767710307261e-15,
+          1.6753012063999946e-09,
+          1.0970063789109817e-14,
+          9.105218949919894e-10,
+          3.702705942928643e-15,
+          2.9060571328184245e-10,
+          6.940114033097318e-16,
+          1.0818022116844974e-10,
+          1.7320330197321625e-16,
+          5.357420443399967e-11,
+          6.673754694163496e-17,
+          3.336134718203071e-11,
+          3.520524711127251e-17,
+          2.3779327765838808e-11,
+          1.3390384380100734e-17,
+          3.480049980259401e-21,
+          3.1371148911593454e-14,
+          2.6290641548254157e-09
+        ]
+      }
+    },
+    "linear": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 144,
+      "wall_s": 19.404983568001626,
+      "initial_acceleration_rms_m_s2": 3.626635259727418e-13,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.992242124438306,
+          "min_tke": 0.0001
+        },
+        {
+          "time_s": 1200.0,
+          "energy_minus_inputs_J_kg": 3.244009001817123e-11,
+          "velocity_change_rms": 0.0021941001319558634,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.981033938968498,
+          "min_tke": 2.4420505954938324e-20
+        },
+        {
+          "time_s": 2400.0,
+          "energy_minus_inputs_J_kg": 6.329505779070938e-11,
+          "velocity_change_rms": 0.004248875698777449,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.970868467273254,
+          "min_tke": 7.405024592974032e-22
+        },
+        {
+          "time_s": 3600.0,
+          "energy_minus_inputs_J_kg": 9.03994417621242e-11,
+          "velocity_change_rms": 0.006019967044521639,
+          "mld_density_003_mean_m": 10.9375,
+          "surface_temperature_C": 14.962262098639666,
+          "min_tke": 7.172987566710308e-22
+        },
+        {
+          "time_s": 4800.0,
+          "energy_minus_inputs_J_kg": 1.2649485470118303e-10,
+          "velocity_change_rms": 0.007583874579906695,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.955012665172536,
+          "min_tke": 7.182261576634922e-22
+        },
+        {
+          "time_s": 6000.0,
+          "energy_minus_inputs_J_kg": 1.5858931067034106e-10,
+          "velocity_change_rms": 0.009026188295257795,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.948560629872032,
+          "min_tke": 7.605932219583272e-22
+        },
+        {
+          "time_s": 7200.0,
+          "energy_minus_inputs_J_kg": 1.857474355659678e-10,
+          "velocity_change_rms": 0.010383535589794502,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.942628851427997,
+          "min_tke": 8.240325303821751e-22
+        },
+        {
+          "time_s": 8400.0,
+          "energy_minus_inputs_J_kg": 2.1485903522274442e-10,
+          "velocity_change_rms": 0.011684980924082728,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.937111329830206,
+          "min_tke": 8.501733176571475e-22
+        },
+        {
+          "time_s": 9600.0,
+          "energy_minus_inputs_J_kg": 2.504903647288127e-10,
+          "velocity_change_rms": 0.012954117486716453,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.93195040850149,
+          "min_tke": 8.651979875852868e-22
+        },
+        {
+          "time_s": 10800.0,
+          "energy_minus_inputs_J_kg": 2.781768114799574e-10,
+          "velocity_change_rms": 0.014205106494731154,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.927093168429757,
+          "min_tke": 8.746470664487148e-22
+        },
+        {
+          "time_s": 12000.0,
+          "energy_minus_inputs_J_kg": 3.070671802767129e-10,
+          "velocity_change_rms": 0.015438946795851836,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.922476919704806,
+          "min_tke": 8.792168083659089e-22
+        },
+        {
+          "time_s": 13200.0,
+          "energy_minus_inputs_J_kg": 3.3611422815280345e-10,
+          "velocity_change_rms": 0.016638543798196393,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.918019580401198,
+          "min_tke": 8.883515706292524e-22
+        },
+        {
+          "time_s": 14400.0,
+          "energy_minus_inputs_J_kg": 3.7660260911825945e-10,
+          "velocity_change_rms": 0.01779013531269838,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.91361899804138,
+          "min_tke": 4.726043272319952e-22
+        },
+        {
+          "time_s": 15600.0,
+          "energy_minus_inputs_J_kg": 4.0818785807957845e-10,
+          "velocity_change_rms": 0.018902373442919403,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.909181677559843,
+          "min_tke": 5.558069812164822e-22
+        },
+        {
+          "time_s": 16800.0,
+          "energy_minus_inputs_J_kg": 4.4023311681782526e-10,
+          "velocity_change_rms": 0.019989183183258014,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.904661713392816,
+          "min_tke": 5.971748550603831e-22
+        },
+        {
+          "time_s": 18000.0,
+          "energy_minus_inputs_J_kg": 4.724287874722337e-10,
+          "velocity_change_rms": 0.021061280366519303,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.900069368864429,
+          "min_tke": 6.223633410153995e-22
+        },
+        {
+          "time_s": 19200.0,
+          "energy_minus_inputs_J_kg": 5.090891851713749e-10,
+          "velocity_change_rms": 0.022126111173192128,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.895449867584219,
+          "min_tke": 6.406612010543156e-22
+        },
+        {
+          "time_s": 20400.0,
+          "energy_minus_inputs_J_kg": 5.294110884774531e-10,
+          "velocity_change_rms": 0.023188576699348182,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.89085838235468,
+          "min_tke": 6.550791415260118e-22
+        },
+        {
+          "time_s": 21600.0,
+          "energy_minus_inputs_J_kg": 5.662632613697005e-10,
+          "velocity_change_rms": 0.024251575824094183,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.886343779568037,
+          "min_tke": 6.66591710606939e-22
+        },
+        {
+          "time_s": 22800.0,
+          "energy_minus_inputs_J_kg": 5.930892266171368e-10,
+          "velocity_change_rms": 0.02531642725807894,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.881941319345657,
+          "min_tke": 6.754743462185278e-22
+        },
+        {
+          "time_s": 24000.0,
+          "energy_minus_inputs_J_kg": 6.285538495827926e-10,
+          "velocity_change_rms": 0.02638320523050899,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.87767103734939,
+          "min_tke": 6.819053633743951e-22
+        },
+        {
+          "time_s": 25200.0,
+          "energy_minus_inputs_J_kg": 6.583404227133448e-10,
+          "velocity_change_rms": 0.027451024882584118,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.87353880500418,
+          "min_tke": 6.862322549905363e-22
+        },
+        {
+          "time_s": 26400.0,
+          "energy_minus_inputs_J_kg": 6.998791802266632e-10,
+          "velocity_change_rms": 0.028519068698994114,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.86953818268013,
+          "min_tke": 6.882709795811918e-22
+        },
+        {
+          "time_s": 27600.0,
+          "energy_minus_inputs_J_kg": 7.315960396146237e-10,
+          "velocity_change_rms": 0.029580840986431652,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.865652463447297,
+          "min_tke": 6.914019034766386e-22
+        },
+        {
+          "time_s": 28800.0,
+          "energy_minus_inputs_J_kg": 7.701666686490182e-10,
+          "velocity_change_rms": 0.03060427785996711,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.861853246081704,
+          "min_tke": 6.9489788785927e-22
+        },
+        {
+          "time_s": 30000.0,
+          "energy_minus_inputs_J_kg": 8.050772743901451e-10,
+          "velocity_change_rms": 0.03158096602206255,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.85808356378364,
+          "min_tke": 7.667725371145008e-22
+        },
+        {
+          "time_s": 31200.0,
+          "energy_minus_inputs_J_kg": 8.37989908511591e-10,
+          "velocity_change_rms": 0.032535748873355315,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.85424646861088,
+          "min_tke": 1.0487665461480946e-21
+        },
+        {
+          "time_s": 32400.0,
+          "energy_minus_inputs_J_kg": 8.694986980821944e-10,
+          "velocity_change_rms": 0.03348066698116065,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.850234835609157,
+          "min_tke": 7.7291193186431885e-22
+        },
+        {
+          "time_s": 33600.0,
+          "energy_minus_inputs_J_kg": 8.907168057220694e-10,
+          "velocity_change_rms": 0.034419235735246134,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.845970337797592,
+          "min_tke": 5.504600683658849e-22
+        },
+        {
+          "time_s": 34800.0,
+          "energy_minus_inputs_J_kg": 9.225188985291881e-10,
+          "velocity_change_rms": 0.03535348558315996,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.841419545300951,
+          "min_tke": 6.061442247715518e-22
+        },
+        {
+          "time_s": 36000.0,
+          "energy_minus_inputs_J_kg": 9.5234558150405e-10,
+          "velocity_change_rms": 0.03628528001469113,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.836590842362204,
+          "min_tke": 6.520519124510617e-22
+        },
+        {
+          "time_s": 37200.0,
+          "energy_minus_inputs_J_kg": 9.884168658648913e-10,
+          "velocity_change_rms": 0.03721622036929188,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.831523129472222,
+          "min_tke": 6.892677544123349e-22
+        },
+        {
+          "time_s": 38400.0,
+          "energy_minus_inputs_J_kg": 1.0074364526635361e-09,
+          "velocity_change_rms": 0.03814749095315272,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.826273124871088,
+          "min_tke": 7.1828537386713775e-22
+        },
+        {
+          "time_s": 39600.0,
+          "energy_minus_inputs_J_kg": 1.0506372618504413e-09,
+          "velocity_change_rms": 0.039079801890113106,
+          "mld_density_003_mean_m": 15.041755583669131,
+          "surface_temperature_C": 14.820904417010052,
+          "min_tke": 7.396866383487249e-22
+        },
+        {
+          "time_s": 40800.0,
+          "energy_minus_inputs_J_kg": 1.0767763460140726e-09,
+          "velocity_change_rms": 0.04001340742286682,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.815479343010225,
+          "min_tke": 7.545695995474271e-22
+        },
+        {
+          "time_s": 42000.0,
+          "energy_minus_inputs_J_kg": 1.1057782703153147e-09,
+          "velocity_change_rms": 0.040948176890352975,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.81005369310088,
+          "min_tke": 7.644142463499101e-22
+        },
+        {
+          "time_s": 43200.0,
+          "energy_minus_inputs_J_kg": 1.1386683426493363e-09,
+          "velocity_change_rms": 0.041883700121519235,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.804673755820073,
+          "min_tke": 7.707080523886563e-22
+        },
+        {
+          "time_s": 44400.0,
+          "energy_minus_inputs_J_kg": 1.176296390342451e-09,
+          "velocity_change_rms": 0.0428194065915831,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.799375086295004,
+          "min_tke": 7.746645921915688e-22
+        },
+        {
+          "time_s": 45600.0,
+          "energy_minus_inputs_J_kg": 1.2088204603471457e-09,
+          "velocity_change_rms": 0.04375467709155268,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.794182429776871,
+          "min_tke": 7.771448839553292e-22
+        },
+        {
+          "time_s": 46800.0,
+          "energy_minus_inputs_J_kg": 1.2371029143160811e-09,
+          "velocity_change_rms": 0.04468893136596856,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.789110359342022,
+          "min_tke": 7.787098737270388e-22
+        },
+        {
+          "time_s": 48000.0,
+          "energy_minus_inputs_J_kg": 1.2704492361291265e-09,
+          "velocity_change_rms": 0.045621683513460715,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.784164323127772,
+          "min_tke": 7.797092809146204e-22
+        },
+        {
+          "time_s": 49200.0,
+          "energy_minus_inputs_J_kg": 1.2973679553915293e-09,
+          "velocity_change_rms": 0.04655256560577737,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.779341905450668,
+          "min_tke": 7.803584816595505e-22
+        },
+        {
+          "time_s": 50400.0,
+          "energy_minus_inputs_J_kg": 1.3364148888271024e-09,
+          "velocity_change_rms": 0.04748132592427457,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.774634179479374,
+          "min_tke": 7.807926886473481e-22
+        },
+        {
+          "time_s": 51600.0,
+          "energy_minus_inputs_J_kg": 1.3692197277419659e-09,
+          "velocity_change_rms": 0.04840781054843141,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.770027071230839,
+          "min_tke": 7.811031157216679e-22
+        },
+        {
+          "time_s": 52800.0,
+          "energy_minus_inputs_J_kg": 1.4015933858304988e-09,
+          "velocity_change_rms": 0.049331936440954835,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.765502676310177,
+          "min_tke": 7.81363801713162e-22
+        },
+        {
+          "time_s": 54000.0,
+          "energy_minus_inputs_J_kg": 1.4410464314397086e-09,
+          "velocity_change_rms": 0.05025366198723871,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.761040482670609,
+          "min_tke": 7.816601947971854e-22
+        },
+        {
+          "time_s": 55200.0,
+          "energy_minus_inputs_J_kg": 1.4702363706361528e-09,
+          "velocity_change_rms": 0.05117295839314589,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.756618461963667,
+          "min_tke": 7.8213944117605815e-22
+        },
+        {
+          "time_s": 56400.0,
+          "energy_minus_inputs_J_kg": 1.5049464271557309e-09,
+          "velocity_change_rms": 0.05209112818936141,
+          "mld_density_003_mean_m": 17.1875,
+          "surface_temperature_C": 14.752214005306586,
+          "min_tke": 7.830592916448926e-22
+        },
+        {
+          "time_s": 57600.0,
+          "energy_minus_inputs_J_kg": 1.5348984533940609e-09,
+          "velocity_change_rms": 0.05300894386780186,
+          "mld_density_003_mean_m": 16.791262260387146,
+          "surface_temperature_C": 14.7478048167503,
+          "min_tke": 7.846926032698213e-22
+        },
+        {
+          "time_s": 58800.0,
+          "energy_minus_inputs_J_kg": 1.5777859044222957e-09,
+          "velocity_change_rms": 0.05392864796773515,
+          "mld_density_003_mean_m": 16.399724511679736,
+          "surface_temperature_C": 14.743369971855538,
+          "min_tke": 7.871274080040783e-22
+        },
+        {
+          "time_s": 60000.0,
+          "energy_minus_inputs_J_kg": 1.6026640353554383e-09,
+          "velocity_change_rms": 0.05483477619798176,
+          "mld_density_003_mean_m": 14.653413453755624,
+          "surface_temperature_C": 14.73889106032949,
+          "min_tke": 8.124400402363788e-22
+        },
+        {
+          "time_s": 61200.0,
+          "energy_minus_inputs_J_kg": 1.6363914006894267e-09,
+          "velocity_change_rms": 0.05570942427462006,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.734351524869023,
+          "min_tke": 1.094667825422513e-21
+        },
+        {
+          "time_s": 62400.0,
+          "energy_minus_inputs_J_kg": 1.6565967347604796e-09,
+          "velocity_change_rms": 0.05657403663324647,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.729729895399252,
+          "min_tke": 1.1710807939967192e-21
+        },
+        {
+          "time_s": 63600.0,
+          "energy_minus_inputs_J_kg": 1.6968620047169624e-09,
+          "velocity_change_rms": 0.05743814072487068,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.724994748535185,
+          "min_tke": 8.44718243064914e-22
+        },
+        {
+          "time_s": 64800.0,
+          "energy_minus_inputs_J_kg": 1.722116165440509e-09,
+          "velocity_change_rms": 0.05829993926907762,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.720109128503797,
+          "min_tke": 8.201218456004304e-22
+        },
+        {
+          "time_s": 66000.0,
+          "energy_minus_inputs_J_kg": 1.7502933310681314e-09,
+          "velocity_change_rms": 0.05915786979503208,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.715038100614848,
+          "min_tke": 9.066979163729407e-22
+        },
+        {
+          "time_s": 67200.0,
+          "energy_minus_inputs_J_kg": 1.7812982407195932e-09,
+          "velocity_change_rms": 0.060011790862405406,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.709754144962382,
+          "min_tke": 9.667415684432176e-22
+        },
+        {
+          "time_s": 68400.0,
+          "energy_minus_inputs_J_kg": 1.7999543320541807e-09,
+          "velocity_change_rms": 0.06086182704837188,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.704239867731234,
+          "min_tke": 1.0056273378260162e-21
+        },
+        {
+          "time_s": 69600.0,
+          "energy_minus_inputs_J_kg": 1.829214463478167e-09,
+          "velocity_change_rms": 0.06170799855139048,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.698488844784467,
+          "min_tke": 1.029562696245853e-21
+        },
+        {
+          "time_s": 70800.0,
+          "energy_minus_inputs_J_kg": 1.8690535663388583e-09,
+          "velocity_change_rms": 0.0625502723317917,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.692505248840206,
+          "min_tke": 1.0438846726807414e-21
+        },
+        {
+          "time_s": 72000.0,
+          "energy_minus_inputs_J_kg": 1.900750370804664e-09,
+          "velocity_change_rms": 0.06338864400432173,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.686302637293114,
+          "min_tke": 1.0523822836425283e-21
+        },
+        {
+          "time_s": 73200.0,
+          "energy_minus_inputs_J_kg": 1.9340515690428608e-09,
+          "velocity_change_rms": 0.06422318613487417,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.67990221135745,
+          "min_tke": 1.0574444695187742e-21
+        },
+        {
+          "time_s": 74400.0,
+          "energy_minus_inputs_J_kg": 1.9561069696827023e-09,
+          "velocity_change_rms": 0.0650540715050306,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.673330799281118,
+          "min_tke": 1.0604866462976904e-21
+        },
+        {
+          "time_s": 75600.0,
+          "energy_minus_inputs_J_kg": 1.9924865984716752e-09,
+          "velocity_change_rms": 0.06588157606084893,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.666618769571382,
+          "min_tke": 1.0623286085991632e-21
+        },
+        {
+          "time_s": 76800.0,
+          "energy_minus_inputs_J_kg": 2.02501066847637e-09,
+          "velocity_change_rms": 0.06670606418680985,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.659798036490988,
+          "min_tke": 1.0634467356510068e-21
+        },
+        {
+          "time_s": 78000.0,
+          "energy_minus_inputs_J_kg": 2.0616209288701238e-09,
+          "velocity_change_rms": 0.06752796147734759,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.652900280717086,
+          "min_tke": 1.0641243750408365e-21
+        },
+        {
+          "time_s": 79200.0,
+          "energy_minus_inputs_J_kg": 2.096892523210039e-09,
+          "velocity_change_rms": 0.06834772190840427,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.645955470791858,
+          "min_tke": 1.0645387577533105e-21
+        },
+        {
+          "time_s": 80400.0,
+          "energy_minus_inputs_J_kg": 2.1267492885681333e-09,
+          "velocity_change_rms": 0.06916579578117854,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.638990734316614,
+          "min_tke": 1.0648137742167398e-21
+        },
+        {
+          "time_s": 81600.0,
+          "energy_minus_inputs_J_kg": 2.154861275698752e-09,
+          "velocity_change_rms": 0.06998260276521451,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.63202959221182,
+          "min_tke": 1.0650596502244536e-21
+        },
+        {
+          "time_s": 82800.0,
+          "energy_minus_inputs_J_kg": 2.1971922026371885e-09,
+          "velocity_change_rms": 0.07079851195103164,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.625091537503495,
+          "min_tke": 1.0654201834935336e-21
+        },
+        {
+          "time_s": 84000.0,
+          "energy_minus_inputs_J_kg": 2.223754947031342e-09,
+          "velocity_change_rms": 0.07161382886554038,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.618191915261816,
+          "min_tke": 1.0661628975298185e-21
+        },
+        {
+          "time_s": 85200.0,
+          "energy_minus_inputs_J_kg": 2.255882932323478e-09,
+          "velocity_change_rms": 0.07242878829159986,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.611342044659262,
+          "min_tke": 1.0678986805484165e-21
+        },
+        {
+          "time_s": 86400.0,
+          "energy_minus_inputs_J_kg": 2.2867875673641652e-09,
+          "velocity_change_rms": 0.0732435515050806,
+          "mld_density_003_mean_m": 14.0625,
+          "surface_temperature_C": 14.604549517904893,
+          "min_tke": 1.072169677884174e-21
+        }
+      ],
+      "energy_minus_inputs_J_kg": 2.2867875673641652e-09,
+      "salt_relative_change": 1.1504586727221269e-15,
+      "min_tke": 1.072169677884174e-21,
+      "final_profiles": {
+        "temperature": [
+          14.604549517904893,
+          14.617748037055744,
+          14.606519705302574,
+          14.564658644853754,
+          14.480529758484082,
+          14.30383872139851,
+          12.47875522748187,
+          10.940383362744672,
+          10.325574663443625,
+          10.111783568860723,
+          10.045527178186807,
+          10.023070654413932,
+          10.014967763403583,
+          10.011183238230275,
+          10.00908769605259,
+          10.007597954791727,
+          10.006455700102869,
+          10.005503275358093,
+          10.004704851741252,
+          10.004022018897958,
+          10.003440705608279,
+          10.002942430900454,
+          10.002517299838654,
+          10.002152863374908,
+          10.001841832398881,
+          10.001575191861376,
+          10.001347639684411,
+          10.001152535063792,
+          10.000986062314,
+          10.000843304327418,
+          10.00072173371984,
+          10.000623120467422
+        ],
+        "salinity": [
+          34.521139893543,
+          34.52303722953496,
+          34.5267587747492,
+          34.533066132854735,
+          34.543081193643744,
+          34.561753883259655,
+          34.74124230034516,
+          34.89913181591753,
+          34.96594827073561,
+          34.98953147410953,
+          34.996701237266535,
+          34.99897500155042,
+          34.99966328451723,
+          34.99989486054935,
+          34.999964836877595,
+          34.999989257782936,
+          34.9999965766024,
+          34.99999899365952,
+          34.999999700418,
+          34.99999991340892,
+          34.999999974728226,
+          34.999999992708894,
+          34.999999997879314,
+          34.999999999387974,
+          34.99999999982211,
+          34.99999999994859,
+          34.999999999985164,
+          34.999999999996014,
+          34.99999999999915,
+          34.99999999999983,
+          34.99999999999995,
+          34.99999999999999
+        ],
+        "density_anomaly": [
+          -1.2724039870308843,
+          -1.2735143605846986,
+          -1.268430278037794,
+          -1.255346673486578,
+          -1.2311167177846052,
+          -1.1820599120342052,
+          -0.6857257227105009,
+          -0.2622445159789777,
+          -0.09011772774698557,
+          -0.029992513597008497,
+          -0.011466797431495479,
+          -0.005309074802866576,
+          -0.003189733209381984,
+          -0.0022696159071813327,
+          -0.0018053259152850387,
+          -0.0014949057789266362,
+          -0.0012657408240386303,
+          -0.001077519733755139,
+          -0.0009207564796440693,
+          -0.0007869921171703709,
+          -0.0006732081513121102,
+          -0.0005757046562706591,
+          -0.0004925219620872667,
+          -0.000421217262328355,
+          -0.00036036240506120976,
+          -0.00030819296259210205,
+          -0.0002636713922896661,
+          -0.00022549834304186334,
+          -0.000192927245905139,
+          -0.0001649960439209508,
+          -0.00014121024238988866,
+          -0.00012191614415257845
+        ],
+        "tke": [
+          0.00010773888587449344,
+          0.0001431611270827484,
+          0.00011261185701786066,
+          7.940642271727779e-05,
+          4.54234236072769e-05,
+          1.7191682629841483e-05,
+          8.312759515772321e-07,
+          1.4735421548916038e-09,
+          1.4506221499273738e-14,
+          1.2478607336374835e-21,
+          1.2517718015183994e-20,
+          1.3169159519039607e-20,
+          2.5935203802532882e-20,
+          7.752775377830013e-21,
+          5.866186343047674e-15,
+          1.3804739572908405e-09,
+          8.740968877568538e-15,
+          8.60745474927305e-10,
+          3.4319166887813596e-15,
+          2.8500456684468133e-10,
+          6.812359090397811e-16,
+          1.1024810994960603e-10,
+          1.8009784484925632e-16,
+          5.613840825975183e-11,
+          7.217686368360158e-17,
+          3.5561197255505316e-11,
+          3.893426900453068e-17,
+          2.5579148595731296e-11,
+          1.4908180144593547e-17,
+          3.0764134668483854e-21,
+          2.5480216188242944e-14,
+          2.6638620000549117e-09
+        ]
+      }
+    }
+  },
+  "final_difference": {
+    "velocity_rms_m_s": 0.0006646488072581911,
+    "thickness_rms_m": 0.0,
+    "density_anomaly_rms_kg_m3": 0.008701378208655405,
+    "temperature_rms_C": 0.05328511605638422
+  }
+}

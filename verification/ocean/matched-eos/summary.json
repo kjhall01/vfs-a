@@ -1,0 +1,128 @@
+[
+  {
+    "file": "wave128.json",
+    "kind": "wave",
+    "cells": 128,
+    "layers": 2,
+    "initial_anomaly_mismatch_kg_m3": 2.2737367544323206e-13,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 2.6392611559359087e-05,
+      "thickness_rms_m": 0.0001299323510906583,
+      "density_anomaly_rms_kg_m3": 3.2667663401948177e-09,
+      "temperature_rms_C": 0.46426318567643826
+    },
+    "energy_errors_J_kg": {
+      "jmd95": -3.332293883415341e-09,
+      "linear": -3.3214395059449325e-09
+    },
+    "frequency_over_jmd95_continuum": {
+      "jmd95": 0.9940343437980501,
+      "linear": 1.0167604942070079
+    },
+    "linear_vs_jmd95_frequency_percent": 2.2862540465276693
+  },
+  {
+    "file": "wave256.json",
+    "kind": "wave",
+    "cells": 256,
+    "layers": 2,
+    "initial_anomaly_mismatch_kg_m3": 2.2737367544323206e-13,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 2.6468598076282653e-05,
+      "thickness_rms_m": 0.0002659948449167105,
+      "density_anomaly_rms_kg_m3": 1.2603276245572179e-09,
+      "temperature_rms_C": 0.464263185678919
+    },
+    "energy_errors_J_kg": {
+      "jmd95": -4.651100746069946e-09,
+      "linear": -4.634819179864334e-09
+    },
+    "frequency_over_jmd95_continuum": {
+      "jmd95": 0.9969295860877898,
+      "linear": 1.019739050684826
+    },
+    "linear_vs_jmd95_frequency_percent": 2.287971479163997
+  },
+  {
+    "file": "jet128.json",
+    "kind": "jet",
+    "cells": 128,
+    "layers": 4,
+    "initial_anomaly_mismatch_kg_m3": 1.1368683772161603e-13,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 4.8060730369687016e-05,
+      "thickness_rms_m": 0.0008497475108016248,
+      "density_anomaly_rms_kg_m3": 0.0001411444534262819,
+      "temperature_rms_C": 0.3066318458000435
+    },
+    "energy_errors_J_kg": {
+      "jmd95": -1.6258181470197315e-06,
+      "linear": -1.625581875490311e-06
+    }
+  },
+  {
+    "file": "jet512.json",
+    "kind": "jet",
+    "cells": 512,
+    "layers": 4,
+    "initial_anomaly_mismatch_kg_m3": 1.1368683772161603e-13,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 4.4701855771828514e-05,
+      "thickness_rms_m": 0.0011885831543773239,
+      "density_anomaly_rms_kg_m3": 4.507263769563813e-05,
+      "temperature_rms_C": 0.3066348742021326
+    },
+    "energy_errors_J_kg": {
+      "jmd95": -1.4299957647459908e-06,
+      "linear": -1.4298607522818727e-06
+    }
+  },
+  {
+    "file": "mixing16.json",
+    "kind": "mixing",
+    "cells": 32,
+    "layers": 16,
+    "initial_anomaly_mismatch_kg_m3": 1.1368683772161603e-13,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 0.00028705963779293385,
+      "thickness_rms_m": 0.0,
+      "density_anomaly_rms_kg_m3": 0.0029278162779836367,
+      "temperature_rms_C": 0.039878267042560096
+    },
+    "energy_errors_J_kg": {
+      "jmd95": 8.135279172131624e-11,
+      "linear": 2.3703764829057518e-09
+    },
+    "interpolated_mean_profile_mld_m": {
+      "jmd95": 15.69954655337231,
+      "linear": 15.717870383576939
+    }
+  },
+  {
+    "file": "mixing32.json",
+    "kind": "mixing",
+    "cells": 32,
+    "layers": 32,
+    "initial_anomaly_mismatch_kg_m3": 0.0,
+    "status": "completed",
+    "final_difference": {
+      "velocity_rms_m_s": 0.0006646488072581911,
+      "thickness_rms_m": 0.0,
+      "density_anomaly_rms_kg_m3": 0.008701378208655405,
+      "temperature_rms_C": 0.05328511605638422
+    },
+    "energy_errors_J_kg": {
+      "jmd95": -1.3517017532396683e-11,
+      "linear": 2.2867875673641652e-09
+    },
+    "interpolated_mean_profile_mld_m": {
+      "jmd95": 12.423063054914374,
+      "linear": 12.60675171764757
+    }
+  }
+]

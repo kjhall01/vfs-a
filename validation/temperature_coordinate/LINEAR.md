@@ -98,3 +98,7 @@ qualification. The inherited local funding and entropy constraints can still
 reject states or large steps. See the recorded campaign for its actual duration,
 errors, timing samples and any rejection. Comparisons with JMD95 have different
 physics and do not establish equal physical accuracy.
+
+The [matched-buoyancy campaign](../../verification/ocean/matched-eos/README.md)
+compares complete internal-wave periods, one-day rotating flow and isolated
+forced-column physics against JMD95, with horizontal/vertical refinement.

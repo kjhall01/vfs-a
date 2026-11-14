@@ -1,0 +1,1117 @@
+{
+  "config": {
+    "kind": "wave",
+    "cells": 256,
+    "layers": 16,
+    "dt": 600.0,
+    "hours": 24.0,
+    "periods": 1.0,
+    "compile": true,
+    "output": "/tmp/matched-wave256.json"
+  },
+  "metadata": {
+    "period_s": 117898.88482910735,
+    "omega": 5.329300032215714e-05,
+    "fast_speed": 171.54556776530623,
+    "vector": [
+      -1.0,
+      0.997097616588637
+    ]
+  },
+  "steps": 3236,
+  "dt_s": 36.43352436004554,
+  "torch": "2.15.0+cpu",
+  "source_sha256": "ab868349d45be90225e76bdee5737347381debd5808a28ab843365cb745a36db",
+  "initial_anomaly_mismatch_kg_m3": 2.2737367544323206e-13,
+  "initial_temperature_difference_rms_C": 0.4642631856724605,
+  "cases": {
+    "jmd95": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 3236,
+      "wall_s": 162.84611139200206,
+      "initial_acceleration_rms_m_s2": 1.1795486993732043e-08,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0,
+          "amplitude_m": 0.10000000000000682,
+          "phase": -0.0,
+          "envelope": 1.0000000000000682
+        },
+        {
+          "time_s": 1821.676218002277,
+          "energy_minus_inputs_J_kg": -6.512626482244966e-11,
+          "velocity_change_rms": 2.1454043414728052e-05,
+          "amplitude_m": 0.09953222820340799,
+          "phase": 0.09644294933354172,
+          "envelope": 0.999969156345591
+        },
+        {
+          "time_s": 3643.352436004554,
+          "energy_minus_inputs_J_kg": -1.3025252964489931e-10,
+          "velocity_change_rms": 4.270737479708028e-05,
+          "amplitude_m": 0.09813328903112087,
+          "phase": 0.192897724248183,
+          "envelope": 0.9998777712799192
+        },
+        {
+          "time_s": 5465.028654006831,
+          "energy_minus_inputs_J_kg": -2.0623317193775723e-10,
+          "velocity_change_rms": 6.356115989669309e-05,
+          "amplitude_m": 0.09581627017646874,
+          "phase": 0.2893757176509039,
+          "envelope": 0.9997292404800459
+        },
+        {
+          "time_s": 7286.704872009108,
+          "energy_minus_inputs_J_kg": -2.713594367602069e-10,
+          "velocity_change_rms": 8.382030248643322e-05,
+          "amplitude_m": 0.09260284837190051,
+          "phase": 0.3858874711009595,
+          "envelope": 0.9995290850164366
+        },
+        {
+          "time_s": 9108.381090011384,
+          "energy_minus_inputs_J_kg": -3.4734007905306484e-10,
+          "velocity_change_rms": 0.00010329526951691358,
+          "amplitude_m": 0.08852308659044969,
+          "phase": 0.482442286464304,
+          "envelope": 0.9992847488264293
+        },
+        {
+          "time_s": 10930.057308013662,
+          "energy_minus_inputs_J_kg": -4.178935326107186e-10,
+          "velocity_change_rms": 0.00012180386421948916,
+          "amplitude_m": 0.08361515279281671,
+          "phase": 0.5790478807030635,
+          "envelope": 0.9990053252161102
+        },
+        {
+          "time_s": 12751.733526015938,
+          "energy_minus_inputs_J_kg": -4.884469861683724e-10,
+          "velocity_change_rms": 0.00013917293066600516,
+          "amplitude_m": 0.07792496284828183,
+          "phase": 0.6757100958365858,
+          "envelope": 0.9987012214456268
+        },
+        {
+          "time_s": 14573.409744018216,
+          "energy_minus_inputs_J_kg": -5.644276284612303e-10,
+          "velocity_change_rms": 0.00015523997373777734,
+          "amplitude_m": 0.07150575096873783,
+          "phase": 0.7724326761769015,
+          "envelope": 0.9983837735937473
+        },
+        {
+          "time_s": 16395.085962020494,
+          "energy_minus_inputs_J_kg": -6.349810820188842e-10,
+          "velocity_change_rms": 0.00016985467924830096,
+          "amplitude_m": 0.06441757168151849,
+          "phase": 0.869217122415931,
+          "envelope": 0.9980648266177988
+        },
+        {
+          "time_s": 18216.762180022768,
+          "energy_minus_inputs_J_kg": -7.055345355765379e-10,
+          "velocity_change_rms": 0.00018288032028532047,
+          "amplitude_m": 0.05672673799481698,
+          "phase": 0.9660626263303577,
+          "envelope": 0.9977562925485479
+        },
+        {
+          "time_s": 20038.438398025046,
+          "energy_minus_inputs_J_kg": -7.760879891341917e-10,
+          "velocity_change_rms": 0.00019419503639084157,
+          "amplitude_m": 0.048505201008612615,
+          "phase": 1.062966092239908,
+          "envelope": 0.9974697045476886
+        },
+        {
+          "time_s": 21860.114616027324,
+          "energy_minus_inputs_J_kg": -8.466414426918455e-10,
+          "velocity_change_rms": 0.00020369297346985025,
+          "amplitude_m": 0.0398298767816483,
+          "phase": 1.1599222461137804,
+          "envelope": 0.997215785475944
+        },
+        {
+          "time_s": 23681.7908340296,
+          "energy_minus_inputs_J_kg": -9.226220849847034e-10,
+          "velocity_change_rms": 0.00021128527413928294,
+          "amplitude_m": 0.03078192675107323,
+          "phase": 1.256923826679724,
+          "envelope": 0.9970040439517985
+        },
+        {
+          "time_s": 25503.467052031876,
+          "energy_minus_inputs_J_kg": -9.986027272775615e-10,
+          "velocity_change_rms": 0.0002169009091690564,
+          "amplitude_m": 0.021445998430365508,
+          "phase": 1.3539618536821587,
+          "envelope": 0.9968424136628482
+        },
+        {
+          "time_s": 27325.143270034154,
+          "energy_minus_inputs_J_kg": -1.063728992100011e-09,
+          "velocity_change_rms": 0.000220487341858468,
+          "amplitude_m": 0.011909433491154149,
+          "phase": 1.4510259649678634,
+          "envelope": 0.9967369543001038
+        },
+        {
+          "time_s": 29146.81948803643,
+          "energy_minus_inputs_J_kg": -1.139709634392869e-09,
+          "velocity_change_rms": 0.00022201101949527157,
+          "amplitude_m": 0.0022614506481625635,
+          "phase": 1.548104807355212,
+          "envelope": 0.9966916221254571
+        },
+        {
+          "time_s": 30968.495706038706,
+          "energy_minus_inputs_J_kg": -1.2102630879505228e-09,
+          "velocity_change_rms": 0.00022145768741578214,
+          "amplitude_m": -0.007407689021127689,
+          "phase": 1.64518646699823,
+          "envelope": 0.9967081176104398
+        },
+        {
+          "time_s": 32790.17192404099,
+          "energy_minus_inputs_J_kg": -1.2808165415081765e-09,
+          "velocity_change_rms": 0.00021883252229713249,
+          "amplitude_m": -0.017007526512115553,
+          "phase": 1.7422589229603216,
+          "envelope": 0.9967858214287045
+        },
+        {
+          "time_s": 34611.84814204326,
+          "energy_minus_inputs_J_kg": -1.3567971838010345e-09,
+          "velocity_change_rms": 0.00021416008362315974,
+          "amplitude_m": -0.026448251172466127,
+          "phase": 1.8393105044374602,
+          "envelope": 0.9969218193226499
+        },
+        {
+          "time_s": 36433.524360045536,
+          "energy_minus_inputs_J_kg": -1.4273506373586882e-09,
+          "velocity_change_rms": 0.00020748408404280496,
+          "amplitude_m": -0.035641540918099235,
+          "phase": 1.9363303341652738,
+          "envelope": 0.9971110115556577
+        },
+        {
+          "time_s": 38255.200578047814,
+          "energy_minus_inputs_J_kg": -1.497904090916342e-09,
+          "velocity_change_rms": 0.00019886698049184363,
+          "amplitude_m": -0.044501388527252356,
+          "phase": 2.0333087406048,
+          "envelope": 0.9973463059989152
+        },
+        {
+          "time_s": 40076.87679605009,
+          "energy_minus_inputs_J_kg": -1.5738847332092e-09,
+          "velocity_change_rms": 0.00018838938969709525,
+          "amplitude_m": -0.052944906276096805,
+          "phase": 2.1302376209427147,
+          "envelope": 0.9976188891383071
+        },
+        {
+          "time_s": 41898.55301405237,
+          "energy_minus_inputs_J_kg": -1.6498653755020579e-09,
+          "velocity_change_rms": 0.00017614933403556498,
+          "amplitude_m": -0.06089310138387989,
+          "phase": 2.227110742701595,
+          "envelope": 0.9979185587195739
+        },
+        {
+          "time_s": 43720.22923205465,
+          "energy_minus_inputs_J_kg": -1.7149916403245077e-09,
+          "velocity_change_rms": 0.00016226132467715462,
+          "amplitude_m": -0.06827161502830671,
+          "phase": 2.323923973670846,
+          "envelope": 0.9982341069153235
+        },
+        {
+          "time_s": 45541.905450056925,
+          "energy_minus_inputs_J_kg": -1.7909722826173654e-09,
+          "velocity_change_rms": 0.00014685529009179793,
+          "amplitude_m": -0.07501141800719473,
+          "phase": 2.4206754284773484,
+          "envelope": 0.9985537435495135
+        },
+        {
+          "time_s": 47363.5816680592,
+          "energy_minus_inputs_J_kg": -1.8615257361750194e-09,
+          "velocity_change_rms": 0.00013007536048284803,
+          "amplitude_m": -0.0810494565316495,
+          "phase": 2.5173655302486866,
+          "envelope": 0.9988655375329116
+        },
+        {
+          "time_s": 49185.257886061474,
+          "energy_minus_inputs_J_kg": -1.932079189732673e-09,
+          "velocity_change_rms": 0.00011207851958431823,
+          "amplitude_m": -0.08632924212312917,
+          "phase": 2.6139969879131946,
+          "envelope": 0.9991578605003434
+        },
+        {
+          "time_s": 51006.93410406375,
+          "energy_minus_inputs_J_kg": -2.0026326432903267e-09,
+          "velocity_change_rms": 9.303313593139128e-05,
+          "amplitude_m": -0.09080138009129404,
+          "phase": 2.71057468653756,
+          "envelope": 0.9994198201513302
+        },
+        {
+          "time_s": 52828.61032206603,
+          "energy_minus_inputs_J_kg": -2.078613285583185e-09,
+          "velocity_change_rms": 7.311738766402409e-05,
+          "amplitude_m": -0.09442403163940427,
+          "phase": 2.8071054979006043,
+          "envelope": 0.9996416641599616
+        },
+        {
+          "time_s": 54650.28654006831,
+          "energy_minus_inputs_J_kg": -2.1491667391408384e-09,
+          "velocity_change_rms": 5.25175960453652e-05,
+          "amplitude_m": -0.09716330528289296,
+          "phase": 2.9035980226878695,
+          "envelope": 0.999815139187911
+        },
+        {
+          "time_s": 56471.962758070586,
+          "energy_minus_inputs_J_kg": -2.2197201926984924e-09,
+          "velocity_change_rms": 3.1426483905617895e-05,
+          "amplitude_m": -0.0989935739224526,
+          "phase": 3.0000622699464685,
+          "envelope": 0.9999337950434329
+        },
+        {
+          "time_s": 58293.63897607286,
+          "energy_minus_inputs_J_kg": -2.2957008349913505e-09,
+          "velocity_change_rms": 1.004139420818892e-05,
+          "amplitude_m": -0.09989771459679321,
+          "phase": 3.0965092856295655,
+          "envelope": 0.9999932219968501
+        },
+        {
+          "time_s": 60115.31519407514,
+          "energy_minus_inputs_J_kg": -2.366254288549004e-09,
+          "velocity_change_rms": 1.143777811196947e-05,
+          "amplitude_m": -0.09986726867237086,
+          "phase": -3.0902345609743094,
+          "envelope": 0.9999912121165572
+        },
+        {
+          "time_s": 61936.99141207741,
+          "energy_minus_inputs_J_kg": -2.436807742106658e-09,
+          "velocity_change_rms": 3.280980987395064e-05,
+          "amplitude_m": -0.0989025209777926,
+          "phase": -2.9937867742176016,
+          "envelope": 0.9999278400789746
+        },
+        {
+          "time_s": 63758.66763007969,
+          "energy_minus_inputs_J_kg": -2.5127883843995158e-09,
+          "velocity_change_rms": 5.387491666893533e-05,
+          "amplitude_m": -0.09701249714383792,
+          "phase": -2.8973210118402473,
+          "envelope": 0.999805460769661
+        },
+        {
+          "time_s": 65580.34384808198,
+          "energy_minus_inputs_J_kg": -2.5833418379571698e-09,
+          "velocity_change_rms": 7.443600404204746e-05,
+          "amplitude_m": -0.09421487916136005,
+          "phase": -2.8008262841929183,
+          "envelope": 0.9996286225696456
+        },
+        {
+          "time_s": 67402.02006608425,
+          "energy_minus_inputs_J_kg": -2.6538952915148233e-09,
+          "velocity_change_rms": 9.430071162213233e-05,
+          "amplitude_m": -0.09053583995668407,
+          "phase": -2.7042926638857474,
+          "envelope": 0.9994039007563645
+        },
+        {
+          "time_s": 69223.69628408652,
+          "energy_minus_inputs_J_kg": -2.7244487450724773e-09,
+          "velocity_change_rms": 0.00011328319569997354,
+          "amplitude_m": -0.08600979853753256,
+          "phase": -2.6077116527837076,
+          "envelope": 0.9991396565000943
+        },
+        {
+          "time_s": 71045.3725020888,
+          "energy_minus_inputs_J_kg": -2.800429387365335e-09,
+          "velocity_change_rms": 0.00013120586666568067,
+          "amplitude_m": -0.08067909798778977,
+          "phase": -2.511076501287783,
+          "envelope": 0.9988457280160515
+        },
+        {
+          "time_s": 72867.04872009107,
+          "energy_minus_inputs_J_kg": -2.870982840922989e-09,
+          "velocity_change_rms": 0.00014790105005904348,
+          "amplitude_m": -0.07459360932533507,
+          "phase": -2.4143824621708783,
+          "envelope": 0.9985330674694972
+        },
+        {
+          "time_s": 74688.72493809335,
+          "energy_minus_inputs_J_kg": -2.9469634832158467e-09,
+          "velocity_change_rms": 0.0001632125550340857,
+          "amplitude_m": -0.06781026494178419,
+          "phase": -2.317626972591738,
+          "envelope": 0.9982133363674126
+        },
+        {
+          "time_s": 76510.40115609563,
+          "energy_minus_inputs_J_kg": -3.0175169367735007e-09,
+          "velocity_change_rms": 0.00017699713577112983,
+          "amplitude_m": -0.060392525976450256,
+          "phase": -2.2208097596058716,
+          "envelope": 0.9978984704957409
+        },
+        {
+          "time_s": 78332.0773740979,
+          "energy_minus_inputs_J_kg": -3.0880703903311543e-09,
+          "velocity_change_rms": 0.0001891258315174602,
+          "amplitude_m": -0.052409788605949935,
+          "phase": -2.123932858246226,
+          "envelope": 0.9976002346680176
+        },
+        {
+          "time_s": 80153.75359210018,
+          "energy_minus_inputs_J_kg": -3.1586238438888082e-09,
+          "velocity_change_rms": 0.00019948517296386925,
+          "amplitude_m": -0.043936734815620646,
+          "phase": -2.0270005430238545,
+          "envelope": 0.9973297830198171
+        },
+        {
+          "time_s": 81975.42981010246,
+          "energy_minus_inputs_J_kg": -3.229177297446462e-09,
+          "velocity_change_rms": 0.0002079782438834195,
+          "amplitude_m": -0.035052633717924546,
+          "phase": -1.9300191754444433,
+          "envelope": 0.997097239038883
+        },
+        {
+          "time_s": 83797.10602810474,
+          "energy_minus_inputs_J_kg": -3.30515793973932e-09,
+          "velocity_change_rms": 0.00021452558786983622,
+          "amplitude_m": -0.025840599954207632,
+          "phase": -1.832996970369722,
+          "envelope": 0.9969113131857321
+        },
+        {
+          "time_s": 85618.78224610702,
+          "energy_minus_inputs_J_kg": -3.3702842045617697e-09,
+          "velocity_change_rms": 0.0002190659515873583,
+          "amplitude_m": -0.016386816119891057,
+          "phase": -1.7359436893778888,
+          "envelope": 0.9967789744296336
+        },
+        {
+          "time_s": 87440.4584641093,
+          "energy_minus_inputs_J_kg": -3.4462648468546275e-09,
+          "velocity_change_rms": 0.0002215568578786204,
+          "amplitude_m": -0.0067797264899931535,
+          "phase": -1.6388702738326408,
+          "envelope": 0.996705185564782
+        },
+        {
+          "time_s": 89262.13468211157,
+          "energy_minus_inputs_J_kg": -3.5168183004122814e-09,
+          "velocity_change_rms": 0.0002219750031894816,
+          "amplitude_m": 0.002890790417319235,
+          "phase": -1.5417884306980005,
+          "envelope": 0.9966927144948632
+        },
+        {
+          "time_s": 91083.81090011385,
+          "energy_minus_inputs_J_kg": -3.587371753969935e-09,
+          "velocity_change_rms": 0.00022031647559614336,
+          "amplitude_m": 0.012534262695041756,
+          "phase": -1.444710187614499,
+          "envelope": 0.9967420288516204
+        },
+        {
+          "time_s": 92905.48711811613,
+          "energy_minus_inputs_J_kg": -3.663352396262793e-09,
+          "velocity_change_rms": 0.00021659679132156134,
+          "amplitude_m": 0.022060471451279207,
+          "phase": -1.3476474352555108,
+          "envelope": 0.9968512789850947
+        },
+        {
+          "time_s": 94727.1633361184,
+          "energy_minus_inputs_J_kg": -3.733905849820447e-09,
+          "velocity_change_rms": 0.00021085074964452837,
+          "amplitude_m": 0.031380294846743546,
+          "phase": -1.250611475069577,
+          "envelope": 0.9970163673443777
+        },
+        {
+          "time_s": 96548.83955412067,
+          "energy_minus_inputs_J_kg": -3.8098864921133044e-09,
+          "velocity_change_rms": 0.00020313210730780508,
+          "amplitude_m": 0.040406541869513285,
+          "phase": -1.1536125906678576,
+          "envelope": 0.9972311046898914
+        },
+        {
+          "time_s": 98370.51577212295,
+          "energy_minus_inputs_J_kg": -3.880439945670959e-09,
+          "velocity_change_rms": 0.00019351307560740744,
+          "amplitude_m": 0.04905476804558283,
+          "phase": -1.0566596598760973,
+          "envelope": 0.9974874450000013
+        },
+        {
+          "time_s": 100192.19199012523,
+          "energy_minus_inputs_J_kg": -3.950993399228612e-09,
+          "velocity_change_rms": 0.00018208364480424335,
+          "amplitude_m": 0.05724406545283464,
+          "phase": -0.9597598225461238,
+          "envelope": 0.9977757902130232
+        },
+        {
+          "time_s": 102013.8682081275,
+          "energy_minus_inputs_J_kg": -4.02697404152147e-09,
+          "velocity_change_rms": 0.00016895074222920942,
+          "amplitude_m": 0.06489781965050088,
+          "phase": -0.8629182163510539,
+          "envelope": 0.9980853524252759
+        },
+        {
+          "time_s": 103835.54442612978,
+          "energy_minus_inputs_J_kg": -4.0975274950791245e-09,
+          "velocity_change_rms": 0.00015423723192091985,
+          "amplitude_m": 0.07194442644094166,
+          "phase": -0.766137790512141,
+          "envelope": 0.9984045602019435
+        },
+        {
+          "time_s": 105657.22064413206,
+          "energy_minus_inputs_J_kg": -4.168080948636778e-09,
+          "velocity_change_rms": 0.00013808076519958857,
+          "amplitude_m": 0.07831796175748179,
+          "phase": -0.6694192033803805,
+          "envelope": 0.9987214927266042
+        },
+        {
+          "time_s": 107478.89686213434,
+          "energy_minus_inputs_J_kg": -4.238634402194432e-09,
+          "velocity_change_rms": 0.00012063249293149705,
+          "amplitude_m": 0.08395879841143722,
+          "phase": -0.5727608062835801,
+          "envelope": 0.9990243251669645
+        },
+        {
+          "time_s": 109300.57308013662,
+          "energy_minus_inputs_J_kg": -4.309187855752085e-09,
+          "velocity_change_rms": 0.00010205565147261976,
+          "amplitude_m": 0.08881416393100289,
+          "phase": -0.4761587132606171,
+          "envelope": 0.9993017690013074
+        },
+        {
+          "time_s": 111122.2492981389,
+          "energy_minus_inputs_J_kg": -4.3797413093097396e-09,
+          "velocity_change_rms": 8.252403555011054e-05,
+          "amplitude_m": 0.09283863426903097,
+          "phase": -0.37960695321087856,
+          "envelope": 0.9995434910389528
+        },
+        {
+          "time_s": 112943.92551614117,
+          "energy_minus_inputs_J_kg": -4.455721951602597e-09,
+          "velocity_change_rms": 6.222037256037771e-05,
+          "amplitude_m": 0.09599455876296774,
+          "phase": -0.2830976970275728,
+          "envelope": 0.9997404953872663
+        },
+        {
+          "time_s": 114765.60173414345,
+          "energy_minus_inputs_J_kg": -4.531702593895455e-09,
+          "velocity_change_rms": 4.1334613939457846e-05,
+          "amplitude_m": 0.09825241237303793,
+          "phase": -0.18662155074949618,
+          "envelope": 0.9998854550065397
+        },
+        {
+          "time_s": 116587.27795214573,
+          "energy_minus_inputs_J_kg": -4.596828858717904e-09,
+          "velocity_change_rms": 2.0062164185755248e-05,
+          "amplitude_m": 0.09959107190209633,
+          "phase": -0.09016790457205336,
+          "envelope": 0.9999729813071779
+        },
+        {
+          "time_s": 117898.88482910737,
+          "energy_minus_inputs_J_kg": -4.651100746069946e-09,
+          "velocity_change_rms": 4.618293475832129e-06,
+          "amplitude_m": 0.0999783689819366,
+          "phase": -0.020728812438414408,
+          "envelope": 0.999998523642022
+        }
+      ],
+      "energy_minus_inputs_J_kg": -4.651100746069946e-09,
+      "salt_relative_change": -1.645282231060345e-13,
+      "min_tke": 0.0,
+      "frequency_over_reference": 0.9969295860877898
+    },
+    "linear": {
+      "status": "completed",
+      "failure": null,
+      "completed_steps": 3236,
+      "wall_s": 80.14833424500102,
+      "initial_acceleration_rms_m_s2": 1.1804695308383022e-08,
+      "samples": [
+        {
+          "time_s": 0.0,
+          "energy_minus_inputs_J_kg": 0.0,
+          "velocity_change_rms": 0.0,
+          "amplitude_m": 0.10000000000000682,
+          "phase": -0.0,
+          "envelope": 1.0000000000000682
+        },
+        {
+          "time_s": 1821.676218002277,
+          "energy_minus_inputs_J_kg": -7.055345355765379e-11,
+          "velocity_change_rms": 2.1966487534220354e-05,
+          "amplitude_m": 0.09951986332165393,
+          "phase": 0.09728594358864384,
+          "envelope": 0.9999268334240454
+        },
+        {
+          "time_s": 3643.352436004554,
+          "energy_minus_inputs_J_kg": -1.4110690711530758e-10,
+          "velocity_change_rms": 4.3485052151764936e-05,
+          "amplitude_m": 0.09809235903278853,
+          "phase": 0.1972562462455619,
+          "envelope": 1.0003218437041246
+        },
+        {
+          "time_s": 5465.028654006831,
+          "energy_minus_inputs_J_kg": -2.1166036067296137e-10,
+          "velocity_change_rms": 6.472292216912117e-05,
+          "amplitude_m": 0.09573460761808479,
+          "phase": 0.2954725561800649,
+          "envelope": 1.000712299344367
+        },
+        {
+          "time_s": 7286.704872009108,
+          "energy_minus_inputs_J_kg": -2.876410029658193e-10,
+          "velocity_change_rms": 8.548008718860482e-05,
+          "amplitude_m": 0.09245931036023183,
+          "phase": 0.391972545168836,
+          "envelope": 1.0004715446703836
+        },
+        {
+          "time_s": 9108.381090011384,
+          "energy_minus_inputs_J_kg": -3.5276726778826897e-10,
+          "velocity_change_rms": 0.00010517553439403167,
+          "amplitude_m": 0.08830121613128643,
+          "phase": 0.4908701190526708,
+          "envelope": 1.0012349572281594
+        },
+        {
+          "time_s": 10930.057308013662,
+          "energy_minus_inputs_J_kg": -4.287479100811269e-10,
+          "velocity_change_rms": 0.00012384108709263556,
+          "amplitude_m": 0.08330915724784035,
+          "phase": 0.5895590403175995,
+          "envelope": 1.0022926776323677
+        },
+        {
+          "time_s": 12751.733526015938,
+          "energy_minus_inputs_J_kg": -4.993013636387807e-10,
+          "velocity_change_rms": 0.00014153924391539007,
+          "amplitude_m": 0.07752360689246239,
+          "phase": 0.6858093169658915,
+          "envelope": 1.0017176596284665
+        },
+        {
+          "time_s": 14573.409744018216,
+          "energy_minus_inputs_J_kg": -5.698548171964345e-10,
+          "velocity_change_rms": 0.00015772768357737141,
+          "amplitude_m": 0.07099720514574619,
+          "phase": 0.783241915982003,
+          "envelope": 1.0018941032840574
+        },
+        {
+          "time_s": 16395.085962020494,
+          "energy_minus_inputs_J_kg": -6.458354594892924e-10,
+          "velocity_change_rms": 0.00017222923856197457,
+          "amplitude_m": 0.0638035502730252,
+          "phase": 0.8816362781524704,
+          "envelope": 1.003375358925997
+        },
+        {
+          "time_s": 18216.762180022768,
+          "energy_minus_inputs_J_kg": -7.163889130469462e-10,
+          "velocity_change_rms": 0.00018528538923893507,
+          "amplitude_m": 0.05600993980821844,
+          "phase": 0.9780983398215503,
+          "envelope": 1.0026826590757838
+        },
+        {
+          "time_s": 20038.438398025046,
+          "energy_minus_inputs_J_kg": -7.815151778693959e-10,
+          "velocity_change_rms": 0.00019655783421548327,
+          "amplitude_m": 0.04768348007238082,
+          "phase": 1.0745425201557182,
+          "envelope": 1.00147061887714
+        },
+        {
+          "time_s": 21860.114616027324,
+          "energy_minus_inputs_J_kg": -8.520686314270496e-10,
+          "velocity_change_rms": 0.0002056825639009621,
+          "amplitude_m": 0.03891287832669275,
+          "phase": 1.1721640514810618,
+          "envelope": 1.002500430519457
+        },
+        {
+          "time_s": 23681.7908340296,
+          "energy_minus_inputs_J_kg": -9.226220849847034e-10,
+          "velocity_change_rms": 0.0002129365195157184,
+          "amplitude_m": 0.029787236500192552,
+          "phase": 1.268943765329802,
+          "envelope": 1.0019605363177388
+        },
+        {
+          "time_s": 25503.467052031876,
+          "energy_minus_inputs_J_kg": -9.931755385423573e-10,
+          "velocity_change_rms": 0.00021828225971771547,
+          "amplitude_m": 0.020385058956871007,
+          "phase": 1.3653527635977234,
+          "envelope": 0.9992606633812295
+        },
+        {
+          "time_s": 27325.143270034154,
+          "energy_minus_inputs_J_kg": -1.0691561808352152e-09,
+          "velocity_change_rms": 0.00022128238622723384,
+          "amplitude_m": 0.010799957428877528,
+          "phase": 1.4624569126436442,
+          "envelope": 0.9988159682061557
+        },
+        {
+          "time_s": 29146.81948803643,
+          "energy_minus_inputs_J_kg": -1.139709634392869e-09,
+          "velocity_change_rms": 0.00022210805918058586,
+          "amplitude_m": 0.001133847814534637,
+          "phase": 1.5594391794991689,
+          "envelope": 0.9983776385312656
+        },
+        {
+          "time_s": 30968.495706038706,
+          "energy_minus_inputs_J_kg": -1.2102630879505228e-09,
+          "velocity_change_rms": 0.00022101525612504112,
+          "amplitude_m": -0.008526934340961375,
+          "phase": 1.6566145687753655,
+          "envelope": 0.9948246002187002
+        },
+        {
+          "time_s": 32790.17192404099,
+          "energy_minus_inputs_J_kg": -1.2862437302433807e-09,
+          "velocity_change_rms": 0.00021765472948697865,
+          "amplitude_m": -0.01809272530661465,
+          "phase": 1.7541299502272536,
+          "envelope": 0.9924244611347155
+        },
+        {
+          "time_s": 34611.84814204326,
+          "energy_minus_inputs_J_kg": -1.3567971838010345e-09,
+          "velocity_change_rms": 0.0002120128583164898,
+          "amplitude_m": -0.027460466429628006,
+          "phase": 1.851374480286078,
+          "envelope": 0.991670343150212
+        },
+        {
+          "time_s": 36433.524360045536,
+          "energy_minus_inputs_J_kg": -1.4327778260938924e-09,
+          "velocity_change_rms": 0.00020453226991052362,
+          "amplitude_m": -0.03654106724529835,
+          "phase": 1.9495676520022336,
+          "envelope": 0.9881862179419085
+        },
+        {
+          "time_s": 38255.200578047814,
+          "energy_minus_inputs_J_kg": -1.497904090916342e-09,
+          "velocity_change_rms": 0.00019509727759300146,
+          "amplitude_m": -0.04525525262035909,
+          "phase": 2.048535371388934,
+          "envelope": 0.9842965506885074
+        },
+        {
+          "time_s": 40076.87679605009,
+          "energy_minus_inputs_J_kg": -1.5738847332092e-09,
+          "velocity_change_rms": 0.00018352568216494078,
+          "amplitude_m": -0.05351101483239855,
+          "phase": 2.1465500964988675,
+          "envelope": 0.9828143079259012
+        },
+        {
+          "time_s": 41898.55301405237,
+          "energy_minus_inputs_J_kg": -1.6444381867668537e-09,
+          "velocity_change_rms": 0.00017028415044452675,
+          "amplitude_m": -0.06122363634883728,
+          "phase": 2.245528335013768,
+          "envelope": 0.9800673194691747
+        },
+        {
+          "time_s": 43720.22923205465,
+          "energy_minus_inputs_J_kg": -1.7149916403245077e-09,
+          "velocity_change_rms": 0.00015556061900918647,
+          "amplitude_m": -0.06832824887043128,
+          "phase": 2.346401473787146,
+          "envelope": 0.9759111194124063
+        },
+        {
+          "time_s": 45541.905450056925,
+          "energy_minus_inputs_J_kg": -1.7909722826173654e-09,
+          "velocity_change_rms": 0.00013910814999335022,
+          "amplitude_m": -0.07475423718712951,
+          "phase": 2.4459791248322884,
+          "envelope": 0.9737927296605344
+        },
+        {
+          "time_s": 47363.5816680592,
+          "energy_minus_inputs_J_kg": -1.8560985474398152e-09,
+          "velocity_change_rms": 0.0001212634403889804,
+          "amplitude_m": -0.08043006392842252,
+          "phase": 2.545424455785857,
+          "envelope": 0.971972566104975
+        },
+        {
+          "time_s": 49185.257886061474,
+          "energy_minus_inputs_J_kg": -1.932079189732673e-09,
+          "velocity_change_rms": 0.00010248251231461388,
+          "amplitude_m": -0.08530767981173654,
+          "phase": 2.6477129040645666,
+          "envelope": 0.9688546233276433
+        },
+        {
+          "time_s": 51006.93410406375,
+          "energy_minus_inputs_J_kg": -2.0026326432903267e-09,
+          "velocity_change_rms": 8.260027146240749e-05,
+          "amplitude_m": -0.08934450092014361,
+          "phase": 2.7493511395921213,
+          "envelope": 0.96687475807699
+        },
+        {
+          "time_s": 52828.61032206603,
+          "energy_minus_inputs_J_kg": -2.0731860968479807e-09,
+          "velocity_change_rms": 6.173744551561237e-05,
+          "amplitude_m": -0.0924913026722823,
+          "phase": 2.8492096569201126,
+          "envelope": 0.9659063509440647
+        },
+        {
+          "time_s": 54650.28654006831,
+          "energy_minus_inputs_J_kg": -2.1491667391408384e-09,
+          "velocity_change_rms": 4.048806687117442e-05,
+          "amplitude_m": -0.09471875971721577,
+          "phase": 2.9517434674816503,
+          "envelope": 0.9645173637377137
+        },
+        {
+          "time_s": 56471.962758070586,
+          "energy_minus_inputs_J_kg": -2.2197201926984924e-09,
+          "velocity_change_rms": 1.8894795389466946e-05,
+          "amplitude_m": -0.09601447554102258,
+          "phase": 3.055070506612624,
+          "envelope": 0.9637498607615023
+        },
+        {
+          "time_s": 58293.63897607286,
+          "energy_minus_inputs_J_kg": -2.2902736462561463e-09,
+          "velocity_change_rms": 3.12677074580437e-06,
+          "amplitude_m": -0.09635901784717107,
+          "phase": -3.1276691449530776,
+          "envelope": 0.9636835887849428
+        },
+        {
+          "time_s": 60115.31519407514,
+          "energy_minus_inputs_J_kg": -2.3608270998138e-09,
+          "velocity_change_rms": 2.501809357848863e-05,
+          "amplitude_m": -0.09574393762912972,
+          "phase": -3.02603420219575,
+          "envelope": 0.9638678456919136
+        },
+        {
+          "time_s": 61936.99141207741,
+          "energy_minus_inputs_J_kg": -2.431380553371454e-09,
+          "velocity_change_rms": 4.6483237067284594e-05,
+          "amplitude_m": -0.0941851397907932,
+          "phase": -2.9222963158063906,
+          "envelope": 0.9649614847091451
+        },
+        {
+          "time_s": 63758.66763007969,
+          "energy_minus_inputs_J_kg": -2.5073611956643116e-09,
+          "velocity_change_rms": 6.770588630485067e-05,
+          "amplitude_m": -0.09169686087107917,
+          "phase": -2.821254462271712,
+          "envelope": 0.9661159103937695
+        },
+        {
+          "time_s": 65580.34384808198,
+          "energy_minus_inputs_J_kg": -2.5833418379571698e-09,
+          "velocity_change_rms": 8.832778544481464e-05,
+          "amplitude_m": -0.08829390013261612,
+          "phase": -2.7210277917013883,
+          "envelope": 0.9672244207686971
+        },
+        {
+          "time_s": 67402.02006608425,
+          "energy_minus_inputs_J_kg": -2.648468102779619e-09,
+          "velocity_change_rms": 0.00010784776317734638,
+          "amplitude_m": -0.08401590312805508,
+          "phase": -2.6184237257433307,
+          "envelope": 0.9698914747534646
+        },
+        {
+          "time_s": 69223.69628408652,
+          "energy_minus_inputs_J_kg": -2.7298759338076815e-09,
+          "velocity_change_rms": 0.00012641062199114834,
+          "amplitude_m": -0.07890982477449057,
+          "phase": -2.5172727974528915,
+          "envelope": 0.9725613657707858
+        },
+        {
+          "time_s": 71045.3725020888,
+          "energy_minus_inputs_J_kg": -2.795002198630131e-09,
+          "velocity_change_rms": 0.0001439339162747043,
+          "amplitude_m": -0.07301543177416561,
+          "phase": -2.4182721528354745,
+          "envelope": 0.9740428636473983
+        },
+        {
+          "time_s": 72867.04872009107,
+          "energy_minus_inputs_J_kg": -2.865555652187785e-09,
+          "velocity_change_rms": 0.00015985399001583933,
+          "amplitude_m": -0.06639056122904596,
+          "phase": -2.3177508922144163,
+          "envelope": 0.9771835248262412
+        },
+        {
+          "time_s": 74688.72493809335,
+          "energy_minus_inputs_J_kg": -2.9415362944806426e-09,
+          "velocity_change_rms": 0.0001741563277280449,
+          "amplitude_m": -0.059109076757704944,
+          "phase": -2.2173477906013033,
+          "envelope": 0.9811653134773738
+        },
+        {
+          "time_s": 76510.40115609563,
+          "energy_minus_inputs_J_kg": -3.0120897480382965e-09,
+          "velocity_change_rms": 0.00018701032234552371,
+          "amplitude_m": -0.051235409124912486,
+          "phase": -2.1191407981173,
+          "envelope": 0.9828861139591867
+        },
+        {
+          "time_s": 78332.0773740979,
+          "energy_minus_inputs_J_kg": -3.0826432015959505e-09,
+          "velocity_change_rms": 0.00019796455192310232,
+          "amplitude_m": -0.04284038498194222,
+          "phase": -2.0206233628865293,
+          "envelope": 0.985267275047124
+        },
+        {
+          "time_s": 80153.75359210018,
+          "energy_minus_inputs_J_kg": -3.1586238438888082e-09,
+          "velocity_change_rms": 0.00020680172938660282,
+          "amplitude_m": -0.03401531618991251,
+          "phase": -1.9216562275307019,
+          "envelope": 0.9896647376657847
+        },
+        {
+          "time_s": 81975.42981010246,
+          "energy_minus_inputs_J_kg": -3.229177297446462e-09,
+          "velocity_change_rms": 0.00021382964907579993,
+          "amplitude_m": -0.02484571901002655,
+          "phase": -1.8240191691398409,
+          "envelope": 0.9917448229745921
+        },
+        {
+          "time_s": 83797.10602810474,
+          "energy_minus_inputs_J_kg": -3.2997307510041158e-09,
+          "velocity_change_rms": 0.0002188526205438478,
+          "amplitude_m": -0.015411077164422842,
+          "phase": -1.726667288176844,
+          "envelope": 0.9927223344965627
+        },
+        {
+          "time_s": 85618.78224610702,
+          "energy_minus_inputs_J_kg": -3.3702842045617697e-09,
+          "velocity_change_rms": 0.00022150529242520882,
+          "amplitude_m": -0.005809097425745118,
+          "phase": -1.6291374699030143,
+          "envelope": 0.9962770385756043
+        },
+        {
+          "time_s": 87440.4584641093,
+          "energy_minus_inputs_J_kg": -3.4408376581194233e-09,
+          "velocity_change_rms": 0.00022208099177062872,
+          "amplitude_m": 0.0038609797913904077,
+          "phase": -1.5321259191115355,
+          "envelope": 0.9986815437951524
+        },
+        {
+          "time_s": 89262.13468211157,
+          "energy_minus_inputs_J_kg": -3.5168183004122814e-09,
+          "velocity_change_rms": 0.00022069732739239556,
+          "amplitude_m": 0.013514840641899787,
+          "phase": -1.4350226348759172,
+          "envelope": 0.9984595056028337
+        },
+        {
+          "time_s": 91083.81090011385,
+          "energy_minus_inputs_J_kg": -3.581944565234731e-09,
+          "velocity_change_rms": 0.00021697425916053967,
+          "amplitude_m": 0.023058803020566742,
+          "phase": -1.338166567116977,
+          "envelope": 1.0002203084435801
+        },
+        {
+          "time_s": 92905.48711811613,
+          "energy_minus_inputs_J_kg": -3.657925207527589e-09,
+          "velocity_change_rms": 0.00021106291472732286,
+          "amplitude_m": 0.03239043311363276,
+          "phase": -1.241808201987948,
+          "envelope": 1.002534143537442
+        },
+        {
+          "time_s": 94727.1633361184,
+          "energy_minus_inputs_J_kg": -3.7284786610852425e-09,
+          "velocity_change_rms": 0.00020334445064623856,
+          "amplitude_m": 0.041424826073312576,
+          "phase": -1.1445169507783381,
+          "envelope": 1.0018434859634684
+        },
+        {
+          "time_s": 96548.83955412067,
+          "energy_minus_inputs_J_kg": -3.799032114642897e-09,
+          "velocity_change_rms": 0.00019358318051704323,
+          "amplitude_m": 0.05008042230982619,
+          "phase": -1.0472551718019303,
+          "envelope": 1.001708420178807
+        },
+        {
+          "time_s": 98370.51577212295,
+          "energy_minus_inputs_J_kg": -3.8695855682005505e-09,
+          "velocity_change_rms": 0.0001817381544415432,
+          "amplitude_m": 0.058263603712117244,
+          "phase": -0.9512035433830558,
+          "envelope": 1.0033275999439473
+        },
+        {
+          "time_s": 100192.19199012523,
+          "energy_minus_inputs_J_kg": -3.940139021758204e-09,
+          "velocity_change_rms": 0.0001683173397561266,
+          "amplitude_m": 0.06589440970632185,
+          "phase": -0.8538548111080159,
+          "envelope": 1.0028335748065083
+        },
+        {
+          "time_s": 102013.8682081275,
+          "energy_minus_inputs_J_kg": -4.016119664051062e-09,
+          "velocity_change_rms": 0.00015334912543238176,
+          "amplitude_m": 0.07290849393630988,
+          "phase": -0.7554789814896508,
+          "envelope": 1.0015684194405923
+        },
+        {
+          "time_s": 103835.54442612978,
+          "energy_minus_inputs_J_kg": -4.081245928873512e-09,
+          "velocity_change_rms": 0.00013664776432205204,
+          "amplitude_m": 0.07923223519173488,
+          "phase": -0.6589896393452419,
+          "envelope": 1.002164217246212
+        },
+        {
+          "time_s": 105657.22064413206,
+          "energy_minus_inputs_J_kg": -4.15722657116637e-09,
+          "velocity_change_rms": 0.00011867814468956453,
+          "amplitude_m": 0.08479771389201415,
+          "phase": -0.5619274877103139,
+          "envelope": 1.0020649902039374
+        },
+        {
+          "time_s": 107478.89686213434,
+          "energy_minus_inputs_J_kg": -4.227780024724023e-09,
+          "velocity_change_rms": 9.976257807236335e-05,
+          "amplitude_m": 0.0895602492778947,
+          "phase": -0.4625576040025964,
+          "envelope": 1.0007692002411768
+        },
+        {
+          "time_s": 109300.57308013662,
+          "energy_minus_inputs_J_kg": -4.298333478281677e-09,
+          "velocity_change_rms": 7.969305635642851e-05,
+          "amplitude_m": 0.09347436212118411,
+          "phase": -0.3648883202445594,
+          "envelope": 1.0006208782387722
+        },
+        {
+          "time_s": 111122.2492981389,
+          "energy_minus_inputs_J_kg": -4.368886931839331e-09,
+          "velocity_change_rms": 5.875405270090299e-05,
+          "amplitude_m": 0.0964921531014704,
+          "phase": -0.26821682367223787,
+          "envelope": 1.000701624567744
+        },
+        {
+          "time_s": 112943.92551614117,
+          "energy_minus_inputs_J_kg": -4.439440385396985e-09,
+          "velocity_change_rms": 3.7486219952919125e-05,
+          "amplitude_m": 0.09858948224767708,
+          "phase": -0.16870147339784622,
+          "envelope": 1.0000925121171733
+        },
+        {
+          "time_s": 114765.60173414345,
+          "energy_minus_inputs_J_kg": -4.5154210276898425e-09,
+          "velocity_change_rms": 1.580352287597421e-05,
+          "amplitude_m": 0.09975270484878511,
+          "phase": -0.06966582892750586,
+          "envelope": 0.999952616118856
+        },
+        {
+          "time_s": 116587.27795214573,
+          "energy_minus_inputs_J_kg": -4.580547292512293e-09,
+          "velocity_change_rms": 6.245888935398951e-06,
+          "amplitude_m": 0.09996126548940881,
+          "phase": 0.026914018559979453,
+          "envelope": 0.9999748061052527
+        },
+        {
+          "time_s": 117898.88482910737,
+          "energy_minus_inputs_J_kg": -4.634819179864334e-09,
+          "velocity_change_rms": 2.18505169835827e-05,
+          "amplitude_m": 0.09951710009147083,
+          "phase": 0.09930284847051028,
+          "envelope": 1.0000979610220615
+        }
+      ],
+      "energy_minus_inputs_J_kg": -4.634819179864334e-09,
+      "salt_relative_change": -1.6478294873648592e-13,
+      "min_tke": 0.0,
+      "frequency_over_reference": 1.019739050684826
+    }
+  },
+  "final_difference": {
+    "velocity_rms_m_s": 2.6468598076282653e-05,
+    "thickness_rms_m": 0.0002659948449167105,
+    "density_anomaly_rms_kg_m3": 1.2603276245572179e-09,
+    "temperature_rms_C": 0.464263185678919
+  }
+}
