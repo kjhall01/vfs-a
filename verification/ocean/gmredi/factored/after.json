@@ -1,0 +1,38 @@
+{
+  "driver_sha256": "fdfbe85a56695971965fb61fbb3dc6c63b3c3759dba6e6fffa8aa7c1be2de73f",
+  "source_sha256": {
+    "eddy.py": "83d80561e54e23e8bc4be80689913d185823cdbd199e9a99cb275672e3cc3082",
+    "roquet.py": "12fa354e20af225a409802d2b648f51ff8acb5d425f81d7d9777da1f21247821",
+    "eddy_energy.py": "d7757bf5e66567104f62cbba1d76c296dc68161611b0377d91cb27329fadd024"
+  },
+  "peak_rss_bytes": 3286831104,
+  "revision": "working-tree",
+  "cells": 16384,
+  "layers": 40,
+  "dt": 120.0,
+  "compiled": false,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "samples_s": {
+    "dynamics": [
+      13.573315208002896,
+      13.832396662000974,
+      13.60647909600084
+    ],
+    "dynamics_reservoir": [
+      16.843334969998978,
+      17.113245307999023,
+      16.54660272500041
+    ],
+    "funded_eddy": [
+      2.0140635190000467,
+      1.6493345140006568,
+      1.5610380110010738
+    ]
+  },
+  "medians_s": {
+    "dynamics": 13.60647909600084,
+    "dynamics_reservoir": 16.843334969998978,
+    "funded_eddy": 1.6493345140006568
+  }
+}

@@ -770,3 +770,82 @@ Optional Roquet kernel compilation and live timestep progress are available in
 the timestep campaign. Selected pure energy/caloric kernels compile; numerical
 guards, physics control and timestep loop remain eager. Recorded wall time
 includes first-use compilation; it is not a warmed performance measurement.
+
+The opt-in [GM–Redi research operator](../validation/temperature_coordinate/GMREDI.md)
+adds prescribed-coefficient eddy transport to the Roquet CT/SA path. A discrete
+closed circulation supplies GM donor transport; an adjoint small-slope Redi
+operator conserves inventories and dissipates tracer variance. Surface-referenced
+potential density approximates neutral geometry. Exact finite Hamiltonian work
+is diagnosed but not compensated with heat or eddy energy. The implementation
+rejects invalid/negative tracer updates; rotated Redi has no maximum principle.
+See [front relaxation and refinement evidence](../verification/ocean/gmredi/README.md).
+This research addition changes no existing runtime expressions or defaults.
+
+GM–Redi validation on CPU float64: 13 focused tests, 1171 passed / 2 skipped
+in the outside-checkout portable suite, 142 corrected-Gibbs fixture tensors and
+93 dry-helper tensors passed. Initial user-site isolation failures were resolved
+by installing into a virtual environment, with no test expectation changes.
+Front relaxation and first-order timestep refinement are recorded; GPU,
+backward rollout, spatial convergence and climate performance are unqualified.
+
+The [mesoscale reservoir extension](../verification/ocean/gmredi/ENERGY_RESERVOIR.md)
+replaces the unfunded GM–Redi diagnostic with an explicit `EddyState.eddy_h`.
+`RoquetHamiltonian` composes the original resolved energy, turbulent TKE and
+mesoscale reservoir and supplies exact finite tracer work. Each GM/Redi stage
+pairs conservative energy transport with a local reservoir exchange, rejecting
+unaffordable withdrawals. The reservoir survives resolved transport, forcing,
+vertical mixing and ALE. Redi slopes now refresh after GM; cold and warm tests
+verify both signs of its energy exchange using the published default EOS.
+Existing resolved RK errors are measured, not absorbed into the reservoir.
+
+Reservoir qualification: 22 focused tests; installed-wheel outside-checkout
+portable suite 1180 passed / 2 skipped; 142 corrected-Gibbs and 93 dry-helper
+fixture tensors passed. Thirty-six isolated front runs retain nonnegative
+funding; endpoint finite-H residuals are at most 3.73e-16 J/kg. Local stage
+first-law residuals are at most 6.66e-17 J/kg. Both signs of Redi energy work
+are covered. Direct large-H subtraction remains limited by roundoff, with a
+maximum 8.15e-12 J/kg difference. One backward sensitivity is checked; general
+backward rollouts and climate/target-resolution qualification remain open.
+
+The [GM–Redi optimization pass](../verification/ocean/gmredi/optimization/README.md)
+reuses immutable geometry within each closure call, builds only the applicable
+GM/Redi operators, reduces tensor temporaries, and avoids revalidating unchanged
+physical fields after reservoir-only updates. All physical guard classes remain
+active; Redi still recomputes slopes after GM. Against commit 774e2f3, 18 cases
+advanced five steps retain bitwise-identical resolved fields and turbulent TKE;
+maximum eddy-content difference is 1.21e-13 m³/s². One backward sensitivity differs
+by 6.39e-18. Installed-wheel portable regression: 1186 passed, 2 skipped;
+142 corrected-Gibbs and 93 dry-helper fixture tensors passed. Arithmetic regrouping
+changes reduction order, so long-trajectory bitwise identity is not claimed.
+
+Sequential 16384×40 eager one-thread CPU timing: funded closure median
+3.910 → 3.356 s (14.2% less), whole-process peak RSS 3.526 → 3.267 GB
+(7.4% less). Estimated full step remains about 20 s (19.835 → 20.040 s);
+unchanged-control and reservoir-dynamics timing variation precludes a claim of
+end-to-end speedup. Three samples per operation are retained in the report.
+
+The [factored Redi pass](../verification/ocean/gmredi/factored/README.md) computes
+column vertical derivatives once and averages them to edges, then reverses those
+operations for the transpose. Tracer and Hamiltonian energy flux use the same
+transpose; the old absolute eight-entry bound is algebraically retained. Four
+new explicit-stencil/adjoint/variance tests pass, alongside the 28 existing
+GM–Redi/reservoir checks with unchanged tolerances. In 18 five-step cases,
+velocity, h, CT content, SA content and TKE remain bitwise identical; maximum
+passive and reservoir content differences are 1.42e-14 and 8.53e-14 respectively.
+One backward sensitivity differs by 1.00e-18. Extensive energy-report differences
+from cancellation are retained in comparison.json; these are not a claim of
+bitwise equivalence. CPU float64 only; no compiled/GPU/long-rollout claim.
+
+Installed-wheel tests outside checkout: 1189 passed, 2 skipped and one known
+exact atmospheric-fixture mismatch (max 4.44e-15 initial velocity). The affected
+extraction file passes all 3 tests under the existing portable policy; combined
+coverage is 1190 distinct passing tests. Standalone portable comparisons pass
+142 corrected-Gibbs and 93 dry-helper tensors. Both test logs are retained.
+
+At 16384×40, uncompiled single-thread CPU float64, closure medians decrease
+3.184 → 1.649 s in the full benchmark (48.2%) and 3.614 → 2.587 s in a separate
+closure-only process pair (28.4%). Closure-only peak process RSS decreases
+2.396 → 1.765 GB (26.3%); full-process peak remains about 3.3 GB. Summed component
+medians decrease 20.803 → 18.493 s, with unchanged dynamics also timing 4.4–7.0%
+faster; no precise end-to-end speedup is attributed from those sums. Raw timing
+samples, source hashes and reproduction commands accompany the report.
