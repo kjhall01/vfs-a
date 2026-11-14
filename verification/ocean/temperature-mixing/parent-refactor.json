@@ -1,0 +1,12 @@
+[
+  {
+    "fast": false,
+    "compared_tensors": 24,
+    "bitwise_equal": true
+  },
+  {
+    "fast": true,
+    "compared_tensors": 24,
+    "bitwise_equal": true
+  }
+]

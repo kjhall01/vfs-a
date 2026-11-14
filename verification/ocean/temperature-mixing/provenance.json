@@ -1,0 +1,23 @@
+{
+  "parent": "b41d8adfb1f5cd56035964df9c11a8b9f03954c1",
+  "source_sha256": {
+    "validation/ocean_column/lagged.py": "78b4d402924af6f369611e224f02d99011639d88df85fb2db098f4081e5a67ec",
+    "validation/ocean_column/fast_thermo.py": "0c5b200b05ba2f99be1ea3a505650537c894ec3ae0fec42951d0358b7360abc0",
+    "validation/temperature_coordinate/physics.py": "53fbab90f8604afe80f13d6291f21f3ca9abded540aa47afdf73e3edf0e7442e",
+    "validation/temperature_coordinate/physics_campaign.py": "5b811e790d807a67d9a27b87109d337511791f98de11d1570c157e5e7299346d",
+    "tests/ocean/test_temperature_physics.py": "8034ae4dc97352ca47bfdc96394aacbacb6012c5edea913cada230ad3a3b9e34"
+  },
+  "parent_helper_sha256": {
+    "validation/ocean_column/lagged.py": "5e6df456beae0897f736b3c3d697d2f19a630dd6222a239f4d4eaaac656ce6fc",
+    "validation/ocean_column/fast_thermo.py": "1f0b25b3b2d43707818adf6ee505a92cff835d48449a8d42ce60fddfd6881149"
+  },
+  "runtime": "Unchanged installed PR73 package, Python 3.12, torch 2.15.0+cpu; helpers loaded explicitly from candidate checkout",
+  "timings": "Sequential compiled CPU float64 one-thread jobs, no test overlap; 128x16 three timed samples, 1024x64 one timed sample, warmup excluded; counters collected separately",
+  "parent_regression": "24 state/report tensors bitwise equal in each of fast and ordinary entropy mixing, 16 cells x4 layers, dt10, two substeps",
+  "limits": [
+    "Not full ocean step",
+    "No new MPS/CUDA or long-run qualification",
+    "No claim of full backward qualification",
+    "All production files unchanged"
+  ]
+}

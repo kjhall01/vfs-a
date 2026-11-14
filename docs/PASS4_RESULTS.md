@@ -702,3 +702,19 @@ These are short samples beyond #72, not Mac or long-run qualification. Final
 installed-wheel suite: 1084 passed, one CUDA skip; both portable fixtures and
 three compiled CLI smoke cases pass. Defaults remain eager q4. Compact evidence
 and source/wheel hashes are retained; oversized tensor captures are omitted.
+
+## Temperature-native thermal physics prototype
+
+The temperature-coordinate research path now supports prescribed layer-energy
+increments and lagged vertical TKE mixing. The same finite-H heating solve,
+funding retries, local/column energy and entropy checks are retained. Direct
+h*T storage removes entropy reconstruction; reference-enthalpy inversions remain.
+A 1024×64 compiled short heating+mixing sample shows no meaningful speedup
+(10.074 vs 10.034 s), despite removing 15 entropy and four baseline enthalpy
+inversions. Both energy-minus-input residuals are -5.93e-12 J/kg. This is not a
+supported full-ocean timestep: surface exchange, stress/radiation adapters and
+ALE remain outside the temperature-native composition. See
+[methods and evidence](../verification/ocean/temperature-mixing/README.md).
+Final outside-checkout portable regression: 1102 passed, one CUDA skip, one
+existing warning. Old entropy research helper outputs matched 24 state/report
+tensors bitwise in each of ordinary and fast mode on the recorded small case.

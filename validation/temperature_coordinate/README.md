@@ -68,12 +68,13 @@ The short smooth campaign may be roundoff dominated; the stronger sharp-front
 case is retained to expose finite-coordinate differences. Three repeated timing
 samples after warmup are exploratory CPU results, not a scaling campaign.
 
-No TKE closure, surface forcing, energy-corrected ALE or full-ocean backward path
-has been converted. Heating still requires a nonlinear finite-energy solve even
-when T is prognostic, but the subsequent T-to-entropy-to-T reconstruction can be
-removed. Mixing in reference enthalpy still requires enthalpy-to-T inversion;
-the coordinate change alone cannot remove that solve. Converting these operators
-and their discrete ledgers is the next prerequisite for a supported full model.
+Temperature-native layer heating and research TKE mixing are now available in
+`physics.py`; see [their campaign](../../verification/ocean/temperature-mixing/README.md).
+Surface forcing, energy-corrected ALE and full-ocean backward paths have not been
+converted. Heating still needs a nonlinear finite-energy solve; mixing in
+reference enthalpy still needs enthalpy-to-T inversion. The coordinate change
+alone cannot remove those solves. These helpers do not yet constitute a
+supported full-ocean timestep.
 The benchmark's `--compile` applies the same existing thermodynamic compilation
 to both coordinate formulations; no extra compiler optimization is credited.
 
