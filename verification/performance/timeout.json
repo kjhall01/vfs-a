@@ -1,0 +1,34 @@
+{
+  "revision": null,
+  "dirty": null,
+  "command": [
+    "validation/performance/run.py",
+    "--preset",
+    "smoke",
+    "--cases",
+    "dry",
+    "--timeout",
+    ".001",
+    "--output",
+    "/tmp/performance-timeout"
+  ],
+  "cases": [
+    {
+      "name": "dry-none-16x4-t1",
+      "status": "timeout",
+      "config": {
+        "case": "dry",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 3,
+        "repeats": 3,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      }
+    }
+  ]
+}

@@ -1684,3 +1684,12 @@ remain unchanged; an internal validation hook reuses residual-checked physical
 fields. Installed suite: 1,052 passed, one CUDA skip, plus a separately passing
 composed-step regression; both portable fixture checks pass. See
 [implementation and evidence](../verification/ocean/FAST_THERMODYNAMICS.md).
+
+## CPU performance campaign
+
+`validation/performance/run.py` provides isolated-process CPU/float64 timings for
+dry/moist dynamics, active ocean dynamics with horizontal TKE transport, vertical
+mixing, and forced full-ocean compositions with/without explicit post-physics ALE.
+See `validation/performance/README.md` for Mac thread sweeps, installed-wheel
+execution, actual timestep/SYPD accounting and the scope of research closures.
+This adds no runtime physics or new timestep qualification.

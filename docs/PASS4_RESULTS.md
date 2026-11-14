@@ -642,3 +642,16 @@ remain unchanged; an internal validation hook reuses residual-checked physical
 fields. Installed suite: 1,052 passed, one CUDA skip, plus a separately passing
 composed-step regression; both portable fixture checks pass. See
 [implementation and evidence](../verification/ocean/FAST_THERMODYNAMICS.md).
+
+## Local CPU throughput harness
+
+The [performance campaign](../validation/performance/README.md) records warm-up,
+repeated evolving-step wall timings, process CPU time, memory, source fingerprints,
+endpoint inventories and limiter/forcing/remap ledgers. Failed/timed-out cases
+receive no SYPD. Supported and research closures are explicitly distinguished.
+No package kernels, fixtures, tolerances or defaults change.
+
+Harness validation: 12 installed-wheel smoke cases and six 128×16 evolving-step
+cases pass; throughput accounting tests and both portable fixture comparisons
+pass. See `verification/performance/README.md`. These are execution checks,
+not M4 Pro measurements or global timestep qualification.
