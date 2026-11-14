@@ -68,6 +68,9 @@ def make_case(c):
     from vfs.ocean.stratified import (TKEOcean,TKEClosure,OceanBoundaryStress,
         OceanSurfaceHeating,OceanSurfaceExchange,OceanSurfaceFluxes,AdaptiveThermalRemapper)
     ocean,resolved,k = setup(c['cells'],layers)
+    ocean.warm_start = c.get('warm_start', False)
+    if not c.get('prepared', True) and hasattr(ocean.base, '_stratified_transport'):
+        del ocean.base._stratified_transport
     closure = None
     if c['closure']=='supported': closure=TKEClosure(2.)
     elif c['closure'] in ('semi','fast'):

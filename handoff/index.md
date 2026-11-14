@@ -1708,3 +1708,23 @@ Validation: installed-wheel portable suite 1061 passed / one CUDA skip, includin
 frozen sharp-front/coastal equality and five stage-reuse/gradient/rejection tests;
 corrected-Gibbs and dry portable fixtures pass. Timing variation is retained in
 the report rather than interpreted as atmospheric speed changes.
+
+## Validated ocean field reuse
+
+The [field reuse pass](../verification/ocean/FIELD_REUSE.md) carries validated
+physical reconstructions through dynamics stages and standard boundary operators,
+prepares immutable layer connectivity, and shares repeated local gathers. The
+default keeps the established inversion; optional `warm_start=True` uses a
+residual-checked previous temperature with fallback. Warm starts retain the EOS
+and tolerance but can change roundoff and roundoff-sensitive limiter diagnostics.
+No cross-call thermodynamic cache is retained. Custom ocean/composition subclasses
+keep their public stepping path. Rebuild after geometry/device/layer changes.
+1024×64 dynamics exploratory medians: 14.65 → 9.56 s/step, or 6.42 s with warm
+starts, relative to the stage-reuse parent. This is CPU/float64 evidence, not a
+Mac, GPU, long-run or full-model backward qualification.
+Final installed-wheel portable suite: 1074 passed, one CUDA skip, one existing
+warning; both portable fixture checks pass. Default state/report captures agree
+bitwise in four comparisons. Thirteen new residual/derivative/geometry/protocol
+checks pass; inference geometry without mutation counters falls back to ordinary
+indexing. Warm inversion remains opt-in, with short-run roundoff differences
+reported explicitly. Oversized tensor captures are omitted.

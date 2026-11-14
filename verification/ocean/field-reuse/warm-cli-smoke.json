@@ -1,0 +1,82 @@
+{
+  "revision": null,
+  "dirty": null,
+  "command": [
+    "validation/performance/run.py",
+    "--preset",
+    "smoke",
+    "--cases",
+    "ocean",
+    "full",
+    "full_ale",
+    "--steps",
+    "1",
+    "--repeats",
+    "1",
+    "--warm-start",
+    "--output",
+    "/tmp/field-warm-cli"
+  ],
+  "cases": [
+    {
+      "name": "ocean-none-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true
+      },
+      "median_step_wall_s": 0.08040144200003851,
+      "sypd": 0.034075583213991956
+    },
+    {
+      "name": "full-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true
+      },
+      "median_step_wall_s": 0.6018567150003946,
+      "sypd": 0.004552123386037927
+    },
+    {
+      "name": "full_ale-fast-16x4-t1",
+      "status": "completed",
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 16,
+        "layers": 4,
+        "threads": 1,
+        "dt": 1.0,
+        "steps": 1,
+        "repeats": 1,
+        "warmup": 1,
+        "mixing_substeps": 4,
+        "remap_every": 1,
+        "warm_start": true
+      },
+      "median_step_wall_s": 0.9643164650005929,
+      "sypd": 0.0028411067599012486
+    }
+  ]
+}

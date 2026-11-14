@@ -1,0 +1,265 @@
+{
+  "parent": "large-parent-2.json",
+  "candidate": "large-candidate-2.json",
+  "tensor_count": 64,
+  "bitwise_equal": true,
+  "different_tensors": [],
+  "field_errors": {
+    ".0.ocean.u_e": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".0.ocean.h": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".0.ocean.entropy_h": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".0.ocean.salt_h": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".0.ocean.tracer_h": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".0.tke_h": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.volume": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.amounts": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.high_integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.trace_change": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.i": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.j": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.carrier": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.transport.outflow_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.heat": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.entropy_source": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.force_correction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.gibbs_identity": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.target_beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.work_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.target_face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.0.kinetic_budget": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.volume": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.amounts": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.high_integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.trace_change": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.i": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.j": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.carrier": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.transport.outflow_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.heat": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.entropy_source": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.force_correction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.gibbs_identity": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.target_beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.work_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.target_face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.1.kinetic_budget": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.volume": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.amounts": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.high_integrated_flux": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.trace_change": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.i": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.j": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.carrier": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.transport.outflow_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.heat": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.entropy_source": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.force_correction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.gibbs_identity": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.target_beta": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.work_fraction": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.target_face_work": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.ocean.stages.2.kinetic_budget": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    },
+    ".1.0.0.tke_transport_residual": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0
+    }
+  }
+}
