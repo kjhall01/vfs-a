@@ -765,3 +765,8 @@ It supports saved meshes, explicit resolution/layer/depth choices, fixed maximum
 mixing substeps, isolated timeouts and resumable completed trials. It does not
 assign a universal or climate-safe timestep. Compact implementation checks and
 target-resolution attempt results are retained under `verification/ocean/timestep`.
+
+Optional Roquet kernel compilation and live timestep progress are available in
+the timestep campaign. Selected pure energy/caloric kernels compile; numerical
+guards, physics control and timestep loop remain eager. Recorded wall time
+includes first-use compilation; it is not a warmed performance measurement.

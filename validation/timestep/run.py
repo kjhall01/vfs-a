@@ -10,6 +10,7 @@ import math
 import subprocess
 import sys
 import time
+import threading
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -51,6 +52,24 @@ def qualifies(row, errors, limits):
             and row['max_tracer_error_relative'] <= limits['inventory'])
 
 
+def run_logged(command, log, timeout, verbose):
+    """Tee worker output without blocking the timeout on a silent worker."""
+    with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                          text=True, bufsize=1) as process:
+        def relay():
+            for line in process.stdout:
+                log.write(line); log.flush()
+                if verbose:print(line,end='',flush=True)
+        thread=threading.Thread(target=relay,daemon=True);thread.start()
+        try:
+            returncode=process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill();process.wait();thread.join()
+            raise
+        thread.join()
+        return returncode
+
+
 def worker(config, output):
     import numpy as np
     import torch
@@ -64,6 +83,9 @@ def worker(config, output):
     started = time.perf_counter()
     row = dict(config=config, status='initializing', completed_steps=0, time_s=0.)
     write(output, row)
+    def progress(message):
+        if config.get('verbose'):print(message,flush=True)
+    progress('Initializing mesh and model...')
     try:
         xyz = np.load(config['mesh'], allow_pickle=False) if config['mesh'] else None
         mesh = VoronoiMesh(n_cells=config['cells'], generator_xyz=xyz,
@@ -76,6 +98,9 @@ def worker(config, output):
         column = OceanColumn(config['layers'], total_depth=config['depth'], rest_thickness=rest)
         full = config['case'] == 'forced'
         m = model(mesh, column, substeps(config['dt'], config['mixing_dt']), physics=full)
+        if config.get('compile'):
+            progress('Enabling torch.compile kernels; first calls may take several minutes...')
+            m.compile_thermodynamics()
         row['phase']='initial state'; write(output,row)
         h = rest[None].expand(config['cells'], -1).clone()
         depth = (interfaces[1:]+interfaces[:-1])[None]/2
@@ -99,6 +124,7 @@ def worker(config, output):
         salt0 = (area*initial.salt_h).sum()
         tracer0 = (area[..., None]*initial.tracer_h).sum()
         row['phase']='initial energy'; write(output,row)
+        progress('Evaluating initial energy (may compile kernels)...')
         energy0 = m.total_energy(state)
         forcing = {}
         if full:
@@ -115,6 +141,8 @@ def worker(config, output):
                    max_local_budget_ratio=0., max_wave_courant=0.,
                    setup_wall_s=time.perf_counter()-started, samples=[])
         elapsed = 0.; external = 0.; run_started = time.perf_counter()
+        total_steps=math.ceil(config['duration']/config['dt'])
+        progress(f'Starting {total_steps} steps; first step may trigger additional compilation.')
         with torch.no_grad():
             while elapsed < config['duration']-1e-9:
                 dt = min(config['dt'], config['duration']-elapsed)
@@ -143,6 +171,9 @@ def worker(config, output):
                 if len(row['samples']) < 65 and (elapsed >= (len(row['samples'])+1)*config['duration']/64 or elapsed >= config['duration']):
                     row['samples'].append(dict(time_s=elapsed, **metrics))
                 write(output, row)
+                average=row['run_wall_s']/row['completed_steps']
+                eta=average*(total_steps-row['completed_steps'])
+                progress(f"step {row['completed_steps']}/{total_steps} | t={elapsed:g}s | wall={row['run_wall_s']:.1f}s | mean={average:.2f}s/step | ETA={eta:.1f}s | energy error={error:.3e} J/kg")
             row.update(status='completed', sypd=elapsed/(365*row['run_wall_s']))
             endpoint = dict(u=s.u_e, CT=s.temperature(), SA=s.salinity(), h=s.h,
                             k=state.tke_h/s.h, weight=area*s.h,
@@ -173,6 +204,8 @@ def main():
     p.add_argument('--mesh', type=Path, help='Saved (N,3) .npy generators; no implicit extra relaxation')
     p.add_argument('--wave-amplitude', type=float, default=10.)
     p.add_argument('--timeout', type=float, default=43200., help='Wall seconds per trial')
+    p.add_argument('--compile', action='store_true', help='Compile selected Roquet tensor kernels with Inductor; guards remain eager')
+    p.add_argument('--verbose', action='store_true', help='Stream initialization and every accepted step with wall time and ETA')
     p.add_argument('--resume', action='store_true')
     p.add_argument('--screen', action='store_true', help='Skip references: completion/budgets only; never qualifies a timestep')
     p.add_argument('--velocity-tolerance', type=float, default=.001)
@@ -205,7 +238,7 @@ def main():
     summary = dict(provenance=provenance, limits=limits, scope='finite-duration Roquet CPU float64; no climate guarantee', results=[])
     def trial(cells, case, dt):
         cfg = dict(cells=cells,layers=a.layers,depth=a.depth,dt=dt,duration=a.hours*3600,
-                   case=case,mixing_dt=a.mixing_dt,threads=a.threads,lloyd=a.lloyd,
+                   case=case,compile=a.compile,verbose=a.verbose,mixing_dt=a.mixing_dt,threads=a.threads,lloyd=a.lloyd,
                    mesh=str(a.mesh.resolve()) if a.mesh else None,wave_amplitude=a.wave_amplitude,provenance=provenance)
         name=f'{cells}x{a.layers}-{case}-dt{dt:g}'
         path=a.output/(name+'.json');request=a.output/(name+'.config.json')
@@ -216,9 +249,9 @@ def main():
         print('Running',name,flush=True)
         with path.with_suffix('.log').open('w') as log:
             try:
-                result=subprocess.run([sys.executable,'-I',str(Path(__file__).resolve()),'--worker',str(request.resolve()),'--output',str(path.resolve())],stdout=log,stderr=subprocess.STDOUT,timeout=a.timeout)
+                returncode=run_logged([sys.executable,'-I',str(Path(__file__).resolve()),'--worker',str(request.resolve()),'--output',str(path.resolve())],log,a.timeout,a.verbose)
                 row=json.loads(path.read_text()) if path.exists() else dict(config=cfg,status='worker_failed')
-                if result.returncode and row.get('status') in ('initializing','running','completed'):row.update(status='worker_failed',returncode=result.returncode)
+                if returncode and row.get('status') in ('initializing','running','completed'):row.update(status='worker_failed',returncode=returncode)
             except subprocess.TimeoutExpired:
                 row=json.loads(path.read_text()) if path.exists() else dict(config=cfg)
                 row['status']='timeout'

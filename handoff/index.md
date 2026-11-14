@@ -1837,3 +1837,9 @@ endpoint field errors and cumulative budgets are required before a tested dt is
 qualified; screen completion alone never qualifies it. Mixing substeps have an
 explicit maximum physical duration. See `validation/timestep/README.md` and
 `verification/ocean/timestep/README.md`. No model defaults or guards change.
+
+The timestep runner now accepts `--compile` for selected Roquet tensor kernels
+and `--verbose` for live per-step timing/ETA/budget output, also retained in logs.
+Domain checks remain eager; compiler errors never silently fall back. The
+coordinator tees worker output while preserving timeout enforcement. Compilation
+startup is included in setup/run timings, so initial ETA is not warmed throughput.

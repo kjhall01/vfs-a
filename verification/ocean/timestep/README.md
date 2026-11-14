@@ -45,3 +45,14 @@ in separate processes. Four unit checks and the complete 32x4 forced reference
 comparison pass again. A solo 16384x40 attempt with this lightweight coordinator
 still received signal 9 during initial energy evaluation, before any step.
 This confirms the campaign overhead reduction did not remove that blocker.
+
+## Compile/progress follow-up
+
+37 focused checks pass outside checkout against the unchanged installed wheel:
+Roquet, linear configuration and timestep campaign tests, including compiler
+graph capture with the eager backend, retained domain rejection, live-log tee
+and timeout enforcement. A real CPU Inductor run completes two dt30 forced
+steps with mixing and ALE at 32x4; all seven saved endpoint tensors match eager
+within rtol 2e-12 / atol 1e-12. Raw budgets, configuration/source hashes and
+maximum differences are in `compile-check.json`. Compilation startup is retained
+in wall times; these two-step runs do not establish a performance multiplier.

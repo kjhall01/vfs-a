@@ -40,3 +40,14 @@ def test_atomic_report_preserves_previous_after_nan(tmp_path):
     old=path.read_text()
     with pytest.raises(ValueError):campaign.write(path,dict(error=float('nan')))
     assert path.read_text()==old
+
+
+def test_live_log_and_timeout(tmp_path,capsys):
+    import sys,subprocess
+    with (tmp_path/'worker.log').open('w') as log:
+        assert campaign.run_logged([sys.executable,'-u','-c','print("step 1/2")'],log,10,True)==0
+    assert 'step 1/2' in capsys.readouterr().out
+    assert 'step 1/2' in (tmp_path/'worker.log').read_text()
+    with (tmp_path/'timeout.log').open('w') as log:
+        with pytest.raises(subprocess.TimeoutExpired):
+            campaign.run_logged([sys.executable,'-c','import time; time.sleep(10)'],log,.1,False)

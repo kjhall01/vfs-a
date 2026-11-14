@@ -131,3 +131,8 @@ from the published equations, not a vendored dependency.
 For timestep selection at a specified horizontal and vertical resolution, use
 [the timestep campaign](../timestep/README.md). Its deep-ocean tests differ from
 the shallow throughput example, and distinguish completion from temporal accuracy.
+
+`model.compile_thermodynamics()` optionally compiles selected pure Roquet energy
+and caloric kernels with Inductor. Guards and timestep/physics control stay eager.
+Compilation is lazy and per-model; rebuild to change compiler backend. Small CPU
+forward comparisons are tested; no new global speedup or accelerator claim.

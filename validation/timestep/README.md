@@ -118,3 +118,28 @@ is not a replacement for the performance harness. No autograd tape is retained
 while stepping. Endpoint `.pt` files contain only tensors and are loaded with
 `weights_only=True`; they can be large and stay local. Do not commit or upload
 them. Preserve compact JSON summaries and logs; omit any file over 128 KiB.
+
+## Compilation and live progress
+
+Append `--compile --verbose` to any command. `--compile` enables per-model
+`torch.compile(backend='inductor', fullgraph=True, dynamic=True)` for Roquet
+layer energy/derivatives, polynomial coefficients, parcel potential, and pure
+caloric values. Public domain/positivity checks, transport, mixing control,
+ALE acceptance and the Python timestep loop remain eager. This is selected
+kernel compilation, not whole-model compilation. A compiler error is reported
+as a failed worker; there is no silent eager fallback. A working CPU Inductor
+compiler toolchain is required. No accelerator qualification is implied.
+
+`--verbose` streams initialization and every accepted step to the terminal and
+retains the same messages in each trial's `.log`. Lines include simulated time,
+completed/total steps, elapsed run wall time, mean seconds per step, estimated
+remaining wall time, and energy minus prescribed inputs. Timeout handling is
+retained even while a worker is silent. Without `--verbose`, only the existing
+per-trial start/result lines appear.
+
+Compilation is lazy. Initial energy and the first dynamics/physics/ALE calls
+may compile different graphs. Initial energy compilation is included in setup
+wall time; later compilation is included in run wall time. The first ETA can
+therefore overestimate subsequent costs. Neither reported SYPD nor mean step
+time excludes startup compilation. Use the performance harness for warmed
+throughput comparisons. Both flags are recorded in configuration/resume matching.
