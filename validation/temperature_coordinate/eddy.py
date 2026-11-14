@@ -89,25 +89,34 @@ class GMRedi:
         c = wl / dl
         return torch.stack((upper, ids, lower), -1), torch.stack((a, -a - c, c), -1)
 
-    def _geometry(self, model, state):
+    @staticmethod
+    def _metrics(model, state):
+        """Geometry shared only within this fixed-h/u GM–Redi call."""
         s = state.ocean
-        mesh = s.mesh
-        h = s.h
-        layers = h.shape[1]
-        if layers < 2:
-            raise ValueError("GMRedi requires at least two layers")
+        h, mesh = s.h, s.mesh
         z = model.ocean.energy.base.height(s)
-        vertical_ids, vertical_weights = self._vertical_rows(z)
+        vertical_ids, vertical_weights = GMRedi._vertical_rows(z)
         domain = model.ocean.domain
         active = (
             torch.ones(mesh.nEdges, dtype=torch.bool, device=h.device)
             if domain is None
             else domain.active_edge
         )
-        edges = mesh.cellsOnEdge[active]
-        i, j = edges.unbind(1)
-        dc = mesh.dc_edge[active, None]
-        ell = mesh.dv_edge[active, None]
+        i, j = mesh.cellsOnEdge[active].unbind(1)
+        dc, ell = mesh.dc_edge[active, None], mesh.dv_edge[active, None]
+        ids = torch.arange(h.numel(), device=h.device).reshape_as(h)
+        return z, vertical_ids, vertical_weights, i, j, dc, ell, ids, (z[j] - z[i]) / dc
+
+    def _geometry(self, model, state, *, part="all", metrics=None):
+        s = state.ocean
+        mesh = s.mesh
+        h = s.h
+        layers = h.shape[1]
+        if layers < 2:
+            raise ValueError("GMRedi requires at least two layers")
+        if metrics is None:
+            metrics = self._metrics(model, state)
+        z, vertical_ids, vertical_weights, i, j, dc, ell, ids, zn = metrics
         # A SINGLE reference pressure prevents pressure-compression gradients
         # from masquerading as water-mass gradients. Thermobaricity is omitted.
         b = (
@@ -118,7 +127,6 @@ class GMRedi:
         bz = (b.flatten()[vertical_ids] * vertical_weights).sum(-1)
         bz_edge = 0.5 * (bz[i] + bz[j])
         bn = (b[j] - b[i]) / dc
-        zn = (z[j] - z[i]) / dc
         stable = bz_edge > self.min_n2
         safe = torch.where(stable, bz_edge, torch.ones_like(bz_edge))
         raw = zn - bn / safe
@@ -128,22 +136,33 @@ class GMRedi:
         # Relative slope in layer-index coordinates. This metric term is what
         # cancels spurious lateral mixing on a tilted computational grid.
         relative = slope - zn
-        ids = torch.arange(h.numel(), device=h.device).reshape_as(h)
+        rows = weights = measure = None
+        if part != "gm":
+            rows = torch.cat(
+                (
+                    ids[i][..., None],
+                    ids[j][..., None],
+                    vertical_ids[i],
+                    vertical_ids[j],
+                ),
+                -1,
+            ).reshape(-1, 8)
+            weights = torch.cat(
+                (
+                    -torch.ones_like(h[i])[..., None] / dc[..., None],
+                    torch.ones_like(h[j])[..., None] / dc[..., None],
+                    0.5 * relative[..., None] * vertical_weights[i],
+                    0.5 * relative[..., None] * vertical_weights[j],
+                ),
+                -1,
+            ).reshape(-1, 8)
+            # Suppress the ENTIRE rotated diffusion row in weak/unstable layers.
+            measure = (
+                self.kappa_redi * ell * dc * 0.5 * (h[i] + h[j]) * stable
+            ).flatten()
+        if part == "redi":
+            return slope, None, None, None, None, None, None, rows, weights, measure
         hi, hj = ids[i].flatten(), ids[j].flatten()
-        rows = torch.cat(
-            (ids[i][..., None], ids[j][..., None], vertical_ids[i], vertical_ids[j]), -1
-        ).reshape(-1, 8)
-        weights = torch.cat(
-            (
-                -torch.ones_like(h[i])[..., None] / dc[..., None],
-                torch.ones_like(h[j])[..., None] / dc[..., None],
-                0.5 * relative[..., None] * vertical_weights[i],
-                0.5 * relative[..., None] * vertical_weights[j],
-            ),
-            -1,
-        ).reshape(-1, 8)
-        # Suppress the ENTIRE rotated diffusion row in weak/unstable layers.
-        measure = (self.kappa_redi * ell * dc * 0.5 * (h[i] + h[j]) * stable).flatten()
         # Psi at interfaces; exact zero at closed upper/lower boundaries.
         zero = torch.zeros_like(slope[:, :1])
         psi = torch.cat(
@@ -178,9 +197,13 @@ class GMRedi:
         fields.extend((state.tke_h[..., None], state.eddy_h[..., None]))
         return torch.cat(fields, -1)
 
-    def _unpack(self, model, before, values):
+    def _unpack(self, model, before, values, initial=None):
         s, h = before.ocean, before.ocean.h
-        initial = self._contents(before) / h[..., None]
+        initial = (
+            self._contents(before) / h[..., None]
+            if initial is None
+            else initial.reshape(*h.shape, -1)
+        )
         delta = values.reshape_as(initial) - initial
         passive = (
             None if s.tracer_h is None else s.tracer_h + h[..., None] * delta[..., 2:-2]
@@ -225,7 +248,8 @@ class GMRedi:
                 + " requires unavailable local eddy energy; reduce dt or supply a physical reservoir initial condition"
             )
         end = EddyState(transported.ocean, transported.tke_h, eddy_h)
-        model.check(end)
+        # Transported CT/SA/TKE were already checked; exchange changes only e.
+        model._check_eddy(end)
         exchange = (mass * (end.eddy_h - transported.eddy_h)).sum()
         residual = H.finite_change(before, end) - energy_inflow
         return end, exchange, residual
@@ -243,7 +267,8 @@ class GMRedi:
         s, h = state.ocean, state.ocean.h
         volume = (s.mesh.cell_area[:, None] * h).flatten()
         rho0 = s.column.rho0
-        geom = self._geometry(model, state)
+        metrics = self._metrics(model, state)
+        geom = self._geometry(model, state, part="gm", metrics=metrics)
         slope, psi, horizontal, vertical, i, j, carrier, _, _, _ = geom
         initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
         outgoing = (
@@ -263,7 +288,7 @@ class GMRedi:
         donor = torch.where((carrier >= 0)[:, None], anomaly[i], anomaly[j])
         transfer = dt * carrier[:, None] * donor
         gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
-        gm_transport = self._unpack(model, state, gm_values)
+        gm_transport = self._unpack(model, state, gm_values, initial)
         mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(
             initial
         )
@@ -274,16 +299,19 @@ class GMRedi:
         )
 
         # Redi follows the UPDATED density surfaces, not the pre-GM slopes.
-        redi_geometry = self._geometry(model, gm)
+        redi_geometry = self._geometry(model, gm, part="redi", metrics=metrics)
         redi_slope = redi_geometry[0]
         rows, weights, measure = redi_geometry[-3:]
         values = (self._contents(gm) / h[..., None]).reshape_as(initial)
-        gradient = (weights[..., None] * values[rows]).sum(1)
+        # Batched row dot products avoid materializing a second
+        # edge×layer×8×tracer array just to reduce it immediately.
+        gradient = torch.bmm(weights[:, None, :], values[rows]).squeeze(1)
         flux = measure[:, None] * gradient
         transfers = -dt * weights[..., None] * flux[:, None, :]
         rate_amount = torch.zeros_like(values).index_add(
             0, rows.flatten(), transfers.reshape(-1, values.shape[-1])
         )
+        del transfers  # the transpose application above no longer needs this array
         bound = (
             torch.zeros_like(volume).index_add(
                 0,
@@ -298,14 +326,16 @@ class GMRedi:
         if (step_number > self.cfl).any():
             raise FloatingPointError("Redi explicit step exceeds bound; reduce dt")
         final_values = values + rate_amount / volume[:, None]
-        redi_transport = self._unpack(model, gm, final_values)
+        redi_transport = self._unpack(model, gm, final_values, values)
         mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(
             initial
         )
         # A single conjugate per row defines a conservative energy flux over
         # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
         mu_face = 0.5 * (mu[rows[:, 0]] + mu[rows[:, 1]])
-        energy_transfers = rho0 * (transfers * mu_face[:, None, :]).sum(-1)
+        # Factor the row scalar product before distributing across its eight
+        # stencil entries. Avoid another edge×layer×8×tracer temporary.
+        energy_transfers = rho0 * (-dt * weights * (flux * mu_face).sum(-1)[:, None])
         redi_inflow = (
             torch.zeros_like(volume)
             .index_add(0, rows.flatten(), energy_transfers.flatten())

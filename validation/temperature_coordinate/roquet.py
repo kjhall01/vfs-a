@@ -205,6 +205,10 @@ class RoquetOcean(TemperatureSystem):
 
     def check(self, state):
         super().check(state)
+        self._check_eddy(state)
+
+    def _check_eddy(self, state):
+        """Validate the reservoir when all other fields were checked unchanged."""
         if isinstance(state, EddyState):
             e, h = state.eddy_h, state.ocean.h
             if (
@@ -261,19 +265,19 @@ class RoquetOcean(TemperatureSystem):
     def step_with_report(self, state, dt, **forcing):
         if not isinstance(state, EddyState):
             return super().step_with_report(state, dt, **forcing)
-        self.check(state)
+        self._check_eddy(state)
         end, report = super().step_with_report(self._carry_eddy(state), dt, **forcing)
         end = self._recover_eddy(end, state)
-        self.check(end)
+        self._check_eddy(end)
         return end, report
 
     def remap_with_report(self, state, target_h):
         if not isinstance(state, EddyState):
             return super().remap_with_report(state, target_h)
-        self.check(state)
+        self._check_eddy(state)
         end, report = super().remap_with_report(self._carry_eddy(state), target_h)
         end = self._recover_eddy(end, state)
-        self.check(end)
+        self._check_eddy(end)
         return end, report
 
 

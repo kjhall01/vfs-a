@@ -205,3 +205,30 @@ def test_one_step_reservoir_gradient_against_finite_difference():
     step = 1e-4
     fd = (loss(torch.tensor(step)) - loss(torch.tensor(-step))) / (2 * step)
     torch.testing.assert_close(analytic, fd, rtol=1e-5, atol=1e-10)
+
+
+@pytest.mark.parametrize("operation", ["step", "remap"])
+@pytest.mark.parametrize("invalid", ["temperature", "reservoir", "passive"])
+def test_transport_adapter_still_rejects_invalid_fields(operation, invalid):
+    # The adapter avoids rechecking an unchanged ocean after the wrapped model
+    # has checked it. Each class of input must still reach its original guard.
+    model, state = make()
+    s = state.ocean
+    if invalid == "reservoir":
+        state = replace(state, eddy_h=-state.eddy_h)
+    elif invalid == "temperature":
+        state = replace(
+            state,
+            ocean=s.with_tensors(
+                s.u_e, s.h, s.temp_h * float("nan"), s.salt_h, s.tracer_h
+            ),
+        )
+    else:
+        state = replace(
+            state, ocean=s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, -s.tracer_h)
+        )
+    with pytest.raises(ValueError):
+        if operation == "step":
+            model.step_with_report(state, 1.0)
+        else:
+            model.remap_with_report(state, state.ocean.h)

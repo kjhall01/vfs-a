@@ -806,3 +806,20 @@ first-law residuals are at most 6.66e-17 J/kg. Both signs of Redi energy work
 are covered. Direct large-H subtraction remains limited by roundoff, with a
 maximum 8.15e-12 J/kg difference. One backward sensitivity is checked; general
 backward rollouts and climate/target-resolution qualification remain open.
+
+The [GM–Redi optimization pass](../verification/ocean/gmredi/optimization/README.md)
+reuses immutable geometry within each closure call, builds only the applicable
+GM/Redi operators, reduces tensor temporaries, and avoids revalidating unchanged
+physical fields after reservoir-only updates. All physical guard classes remain
+active; Redi still recomputes slopes after GM. Against commit 774e2f3, 18 cases
+advanced five steps retain bitwise-identical resolved fields and turbulent TKE;
+maximum eddy-content difference is 1.21e-13 m³/s². One backward sensitivity differs
+by 6.39e-18. Installed-wheel portable regression: 1186 passed, 2 skipped;
+142 corrected-Gibbs and 93 dry-helper fixture tensors passed. Arithmetic regrouping
+changes reduction order, so long-trajectory bitwise identity is not claimed.
+
+Sequential 16384×40 eager one-thread CPU timing: funded closure median
+3.910 → 3.356 s (14.2% less), whole-process peak RSS 3.526 → 3.267 GB
+(7.4% less). Estimated full step remains about 20 s (19.835 → 20.040 s);
+unchanged-control and reservoir-dynamics timing variation precludes a claim of
+end-to-end speedup. Three samples per operation are retained in the report.

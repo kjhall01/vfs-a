@@ -8,6 +8,12 @@ GM and Redi. Redi refreshes slopes after GM. See [energy qualification](../verif
 Unaffordable local withdrawals and negative rotated-diffusion updates reject;
 positivity-preserving Redi, exact neutral geometry and backscatter remain open.
 
+The [GM–Redi optimization](../verification/ocean/gmredi/optimization/README.md)
+shares per-call geometry, avoids redundant stencil tensors and reuses validation
+of unchanged fields. Redi slope refresh and local funding checks remain intact.
+Reference comparison covers all outputs in 18 five-step cases, plus backward
+sensitivity. Installed-wheel regression: 1186 passed, 2 skipped.
+
 The [documentation index](../docs/README.md) describes the atmospheric and ocean
 APIs, state ownership, stepping, forcing and verification scope. The stratified
 ocean API is available on main. Run `examples/ocean_stratified.py` for explicit

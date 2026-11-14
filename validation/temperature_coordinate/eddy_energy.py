@@ -50,8 +50,8 @@ class RoquetHamiltonian:
         if (
             s.mesh is not t.mesh
             or s.column is not t.column
-            or not torch.equal(s.h, t.h)
-            or not torch.equal(s.u_e, t.u_e)
+            or (s.h is not t.h and not torch.equal(s.h, t.h))
+            or (s.u_e is not t.u_e and not torch.equal(s.u_e, t.u_e))
         ):
             raise ValueError(
                 "finite tracer work requires unchanged geometry and velocity"
@@ -65,15 +65,9 @@ class RoquetHamiltonian:
         Order: CT, SA, optional passives, turbulent TKE, optional mesoscale e.
         The midpoint rule integrates this quadratic Hamiltonian exactly.
         """
-        self._fixed_geometry(before, after)
-        s, t = before.ocean, after.ocean
-        a, b, c, _ = self.base.coefficients(s)
-        fields = [
-            (self.base.config.cp + a * (s.temperature() + t.temperature()) + b)[
-                ..., None
-            ],
-            c[..., None],
-        ]
+        thermal, saline = self._thermal_conjugates(before, after)
+        s = before.ocean
+        fields = [thermal[..., None], saline[..., None]]
         if s.tracer_h is not None:
             fields.append(torch.zeros_like(s.tracer_h))
         fields.append(torch.ones_like(s.h)[..., None])
@@ -81,11 +75,17 @@ class RoquetHamiltonian:
             fields.append(torch.ones_like(s.h)[..., None])
         return torch.cat(fields, -1)
 
+    def _thermal_conjugates(self, before, after):
+        self._fixed_geometry(before, after)
+        s, t = before.ocean, after.ocean
+        a, b, c, _ = self.base.coefficients(s)
+        return self.base.config.cp + a * (s.temperature() + t.temperature()) + b, c
+
     def finite_change(self, before, after, *, include_eddy=True):
         """Local finite Hamiltonian change [J], without subtracting large H totals."""
-        mu = self.midpoint_conjugates(before, after)
+        thermal, saline = self._thermal_conjugates(before, after)
         s, t = before.ocean, after.ocean
-        work = mu[..., 0] * (t.temp_h - s.temp_h) + mu[..., 1] * (t.salt_h - s.salt_h)
+        work = thermal * (t.temp_h - s.temp_h) + saline * (t.salt_h - s.salt_h)
         work = work + (after.tke_h - before.tke_h)
         if include_eddy and isinstance(before, EddyState):
             work = work + (after.eddy_h - before.eddy_h)

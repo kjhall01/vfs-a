@@ -180,3 +180,12 @@ whole-model composition and timestep refinement.
 No long-run climate, GPU, float32, compiled-kernel or 16384×40 performance claim
 is made. Positivity-preserving Redi, exact neutral geometry, boundary tapering,
 spatial convergence and energy-dependent coefficients remain open work.
+
+## Evaluation cost
+
+The optimization pass shares geometry only within a fixed-h/u call, rebuilds
+Redi slopes after GM, and avoids large redundant stencil/conjugate tensors.
+Validation of unchanged fields is reused; reservoir and funding checks remain
+explicit after each exchange. See [equivalence and timing](../../verification/ocean/gmredi/optimization/README.md).
+Algebraic regrouping can change roundoff, but no physical coefficient or limiter
+policy changes. No model/state cache survives into a later call.
