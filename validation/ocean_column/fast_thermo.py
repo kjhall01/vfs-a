@@ -133,7 +133,7 @@ class MixingThermodynamics:
         theta=Caloric(self.reference,salt).inverse(state.entropy_h/state.h,guess,'entropy')
         physical=OceanState(state.u_e,state.h,state.h*theta,state.salt_h,state.tracer_h,mesh=state.mesh,column=state.column)
         return validate(self.ocean.base,state,self.ocean.energy,physical=physical)
-    def path_work(self,closure,physical,H0,fh,fs,mid):
+    def path_work(self,closure,physical,H0,fh,fs,mid,*,after=None):
         h=physical.h;area=self.ocean.energy.mass_area(physical)
         zero=torch.zeros_like(h[:,:1]);div=lambda f:torch.cat((f,zero),-1)-torch.cat((zero,f),-1)
         ds,dh=div(fs)/h,div(fh)/h;s0,t0=physical.salinity(),physical.temperature()

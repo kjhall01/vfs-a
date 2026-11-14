@@ -56,6 +56,17 @@ class OceanSurfaceExchange:
     including changing salinity, mass, free-surface and kinetic energy.
     No automatic freshwater enthalpy, latent heat or TKE source is inferred.
     """
+    def _trial_state(self,ocean,state,physical,new_h,salt,velocity):
+        theta=physical.temperature()
+        old_eta=ocean.reference.evaluate(physical.salinity(),theta,entropy_derivatives=True)['entropy']
+        new_eta=ocean.reference.evaluate(salt,theta,entropy_derivatives=True)['entropy']
+        entropy=state.entropy_h+(new_h-state.h)*new_eta+state.h*(new_eta-old_eta)
+        return replace(state,h=new_h,u_e=velocity,entropy_h=entropy)
+
+    def _thermal_update(self,ocean,state,specific,physical):
+        end,residual=apply_heat(ocean,state,specific,allow_cooling=True)
+        return end,residual,ocean.check_state(end)
+
     def apply(self,ocean,state,dt,fluxes, *, _physical=None, _return_physical=False):
         if not isinstance(fluxes,OceanSurfaceFluxes):
             raise TypeError('fluxes must be OceanSurfaceFluxes')
@@ -102,11 +113,7 @@ class OceanSurfaceExchange:
         u_top=state.u_e[:,0]+(impulse-delta_metric*state.u_e[:,0])/new_metric[:,0]
         velocity=torch.cat((u_top[:,None],state.u_e[:,1:]),-1)
         # Only the top geometry/composition changes. Keep lower/dry entropy exact.
-        theta=physical.temperature()
-        old_eta=ocean.reference.evaluate(physical.salinity(),theta,entropy_derivatives=True)['entropy']
-        new_eta=ocean.reference.evaluate(salt,theta,entropy_derivatives=True)['entropy']
-        entropy=state.entropy_h+(new_h-h)*new_eta+h*(new_eta-old_eta)
-        trial=replace(state,h=new_h,u_e=velocity,entropy_h=entropy)
+        trial=self._trial_state(ocean,state,physical,new_h,salt,velocity)
         provisional=ocean.check_state(trial)
         before,_=column_terms(energy,physical)
         after,_=column_terms(energy,provisional)
@@ -117,8 +124,7 @@ class OceanSurfaceExchange:
         top_mass=mass_area[:,0]*new_h[:,0]
         safe_mass=torch.where(wet,top_mass,torch.ones_like(top_mass))
         specific=torch.cat(((correction/safe_mass)[:,None],torch.zeros_like(h[:,1:])), -1)
-        end,inversion=apply_heat(ocean,trial,specific,allow_cooling=True)
-        final=ocean.check_state(end)
+        end,inversion,final=self._thermal_update(ocean,trial,specific,provisional)
         final_terms,_=column_terms(energy,final)
         residual=sum(final_terms[key]-before[key] for key in before)-external
         scale=(sum(x.abs() for x in before.values())+external.abs()).clamp_min(1)

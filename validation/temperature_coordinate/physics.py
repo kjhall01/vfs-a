@@ -2,7 +2,8 @@
 
 Reuse its tridiagonal solves, scalar funding retries, local/full-H and entropy
 acceptance tests. Only caloric storage/reconstruction hooks differ. No boundary
-stress, freshwater exchange, radiative profile or ALE adapter is implied.
+stress, freshwater exchange, radiative profile or ALE adapter is provided here;
+those optional composition adapters live in surface.py, ale.py and system.py.
 """
 from dataclasses import dataclass
 import torch

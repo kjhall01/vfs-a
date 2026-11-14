@@ -1780,3 +1780,24 @@ remain untouched.
 Final outside-checkout portable regression: 1102 passed, one CUDA skip, one
 existing warning. Production package remains the installed unchanged wheel;
 candidate research helpers and tests were copied into the check workspace.
+
+Energy-evaluation optimization candidates are tracked in
+[ENERGY_EVALUATION_BACKLOG.md](../verification/ocean/ENERGY_EVALUATION_BACKLOG.md):
+T/S-path work without intermediate inversions, surface thermal-solver integration,
+required-output kernels, endpoint reuse, invariant geometry/reference hoisting,
+and explicitly tested heat-source composition. These are a backlog, not completed
+optimizations or promised speedups.
+
+The optional [temperature-native complete composition](../validation/temperature_coordinate/COMPOSITION.md)
+now includes prescribed surface forcing, stress, TKE mixing and adaptive ALE.
+Three-point T/S work avoids intermediate enthalpy inversions. Supported defaults
+remain unchanged. Small complete-step timing improves 2.55×, but the noisy
+1024×64 sample improves only 1.09×; neither is a global throughput guarantee.
+See [evidence and limits](../verification/ocean/throughput-composition/README.md).
+
+Installed-wheel, outside-checkout portable regression: **1115 passed, one CUDA
+skip**, one existing warning. Thirteen new composition checks pass.
+
+An alternating 1024×64 follow-up (three samples each, same compiled kernels)
+measures 21.728 → 9.709 s including ALE, **2.24×**. The earlier noisy
+single-sample comparison remains recorded; no Mac/global extrapolation.

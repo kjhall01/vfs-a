@@ -70,8 +70,8 @@ samples after warmup are exploratory CPU results, not a scaling campaign.
 
 Temperature-native layer heating and research TKE mixing are now available in
 `physics.py`; see [their campaign](../../verification/ocean/temperature-mixing/README.md).
-Surface forcing, energy-corrected ALE and full-ocean backward paths have not been
-converted. Heating still needs a nonlinear finite-energy solve; mixing in
+The optional [complete research composition](COMPOSITION.md) adds surface
+forcing and energy-corrected ALE, with a small composed backward smoke test. Heating still needs a nonlinear finite-energy solve; mixing in
 reference enthalpy still needs enthalpy-to-T inversion. The coordinate change
 alone cannot remove those solves. These helpers do not yet constitute a
 supported full-ocean timestep.

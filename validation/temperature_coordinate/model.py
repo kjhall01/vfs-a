@@ -3,7 +3,7 @@
 No inverse thermodynamics, altered EOS, or simplified caloric energy. Reuses
 entropy transport/limiter algebra as a temporary computational coordinate, not
 as prognostic storage. Finite RK steps are not invariant to this nonlinear
-coordinate change. No TKE/forcing/ALE integration is claimed.
+coordinate change. Optional TKE/forcing/ALE composition lives in system.py.
 """
 import math
 import torch
