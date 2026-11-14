@@ -1827,3 +1827,19 @@ Its layer Hamiltonian, finite mixing work and heating root are analytic. Caloric
 entropy remains an explicitly idealized model coordinate, not full TEOS entropy.
 See [qualification](../verification/ocean/roquet/README.md), including cold/contrast
 runs, matched waves/columns, source conventions and unresolved limitations.
+
+## Roquet timestep campaign
+
+`validation/timestep/run.py` sweeps macro-dt with independent workers, preserved
+failure/progress records and optional saved mesh generators. The default target
+is 16384 cells, 40 stretched layers and 4000 m depth. Refined reference agreement,
+endpoint field errors and cumulative budgets are required before a tested dt is
+qualified; screen completion alone never qualifies it. Mixing substeps have an
+explicit maximum physical duration. See `validation/timestep/README.md` and
+`verification/ocean/timestep/README.md`. No model defaults or guards change.
+
+The timestep runner now accepts `--compile` for selected Roquet tensor kernels
+and `--verbose` for live per-step timing/ETA/budget output, also retained in logs.
+Domain checks remain eager; compiler errors never silently fall back. The
+coordinator tees worker output while preserving timeout enforcement. Compilation
+startup is included in setup/run timings, so initial ETA is not warmed throughput.
