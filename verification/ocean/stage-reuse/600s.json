@@ -1,0 +1,116 @@
+{
+  "baseline_hashes": {
+    "equations": "013abda15e7a314b300b27dfb6dbb3f3c2e5ed0374e0c535299ae522fa14f069",
+    "transport": "692fbce697cb11367a72ae21f025eb6d7143cd7b113b2f22c10fd73ff88f1521"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "rows": [
+    {
+      "config": {
+        "case": "full",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 64,
+        "dt": 600.0,
+        "mixing_substeps": 8,
+        "remap_every": 1
+      },
+      "steps": 1,
+      "repeats": 2,
+      "tensor_comparisons": 119,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          11.528139696000835,
+          12.679104081000332
+        ],
+        "candidate": [
+          9.412131041000066,
+          10.222987766000188
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 12.103621888500584,
+        "candidate": 9.817559403500127
+      },
+      "speedup": 1.2328544591424053,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 40,
+          "SurfaceGibbs.evaluate": 1251,
+          "JMD95Energy.gradients": 9
+        },
+        "candidate": {
+          "EntropyState.physical_state": 28,
+          "SurfaceGibbs.evaluate": 1059,
+          "JMD95Energy.gradients": 3
+        }
+      },
+      "endpoint": {
+        "volume": 5.100644868385045e+16,
+        "salt": 1.8246279226964e+21,
+        "total": 2.2935656510535568e+24,
+        "tke": 1075651678258356.2,
+        "min_tke": 3.261602604940653e-12,
+        "min_thickness": 1.3305853086440687,
+        "min_tracer": 0.847627606385738,
+        "passive_inventory": 8.336669351624784e+19,
+        "initial_mass_kg": 5.228160837075331e+19
+      }
+    },
+    {
+      "config": {
+        "case": "full_ale",
+        "closure": "fast",
+        "cells": 128,
+        "layers": 64,
+        "dt": 600.0,
+        "mixing_substeps": 8,
+        "remap_every": 1
+      },
+      "steps": 1,
+      "repeats": 2,
+      "tensor_comparisons": 143,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          13.972219358000075,
+          13.688395531999959
+        ],
+        "candidate": [
+          12.967120100999637,
+          12.047854231000201
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 13.830307445000017,
+        "candidate": 12.507487165999919
+      },
+      "speedup": 1.1057622735441235,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 52,
+          "SurfaceGibbs.evaluate": 1464,
+          "JMD95Energy.gradients": 9
+        },
+        "candidate": {
+          "EntropyState.physical_state": 40,
+          "SurfaceGibbs.evaluate": 1272,
+          "JMD95Energy.gradients": 3
+        }
+      },
+      "endpoint": {
+        "volume": 5.100644868385045e+16,
+        "salt": 1.8246279226964003e+21,
+        "total": 2.2935656510535563e+24,
+        "tke": 1075651678258356.2,
+        "min_tke": 1.2483220111238129e-11,
+        "min_thickness": 1.5624978226175916,
+        "min_tracer": 0.8497209780417526,
+        "passive_inventory": 8.336669351624783e+19,
+        "initial_mass_kg": 5.228160837075331e+19
+      }
+    }
+  ]
+}

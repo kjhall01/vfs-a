@@ -1,0 +1,611 @@
+{
+  "baseline_hashes": {
+    "equations": "013abda15e7a314b300b27dfb6dbb3f3c2e5ed0374e0c535299ae522fa14f069",
+    "transport": "692fbce697cb11367a72ae21f025eb6d7143cd7b113b2f22c10fd73ff88f1521"
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "rows": [
+    {
+      "config": {
+        "case": "ocean",
+        "closure": "none",
+        "cells": 1024,
+        "layers": 64,
+        "dt": 60.0,
+        "mixing_substeps": 4,
+        "remap_every": 1
+      },
+      "steps": 1,
+      "repeats": 3,
+      "tensor_comparisons": 64,
+      "bitwise_equal": true,
+      "timings_s_per_step": {
+        "parent": [
+          28.094838770000024,
+          27.221192983000037,
+          26.261007698000867
+        ],
+        "candidate": [
+          14.74962488700021,
+          14.198866379999345,
+          13.741036849999546
+        ]
+      },
+      "median_s_per_step": {
+        "parent": 27.221192983000037,
+        "candidate": 14.198866379999345
+      },
+      "speedup": 1.917138471092598,
+      "calls_per_trajectory": {
+        "parent": {
+          "EntropyState.physical_state": 25,
+          "SurfaceGibbs.evaluate": 396,
+          "JMD95Energy.gradients": 9
+        },
+        "candidate": {
+          "EntropyState.physical_state": 13,
+          "SurfaceGibbs.evaluate": 204,
+          "JMD95Energy.gradients": 3
+        }
+      },
+      "endpoint": {
+        "volume": 5.100644719097882e+16,
+        "salt": 1.824627922693817e+21,
+        "total": 2.293526719577328e+24,
+        "tke": 5228160837075330.0,
+        "min_tke": 9.999999999999995e-05,
+        "min_thickness": 1.328626661210922,
+        "min_tracer": 0.8312184409584501,
+        "passive_inventory": 8.336669350053936e+19,
+        "initial_mass_kg": 5.228160837075329e+19
+      },
+      "instrumented_profiles": {
+        "parent": [
+          {
+            "file": "/tmp/vfs-opt-check/validation/performance/stage_reuse.py",
+            "line": 90,
+            "function": "run",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 5.5099e-05,
+            "cumulative_s": 26.614953582000002
+          },
+          {
+            "file": "/tmp/vfs-opt-check/validation/performance/cases.py",
+            "line": 92,
+            "function": "advance",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 9.666e-06,
+            "cumulative_s": 26.614634779000003
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 163,
+            "function": "step_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.00023916100000000002,
+            "cumulative_s": 26.614625113000002
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/model.py",
+            "line": 76,
+            "function": "step_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.000139504,
+            "cumulative_s": 23.064999745
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/transport.py",
+            "line": 137,
+            "function": "step",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.000140266,
+            "cumulative_s": 22.481778497
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/transport.py",
+            "line": 126,
+            "function": "euler",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.0072487770000000005,
+            "cumulative_s": 21.791055317
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/transport.py",
+            "line": 74,
+            "function": "evaluate",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.10859354600000001,
+            "cumulative_s": 19.744696489000003
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+            "line": 38,
+            "function": "evaluate",
+            "primitive_calls": 396,
+            "calls": 396,
+            "self_s": 3.8050552580000003,
+            "cumulative_s": 18.380597134000002
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 30,
+            "function": "physical_state",
+            "primitive_calls": 25,
+            "calls": 25,
+            "self_s": 0.011340567000000001,
+            "cumulative_s": 16.581365548
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/faces.py",
+            "line": 99,
+            "function": "temperature_from_entropy",
+            "primitive_calls": 25,
+            "calls": 25,
+            "self_s": 0.28795270500000003,
+            "cumulative_s": 16.569534463
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+            "line": 13,
+            "function": "polynomial",
+            "primitive_calls": 3168,
+            "calls": 3168,
+            "self_s": 11.526576824000001,
+            "cumulative_s": 11.847742173
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/equations.py",
+            "line": 231,
+            "function": "evaluate",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.043107594000000006,
+            "cumulative_s": 11.496012645
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 78,
+            "function": "gradients",
+            "primitive_calls": 9,
+            "calls": 9,
+            "self_s": 0.000245283,
+            "cumulative_s": 10.706274628000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 66,
+            "function": "fields",
+            "primitive_calls": 9,
+            "calls": 9,
+            "self_s": 0.00022588300000000002,
+            "cumulative_s": 6.453790619
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/equations.py",
+            "line": 98,
+            "function": "validate",
+            "primitive_calls": 7,
+            "calls": 7,
+            "self_s": 0.007455306,
+            "cumulative_s": 4.726011433
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 148,
+            "function": "gradients",
+            "primitive_calls": 9,
+            "calls": 9,
+            "self_s": 0.003296499,
+            "cumulative_s": 4.2311317200000005
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 124,
+            "function": "stratification",
+            "primitive_calls": 9,
+            "calls": 9,
+            "self_s": 0.061619900000000005,
+            "cumulative_s": 4.181226446
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/model.py",
+            "line": 45,
+            "function": "check_state",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 4.7328000000000005e-05,
+            "cumulative_s": 4.126488221000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 102,
+            "function": "validate",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 0.005063024,
+            "cumulative_s": 4.12643967
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 103,
+            "function": "parcel_potential",
+            "primitive_calls": 9,
+            "calls": 9,
+            "self_s": 0.21317492100000002,
+            "cumulative_s": 4.053115078
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 28,
+            "function": "jmd95_partials",
+            "primitive_calls": 31,
+            "calls": 31,
+            "self_s": 2.782477688,
+            "cumulative_s": 4.022456549
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/equations.py",
+            "line": 134,
+            "function": "momentum",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.005157607000000001,
+            "cumulative_s": 3.642361955
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 63,
+            "function": "check_state",
+            "primitive_calls": 5,
+            "calls": 5,
+            "self_s": 0.0010024860000000001,
+            "cumulative_s": 3.548675593
+          },
+          {
+            "file": "/tmp/vfs-stage-parent/vfs/ocean/stratified/equations.py",
+            "line": 126,
+            "function": "high_traces",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 0.009873708,
+            "cumulative_s": 3.3648043390000004
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/faces.py",
+            "line": 45,
+            "function": "gibbs_face",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 0.283853858,
+            "cumulative_s": 3.349920645
+          },
+          {
+            "file": "~",
+            "line": 0,
+            "function": "<method 'pow' of 'torch._C.TensorBase' objects>",
+            "primitive_calls": 5755,
+            "calls": 5755,
+            "self_s": 2.450645953,
+            "cumulative_s": 2.450645953
+          },
+          {
+            "file": "~",
+            "line": 0,
+            "function": "<method 'square' of 'torch._C.TensorBase' objects>",
+            "primitive_calls": 263,
+            "calls": 263,
+            "self_s": 0.793026659,
+            "cumulative_s": 0.793026659
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 117,
+            "function": "boundary_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 1.6517e-05,
+            "cumulative_s": 0.754833061
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/transport.py",
+            "line": 108,
+            "function": "advance",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 0.31781872,
+            "cumulative_s": 0.7464199610000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 145,
+            "function": "exchange_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 7.218e-06,
+            "cumulative_s": 0.73344087
+          }
+        ],
+        "candidate": [
+          {
+            "file": "/tmp/vfs-opt-check/validation/performance/stage_reuse.py",
+            "line": 90,
+            "function": "run",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 3.4847e-05,
+            "cumulative_s": 14.238206122000001
+          },
+          {
+            "file": "/tmp/vfs-opt-check/validation/performance/cases.py",
+            "line": 92,
+            "function": "advance",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 1.5687e-05,
+            "cumulative_s": 14.238031820000002
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 163,
+            "function": "step_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.00018723100000000002,
+            "cumulative_s": 14.238016133
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/model.py",
+            "line": 76,
+            "function": "step_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.00024641800000000004,
+            "cumulative_s": 10.801139597
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/transport.py",
+            "line": 138,
+            "function": "step",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 0.000397376,
+            "cumulative_s": 10.153073458000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+            "line": 38,
+            "function": "evaluate",
+            "primitive_calls": 204,
+            "calls": 204,
+            "self_s": 1.999049112,
+            "cumulative_s": 9.792617743000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/transport.py",
+            "line": 127,
+            "function": "euler",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.0053828520000000005,
+            "cumulative_s": 9.476980191
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 102,
+            "function": "validate",
+            "primitive_calls": 13,
+            "calls": 13,
+            "self_s": 0.011203855,
+            "cumulative_s": 9.200851919
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 30,
+            "function": "physical_state",
+            "primitive_calls": 13,
+            "calls": 13,
+            "self_s": 0.0048121660000000005,
+            "cumulative_s": 8.866458505
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/faces.py",
+            "line": 99,
+            "function": "temperature_from_entropy",
+            "primitive_calls": 13,
+            "calls": 13,
+            "self_s": 0.15463437600000002,
+            "cumulative_s": 8.861339159
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/transport.py",
+            "line": 75,
+            "function": "evaluate",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.099380859,
+            "cumulative_s": 7.30517736
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 243,
+            "function": "__init__",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.00036439800000000004,
+            "cumulative_s": 6.414967876
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/thermodynamics.py",
+            "line": 13,
+            "function": "polynomial",
+            "primitive_calls": 1632,
+            "calls": 1632,
+            "self_s": 6.1822850460000005,
+            "cumulative_s": 6.364329601000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/model.py",
+            "line": 45,
+            "function": "check_state",
+            "primitive_calls": 6,
+            "calls": 6,
+            "self_s": 0.006809681000000001,
+            "cumulative_s": 4.080676865
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 63,
+            "function": "check_state",
+            "primitive_calls": 5,
+            "calls": 5,
+            "self_s": 0.0005563990000000001,
+            "cumulative_s": 3.435975935
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 28,
+            "function": "jmd95_partials",
+            "primitive_calls": 19,
+            "calls": 19,
+            "self_s": 1.1264488350000001,
+            "cumulative_s": 1.877541007
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 130,
+            "function": "high_traces",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.005049063,
+            "cumulative_s": 1.8057041440000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 148,
+            "function": "gradients",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.002647815,
+            "cumulative_s": 1.805546539
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/faces.py",
+            "line": 45,
+            "function": "gibbs_face",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.14078952,
+            "cumulative_s": 1.7985331960000002
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 124,
+            "function": "stratification",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.023647589,
+            "cumulative_s": 1.787088969
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95_energy.py",
+            "line": 103,
+            "function": "parcel_potential",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.065999469,
+            "cumulative_s": 1.7453556300000002
+          },
+          {
+            "file": "~",
+            "line": 0,
+            "function": "<method 'pow' of 'torch._C.TensorBase' objects>",
+            "primitive_calls": 2965,
+            "calls": 2965,
+            "self_s": 1.2873617880000001,
+            "cumulative_s": 1.2873617880000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 105,
+            "function": "mix_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 8.268000000000001e-06,
+            "cumulative_s": 0.7292553180000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 117,
+            "function": "boundary_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 7.0930000000000005e-06,
+            "cumulative_s": 0.695184589
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 145,
+            "function": "exchange_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 7.208e-06,
+            "cumulative_s": 0.689401908
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/tke_model.py",
+            "line": 132,
+            "function": "heat_with_report",
+            "primitive_calls": 1,
+            "calls": 1,
+            "self_s": 7.0030000000000005e-06,
+            "cumulative_s": 0.6571037110000001
+          },
+          {
+            "file": "~",
+            "line": 0,
+            "function": "<method 'square' of 'torch._C.TensorBase' objects>",
+            "primitive_calls": 158,
+            "calls": 158,
+            "self_s": 0.5258043800000001,
+            "cumulative_s": 0.5258043800000001
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/stratified/equations.py",
+            "line": 255,
+            "function": "evaluate",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.037895583000000004,
+            "cumulative_s": 0.458732228
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/transport.py",
+            "line": 108,
+            "function": "advance",
+            "primitive_calls": 3,
+            "calls": 3,
+            "self_s": 0.160200113,
+            "cumulative_s": 0.36742387600000004
+          },
+          {
+            "file": "/tmp/vfs-opt-env/lib/python3.12/site-packages/vfs/ocean/jmd95.py",
+            "line": 47,
+            "function": "check_state",
+            "primitive_calls": 13,
+            "calls": 13,
+            "self_s": 0.00298055,
+            "cumulative_s": 0.27293046600000004
+          }
+        ]
+      }
+    }
+  ]
+}

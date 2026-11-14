@@ -78,6 +78,10 @@ class EntropyEnergy:
     def gradients(self, state, *, dynamic_only=False):
         physical, ref = self.fields(state)
         old = self.base.gradients(physical)
+        return self._gradients(state, physical, ref, old, dynamic_only=dynamic_only)
+
+    def _gradients(self, state, physical, ref, old, *, dynamic_only=False):
+        """Apply the coordinate transform to already evaluated stage fields."""
         eta, salt = state.entropy_h/state.h, state.salt_h/state.h
         q = old['temp_h']/ref['entropy_theta']
         g = dict(u_e=old['u_e'], h=old['h']+old['temp_h']*physical.temperature()+q*(salt*ref['entropy_s']-eta),
@@ -131,10 +135,10 @@ def high_traces(model, physical, energy):
     return eta, salt, audit
 
 
-def momentum(model, state, energy, physical, eta, salt):
+def momentum(model, state, energy, physical, eta, salt, *, gradient=None):
     # The surface reference cancels by the Gibbs identity. Remove that zero
     # analytically; no subtraction of large caloric force components.
-    g = energy.gradients(state, dynamic_only=True)
+    g = energy.gradients(state, dynamic_only=True) if gradient is None else gradient
     mesh, mass = state.mesh, model.dynamics.rho0*state.mesh.cell_area[:, None]
     pressure = -mesh.grad(g['h']/mass)-eta*mesh.grad(g['entropy_h']/mass)-salt*mesh.grad(g['salt_h']/mass)
     if model.domain is not None:
@@ -156,7 +160,7 @@ class AdmissibleLedger:
     outflow_fraction: torch.Tensor
 
 
-def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy):
+def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy, *, low=None):
     """Gibbs high flux, donor reference, all-face salt/passive amount budgets.
 
     Entropy change is attached to the ACTUAL salt trace change using the
@@ -165,7 +169,8 @@ def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy
     betas and cannot trigger thermodynamic force corrections. Bounds are
     0<SP<42 and passive>=0, NOT local extrema. Check the full caloric domain.
     """
-    low = transport_for(model).advance(state.transport_view(), dt)
+    if low is None:
+        low = transport_for(model).advance(state.transport_view(), dt)
     active = slice(None) if model.domain is None else model.domain.active_edge
     scalars = [state.entropy_h[..., None], state.salt_h[..., None]]
     if state.tracer_h is not None:
@@ -228,13 +233,34 @@ class WorkLedger:
     gibbs_identity: torch.Tensor
 
 
-def evaluate(model, state, dt, energy):
-    physical = validate(model, state, energy)
-    eta, salt, face = high_traces(model, physical, energy)
-    velocity = momentum(model, state, energy, physical, eta, salt)
-    ledger = bounded_transport(model, state, dt, eta, salt, face['composition_entropy'])
+class _StageEvaluation:
+    """Work shared only within one RHS evaluation of one unchanged state.
+
+    Nothing is attached to a model or state. New SSPRK stages get new work;
+    tensor graphs are retained for differentiation. Validation and every
+    original thermodynamic expression remain in force.
+    """
+    def __init__(self, model, state, dt, energy):
+        self.physical = validate(model, state, energy)
+        self.eta, self.salt, self.face = high_traces(model, self.physical, energy)
+        ref = energy.reference.evaluate(self.physical.salinity(),
+            self.physical.temperature(), entropy_derivatives=True)
+        old = energy.base.gradients(self.physical)
+        self.dynamic_gradient = energy._gradients(state, self.physical, ref, old,
+            dynamic_only=True)
+        self.gradient = energy._gradients(state, self.physical, ref, old)
+        self.low = transport_for(model).advance(state.transport_view(), dt)
+
+
+def evaluate(model, state, dt, energy, *, _stage=None):
+    stage = _StageEvaluation(model, state, dt, energy) if _stage is None else _stage
+    physical, eta, salt, face = stage.physical, stage.eta, stage.salt, stage.face
+    velocity = momentum(model, state, energy, physical, eta, salt,
+                        gradient=stage.dynamic_gradient)
+    ledger = bounded_transport(model, state, dt, eta, salt,
+                               face['composition_entropy'], low=stage.low)
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
-    g = energy.gradients(state)
+    g = stage.gradient
     covector = torch.stack([g[k]/area for k in ('entropy_h', 'salt_h')], -1).reshape(-1, 2)
     per_carrier = ((covector[ledger.j]-covector[ledger.i])*ledger.trace_change[:, :2]).sum(-1)
     work = ledger.carrier*per_carrier

@@ -1693,3 +1693,18 @@ mixing, and forced full-ocean compositions with/without explicit post-physics AL
 See `validation/performance/README.md` for Mac thread sweeps, installed-wheel
 execution, actual timestep/SYPD accounting and the scope of research closures.
 This adds no runtime physics or new timestep qualification.
+
+## Ocean stage work reuse
+
+The [stage reuse pass](../verification/ocean/STAGE_REUSE.md) shares physical
+reconstruction, Gibbs faces, JMD95 gradients and donor transport only within one
+unchanged RHS input. No persistent cache, formula, tolerance or guard changes.
+Interleaved CPU dynamics timings improve about 1.9× at 128×16 and 1024×64;
+full forced/ALE cases improve about 1.1–1.23× with bitwise state/report agreement.
+Recent ocean merges did not modify atmospheric or shared-geometry sources.
+Independent endpoint validation and expensive inversions still dominate much of
+the remaining dynamics cost. No Mac/GPU/global-rollout qualification is claimed.
+Validation: installed-wheel portable suite 1061 passed / one CUDA skip, including
+frozen sharp-front/coastal equality and five stage-reuse/gradient/rejection tests;
+corrected-Gibbs and dry portable fixtures pass. Timing variation is retained in
+the report rather than interpreted as atmospheric speed changes.

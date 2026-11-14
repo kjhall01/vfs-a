@@ -14,7 +14,7 @@ from vfs.ocean.transport import divergence
 
 
 def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
-                 baseline=None):
+                 baseline=None, low=None):
     """FCT target using all incident faces and this Euler stage's local bounds.
 
     Entropy and salt have independent target budgets. Their eventual changes
@@ -24,7 +24,8 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
     if baseline is None:
         baseline = parent.bounded_transport(model, state, dt, eta_high,
                                              salt_high, composition_entropy)
-    low = transport_for(model).advance(state.transport_view(), dt)
+    if low is None:
+        low = transport_for(model).advance(state.transport_view(), dt)
     anti = baseline.high_integrated_flux-low.donor_integrated_flux
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
@@ -72,13 +73,13 @@ class FrontWorkLedger(parent.WorkLedger):
 
 
 def evaluate(model, state, dt, energy):
-    original_rhs, original = parent.evaluate(model, state, dt, energy)
-    physical = state.physical_state(energy.reference)
-    eta, salt, face = parent.high_traces(model, physical, energy)
+    stage = parent._StageEvaluation(model, state, dt, energy)
+    original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
+    eta, salt, face = stage.eta, stage.salt, stage.face
     target, low, high = local_target(model, state, dt, eta, salt,
-                                     face['composition_entropy'], original.transport)
+                                     face['composition_entropy'], original.transport, low=stage.low)
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
-    g = energy.gradients(state)
+    g = stage.gradient
     covector = torch.stack([g[k]/area for k in ('entropy_h', 'salt_h')], -1).reshape(nodes, 2)
     jump = covector[low.j]-covector[low.i]
     delta = target.trace_change[:, :2]-original.transport.trace_change[:, :2]
