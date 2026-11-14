@@ -113,3 +113,8 @@ results are retained under verification/ocean/temperature-coordinate.
 A separate [linear-density, constant-heat-capacity configuration](LINEAR.md)
 provides matching Hamiltonian derivatives, analytic mixing costs and algebraic
 heating/temperature recovery. It is explicitly selected and changes the EOS.
+
+The [Roquet freezing configuration](ROQUET.md) adds quadratic temperature and
+thermobaric density terms with analytic energy/mixing work. It explicitly uses
+Conservative Temperature and Absolute Salinity, with a declared idealized caloric
+reference; it does not silently reinterpret JMD95 state fields.

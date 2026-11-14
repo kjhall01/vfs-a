@@ -1,0 +1,246 @@
+{
+  "gsw_version": "3.6.23",
+  "reference": "GSW rho*alpha and rho*beta at native CT/SA/p; geopotential z=-p m",
+  "rows": [
+    {
+      "CT_C": -1.5,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.0333176323960411,
+      "roquet_minus_rho_CT": 0.034018999999999994,
+      "roquet_thermal_relative_error": 0.02105094370517846,
+      "linear_thermal_relative_error": 4.872392427787609,
+      "roquet_haline_relative_error": -0.044158908595827495
+    },
+    {
+      "CT_C": 0.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.053968231016641596,
+      "roquet_minus_rho_CT": 0.0491,
+      "roquet_thermal_relative_error": -0.09020549543564682,
+      "linear_thermal_relative_error": 2.6253590030399763,
+      "roquet_haline_relative_error": -0.038460332221049276
+    },
+    {
+      "CT_C": 5.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.11630795148557813,
+      "roquet_minus_rho_CT": 0.09937,
+      "roquet_thermal_relative_error": -0.14563021073996296,
+      "linear_thermal_relative_error": 0.6822083932806908,
+      "roquet_haline_relative_error": -0.020038092536262098
+    },
+    {
+      "CT_C": 15.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.2192474881253229,
+      "roquet_minus_rho_CT": 0.19991,
+      "roquet_thermal_relative_error": -0.08819935995923245,
+      "linear_thermal_relative_error": -0.10761024508300854,
+      "roquet_haline_relative_error": 0.013445259428177536
+    },
+    {
+      "CT_C": 25.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.30362923503793127,
+      "roquet_minus_rho_CT": 0.30045,
+      "roquet_thermal_relative_error": -0.010470780382969669,
+      "linear_thermal_relative_error": -0.3556147115745275,
+      "roquet_haline_relative_error": 0.042374817731797076
+    },
+    {
+      "CT_C": 30.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 0.0,
+      "gsw_minus_rho_CT": 0.3406607179071174,
+      "roquet_minus_rho_CT": 0.35072,
+      "roquet_thermal_relative_error": 0.029528740955760302,
+      "linear_thermal_relative_error": -0.4256625377990635,
+      "roquet_haline_relative_error": 0.055659217499527625
+    },
+    {
+      "CT_C": -1.5,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.06480798627945936,
+      "roquet_minus_rho_CT": 0.05969999999999999,
+      "roquet_thermal_relative_error": -0.07881723492276327,
+      "linear_thermal_relative_error": 2.0189830517282217,
+      "roquet_haline_relative_error": -0.033425248562867216
+    },
+    {
+      "CT_C": 0.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.08390985671486012,
+      "roquet_minus_rho_CT": 0.074781,
+      "roquet_thermal_relative_error": -0.10879361581895575,
+      "linear_thermal_relative_error": 1.3317190596474142,
+      "roquet_haline_relative_error": -0.027841858005006603
+    },
+    {
+      "CT_C": 5.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.14164484107533443,
+      "roquet_minus_rho_CT": 0.125051,
+      "roquet_thermal_relative_error": -0.11715104446697722,
+      "linear_thermal_relative_error": 0.3813013640946046,
+      "roquet_haline_relative_error": -0.009784415689635062
+    },
+    {
+      "CT_C": 15.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.23744686918179403,
+      "roquet_minus_rho_CT": 0.225591,
+      "roquet_thermal_relative_error": -0.04993061910080154,
+      "linear_thermal_relative_error": -0.17600845667699172,
+      "roquet_haline_relative_error": 0.023013821760363484
+    },
+    {
+      "CT_C": 25.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.3166734502607334,
+      "roquet_minus_rho_CT": 0.326131,
+      "roquet_thermal_relative_error": 0.02986530677415411,
+      "linear_thermal_relative_error": -0.38215782840894674,
+      "roquet_haline_relative_error": 0.0513190248147537
+    },
+    {
+      "CT_C": 30.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 1000.0,
+      "gsw_minus_rho_CT": 0.3516940676673423,
+      "roquet_minus_rho_CT": 0.376401,
+      "roquet_thermal_relative_error": 0.07025120581797051,
+      "linear_thermal_relative_error": -0.4436806583289121,
+      "roquet_haline_relative_error": 0.06435794622510582
+    },
+    {
+      "CT_C": -1.5,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.12507377115361176,
+      "roquet_minus_rho_CT": 0.111062,
+      "roquet_thermal_relative_error": -0.11202805371881641,
+      "linear_thermal_relative_error": 0.564310489639162,
+      "roquet_haline_relative_error": -0.012242095478765425
+    },
+    {
+      "CT_C": 0.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.14117891889031173,
+      "roquet_minus_rho_CT": 0.126143,
+      "roquet_thermal_relative_error": -0.10650257849044587,
+      "linear_thermal_relative_error": 0.3858599692659177,
+      "roquet_haline_relative_error": -0.0069078812289565805
+    },
+    {
+      "CT_C": 5.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.19004936180891516,
+      "roquet_minus_rho_CT": 0.176413,
+      "roquet_thermal_relative_error": -0.0717516842946615,
+      "linear_thermal_relative_error": 0.029491550679570988,
+      "roquet_haline_relative_error": 0.010360234746465302
+    },
+    {
+      "CT_C": 15.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.27222350655727234,
+      "roquet_minus_rho_CT": 0.276953,
+      "roquet_thermal_relative_error": 0.01737356741355711,
+      "linear_thermal_relative_error": -0.28127363184501564,
+      "roquet_haline_relative_error": 0.041657888143220356
+    },
+    {
+      "CT_C": 25.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.34160651159833716,
+      "roquet_minus_rho_CT": 0.37749299999999997,
+      "roquet_thermal_relative_error": 0.1050521204462822,
+      "linear_thermal_relative_error": -0.4272526853224208,
+      "roquet_haline_relative_error": 0.06853513464485461
+    },
+    {
+      "CT_C": 30.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 3000.0,
+      "gsw_minus_rho_CT": 0.37274077114802145,
+      "roquet_minus_rho_CT": 0.427763,
+      "roquet_thermal_relative_error": 0.14761526806555958,
+      "linear_thermal_relative_error": -0.47509307449325033,
+      "roquet_haline_relative_error": 0.08096809065944743
+    },
+    {
+      "CT_C": -1.5,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.18088914105568604,
+      "roquet_minus_rho_CT": 0.16242399999999999,
+      "roquet_thermal_relative_error": -0.10207987581743028,
+      "linear_thermal_relative_error": 0.08162497235857558,
+      "roquet_haline_relative_error": 0.008429767735412819
+    },
+    {
+      "CT_C": 0.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.19417771080892066,
+      "roquet_minus_rho_CT": 0.177505,
+      "roquet_thermal_relative_error": -0.08586315463017968,
+      "linear_thermal_relative_error": 0.007603866474948706,
+      "roquet_haline_relative_error": 0.013487517818845163
+    },
+    {
+      "CT_C": 5.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.23478851924014232,
+      "roquet_minus_rho_CT": 0.227775,
+      "roquet_thermal_relative_error": -0.029871644758613036,
+      "linear_thermal_relative_error": -0.16667896357314105,
+      "roquet_haline_relative_error": 0.02987726941927371
+    },
+    {
+      "CT_C": 15.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.30445638212483167,
+      "roquet_minus_rho_CT": 0.328315,
+      "roquet_thermal_relative_error": 0.07836465016320782,
+      "linear_thermal_relative_error": -0.3573653775006045,
+      "roquet_haline_relative_error": 0.05947114562237443
+    },
+    {
+      "CT_C": 25.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.364841954234348,
+      "roquet_minus_rho_CT": 0.428855,
+      "roquet_thermal_relative_error": 0.1754541796049438,
+      "linear_thermal_relative_error": -0.46372885595101043,
+      "roquet_haline_relative_error": 0.08463666911487544
+    },
+    {
+      "CT_C": 30.0,
+      "SA_g_kg": 35.0,
+      "p_dbar": 5000.0,
+      "gsw_minus_rho_CT": 0.39237058293209454,
+      "roquet_minus_rho_CT": 0.47912499999999997,
+      "roquet_thermal_relative_error": 0.22110326523362112,
+      "linear_thermal_relative_error": -0.5013535144958007,
+      "roquet_haline_relative_error": 0.09628165219596418
+    }
+  ]
+}

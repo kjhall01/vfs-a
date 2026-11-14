@@ -1,0 +1,15 @@
+{
+  "parent_commit": "a446b50e311ade0e1c5e4bb73e65e9cc75c1677a",
+  "source_sha256": {
+    "roquet.py": "853ba6f3efb4168dada2a189e9da76b2b25085d54a10521237f769c07af99237",
+    "roquet_campaign.py": "ba65ef214dc4609736ff25f6cb15075fdc2f97bc5d5b503e764f1c53ef8ce99f",
+    "roquet_column.py": "16264c2af08d5d3ad95f32bc08e2cd4c40b1e6a17a0676351225d1a04f43fec9",
+    "roquet_response.py": "987511f95a8e0bfcbbb5622c1fae93e7adf8e37e850840d8f90edaa0e8dbe450",
+    "roquet_timing.py": "feb026202e838f9adc4c4ad61a14e428125b60f85d7eb318a6ca7f4b4646050c"
+  },
+  "coefficient_source": "Roquet et al. 2015, Table 3 Freezing, DOI 10.1175/JPO-D-15-0080.1",
+  "crosscheck_blob": "b7c0336f8c350dcf0debdde4451099ff75fcce77",
+  "runtime": "CPU float64; Torch 2.15.0+cpu; GSW 3.6.23 offline only",
+  "caloric_model": "h0=cp*CT, eta_model=cp*log((CT+273.15)/273.15); not TEOS-10 entropy",
+  "wheel_sha256": "77e7066f7a56699f13e164b27052b4095be2ef453308b706b8d8bb6431d1c6a1"
+}

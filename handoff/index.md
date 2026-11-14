@@ -1820,3 +1820,10 @@ matched midpoint density anomalies. It includes full internal-wave periods,
 rotating-flow mesh refinement, and forced-column vertical refinement. It is a
 model comparison, not climate validation; fixed-alpha cold/warm response errors
 and unresolved mixed-layer resolution sensitivity are explicitly documented.
+
+The separate [Roquet freezing configuration](../validation/temperature_coordinate/ROQUET.md)
+uses published polynomial density coefficients and explicit CT/SA initialization.
+Its layer Hamiltonian, finite mixing work and heating root are analytic. Caloric
+entropy remains an explicitly idealized model coordinate, not full TEOS entropy.
+See [qualification](../verification/ocean/roquet/README.md), including cold/contrast
+runs, matched waves/columns, source conventions and unresolved limitations.
