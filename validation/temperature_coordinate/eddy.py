@@ -3,15 +3,16 @@
 Fixed geometry during this explicit operator; arbitrary positive layer thickness.
 GM is a discrete divergence-free circulation, including interlayer transport.
 Redi uses an adjoint small-slope operator in layer coordinates. Slopes follow
-surface-referenced potential density, NOT exact neutral directions. No energy
-compensation, resolved momentum forcing, or prognostic eddy energy is supplied.
+surface-referenced potential density, NOT exact neutral directions. GM and Redi
+exchange actual finite Hamiltonian work with an explicit mesoscale reservoir.
+Neither momentum backscatter nor reservoir dissipation is supplied.
 """
 
 from dataclasses import dataclass
 import math
 import torch
 from vfs.ocean.transport import divergence
-from vfs.ocean.stratified import TKEState
+from eddy_energy import EddyState
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,14 @@ class EddyReport:
     energy_change: torch.Tensor
     gm_energy_change: torch.Tensor
     redi_energy_change: torch.Tensor
+    redi_slope: torch.Tensor
+    reservoir_change: torch.Tensor
+    gm_reservoir_exchange: torch.Tensor
+    redi_reservoir_exchange: torch.Tensor
+    gm_energy_flux_divergence: torch.Tensor
+    redi_energy_flux_divergence: torch.Tensor
+    gm_local_energy_residual: torch.Tensor
+    redi_local_energy_residual: torch.Tensor
 
 
 class GMRedi:
@@ -158,57 +167,123 @@ class GMRedi:
 
     @staticmethod
     def _energy_change(model, before, after):
-        """Exact finite quadratic Roquet work at fixed h/u; no large subtraction."""
-        s, t = before.ocean, after.ocean
-        a, b, c, _ = model.ocean.energy.base.coefficients(s)
-        dth = t.temp_h - s.temp_h
-        dsh = t.salt_h - s.salt_h
-        work = (
-            model.config.cp + a * (s.temperature() + t.temperature()) + b
-        ) * dth + c * dsh
-        return (model.energy.mass_area(s) * (work + after.tke_h - before.tke_h)).sum()
+        return model.hamiltonian.finite_change(before, after).sum()
+
+    @staticmethod
+    def _contents(state):
+        s = state.ocean
+        fields = [s.temp_h[..., None], s.salt_h[..., None]]
+        if s.tracer_h is not None:
+            fields.append(s.tracer_h)
+        fields.extend((state.tke_h[..., None], state.eddy_h[..., None]))
+        return torch.cat(fields, -1)
+
+    def _unpack(self, model, before, values):
+        s, h = before.ocean, before.ocean.h
+        initial = self._contents(before) / h[..., None]
+        delta = values.reshape_as(initial) - initial
+        passive = (
+            None if s.tracer_h is None else s.tracer_h + h[..., None] * delta[..., 2:-2]
+        )
+        ocean = s.with_tensors(
+            s.u_e,
+            h,
+            s.temp_h + h * delta[..., 0],
+            s.salt_h + h * delta[..., 1],
+            passive,
+        )
+        end = EddyState(
+            ocean, before.tke_h + h * delta[..., -2], before.eddy_h + h * delta[..., -1]
+        )
+        if (
+            (end.tke_h < 0).any()
+            or (end.eddy_h < 0).any()
+            or (passive is not None and (passive < 0).any())
+        ):
+            raise FloatingPointError(
+                "negative passive/TKE/reservoir: rotated Redi is not positivity preserving"
+            )
+        model.check(end)
+        return end
+
+    @staticmethod
+    def _settle(model, before, transported, energy_inflow, name):
+        """Local discrete first law: delta H = energy inflow + conversion.
+
+        The flux has zero global divergence. Exchange the remaining LOCAL work
+        with h*e; do not repair a global scalar budget or borrow distant energy.
+        The specified midpoint energy flux defines the spatial work allocation.
+        """
+        H = model.hamiltonian
+        work = H.finite_change(before, transported) - energy_inflow
+        mass = H.mass_area(before.ocean)
+        safe_mass = torch.where(mass > 0, mass, torch.ones_like(mass))
+        eddy_h = transported.eddy_h - work / safe_mass
+        if (eddy_h < 0).any():
+            raise FloatingPointError(
+                name
+                + " requires unavailable local eddy energy; reduce dt or supply a physical reservoir initial condition"
+            )
+        end = EddyState(transported.ocean, transported.tke_h, eddy_h)
+        model.check(end)
+        exchange = (mass * (end.eddy_h - transported.eddy_h)).sum()
+        residual = H.finite_change(before, end) - energy_inflow
+        return end, exchange, residual
 
     def apply(self, model, state, dt):
         from roquet import RoquetOcean
 
         if not isinstance(model, RoquetOcean):
             raise TypeError("research GMRedi requires RoquetOcean CT/SA")
+        if not isinstance(state, EddyState):
+            raise TypeError("GMRedi requires an explicit EddyState reservoir")
         if not math.isfinite(float(dt)) or dt <= 0:
             raise ValueError("positive finite dt required")
         model.check(state)
-        s = state.ocean
-        h = s.h
+        s, h = state.ocean, state.ocean.h
         volume = (s.mesh.cell_area[:, None] * h).flatten()
+        rho0 = s.column.rho0
         geom = self._geometry(model, state)
-        slope, psi, horizontal, vertical, i, j, carrier, rows, weights, measure = geom
-        q = [s.temperature()[..., None], s.salinity()[..., None]]
-        if s.tracer_h is not None:
-            q.append(s.tracer_h / h[..., None])
-        q.append((state.tke_h / h)[..., None])
-        initial = torch.cat(q, -1).reshape(h.numel(), -1)
-        outgoing = torch.zeros_like(volume)
-        outgoing = outgoing.index_add(0, i, carrier.clamp_min(0)).index_add(
-            0, j, (-carrier).clamp_min(0)
+        slope, psi, horizontal, vertical, i, j, carrier, _, _, _ = geom
+        initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
+        outgoing = (
+            torch.zeros_like(volume)
+            .index_add(0, i, carrier.clamp_min(0))
+            .index_add(0, j, (-carrier).clamp_min(0))
         )
         fraction = dt * outgoing / volume
         if (fraction > self.cfl).any():
             raise FloatingPointError("GM outflow exceeds CFL; reduce dt")
-        donor = torch.where((carrier >= 0)[:, None], initial[i], initial[j])
-        gm = (
+        # The circulation has zero divergence, so subtracting the EOS reference
+        # CT/SA changes no tendency. It fixes the energy-flux datum and avoids
+        # transporting a large arbitrary thermal/salt background in the ledger.
+        reference = initial.new_zeros(initial.shape[-1])
+        reference[0], reference[1] = model.config.CT0, model.config.SA0
+        anomaly = initial - reference
+        donor = torch.where((carrier >= 0)[:, None], anomaly[i], anomaly[j])
+        transfer = dt * carrier[:, None] * donor
+        gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
+        gm_transport = self._unpack(model, state, gm_values)
+        mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(
             initial
-            + dt
-            * divergence(i, j, carrier[:, None] * donor, h.numel())
-            / volume[:, None]
         )
-        # -G^T W G is conservative and negative semidefinite in volume norm.
-        gradient = (weights[..., None] * gm[rows]).sum(1)
+        energy_flux = rho0 * (0.5 * (mu[i] + mu[j]) * transfer).sum(-1)
+        gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
+        gm, gm_exchange, gm_residual = self._settle(
+            model, state, gm_transport, gm_inflow, "GM"
+        )
+
+        # Redi follows the UPDATED density surfaces, not the pre-GM slopes.
+        redi_geometry = self._geometry(model, gm)
+        redi_slope = redi_geometry[0]
+        rows, weights, measure = redi_geometry[-3:]
+        values = (self._contents(gm) / h[..., None]).reshape_as(initial)
+        gradient = (weights[..., None] * values[rows]).sum(1)
         flux = measure[:, None] * gradient
-        redi_rate = torch.zeros_like(gm).index_add(
-            0,
-            rows.flatten(),
-            (-weights[..., None] * flux[:, None, :]).reshape(-1, gm.shape[-1]),
+        transfers = -dt * weights[..., None] * flux[:, None, :]
+        rate_amount = torch.zeros_like(values).index_add(
+            0, rows.flatten(), transfers.reshape(-1, values.shape[-1])
         )
-        # Gershgorin upper bound on spectral radius of M^-1 G^T W G.
         bound = (
             torch.zeros_like(volume).index_add(
                 0,
@@ -222,38 +297,25 @@ class GMRedi:
         step_number = dt * bound
         if (step_number > self.cfl).any():
             raise FloatingPointError("Redi explicit step exceeds bound; reduce dt")
-        final = gm + dt * redi_rate / volume[:, None]
-
-        def unpack(values):
-            # Increment original contents, preserving exact identity for inactive
-            # cells/operators instead of round-tripping contents through h*q.
-            delta = (values - initial).reshape(*h.shape, -1)
-            passive = (
-                None
-                if s.tracer_h is None
-                else s.tracer_h + h[..., None] * delta[..., 2:-1]
-            )
-            out = s.with_tensors(
-                s.u_e,
-                h,
-                s.temp_h + h * delta[..., 0],
-                s.salt_h + h * delta[..., 1],
-                passive,
-            )
-            result = TKEState(out, state.tke_h + h * delta[..., -1])
-            if (result.tke_h < 0).any() or (
-                passive is not None and (passive < 0).any()
-            ):
-                raise FloatingPointError(
-                    "negative passive/TKE: rotated Redi is not positivity preserving"
-                )
-            model.check(result)
-            return result
-
-        gm_state = unpack(gm)
-        end = unpack(final)
-        eg = self._energy_change(model, state, gm_state)
-        er = self._energy_change(model, gm_state, end)
+        final_values = values + rate_amount / volume[:, None]
+        redi_transport = self._unpack(model, gm, final_values)
+        mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(
+            initial
+        )
+        # A single conjugate per row defines a conservative energy flux over
+        # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
+        mu_face = 0.5 * (mu[rows[:, 0]] + mu[rows[:, 1]])
+        energy_transfers = rho0 * (transfers * mu_face[:, None, :]).sum(-1)
+        redi_inflow = (
+            torch.zeros_like(volume)
+            .index_add(0, rows.flatten(), energy_transfers.flatten())
+            .reshape_as(h)
+        )
+        end, redi_exchange, redi_residual = self._settle(
+            model, gm, redi_transport, redi_inflow, "Redi"
+        )
+        H = model.hamiltonian
+        mass = H.mass_area(s)
         report = EddyReport(
             slope,
             psi,
@@ -262,10 +324,26 @@ class GMRedi:
             divergence(i, j, carrier, h.numel()).reshape_as(h),
             fraction.reshape_as(h),
             step_number.reshape_as(h),
-            (volume[:, None] * (final - initial)).sum(0),
-            (0.5 * volume[:, None] * (final - gm) * (final + gm)).sum(0),
-            eg + er,
-            eg,
-            er,
+            (
+                s.mesh.cell_area[:, None, None]
+                * (self._contents(end) - self._contents(state))
+            ).sum((0, 1)),
+            (
+                0.5
+                * volume[:, None]
+                * (final_values - values)
+                * (final_values + values)
+            ).sum(0),
+            H.finite_change(state, end).sum(),
+            H.finite_change(state, gm, include_eddy=False).sum(),
+            H.finite_change(gm, end, include_eddy=False).sum(),
+            redi_slope,
+            (mass * (end.eddy_h - state.eddy_h)).sum(),
+            gm_exchange,
+            redi_exchange,
+            gm_inflow,
+            redi_inflow,
+            gm_residual,
+            redi_residual,
         )
         return end, report

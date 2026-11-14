@@ -787,3 +787,22 @@ in the outside-checkout portable suite, 142 corrected-Gibbs fixture tensors and
 by installing into a virtual environment, with no test expectation changes.
 Front relaxation and first-order timestep refinement are recorded; GPU,
 backward rollout, spatial convergence and climate performance are unqualified.
+
+The [mesoscale reservoir extension](../verification/ocean/gmredi/ENERGY_RESERVOIR.md)
+replaces the unfunded GM–Redi diagnostic with an explicit `EddyState.eddy_h`.
+`RoquetHamiltonian` composes the original resolved energy, turbulent TKE and
+mesoscale reservoir and supplies exact finite tracer work. Each GM/Redi stage
+pairs conservative energy transport with a local reservoir exchange, rejecting
+unaffordable withdrawals. The reservoir survives resolved transport, forcing,
+vertical mixing and ALE. Redi slopes now refresh after GM; cold and warm tests
+verify both signs of its energy exchange using the published default EOS.
+Existing resolved RK errors are measured, not absorbed into the reservoir.
+
+Reservoir qualification: 22 focused tests; installed-wheel outside-checkout
+portable suite 1180 passed / 2 skipped; 142 corrected-Gibbs and 93 dry-helper
+fixture tensors passed. Thirty-six isolated front runs retain nonnegative
+funding; endpoint finite-H residuals are at most 3.73e-16 J/kg. Local stage
+first-law residuals are at most 6.66e-17 J/kg. Both signs of Redi energy work
+are covered. Direct large-H subtraction remains limited by roundoff, with a
+maximum 8.15e-12 J/kg difference. One backward sensitivity is checked; general
+backward rollouts and climate/target-resolution qualification remain open.

@@ -6,6 +6,11 @@ Conservative Temperature (CT, degrees Celsius), Absolute Salinity (SA, g/kg),
 layer thickness, edge velocity, optional passive contents and prognostic TKE.
 The JMD95 and linear configurations/defaults are unchanged.
 
+Optional `eddy_energy=...` initializes an explicit mesoscale-energy reservoir
+separate from turbulent TKE. `model.total_energy(state)` and
+`model.hamiltonian.terms(state)` include it in the same Roquet Hamiltonian.
+See [GM–Redi and reservoir usage](GMREDI.md).
+
 ```python
 # With this research directory and validation/ocean_column on sys.path:
 from roquet import RoquetOcean, RoquetMixing, RoquetHeating, TemperatureBoundary

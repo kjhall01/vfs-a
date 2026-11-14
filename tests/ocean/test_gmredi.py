@@ -12,6 +12,7 @@ sys.path[:0] = [
 ]
 from roquet import RoquetOcean
 from eddy import GMRedi
+from eddy_energy import EddyState
 from vfs.ocean.stratified import TKEState
 from test_jmd95_hamiltonian import mesh, case
 
@@ -22,7 +23,7 @@ def setup(mesh, coast=False):
     k = s.h * 1e-4
     if coast:
         k = old.domain.apply_cell(k)
-    return model, TKEState(s, k)
+    return model, model.with_eddy_reservoir(TKEState(s, k), 0.1)
 
 
 @pytest.mark.parametrize("coast", [False, True])
@@ -55,7 +56,13 @@ def test_conservation_closed_circulation_and_variance(mesh, coast, coefficients)
             assert torch.equal(a[~m.ocean.domain.wet_cell], b[~m.ocean.domain.wet_cell])
     torch.testing.assert_close(t.tracer_h, s.tracer_h, rtol=0, atol=2e-12)
     concentrations = torch.stack(
-        (s.temperature(), s.salinity(), s.tracer_h[..., 0] / s.h, initial.tke_h / s.h),
+        (
+            s.temperature(),
+            s.salinity(),
+            s.tracer_h[..., 0] / s.h,
+            initial.tke_h / s.h,
+            initial.eddy_h / s.h,
+        ),
         -1,
     )
     norm = (
@@ -65,8 +72,20 @@ def test_conservation_closed_circulation_and_variance(mesh, coast, coefficients)
     # Independent direct Hamiltonian subtraction, tolerance based on its large datum.
     expected = m.total_energy(end) - m.total_energy(initial)
     assert abs(r.energy_change - expected) <= 32 * eps * m.total_energy(initial).abs()
-    torch.testing.assert_close(
-        r.energy_change, r.gm_energy_change + r.redi_energy_change
+    resolved_work = m.hamiltonian.finite_change(initial, end, include_eddy=False)
+    eddy_work = m.energy.mass_area(s) * (end.eddy_h - initial.eddy_h)
+    scale = resolved_work.abs().sum() + eddy_work.abs().sum()
+    assert (
+        abs(
+            r.energy_change
+            - r.gm_energy_change
+            - r.redi_energy_change
+            - r.reservoir_change
+        )
+        <= 128 * eps * scale
+    )
+    assert abs(r.energy_change) <= 128 * eps * (
+        scale + (m.energy.mass_area(s) * initial.eddy_h).sum()
     )
 
 
@@ -86,7 +105,7 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
     ct = torch.full_like(z, 10.0)
     sa = 35.0 - 0.001 * z
     s = s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h)
-    state = TKEState(s, state.tke_h)
+    state = EddyState(s, state.tke_h, state.eddy_h)
     eddy = GMRedi(1000.0, 1000.0)
     slope, _, _, _, _, _, _, rows, weights, _ = eddy._geometry(m, state)
     assert slope.abs().max() < 1e-16
@@ -99,8 +118,10 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
     # With a lateral salinity gradient, the unclipped slope still annihilates
     # the reference buoyancy itself (discrete along-density derivative).
     sa = sa + 0.1 * mesh.cell_xyz[:, :1]
-    state = TKEState(
-        s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h), state.tke_h
+    state = EddyState(
+        s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h),
+        state.tke_h,
+        state.eddy_h,
     )
     geom = eddy._geometry(m, state)
     rows, weights = geom[-3:-1]
@@ -136,8 +157,10 @@ def test_weak_stratification_no_transport(mesh):
     # Vertically uniform buoyancy, with lateral gradients: no finite slope.
     ct = (10.0 + mesh.cell_xyz[:, :1]).expand_as(s.h)
     sa = torch.full_like(s.h, 35.0)
-    state = TKEState(
-        s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h), state.tke_h
+    state = EddyState(
+        s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h),
+        state.tke_h,
+        state.eddy_h,
     )
     end, r = GMRedi(1000.0, 1000.0).apply(m, state, 60.0)
     assert torch.count_nonzero(r.slope) == 0
@@ -161,8 +184,10 @@ def test_rejects_redi_negative_tracer_without_mutating_input():
     s = state.ocean
     tracer = torch.zeros_like(s.tracer_h)
     tracer[0, 3, 0] = s.h[0, 3]
-    state = TKEState(
-        s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, tracer), state.tke_h
+    state = EddyState(
+        s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, tracer),
+        state.tke_h,
+        state.eddy_h,
     )
     before = tracer.clone()
     with pytest.raises(FloatingPointError, match="not positivity preserving"):
@@ -179,13 +204,19 @@ def test_finite_energy_work_against_independent_midpoint_gradient(mesh):
     th = ((s.temp_h + t.temp_h) / 2).detach().requires_grad_()
     sh = ((s.salt_h + t.salt_h) / 2).detach().requires_grad_()
     kh = ((state.tke_h + end.tke_h) / 2).detach().requires_grad_()
-    mid = TKEState(s.with_tensors(s.u_e, s.h, th, sh, s.tracer_h), kh)
-    gradients = torch.autograd.grad(m.total_energy(mid), (th, sh, kh))
+    eh = ((state.eddy_h + end.eddy_h) / 2).detach().requires_grad_()
+    mid = EddyState(s.with_tensors(s.u_e, s.h, th, sh, s.tracer_h), kh, eh)
+    gradients = torch.autograd.grad(m.total_energy(mid), (th, sh, kh, eh))
     work = [
         g * d
         for g, d in zip(
             gradients,
-            (t.temp_h - s.temp_h, t.salt_h - s.salt_h, end.tke_h - state.tke_h),
+            (
+                t.temp_h - s.temp_h,
+                t.salt_h - s.salt_h,
+                end.tke_h - state.tke_h,
+                end.eddy_h - state.eddy_h,
+            ),
         )
     ]
     expected = sum(w.sum() for w in work)

@@ -1,4 +1,10 @@
-# GM–Redi research qualification
+# Historical GM–Redi transport-only qualification
+
+This report describes the initial unfunded prototype at commit
+`b76c0b4266b6384e0b83bf5eafe04db3e9f8539d`. The current implementation includes
+an explicit reservoir and refreshed Redi slopes; see
+[the energy-reservoir qualification](ENERGY_RESERVOIR.md). Reproduction of the
+historical numbers below requires that initial commit.
 
 Base: `validation/ocean-timestep-campaign`, commit
 `73fd69936367a8811a5788db9f94b1636eb1398b`. Implementation and runnable examples:

@@ -14,6 +14,7 @@ from vfs.ocean.stratified.equations import EntropyEnergy
 from linear import LinearCaloric,LinearMixing,LinearRemapper
 from model import TemperatureOcean
 from system import TemperatureSystem
+from eddy_energy import EddyState,RoquetHamiltonian
 from surface import FastSurfaceExchange,TemperatureBoundary
 
 
@@ -174,6 +175,7 @@ class RoquetOcean(TemperatureSystem):
         ocean.reference=RoquetCaloric(config);ocean.energy=RoquetEntropyEnergy(base,ocean.reference)
         super().__init__(ocean,closure=closure,boundary=boundary,heating=heating,exchange=exchange)
         self.config=config;self.remapper=LinearRemapper()
+        self.hamiltonian=RoquetHamiltonian(self.energy)
 
     def compile_thermodynamics(self, *, backend='inductor'):
         """Compile selected pure kernels; validation and timestep control stay eager."""
@@ -190,11 +192,89 @@ class RoquetOcean(TemperatureSystem):
         self._compile_backend=backend
         return self
 
-    def state(self,*,conservative_temperature,absolute_salinity,tke=0.,**fields):
+    def state(self,*,conservative_temperature,absolute_salinity,tke=0.,eddy_energy=None,**fields):
         """No implicit conversion: CT [deg C], SA [g/kg]."""
         if 'temperature' in fields or 'salinity' in fields:raise TypeError('use explicit CT/SA keyword names')
         s=self.ocean.base.state(temperature=conservative_temperature,salinity=absolute_salinity,**fields)
-        out=TKEState(s,s.h*torch.as_tensor(tke,dtype=s.h.dtype,device=s.h.device));self.check(out);return out
+        out=TKEState(s,s.h*torch.as_tensor(tke,dtype=s.h.dtype,device=s.h.device));self.check(out)
+        return out if eddy_energy is None else self.with_eddy_reservoir(out,eddy_energy)
+
+
+    def total_energy(self, state):
+        return self.hamiltonian.terms(state)["total"]
+
+    def check(self, state):
+        super().check(state)
+        if isinstance(state, EddyState):
+            e, h = state.eddy_h, state.ocean.h
+            if (
+                e.shape != h.shape
+                or e.dtype != h.dtype
+                or e.device != h.device
+                or not torch.isfinite(e).all()
+                or (e < 0).any()
+            ):
+                raise ValueError(
+                    "eddy reservoir must match h and be finite/nonnegative"
+                )
+            wet = (self.energy.mass_area(state.ocean) > 0).expand_as(h)
+            if (e[~wet] != 0).any():
+                raise ValueError("dry eddy reservoir must be zero")
+
+    def with_eddy_reservoir(self, state, specific_energy):
+        """Explicitly initialize e [J/kg]; never invent or reset a hidden seed."""
+        if isinstance(state, EddyState):
+            raise TypeError("state already has an eddy reservoir")
+        self.check(state)
+        h = state.ocean.h
+        e = h * torch.as_tensor(specific_energy, dtype=h.dtype, device=h.device)
+        wet = (self.energy.mass_area(state.ocean) > 0).expand_as(h)
+        out = EddyState(
+            state.ocean, state.tke_h, torch.where(wet, e, torch.zeros_like(e))
+        )
+        self.check(out)
+        return out
+
+    @staticmethod
+    def _carry_eddy(state):
+        # Existing dynamics, mixing, freshwater exchange and ALE already carry
+        # passive contents conservatively. Their energy-blind tracer slot is
+        # only a transport adapter: full-H diagnostics always see EddyState.
+        s = state.ocean
+        q = (
+            state.eddy_h[..., None]
+            if s.tracer_h is None
+            else torch.cat((s.tracer_h, state.eddy_h[..., None]), -1)
+        )
+        return TKEState(s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, q), state.tke_h)
+
+    @staticmethod
+    def _recover_eddy(state, original):
+        s = state.ocean
+        q = None if original.ocean.tracer_h is None else s.tracer_h[..., :-1]
+        return EddyState(
+            s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, q),
+            state.tke_h,
+            s.tracer_h[..., -1],
+        )
+
+    def step_with_report(self, state, dt, **forcing):
+        if not isinstance(state, EddyState):
+            return super().step_with_report(state, dt, **forcing)
+        self.check(state)
+        end, report = super().step_with_report(self._carry_eddy(state), dt, **forcing)
+        end = self._recover_eddy(end, state)
+        self.check(end)
+        return end, report
+
+    def remap_with_report(self, state, target_h):
+        if not isinstance(state, EddyState):
+            return super().remap_with_report(state, target_h)
+        self.check(state)
+        end, report = super().remap_with_report(self._carry_eddy(state), target_h)
+        end = self._recover_eddy(end, state)
+        self.check(end)
+        return end, report
 
 
 def convert_jmd95_initialization(*,potential_temperature_ipts68,practical_salinity,pressure_dbar,longitude,latitude):

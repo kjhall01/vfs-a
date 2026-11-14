@@ -19,13 +19,21 @@ from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 
 
-def make(cells=32, layers=8, radius=100000.0):
+def make(cells=32, layers=8, radius=100000.0, eddy_energy=0.1, front="density"):
     mesh = VoronoiMesh(n_cells=cells, radius=radius, lloyd_iters=2, verbose=False)
     model = RoquetOcean(mesh, OceanColumn(layers, total_depth=1000.0))
     h = torch.full((cells, layers), 1000.0 / layers)
     z = -(torch.arange(layers) + 0.5) * 1000.0 / layers
     ct = torch.full_like(h, 10.0)
     sa = 35.0 - 0.001 * z[None, :] + 0.15 * mesh.cell_xyz[:, 1:2]
+    if front == "cold":
+        ct = 0.001 * z[None, :] + 0.05 * mesh.cell_xyz[:, :1]
+        sa = 35.0 - 0.0001 * z[None, :] - 0.05 * mesh.cell_xyz[:, :1]
+    elif front == "warm":
+        ct = 15.0 + 0.005 * z[None, :] + 0.5 * mesh.cell_xyz[:, :1]
+        sa = 35.0 - 0.0003 * z[None, :] - 0.1 * mesh.cell_xyz[:, 1:2]
+    elif front != "density":
+        raise ValueError("unknown front")
     tracer = (1.0 + 0.2 * mesh.cell_xyz[:, :1] + 0.1 * torch.cos(z / 1000.0))[..., None]
     state = model.state(
         u_e=torch.zeros(mesh.nEdges, layers),
@@ -34,6 +42,7 @@ def make(cells=32, layers=8, radius=100000.0):
         absolute_salinity=sa,
         tracer=tracer,
         tke=1e-4,
+        eddy_energy=eddy_energy,
     )
     return model, state
 
@@ -46,9 +55,18 @@ def run(model, initial, coefficients, dt, duration):
         raise ValueError("each dt must divide duration exactly")
     energy = gm_energy = redi_energy = 0.0
     maximum_cfl = maximum_redi = maximum_div = 0.0
+    maximum_local_residual = 0.0
+    reservoir_change = 0.0
     for _ in range(n):
         state, report = eddy.apply(model, state, dt)
         energy += float(report.energy_change)
+        reservoir_change += float(report.reservoir_change)
+        layer_mass = model.energy.mass_area(state.ocean) * state.ocean.h
+        maximum_local_residual = max(
+            maximum_local_residual,
+            float((report.gm_local_energy_residual.abs() / layer_mass).max()),
+            float((report.redi_local_energy_residual.abs() / layer_mass).max()),
+        )
         gm_energy += float(report.gm_energy_change)
         redi_energy += float(report.redi_energy_change)
         maximum_cfl = max(maximum_cfl, float(report.gm_outflow_fraction.max()))
@@ -77,6 +95,15 @@ def run(model, initial, coefficients, dt, duration):
         redi_max_step_number=maximum_redi,
         max_volume_residual_m3_s=maximum_div,
         energy_change_J_kg=energy / float(mass.sum()),
+        endpoint_finite_H_change_J_kg=float(
+            model.hamiltonian.finite_change(initial, state).sum() / mass.sum()
+        ),
+        direct_H_difference_J_kg=float(
+            (model.total_energy(state) - model.total_energy(initial)) / mass.sum()
+        ),
+        reservoir_change_J_kg=reservoir_change / float(mass.sum()),
+        min_reservoir_J_kg=float(state.specific_eddy_energy().min()),
+        max_local_energy_residual_J_kg=maximum_local_residual,
         gm_energy_change_J_kg=gm_energy / float(mass.sum()),
         redi_energy_change_J_kg=redi_energy / float(mass.sum()),
         salinity_contrast_initial=contrast(s.salinity()),
@@ -100,6 +127,8 @@ def main():
     p.add_argument(
         "--dt", type=float, nargs="+", default=[3600.0, 1800.0, 900.0, 450.0]
     )
+    p.add_argument("--front", choices=("density", "cold", "warm"), default="density")
+    p.add_argument("--eddy-energy", type=float, default=0.1)
     p.add_argument("--kappa", type=float, default=1000.0)
     p.add_argument("--output", type=Path, required=True)
     args = p.parse_args()
@@ -113,7 +142,9 @@ def main():
         threads=1,
         cases={},
     )
-    model, initial = make(args.cells, args.layers, args.radius)
+    model, initial = make(
+        args.cells, args.layers, args.radius, args.eddy_energy, args.front
+    )
     volume = initial.ocean.mesh.cell_area[:, None] * initial.ocean.h
     with torch.no_grad():
         for name, coefficients in [

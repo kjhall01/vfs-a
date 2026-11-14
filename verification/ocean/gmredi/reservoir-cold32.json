@@ -1,0 +1,378 @@
+{
+  "config": {
+    "cells": 32,
+    "layers": 8,
+    "radius": 100000.0,
+    "days": 0.25,
+    "dt": [
+      600.0,
+      300.0,
+      150.0,
+      75.0
+    ],
+    "front": "cold",
+    "eddy_energy": 0.1,
+    "kappa": 1000.0,
+    "output": "/workspace/scratch/cb460db1b799/vfs-a/verification/ocean/gmredi/reservoir-cold32.json"
+  },
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "threads": 1,
+  "cases": {
+    "gm": [
+      {
+        "dt": 600.0,
+        "steps": 36,
+        "relative_inventory_drift": [
+          4.253721416025354e-17,
+          7.679238029970573e-17,
+          4.282364381125048e-17
+        ],
+        "gm_max_outflow_fraction": 0.00036745937229794285,
+        "redi_max_step_number": 0.0,
+        "max_volume_residual_m3_s": 1.1641532182693481e-10,
+        "energy_change_J_kg": 2.304835303922265e-16,
+        "endpoint_finite_H_change_J_kg": 2.6396429585972884e-16,
+        "direct_H_difference_J_kg": -7.631984158880819e-13,
+        "reservoir_change_J_kg": 0.00011184056880917645,
+        "min_reservoir_J_kg": 0.09200094545907679,
+        "max_local_energy_residual_J_kg": 6.459570684098786e-17,
+        "gm_energy_change_J_kg": -0.00011184056880895451,
+        "redi_energy_change_J_kg": 0.0,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008278386457847529,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013498573186799614,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          8.495704078096468e-08,
+          2.2846511673964448e-08,
+          8.95578775484725e-08
+        ]
+      },
+      {
+        "dt": 300.0,
+        "steps": 72,
+        "relative_inventory_drift": [
+          3.598777333593618e-17,
+          4.520840870377402e-17,
+          -6.565638753669981e-18
+        ],
+        "gm_max_outflow_fraction": 0.00018372968614897142,
+        "redi_max_step_number": 0.0,
+        "max_volume_residual_m3_s": 1.4551915228366852e-10,
+        "energy_change_J_kg": -2.8652742041391523e-16,
+        "endpoint_finite_H_change_J_kg": -2.6396429585972884e-16,
+        "direct_H_difference_J_kg": -2.5439947196269397e-13,
+        "reservoir_change_J_kg": 0.00011183052366217146,
+        "min_reservoir_J_kg": 0.09200128342483122,
+        "max_local_energy_residual_J_kg": 1.6148926710246964e-17,
+        "gm_energy_change_J_kg": -0.0001118305236624566,
+        "redi_energy_change_J_kg": 0.0,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008278388382534777,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013498572849860004,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          3.640350995475575e-08,
+          9.789017598644238e-09,
+          3.8372862835958056e-08
+        ]
+      },
+      {
+        "dt": 150.0,
+        "steps": 144,
+        "relative_inventory_drift": [
+          -6.485691921739996e-17,
+          -1.2684514638114661e-17,
+          -9.74346390736526e-18
+        ],
+        "gm_max_outflow_fraction": 9.186484307448571e-05,
+        "redi_max_step_number": 0.0,
+        "max_volume_residual_m3_s": 1.1641532182693481e-10,
+        "energy_change_J_kg": -2.1131700523329397e-16,
+        "endpoint_finite_H_change_J_kg": -2.0185504977508678e-16,
+        "direct_H_difference_J_kg": 0.0,
+        "reservoir_change_J_kg": 0.00011182550193375668,
+        "min_reservoir_J_kg": 0.09200145244077475,
+        "max_local_energy_residual_J_kg": 1.1715648188079036e-17,
+        "gm_energy_change_J_kg": -0.00011182550193396799,
+        "redi_energy_change_J_kg": 0.0,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008278389344477081,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013498572681050775,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          1.2133210852261742e-08,
+          3.2625856790038903e-09,
+          1.2789397028317981e-08
+        ]
+      },
+      {
+        "dt": 75.0,
+        "steps": 288,
+        "relative_inventory_drift": [
+          8.219813854945693e-17,
+          -2.6471235065713008e-17,
+          2.9902354750189936e-17
+        ],
+        "gm_max_outflow_fraction": 4.5932421537242856e-05,
+        "redi_max_step_number": 0.0,
+        "max_volume_residual_m3_s": 1.4551915228366852e-10,
+        "energy_change_J_kg": -1.4775207369354308e-16,
+        "endpoint_finite_H_change_J_kg": -1.5527311521160522e-16,
+        "direct_H_difference_J_kg": -5.087989439253879e-13,
+        "reservoir_change_J_kg": 0.00011182299087870461,
+        "min_reservoir_J_kg": 0.09200153695960019,
+        "max_local_energy_residual_J_kg": 9.295679599345573e-18,
+        "gm_energy_change_J_kg": -0.00011182299087885446,
+        "redi_energy_change_J_kg": 0.0,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008278389825326511,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.01349857259651833,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "redi": [
+      {
+        "dt": 600.0,
+        "steps": 36,
+        "relative_inventory_drift": [
+          3.922075339521682e-17,
+          -5.656098759608594e-18,
+          -5.5016972925209016e-18
+        ],
+        "gm_max_outflow_fraction": 0.0,
+        "redi_max_step_number": 0.004692950015064959,
+        "max_volume_residual_m3_s": 0.0,
+        "energy_change_J_kg": 4.270010668319143e-17,
+        "endpoint_finite_H_change_J_kg": -1.2421849216928417e-16,
+        "direct_H_difference_J_kg": -2.5439947196269397e-13,
+        "reservoir_change_J_kg": -1.098296947924549e-05,
+        "min_reservoir_J_kg": 0.09996101338183327,
+        "max_local_energy_residual_J_kg": 6.652609030212895e-17,
+        "gm_energy_change_J_kg": 0.0,
+        "redi_energy_change_J_kg": 1.0982969479264586e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008307357129371944,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013424492722438517,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          3.157669188158508e-07,
+          1.7787681394626246e-08,
+          2.0127804605070915e-07
+        ]
+      },
+      {
+        "dt": 300.0,
+        "steps": 72,
+        "relative_inventory_drift": [
+          1.614972198626575e-17,
+          5.812974439723645e-17,
+          1.2375319100734038e-17
+        ],
+        "gm_max_outflow_fraction": 0.0,
+        "redi_max_step_number": 0.0023464750075324796,
+        "max_volume_residual_m3_s": 0.0,
+        "energy_change_J_kg": -9.704569700725326e-18,
+        "endpoint_finite_H_change_J_kg": -2.4843698433856833e-16,
+        "direct_H_difference_J_kg": -2.5439947196269397e-13,
+        "reservoir_change_J_kg": -1.0982105202018745e-05,
+        "min_reservoir_J_kg": 0.0999610228588451,
+        "max_local_energy_residual_J_kg": 5.949234943581151e-17,
+        "gm_energy_change_J_kg": 0.0,
+        "redi_energy_change_J_kg": 1.09821052020548e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008307358782137242,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013424499500338274,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          1.3528833073183016e-07,
+          7.621036230870272e-09,
+          8.623648114383386e-08
+        ]
+      },
+      {
+        "dt": 150.0,
+        "steps": 144,
+        "relative_inventory_drift": [
+          -3.922075339521682e-17,
+          -5.170120301824213e-17,
+          -1.3134077353290355e-16
+        ],
+        "gm_max_outflow_fraction": 0.0,
+        "redi_max_step_number": 0.0011732375037662398,
+        "max_volume_residual_m3_s": 0.0,
+        "energy_change_J_kg": 5.822741820435195e-18,
+        "endpoint_finite_H_change_J_kg": 1.2421849216928417e-16,
+        "direct_H_difference_J_kg": -2.5439947196269397e-13,
+        "reservoir_change_J_kg": -1.098167310555542e-05,
+        "min_reservoir_J_kg": 0.099961027594999,
+        "max_local_energy_residual_J_kg": 1.487308735895288e-17,
+        "gm_energy_change_J_kg": 0.0,
+        "redi_energy_change_J_kg": 1.0981673105555123e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008307359608291009,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013424502888367384,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          4.508938963885773e-08,
+          2.5399669132017113e-09,
+          2.874123971351516e-08
+        ]
+      },
+      {
+        "dt": 75.0,
+        "steps": 288,
+        "relative_inventory_drift": [
+          -1.4832244666333545e-16,
+          2.334713500798689e-16,
+          -5.3883035315300125e-17
+        ],
+        "gm_max_outflow_fraction": 0.0,
+        "redi_max_step_number": 0.0005866187518831199,
+        "max_volume_residual_m3_s": 0.0,
+        "energy_change_J_kg": -3.88182788029013e-18,
+        "endpoint_finite_H_change_J_kg": -1.2421849216928417e-16,
+        "direct_H_difference_J_kg": -2.5439947196269397e-13,
+        "reservoir_change_J_kg": -1.0981456892683377e-05,
+        "min_reservoir_J_kg": 0.09996102996145534,
+        "max_local_energy_residual_J_kg": 8.315761287766119e-18,
+        "gm_energy_change_J_kg": 0.0,
+        "redi_energy_change_J_kg": 1.098145689268764e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008307360021308805,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013424504582151872,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "gm_redi": [
+      {
+        "dt": 600.0,
+        "steps": 36,
+        "relative_inventory_drift": [
+          4.857059243989699e-18,
+          1.8073533377817917e-17,
+          2.4778636660971998e-17
+        ],
+        "gm_max_outflow_fraction": 0.00036745937229794285,
+        "redi_max_step_number": 0.004691059061431511,
+        "max_volume_residual_m3_s": 1.1641532182693481e-10,
+        "energy_change_J_kg": 2.5231881221885845e-16,
+        "endpoint_finite_H_change_J_kg": 3.726554765078525e-16,
+        "direct_H_difference_J_kg": -5.087989439253879e-13,
+        "reservoir_change_J_kg": 0.00010096607450107891,
+        "min_reservoir_J_kg": 0.09200319860694305,
+        "max_local_energy_residual_J_kg": 6.652609030212895e-17,
+        "gm_energy_change_J_kg": -0.00011187117945034898,
+        "redi_energy_change_J_kg": 1.0905104949531284e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008256289327111385,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013407060220532242,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          1.0421055263678262e-07,
+          2.598570937028383e-08,
+          1.286648608379485e-07
+        ]
+      },
+      {
+        "dt": 300.0,
+        "steps": 72,
+        "relative_inventory_drift": [
+          6.696670432650798e-17,
+          9.788726316901865e-17,
+          4.434955985421429e-17
+        ],
+        "gm_max_outflow_fraction": 0.00018372968614897142,
+        "redi_max_step_number": 0.0023460021664263486,
+        "max_volume_residual_m3_s": 8.731149137020111e-11,
+        "energy_change_J_kg": -3.823600462085778e-16,
+        "endpoint_finite_H_change_J_kg": -2.4843698433856833e-16,
+        "direct_H_difference_J_kg": 0.0,
+        "reservoir_change_J_kg": 0.00010095625650058074,
+        "min_reservoir_J_kg": 0.09200331072732325,
+        "max_local_energy_residual_J_kg": 4.433094201013823e-17,
+        "gm_energy_change_J_kg": -0.00011186156874908296,
+        "redi_energy_change_J_kg": 1.0905312248116818e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008256291667082126,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.01340706153641812,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          4.465540468606919e-08,
+          1.113497510786405e-08,
+          5.513794348029661e-08
+        ]
+      },
+      {
+        "dt": 150.0,
+        "steps": 144,
+        "relative_inventory_drift": [
+          -1.1899795147774763e-17,
+          -1.4600821900514503e-16,
+          -8.080355412832225e-17
+        ],
+        "gm_max_outflow_fraction": 9.186484307448571e-05,
+        "redi_max_step_number": 0.0011731192806483386,
+        "max_volume_residual_m3_s": 1.1641532182693481e-10,
+        "energy_change_J_kg": -1.9409139401450653e-17,
+        "endpoint_finite_H_change_J_kg": 2.4843698433856833e-16,
+        "direct_H_difference_J_kg": -5.087989439253879e-13,
+        "reservoir_change_J_kg": 0.00010095134836579318,
+        "min_reservoir_J_kg": 0.09200336683259747,
+        "max_local_energy_residual_J_kg": 1.487308735895288e-17,
+        "gm_energy_change_J_kg": -0.00011185676409775616,
+        "redi_energy_change_J_kg": 1.0905415731976755e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008256292836838027,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013407062194518342,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          1.488393991678589e-08,
+          3.711271420461238e-09,
+          1.8378481286428812e-08
+        ]
+      },
+      {
+        "dt": 75.0,
+        "steps": 288,
+        "relative_inventory_drift": [
+          8.378427195882231e-18,
+          -1.3249139338485273e-16,
+          -8.855912741090896e-17
+        ],
+        "gm_max_outflow_fraction": 4.5932421537242856e-05,
+        "redi_max_step_number": 0.0005865891944983333,
+        "max_volume_residual_m3_s": 1.1641532182693481e-10,
+        "energy_change_J_kg": -6.793198790507728e-18,
+        "endpoint_finite_H_change_J_kg": 2.4843698433856833e-16,
+        "direct_H_difference_J_kg": -5.087989439253879e-13,
+        "reservoir_change_J_kg": 0.00010094889441134517,
+        "min_reservoir_J_kg": 0.09200339490068138,
+        "max_local_energy_residual_J_kg": 9.054675771556206e-18,
+        "gm_energy_change_J_kg": -0.00011185436200400479,
+        "redi_energy_change_J_kg": 1.0905467592659603e-05,
+        "salinity_contrast_initial": 0.0008329549200341023,
+        "salinity_contrast_final": 0.0008256293421582277,
+        "tracer_variance_initial": 0.013516491905967414,
+        "tracer_variance_final": 0.013407062523493695,
+        "CT_SA_tracer_rms_vs_finest_dt": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}
