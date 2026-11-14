@@ -770,3 +770,20 @@ Optional Roquet kernel compilation and live timestep progress are available in
 the timestep campaign. Selected pure energy/caloric kernels compile; numerical
 guards, physics control and timestep loop remain eager. Recorded wall time
 includes first-use compilation; it is not a warmed performance measurement.
+
+The opt-in [GM–Redi research operator](../validation/temperature_coordinate/GMREDI.md)
+adds prescribed-coefficient eddy transport to the Roquet CT/SA path. A discrete
+closed circulation supplies GM donor transport; an adjoint small-slope Redi
+operator conserves inventories and dissipates tracer variance. Surface-referenced
+potential density approximates neutral geometry. Exact finite Hamiltonian work
+is diagnosed but not compensated with heat or eddy energy. The implementation
+rejects invalid/negative tracer updates; rotated Redi has no maximum principle.
+See [front relaxation and refinement evidence](../verification/ocean/gmredi/README.md).
+This research addition changes no existing runtime expressions or defaults.
+
+GM–Redi validation on CPU float64: 13 focused tests, 1171 passed / 2 skipped
+in the outside-checkout portable suite, 142 corrected-Gibbs fixture tensors and
+93 dry-helper tensors passed. Initial user-site isolation failures were resolved
+by installing into a virtual environment, with no test expectation changes.
+Front relaxation and first-order timestep refinement are recorded; GPU,
+backward rollout, spatial convergence and climate performance are unqualified.

@@ -1,5 +1,12 @@
 # Current package documentation
 
+The opt-in [GM–Redi research operator](../validation/temperature_coordinate/GMREDI.md)
+adds prescribed-coefficient potential-density eddy transport to Roquet CT/SA.
+It provides a closed GM circulation, adjoint Redi diffusion and a finite energy
+ledger; no defaults change. [Verification](../verification/ocean/gmredi/README.md)
+includes front relaxation and timestep refinement. Rotated Redi positivity,
+exact neutral geometry and a closed eddy-energy budget remain outstanding.
+
 The [documentation index](../docs/README.md) describes the atmospheric and ocean
 APIs, state ownership, stepping, forcing and verification scope. The stratified
 ocean API is available on main. Run `examples/ocean_stratified.py` for explicit
