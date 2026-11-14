@@ -88,6 +88,10 @@ class LinearCaloric:
         t=self.to_90*theta
         if not torch.isfinite(sp).all() or not torch.isfinite(t).all():raise ValueError('finite T/S required')
         if ((sp<0)|(sp>42)|(t<-2.5)|(t>40)).any():raise ValueError('outside linear reference domain')
+        return self._values(theta, t, entropy_derivatives=entropy_derivatives)
+
+    def _values(self,theta,t,*,entropy_derivatives=False):
+        """Pure tensor calorics; evaluate retains the public domain checks."""
         kelvin=t+273.15;eta=self.cp*torch.log1p(t/273.15);zero=torch.zeros_like(theta)
         result=dict(h0=self.cp*t,entropy=eta,cp=zero+self.cp,h_theta=zero+self.cp_theta,h_s=zero,
             entropy_theta=self.cp_theta/kelvin,kelvin=kelvin,gibbs=self.cp*t-kelvin*eta)

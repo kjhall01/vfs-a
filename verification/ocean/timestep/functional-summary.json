@@ -1,0 +1,197 @@
+{
+  "provenance": {
+    "source_sha256": "13e82fedb03fc7da1a67633a76930b870b76d27b98dddc563201d632d784f8a2",
+    "torch": "2.15.0+cpu",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "mesh_file_sha256": null
+  },
+  "limits": {
+    "u": 0.001,
+    "CT": 0.01,
+    "SA": 0.001,
+    "h": 0.1,
+    "k": 1e-05,
+    "energy": 0.001,
+    "inventory": 1e-10
+  },
+  "scope": "finite-duration Roquet CPU float64; no climate guarantee",
+  "results": [
+    {
+      "cells": 128,
+      "case": "wave",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 6.315104772621833e-12,
+        "CT": 1.776077127412764e-15,
+        "SA": 1.2136330916074573e-14,
+        "h": 2.5287453898683086e-10,
+        "k": 0.0
+      }
+    },
+    {
+      "cells": 128,
+      "case": "wave",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 6.315104772621833e-12,
+        "CT": 1.776077127412764e-15,
+        "SA": 1.2136330916074573e-14,
+        "h": 2.5287453898683086e-10,
+        "k": 0.0
+      },
+      "result": "128x16-wave-dt60.json"
+    },
+    {
+      "cells": 128,
+      "case": "wave",
+      "dt": 120.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 5.3982394782673484e-11,
+        "CT": 1.7174989223077952e-15,
+        "SA": 1.189142161172402e-14,
+        "h": 2.276927515710456e-09,
+        "k": 0.0
+      },
+      "result": "128x16-wave-dt120.json"
+    },
+    {
+      "cells": 128,
+      "case": "wave",
+      "dt": 240.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 2.837849068696764e-10,
+        "CT": 1.6463989145017593e-15,
+        "SA": 1.169420413684231e-14,
+        "h": 1.3081218734979483e-08,
+        "k": 0.0
+      },
+      "result": "128x16-wave-dt240.json"
+    },
+    {
+      "cells": 128,
+      "case": "front",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 4.657461699241951e-11,
+        "CT": 1.8538233696926167e-08,
+        "SA": 2.127364801434602e-14,
+        "h": 5.721304660703379e-11,
+        "k": 0.0
+      }
+    },
+    {
+      "cells": 128,
+      "case": "front",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 4.657461699241951e-11,
+        "CT": 1.8538233696926167e-08,
+        "SA": 2.127364801434602e-14,
+        "h": 5.721304660703379e-11,
+        "k": 0.0
+      },
+      "result": "128x16-front-dt60.json"
+    },
+    {
+      "cells": 128,
+      "case": "front",
+      "dt": 120.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 2.555028401695801e-10,
+        "CT": 9.004634134258867e-08,
+        "SA": 1.943124908130166e-14,
+        "h": 5.269902774263441e-10,
+        "k": 0.0
+      },
+      "result": "128x16-front-dt120.json"
+    },
+    {
+      "cells": 128,
+      "case": "front",
+      "dt": 240.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.2174778109602605e-09,
+        "CT": 2.2063985001233347e-07,
+        "SA": 1.924994945522451e-14,
+        "h": 3.0563396277637226e-09,
+        "k": 0.0
+      },
+      "result": "128x16-front-dt240.json"
+    },
+    {
+      "cells": 128,
+      "case": "forced",
+      "reference_check": true,
+      "reference_qualified": true,
+      "errors": {
+        "u": 6.437933692553888e-08,
+        "CT": 4.701194001016283e-07,
+        "SA": 3.092744651039369e-08,
+        "h": 3.238907484719253e-10,
+        "k": 1.7376028683128678e-06
+      }
+    },
+    {
+      "cells": 128,
+      "case": "forced",
+      "dt": 60.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 6.437933692553888e-08,
+        "CT": 4.701194001016283e-07,
+        "SA": 3.092744651039369e-08,
+        "h": 3.238907484719253e-10,
+        "k": 1.7376028683128678e-06
+      },
+      "result": "128x16-forced-dt60.json"
+    },
+    {
+      "cells": 128,
+      "case": "forced",
+      "dt": 120.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 1.9326835397736272e-07,
+        "CT": 4.6851077678661193e-07,
+        "SA": 3.0918325549635835e-08,
+        "h": 2.330367264957657e-09,
+        "k": 1.7375842887568306e-06
+      },
+      "result": "128x16-forced-dt120.json"
+    },
+    {
+      "cells": 128,
+      "case": "forced",
+      "dt": 240.0,
+      "status": "completed",
+      "qualified": true,
+      "errors": {
+        "u": 3.653915899165654e-07,
+        "CT": 1.5850803348320762e-07,
+        "SA": 1.0511239594577284e-08,
+        "h": 1.3250818856649877e-08,
+        "k": 1.2198334346184496e-06
+      },
+      "result": "128x16-forced-dt240.json"
+    }
+  ],
+  "largest_tested_qualified_dt": {
+    "128": 240.0
+  }
+}

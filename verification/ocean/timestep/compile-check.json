@@ -1,0 +1,136 @@
+{
+  "max_absolute_endpoint_differences": {
+    "u": 0.0,
+    "CT": 0.0,
+    "SA": 0.0,
+    "h": 0.0,
+    "k": 0.0,
+    "weight": 0.0,
+    "edge_weight": 0.0
+  },
+  "trials": {
+    "eager": {
+      "config": {
+        "cells": 32,
+        "layers": 4,
+        "depth": 4000.0,
+        "dt": 30.0,
+        "duration": 60.0,
+        "case": "forced",
+        "compile": false,
+        "verbose": true,
+        "mixing_dt": 60.0,
+        "threads": 1,
+        "lloyd": 0,
+        "mesh": null,
+        "wave_amplitude": 10.0,
+        "provenance": {
+          "source_sha256": "8bb1204996e0792896c471891394aaf87ba2272b21000d663c302990b864dd78",
+          "torch": "2.15.0+cpu",
+          "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "mesh_file_sha256": null
+        }
+      },
+      "status": "completed",
+      "completed_steps": 2,
+      "time_s": 60.0,
+      "phase": "timestepping",
+      "min_dc_m": 3522092.312509103,
+      "surface_layer_m": 128.23441312033998,
+      "bottom_layer_m": 2575.6570395518893,
+      "external_wave_speed_m_s": 198.05706248452742,
+      "mesh_sha256": "aad17874a6857667ae5a3ac58e5de6d1c34a18bfa589ae7854254fd9025de80b",
+      "max_energy_error_J_kg": 1.3179211991983177e-13,
+      "max_mass_error_relative": 2.663814214390812e-17,
+      "max_salt_error_relative": 3.7251225370104284e-17,
+      "max_tracer_error_relative": 2.673234679983569e-17,
+      "max_speed_m_s": 0.42886969496942606,
+      "min_h_m": 128.23337156728334,
+      "min_tke": 0.0,
+      "max_local_budget_ratio": 1.9806025766653207e-07,
+      "max_wave_courant": 0.0016908298630466145,
+      "setup_wall_s": 0.03784450300008757,
+      "samples": [
+        {
+          "time_s": 30.0,
+          "energy_error_J_kg": -2.6077116647441735e-14,
+          "mass_error_relative": 2.663814214390812e-17,
+          "salt_error_relative": -9.338578687196738e-18,
+          "tracer_error_relative": -8.407728160747836e-18
+        },
+        {
+          "time_s": 60.0,
+          "energy_error_J_kg": 1.3179211991983177e-13,
+          "mass_error_relative": 1.6343424163925705e-17,
+          "salt_error_relative": -3.7251225370104284e-17,
+          "tracer_error_relative": -2.673234679983569e-17
+        }
+      ],
+      "run_wall_s": 0.07206281399703585,
+      "sypd": 2.28111494023252,
+      "total_wall_s": 0.18543357799353544
+    },
+    "inductor": {
+      "config": {
+        "cells": 32,
+        "layers": 4,
+        "depth": 4000.0,
+        "dt": 30.0,
+        "duration": 60.0,
+        "case": "forced",
+        "compile": true,
+        "verbose": true,
+        "mixing_dt": 60.0,
+        "threads": 1,
+        "lloyd": 0,
+        "mesh": null,
+        "wave_amplitude": 10.0,
+        "provenance": {
+          "source_sha256": "8bb1204996e0792896c471891394aaf87ba2272b21000d663c302990b864dd78",
+          "torch": "2.15.0+cpu",
+          "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "mesh_file_sha256": null
+        }
+      },
+      "status": "completed",
+      "completed_steps": 2,
+      "time_s": 60.0,
+      "phase": "timestepping",
+      "min_dc_m": 3522092.312509103,
+      "surface_layer_m": 128.23441312033998,
+      "bottom_layer_m": 2575.6570395518893,
+      "external_wave_speed_m_s": 198.05706248452742,
+      "mesh_sha256": "aad17874a6857667ae5a3ac58e5de6d1c34a18bfa589ae7854254fd9025de80b",
+      "max_energy_error_J_kg": 1.3179211991983177e-13,
+      "max_mass_error_relative": 2.663814214390812e-17,
+      "max_salt_error_relative": 3.7251225370104284e-17,
+      "max_tracer_error_relative": 2.673234679983569e-17,
+      "max_speed_m_s": 0.42886969496942606,
+      "min_h_m": 128.23337156728334,
+      "min_tke": 0.0,
+      "max_local_budget_ratio": 1.9806025766653207e-07,
+      "max_wave_courant": 0.0016908298630466145,
+      "setup_wall_s": 14.184632937998686,
+      "samples": [
+        {
+          "time_s": 30.0,
+          "energy_error_J_kg": -2.6077116647441735e-14,
+          "mass_error_relative": 2.663814214390812e-17,
+          "salt_error_relative": -9.338578687196738e-18,
+          "tracer_error_relative": -8.407728160747836e-18
+        },
+        {
+          "time_s": 60.0,
+          "energy_error_J_kg": 1.3179211991983177e-13,
+          "mass_error_relative": 1.6343424163925705e-17,
+          "salt_error_relative": -3.7251225370104284e-17,
+          "tracer_error_relative": -2.673234679983569e-17
+        }
+      ],
+      "run_wall_s": 7.055484318996605,
+      "sypd": 0.02329869279154084,
+      "total_wall_s": 21.242072681001446
+    }
+  },
+  "scope": "32x4 two dt30 forced steps with mixing and ALE; no warmed speed claim"
+}

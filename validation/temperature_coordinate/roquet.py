@@ -175,6 +175,21 @@ class RoquetOcean(TemperatureSystem):
         super().__init__(ocean,closure=closure,boundary=boundary,heating=heating,exchange=exchange)
         self.config=config;self.remapper=LinearRemapper()
 
+    def compile_thermodynamics(self, *, backend='inductor'):
+        """Compile selected pure kernels; validation and timestep control stay eager."""
+        previous=getattr(self,'_compile_backend',None)
+        if previous is not None:
+            if previous!=backend:raise ValueError('rebuild the model to change compile backend')
+            return self
+        options=dict(backend=backend,fullgraph=True,dynamic=True)
+        base=self.ocean.energy.base
+        base.stratification=torch.compile(base.stratification,**options)
+        base.parcel_potential=torch.compile(base.parcel_potential,**options)
+        base.coefficients=torch.compile(base.coefficients,**options)
+        self.ocean.reference._values=torch.compile(self.ocean.reference._values,**options)
+        self._compile_backend=backend
+        return self
+
     def state(self,*,conservative_temperature,absolute_salinity,tke=0.,**fields):
         """No implicit conversion: CT [deg C], SA [g/kg]."""
         if 'temperature' in fields or 'salinity' in fields:raise TypeError('use explicit CT/SA keyword names')

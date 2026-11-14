@@ -114,3 +114,18 @@ def test_explicit_initialization_conversion(setup):
     assert out.ocean.h.shape==s.h.shape
     with pytest.raises(TypeError):m.state(u_e=s.u_e,h=s.h,temperature=s.temperature(),salinity=s.salinity())
     with pytest.raises(ValueError):convert_jmd95_initialization(**{**kwargs,'potential_temperature_ipts68':s.temperature().requires_grad_()})
+
+
+def test_compile_dispatch_preserves_guards_and_energy(setup):
+    # Eager backend exercises Dynamo full-graph capture without expensive CI codegen.
+    m,state,_=setup
+    before=m.total_energy(state)
+    expected=m.dynamics.gradients(state.ocean)
+    assert m.compile_thermodynamics(backend='eager') is m
+    assert m.compile_thermodynamics(backend='eager') is m
+    torch.testing.assert_close(m.total_energy(state),before,rtol=2e-13,atol=1.)
+    actual=m.dynamics.gradients(state.ocean)
+    for key in expected:
+        if expected[key] is not None:torch.testing.assert_close(actual[key],expected[key],rtol=2e-13,atol=1.)
+    with pytest.raises(ValueError):m.ocean.reference.evaluate(state.ocean.salinity(),state.ocean.temperature()*0+100.)
+    with pytest.raises(ValueError):m.compile_thermodynamics(backend='inductor')
