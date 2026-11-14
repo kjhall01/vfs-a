@@ -1,0 +1,22 @@
+diff --git a/validation/temperature_coordinate/roquet_campaign.py b/validation/temperature_coordinate/roquet_campaign.py
+index e451c07..e42eace 100644
+--- a/validation/temperature_coordinate/roquet_campaign.py
++++ b/validation/temperature_coordinate/roquet_campaign.py
+@@ -38,7 +38,9 @@ def wave_setup(cells):
+     j,_,state,_,h0,meta,_=build('wave',cells,2,False);s=state.ocean
+     m=model(s.mesh,s.column,1,False);m.ocean.base.dynamics.mechanical.rotation_rate=0.
+     z=m.ocean.energy.base.height(s);xyz=s.mesh.cell_xyz
+-    lon=torch.atan2(xyz[:,1:2],xyz[:,0:1])*180/math.pi;lat=torch.asin(xyz[:,2:3])*180/math.pi
++    # A 100-km idealized sphere has no real-world geographic composition map.
++    # Use one declared reference-water location, preserving horizontal uniformity.
++    lon=torch.full_like(xyz[:,:1],-30.);lat=torch.full_like(xyz[:,2:3],45.)
+     converted=convert_jmd95_initialization(potential_temperature_ipts68=s.temperature(),practical_salinity=s.salinity(),pressure_dbar=-s.column.rho0*s.column.gravity*z/1e4,longitude=lon,latitude=lat)
+     sa=converted['absolute_salinity'];c=m.config;target=anomaly(j,s)
+     d0=c.t+2*c.tt*c.CT0-c.tz*z;rhs=target-c.s*(sa-c.SA0)
+@@ -46,5 +48,5 @@ def wave_setup(cells):
+     if (disc<=0).any():raise ValueError('no matching density root')
+     t=c.CT0+2*rhs/(d0-torch.sqrt(disc))
+     out=m.state(u_e=s.u_e,h=s.h,conservative_temperature=t,absolute_salinity=sa)
+-    meta.update(initial_density_anomaly_mismatch=float((m.config.anomaly(t,sa,z)-target).abs().max()),initial_CT_adjustment_from_GSW_rms=float((t-converted['conservative_temperature']).square().mean().sqrt()),rest_thickness=h0.tolist())
++    meta.update(conversion_location='uniform lon=-30 deg, lat=45 deg; idealized reference water',initial_density_anomaly_mismatch=float((m.config.anomaly(t,sa,z)-target).abs().max()),initial_CT_adjustment_from_GSW_rms=float((t-converted['conservative_temperature']).square().mean().sqrt()),rest_thickness=h0.tolist())
+     return m,out,{},meta

@@ -751,3 +751,10 @@ The subsequent [matched-EOS qualification](../verification/ocean/matched-eos/REA
 adds reproducible wave, rotating-flow and isolated mixing comparisons plus EOS
 response diagnostics. Runtime code/defaults are unchanged. Close matched warm
 cases do not establish accurate cold-water formation or global climate behavior.
+
+The [Roquet freezing research configuration](../validation/temperature_coordinate/ROQUET.md)
+adds CT/SA polynomial thermodynamics without changing supported JMD95 defaults.
+Independent derivative/work checks and the installed-wheel portable suite are
+recorded in [its qualification report](../verification/ocean/roquet/README.md).
+Density coefficients are published; the accompanying constant-cp entropy model
+is explicitly idealized. This does not constitute TEOS-10 or climate qualification.

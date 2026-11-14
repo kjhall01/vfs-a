@@ -1,0 +1,37 @@
+{
+  "conversion_location": "uniform lon=-30, lat=45; idealized reference water",
+  "cells": 1024,
+  "layers": 64,
+  "dt": 60.0,
+  "mixing_substeps": 4,
+  "ale_every": 1,
+  "threads": 1,
+  "dtype": "float64",
+  "torch": "2.15.0+cpu",
+  "cases": {
+    "compiled_jmd95": {
+      "samples_s": [
+        11.379495699999097,
+        11.518309855000552,
+        11.261839885999507
+      ],
+      "median_step_s": 11.379495699999097
+    },
+    "linear": {
+      "samples_s": [
+        2.256552054997883,
+        2.717310717998771,
+        2.4099154379982792
+      ],
+      "median_step_s": 2.4099154379982792
+    },
+    "roquet": {
+      "samples_s": [
+        2.7507988909965206,
+        2.663483077001729,
+        2.71941446299752
+      ],
+      "median_step_s": 2.71941446299752
+    }
+  }
+}
