@@ -1,5 +1,14 @@
 # Current package documentation
 
+The opt-in [coupled ocean–ice wrapper](../validation/sea_ice/COUPLED.md) now
+composes actual Roquet ocean dynamics with category transport, ice loading,
+bounded zero-work rotation, wind, reciprocal midpoint drag to ocean TKE,
+compression and category phase/momentum exchange. All use the same full-H
+functional; packaged defaults remain unchanged. It is compression-only research
+ice, without shear rheology or calibrated thickness distribution. See
+[coupled evidence](../verification/ocean/sea-ice/coupled/README.md) for budget,
+melting, coastal, timestep and installed-wheel checks. CPU float64 only.
+
 The opt-in [GM–Redi research operator](../validation/temperature_coordinate/GMREDI.md)
 now requires a prognostic mesoscale-energy reservoir, distinct from turbulent
 TKE. One full Roquet Hamiltonian supplies totals, discrete conjugates and finite

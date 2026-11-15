@@ -1054,3 +1054,35 @@ Final installed-wheel portable regression outside the checkout: 1255 passed,
 2 skipped. Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry
 helpers). Research modules were explicitly copied into the external harness;
 no packaged source changed. CPU float64 only.
+
+## Coupled moving ocean–ice research model (2026-11-15)
+
+Added category transport with energy-adjoint forces, ocean loading, bounded
+zero-work ice rotation, prescribed wind, reciprocal implicit drag to ocean TKE,
+all-category compression and category-aware freezing/melting with donor momentum
+transfer. The full Roquet/category Hamiltonian is shared throughout. The wrapper
+preserves existing vertical mixing and mesoscale backscatter composition. No
+packaged numerical kernels or defaults changed.
+
+Nine global/coastal experiments complete (2010 steps, 57 aggregate model hours),
+including one full day, moving ice margins and complete melting. Peak energy
+residuals range from 5.26e-7 to 1.82e-3 J/m²; water/salt relative errors remain
+below 1.19e-15. Melt-case timestep halving decreases the peak energy residual
+1.87e-4 → 2.32e-5 J/m². These are coarse numerical coupling checks, not climate
+qualification. Final focused coverage is 66 passing ice tests (38 new coupling
+tests); independent derivatives/work, phase momentum and smooth backward checks
+are included. Portable frozen comparisons pass. See [full evidence and external
+suite logs](../verification/ocean/sea-ice/coupled/README.md).
+
+Explicit drag and inverse-mass PV rotation failed near disappearing ice during
+development. Implicit midpoint drag and bounded harmonic-mass zero-work rotation
+resolve the demonstrated failure. The rotation extension claims energy closure,
+not discrete PV conservation. Compression-only ice remains without shear/elastic
+rheology, snow or brine physics. CPU float64 only; selected local backward checks
+are not a long-horizon differentiability qualification.
+
+External installed-wheel portable suite: 1292 passed, 2 skipped. The final
+partial-margin drag correction and one additional regression test then passed
+in the final 66-test ice suite (1293 distinct passing tests across both runs).
+Frozen tolerances are unchanged; the platform exact-mode mismatch is retained
+in the evidence rather than suppressed.

@@ -1,0 +1,39 @@
+{
+  "cells": 32,
+  "layers": 3,
+  "dt": 60.0,
+  "hours": 1.0,
+  "wind_m_s": 8.0,
+  "heat_W_m2": -30.0,
+  "coast": false,
+  "patch": false,
+  "steps": 60,
+  "wall_seconds": 4.924920443998417,
+  "seconds_per_step": 0.08208200739997361,
+  "peak_energy_error_J_m2": 1.1033309532280723e-05,
+  "peak_relative_water_error": 3.130297390306511e-16,
+  "peak_relative_salt_error": 2.9523372747426167e-16,
+  "initial_ice_kg": 1.1693314288326806e+17,
+  "final": {
+    "seconds": 3600.0,
+    "energy_error_J_m2": 1.0900953181823246e-05,
+    "relative_water_error": 1.5651486951532555e-16,
+    "relative_salt_error": 2.9523372747426167e-16,
+    "max_ice_speed_m_s": 0.2459567590297764,
+    "max_ocean_speed_m_s": 0.07738799235892074,
+    "min_coverage": 0.5410790227854526,
+    "max_coverage": 0.6586942125520603,
+    "total_ice_kg": 1.1709807281546664e+17,
+    "ocean_tke_J": 1.7470826013343408e+16
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "source_sha256": {
+    "run_coupled.py": "93d802a50c440d112f0d34c9fbb1dd96fe990e72f7422983b0b17680313e2cbc",
+    "ocean_ice.py": "9aa08e43fed7f3b0c77e041113f1630ea9def6d767d8923b07ba975faa54e051",
+    "category_phase.py": "44ad80734ac1450b97a20a3a8f1b6c9c67b7369e12fd9d3ec63a04bb693b8034",
+    "ice_drag.py": "003dad4691b2717cfe62360eaa9bfb2d9c180bd3753eadf1912b82abdd5894ca",
+    "ridging.py": "7dbc5f453a5183986c8fc89971a3a18adde55d59030fcb769776fe44b6f58c2a",
+    "ice.py": "96a73a9665ef1d632cc5e4f7373173a5a627817ebbafdab2eceecb6b9dc35f82"
+  }
+}

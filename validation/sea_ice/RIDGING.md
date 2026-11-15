@@ -1,5 +1,9 @@
 # Compression stress and two-category ridging
 
+The subsequent [coupled ocean–ice wrapper](COUPLED.md) composes transport,
+loading, rotation, reciprocal drag, wind and category-aware phase change.
+The isolated API described below retains its original scope.
+
 `ridging.py` is an opt-in **isolated mechanics operator** on the existing Voronoi
 mesh. It advances ice velocity, category area/volume and ocean surface thermal
 content. It does not run ocean dynamics, transport, drag, Coriolis, freezing,

@@ -1,5 +1,9 @@
 # Hamiltonian ocean–ice columns
 
+The subsequent [coupled ocean–ice wrapper](COUPLED.md) composes transport,
+loading, rotation, reciprocal drag, wind and category-aware phase change.
+The isolated API described below retains its original scope.
+
 An opt-in research component, **stationary columns only**, based on the useful
 thermodynamic ideas in the October 2026 `VFS-main.zip` prototype. No packaged
 model defaults change. This is not yet a moving-ocean sea-ice configuration.
