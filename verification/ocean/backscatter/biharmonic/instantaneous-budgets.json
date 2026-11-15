@@ -1,0 +1,38 @@
+[
+  {
+    "coast": false,
+    "nu2": 0.0,
+    "nu4": 1000000000000000.0,
+    "full_H_power_residual_W_kg": 0.0,
+    "sink_power_W_kg": -3.6597503626921885e-13,
+    "reservoir_gain_W_kg": 3.6597503626921875e-13,
+    "redistribution_sum_W_kg": -2.850172471513345e-29
+  },
+  {
+    "coast": false,
+    "nu2": 1000000000000.0,
+    "nu4": 1000000000000000.0,
+    "full_H_power_residual_W_kg": 0.0,
+    "sink_power_W_kg": -3.6597503626921885e-13,
+    "reservoir_gain_W_kg": 3.6597503626921875e-13,
+    "redistribution_sum_W_kg": -2.850172471513345e-29
+  },
+  {
+    "coast": true,
+    "nu2": 0.0,
+    "nu4": 1000000000000000.0,
+    "full_H_power_residual_W_kg": -5.543803047766569e-29,
+    "sink_power_W_kg": -2.7021868402871175e-13,
+    "reservoir_gain_W_kg": 2.7021868402871165e-13,
+    "redistribution_sum_W_kg": -2.598657678640579e-29
+  },
+  {
+    "coast": true,
+    "nu2": 1000000000000.0,
+    "nu4": 1000000000000000.0,
+    "full_H_power_residual_W_kg": 0.0,
+    "sink_power_W_kg": -2.7021868402871175e-13,
+    "reservoir_gain_W_kg": 2.7021868402871165e-13,
+    "redistribution_sum_W_kg": -2.598657678640579e-29
+  }
+]

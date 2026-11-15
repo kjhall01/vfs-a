@@ -1956,3 +1956,18 @@ physical spatial quality is not qualified. Stratified bathymetric rest has small
 spurious currents that decrease with vertical refinement. No model methods were
 changed. See [evaluation evidence](../verification/ocean/integrated/README.md)
 and `validation/ocean_evaluation/README.md` for the reusable local runner.
+
+## Budgeted biharmonic sink (2026-11-14)
+
+`EddyBackscatter(..., biharmonic_viscosity=nu4)` adds opt-in rotational
+biharmonic damping with nonnegative dissipation deposited into the mesoscale
+reservoir. The full Hamiltonian supplies the metric. Local viscous energy
+redistribution is explicit in the report; global pairing closes to roundoff.
+No finite-step repair, floor, or altered default is introduced.
+
+Installed-wheel CPU float64 suite: 1227 passed, 2 skipped; both frozen
+comparisons pass. Six two-day coupled comparisons complete. At 128 cells the
+peak-speed spike falls from 1.86 to .216 m/s and single-edge KE concentration
+from 22.1% to 5.24%; at 256 cells the concentration falls from 38.3% to 7.58%.
+This is a short-run improvement, not mesoscale calibration or climate skill.
+See [implementation/evidence](../verification/ocean/backscatter/biharmonic/README.md).

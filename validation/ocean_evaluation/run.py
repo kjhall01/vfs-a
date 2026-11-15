@@ -86,7 +86,10 @@ class Experiment:
             heating=RoquetHeating(0.6, (0.5, 20.0)) if forced else None,
             backscatter=(
                 EddyBackscatter(
-                    args.viscosity, args.backscatter_days * DAY, args.fraction
+                    args.viscosity,
+                    args.backscatter_days * DAY,
+                    args.fraction,
+                    biharmonic_viscosity=args.biharmonic_viscosity,
                 )
                 if variant == "backscatter"
                 else None
@@ -160,6 +163,7 @@ class Experiment:
             dissipated_J_kg=0.0,
             closure_residual_J_kg=0.0,
             backscatter_work_J_kg=0.0,
+            biharmonic_gain_J_kg=0.0,
         )
         self.max_closure = self.max_power = 0.0
         self.min_vertex_scale = 1.0
@@ -176,11 +180,18 @@ class Experiment:
         wet = mass > 0
         for weight, r in zip((1 / 6, 1 / 6, 2 / 3), getattr(report, "backscatter", ())):
             self.cumulative["backscatter_work_J_kg"] += (
-                dt * weight * float(r.kinetic_power) / self.mass
+                dt
+                * weight
+                * float(r.kinetic_power - r.biharmonic_kinetic_power)
+                / self.mass
+            )
+            self.cumulative["biharmonic_gain_J_kg"] += (
+                dt * weight * float(r.biharmonic_reservoir_power) / self.mass
             )
             self.max_power = max(
                 self.max_power,
                 float((r.local_power_residual[wet].abs() / mass[wet]).max()),
+                float((r.kinetic_power + r.reservoir_power).abs()) / self.mass,
             )
             self.min_vertex_scale = min(
                 self.min_vertex_scale, float(r.vertex_scale.min())
@@ -328,7 +339,9 @@ def run(args, variant):
         write_json(directory / "summary.json", summary)
         with (directory / "series.csv").open("w", newline="") as stream:
             initial = experiment.diagnostics(state, 0.0)
-            writer = csv.DictWriter(stream, fieldnames=initial.keys(), lineterminator="\n")
+            writer = csv.DictWriter(
+                stream, fieldnames=initial.keys(), lineterminator="\n"
+            )
             writer.writeheader()
             writer.writerow(initial)
             stream.flush()
@@ -421,6 +434,12 @@ def main():
     p.add_argument("--redi", type=float, default=100.0)
     p.add_argument("--length", type=float, default=10000.0)
     p.add_argument("--viscosity", type=float, default=1e4)
+    p.add_argument(
+        "--biharmonic-viscosity",
+        type=float,
+        default=0.0,
+        help="rotational biharmonic sink coefficient [m^4/s]",
+    )
     p.add_argument("--backscatter-days", type=float, default=1.0)
     p.add_argument("--fraction", type=float, default=0.25)
     p.add_argument("--decay-days", type=float, default=30.0)

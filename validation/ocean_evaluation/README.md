@@ -109,3 +109,15 @@ mesh dimensions at the speed maximum. These are screens, not energy spectra.
 See `verification/ocean/integrated/README.md` for the completed 17-run evaluation.
 Backscatter showed strong short-edge concentration despite small energy errors;
 the default parameters are experimental, not a recommended ocean setup.
+
+
+## Optional budgeted biharmonic sink
+
+For a paired sink/backscatter comparison add `--biharmonic-viscosity 1e13`
+(coefficient in m^4/s) to a channel run. It acts only in the `backscatter`
+variant, also allowing sink-only experiments with `--viscosity 0`. The default
+is zero. `biharmonic_gain_J_kg` records resolved KE returned to the reservoir;
+`backscatter_work_J_kg` retains the negative-viscosity work alone. The reported
+power-residual maximum includes both the local budget (with conservative
+viscous redistribution) and the global kinetic/reservoir power imbalance.
+These coefficient values are experimental, not calibrated or safe at all grids.

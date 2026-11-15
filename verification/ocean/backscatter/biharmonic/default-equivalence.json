@@ -1,0 +1,6 @@
+{
+  "reference_revision": "5f8d96635edb8177ecaa84de41fcdc8e8b6a9cbc",
+  "tensor_comparisons": 90,
+  "bitwise_equal": true,
+  "cases": 6
+}

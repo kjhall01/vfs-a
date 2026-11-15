@@ -15,6 +15,9 @@ class BackscatterReport:
     local_power_residual: torch.Tensor  # W/cell/layer
     power_allowance: torch.Tensor  # W/cell/layer
     vertex_scale: torch.Tensor  # [vertex, layer], no global minimum
+    biharmonic_kinetic_power: torch.Tensor  # W, nonpositive globally
+    biharmonic_reservoir_power: torch.Tensor  # W, nonnegative
+    local_energy_redistribution: torch.Tensor  # W/cell/layer, sums to zero
 
 
 @dataclass(frozen=True)
@@ -24,7 +27,7 @@ class BackscatterStepReport(TKEStepReport):
 
 @dataclass(frozen=True)
 class EddyBackscatter:
-    """Negative rotational viscosity, paired with a local reservoir tendency.
+    """Funded negative viscosity and an optional budgeted biharmonic sink.
 
     Positive viscosity [m²/s] is its magnitude. Local available power is
     fraction*E/timescale [W]. There is no timestep in this constitutive law.
@@ -33,19 +36,26 @@ class EddyBackscatter:
     viscosity: float
     timescale: float
     fraction: float
+    biharmonic_viscosity: float = 0.0  # m^4/s; zero preserves the original path
 
     def __post_init__(self):
         if (
             not all(
                 math.isfinite(x)
-                for x in (self.viscosity, self.timescale, self.fraction)
+                for x in (
+                    self.viscosity,
+                    self.timescale,
+                    self.fraction,
+                    self.biharmonic_viscosity,
+                )
             )
+            or self.biharmonic_viscosity < 0
             or self.viscosity < 0
             or self.timescale <= 0
             or not 0 <= self.fraction <= 1
         ):
             raise ValueError(
-                "finite viscosity >= 0, timescale > 0 and 0 <= fraction <= 1 required"
+                "finite viscosities >= 0, timescale > 0 and 0 <= fraction <= 1 required"
             )
 
     def tendency(self, model, state):
@@ -112,6 +122,38 @@ class EddyBackscatter:
         tolerance = 256 * torch.finfo(u.dtype).eps * (allowance + local.abs())
         if (local > allowance + tolerance).any():
             raise FloatingPointError("local backscatter power exceeds allowance")
+        # L is positive and self-adjoint in the instantaneous kinetic metric:
+        # L v = mask C*(h_v C(mask v))/h_e. Therefore -nu4 L(Lu)
+        # removes nu4 <Lu,Lu>_M from resolved KE even with variable thickness.
+        # Mask between BOTH applications: coast projection is part of L.
+        sink_power = local.new_zeros(())
+        gain = torch.zeros_like(local)
+        redistribution = torch.zeros_like(local)
+        if self.biharmonic_viscosity > 0:
+
+            def rotational_laplacian(v):
+                if domain is not None:
+                    v = domain.apply_edge(v)
+                out = mesh.curl_adjoint(hv * mesh.curl(v)) / he
+                return out if domain is None else domain.apply_edge(out)
+
+            lap_u = rotational_laplacian(u)
+            sink = -self.biharmonic_viscosity * rotational_laplacian(lap_u)
+            sink_local = H.kinetic_power(state, sink)
+            # Positive quadratic dissipation is deposited locally via I^T.
+            # Signed u*F also contains conservative energy transport. Retain
+            # that redistribution explicitly instead of debiting empty cells.
+            gain = base.interpolation_transpose(
+                mesh, self.biharmonic_viscosity * metric * lap_u.square()
+            )
+            redistribution = sink_local + gain
+            force = force + sink
+            local = local + sink_local
+            reservoir_rhs = reservoir_rhs + gain / safe_mass
+            reservoir_power = mass * reservoir_rhs
+            sink_power = sink_local.sum()
+            if not all(torch.isfinite(x).all() for x in (force, reservoir_rhs, gain)):
+                raise FloatingPointError("nonfinite biharmonic tendency")
         return (
             force,
             reservoir_rhs,
@@ -119,8 +161,11 @@ class EddyBackscatter:
                 local.sum(),
                 reservoir_power.sum(),
                 local,
-                local + reservoir_power,
+                local + reservoir_power - redistribution,
                 allowance,
                 scale,
+                sink_power,
+                gain.sum(),
+                redistribution,
             ),
         )
