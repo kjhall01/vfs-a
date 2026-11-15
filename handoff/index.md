@@ -1,5 +1,13 @@
 # Current package documentation
 
+The opt-in [snow-on-ice wrapper](../validation/sea_ice/SNOW.md) now adds
+accumulation, snow-first melt, category transport/ridging, insulation and albedo.
+Snow mass is a labelled subset of total frozen ice-equivalent volume; it is not
+counted twice in the shared Hamiltonian. Porous depth affects surface physics,
+while mechanics retain ice-equivalent geometry. Snowfall includes an explicit
+incoming mass/energy ledger and applies only to existing ice-covered area.
+See [verification](../verification/ocean/sea-ice/snow/README.md).
+
 The opt-in [coupled ocean–ice wrapper](../validation/sea_ice/COUPLED.md) now
 composes actual Roquet ocean dynamics with category transport, ice loading,
 bounded zero-work rotation, wind, reciprocal midpoint drag to ocean TKE,

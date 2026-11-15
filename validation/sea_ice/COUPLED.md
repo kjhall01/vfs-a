@@ -1,5 +1,8 @@
 # Coupled ocean and category ice
 
+The optional [snow wrapper](SNOW.md) adds accumulation/melt, transport, insulation
+and albedo while retaining ice-equivalent mechanical geometry.
+
 `OceanIce` is an opt-in research wrapper around `RoquetOcean`. It now advances
 actual ocean dynamics and moving two-category ice together. Packaged ocean and
 atmospheric defaults remain unchanged. `run_coupled.py` supplies reproducible

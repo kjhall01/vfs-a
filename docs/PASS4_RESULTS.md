@@ -1086,3 +1086,28 @@ partial-margin drag correction and one additional regression test then passed
 in the final 66-test ice suite (1293 distinct passing tests across both runs).
 Frozen tolerances are unchanged; the platform exact-mode mismatch is retained
 in the evidence rather than suppressed.
+
+## Zero-layer snow on moving category ice
+
+Added opt-in snow accumulation, carrier-consistent advection/ridging, snow-first
+melt, insulation and smoothly depth-dependent albedo. Snow is a labelled subset
+of total frozen ice-equivalent volume, with an explicit snowfall mass/energy
+boundary ledger. Snow-only melting preserves underlying ice volume and area.
+The shared Hamiltonian counts snow once; porous depth affects surface exchange
+while mechanical geometry remains ice-equivalent. No packaged default changed.
+
+Fifteen new tests cover mass/energy/momentum, analytic phase derivatives, snow
+transport and redistribution, coastal/open-water behavior, optical/thermal
+responses and a smooth backward check. The bare coupled step is bitwise equal
+to its predecessor. Five moving coupled experiments complete (1980 steps,
+54 aggregate model hours), including coastal ice and complete melting. Peak
+energy residuals are below 1.8e-5 J/m²; ordinary-cycle dt halving decreases the
+residual from 1.27e-5 to 1.02e-6 J/m². [Evidence and runnable commands](../verification/ocean/sea-ice/snow/README.md).
+
+This is zero-layer snow with fixed density and illustrative albedos, not porous
+snow gravitational geometry, snow enthalpy, separate basal/surface melt fronts,
+snow aging, brine or complete precipitation forcing. Incoming snow is co-moving
+and only the ice-covered fraction is intercepted. CPU float64 only.
+
+Final external installed-wheel portable regression: 1308 passed, 2 skipped.
+Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry helpers).

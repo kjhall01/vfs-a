@@ -1,0 +1,52 @@
+{
+  "configuration": {
+    "cells": 32,
+    "hours": 6.0,
+    "dt": 120.0,
+    "snowfall": 0.0002,
+    "cold_air": -15.0,
+    "warm_air": 30.0,
+    "cold_sun": 0.0,
+    "warm_sun": 20000.0,
+    "wind": 4.0,
+    "coast": false,
+    "patch": false,
+    "no_snow_feedback": false,
+    "verbose": true,
+    "output": "verification/ocean/sea-ice/snow/full-melt"
+  },
+  "steps": 180,
+  "wall_seconds": 16.147728837000614,
+  "seconds_per_step": 0.08970960465000341,
+  "peak_energy_error_J_m2": 4.3746817331646026e-06,
+  "peak_relative_water_error": 3.811145192671266e-16,
+  "peak_relative_salt_error": 2.9523372747426167e-16,
+  "peak_snow_kg": 664818819350607.0,
+  "final": {
+    "seconds": 21600.0,
+    "energy_error_J_m2": 4.078650638439178e-06,
+    "relative_water_error": -1.572659670260459e-16,
+    "relative_salt_error": -1.4761686373713084e-16,
+    "snow_kg": 0.0,
+    "incoming_snow_kg": 664818819350606.6,
+    "melted_snow_kg": 664818819350607.0,
+    "solid_kg": 0.0,
+    "max_snow_depth_m": 0.0,
+    "mean_albedo": 0.060000000000000005,
+    "absorbed_shortwave_W_m2": 18800.0,
+    "mean_surface_heat_W_m2": 19104.806082658168,
+    "max_ice_speed_m_s": 0.0
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "source_sha256": {
+    "run_snow.py": "aa103bfade9e5b3ac3fe390e50e1b436d601ccf9e68250934b8455fdf0c5e58f",
+    "snow.py": "05854d9b0b6e3fb7ecb578422071c630d88f37c2ed9847c96ca00920fe337213",
+    "run_coupled.py": "93d802a50c440d112f0d34c9fbb1dd96fe990e72f7422983b0b17680313e2cbc",
+    "ocean_ice.py": "9aa08e43fed7f3b0c77e041113f1630ea9def6d767d8923b07ba975faa54e051",
+    "category_phase.py": "44ad80734ac1450b97a20a3a8f1b6c9c67b7369e12fd9d3ec63a04bb693b8034",
+    "ice_drag.py": "003dad4691b2717cfe62360eaa9bfb2d9c180bd3753eadf1912b82abdd5894ca",
+    "ridging.py": "7dbc5f453a5183986c8fc89971a3a18adde55d59030fcb769776fe44b6f58c2a",
+    "ice.py": "96a73a9665ef1d632cc5e4f7373173a5a627817ebbafdab2eceecb6b9dc35f82"
+  }
+}

@@ -1,5 +1,8 @@
 # Hamiltonian ocean–ice columns
 
+See [moving snow on sea ice](SNOW.md) for the subsequent accumulation, melt,
+insulation and albedo extension and its energy/mass ownership.
+
 The subsequent [coupled ocean–ice wrapper](COUPLED.md) composes transport,
 loading, rotation, reciprocal drag, wind and category-aware phase change.
 The isolated API described below retains its original scope.
