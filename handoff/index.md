@@ -1,5 +1,16 @@
 # Current package documentation
 
+The opt-in [coupled freshwater boundary](../validation/sea_ice/FRESHWATER.md)
+adds rain, whole-cell snowfall, open-water evaporation, snow-first sublimation
+and prescribed river discharge to `SnowOceanIce.step`. It changes actual liquid
+mass while retaining salt and accounts for incoming momentum/enthalpy, latent
+cooling and work against overlying ice in the shared Hamiltonian. River receivers
+and velocities are explicit; land hydrology and atmospheric bulk laws are absent.
+Installed-wheel portable suite: 1330 passed, 2 skipped; both frozen comparisons
+pass. Seven six-hour CPU float64 experiments retain water/salt budgets near
+roundoff and peak accumulated energy residual below 1.75e-6 J/m². See
+[evidence and limitations](../verification/ocean/sea-ice/freshwater/README.md).
+
 The opt-in [snow-on-ice wrapper](../validation/sea_ice/SNOW.md) now adds
 accumulation, snow-first melt, category transport/ridging, insulation and albedo.
 Snow mass is a labelled subset of total frozen ice-equivalent volume; it is not

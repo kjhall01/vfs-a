@@ -1,0 +1,45 @@
+{
+  "configuration": {
+    "cells": 128,
+    "hours": 6.0,
+    "dt": 120.0,
+    "coast": true,
+    "case": "mixed",
+    "verbose": true,
+    "output": "/workspace/scratch/b16610c53df7/vfs-freshwater/verification/ocean/sea-ice/freshwater/coast128"
+  },
+  "steps": 180,
+  "wall_seconds": 22.07284795200394,
+  "peak_energy_error_J_m2": 7.369195960448977e-07,
+  "peak_relative_water_error": 2.3944245131150064e-16,
+  "peak_relative_salt_error": 3.9351943014994134e-16,
+  "peak_boundary_energy_error_J_m2": 4.351428330807957e-07,
+  "final": {
+    "seconds": 21600.0,
+    "energy_error_J_m2": -4.740467278114723e-07,
+    "relative_water_error": 7.486813444166241e-17,
+    "relative_salt_error": 1.9675971507497067e-16,
+    "boundary_energy_error_J_m2": 3.9787184935503496e-07,
+    "boundary_water_kg": 150198833424650.4,
+    "snow_kg": 27066679275094.156,
+    "solid_kg": 5.96125344462432e+16,
+    "min_salinity": 33.99999999999993,
+    "max_ice_speed_m_s": 0.14115606002881265
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "source_sha256": {
+    "run_freshwater.py": "eb2c53f284fed29bf9c01fd58728bfda8ea667ca747719a5ece712c4cf96516e",
+    "ice_drag.py": "003dad4691b2717cfe62360eaa9bfb2d9c180bd3753eadf1912b82abdd5894ca",
+    "ice.py": "96a73a9665ef1d632cc5e4f7373173a5a627817ebbafdab2eceecb6b9dc35f82",
+    "category_phase.py": "44ad80734ac1450b97a20a3a8f1b6c9c67b7369e12fd9d3ec63a04bb693b8034",
+    "run_snow.py": "aa103bfade9e5b3ac3fe390e50e1b436d601ccf9e68250934b8455fdf0c5e58f",
+    "run_coupled.py": "93d802a50c440d112f0d34c9fbb1dd96fe990e72f7422983b0b17680313e2cbc",
+    "ocean_ice.py": "9aa08e43fed7f3b0c77e041113f1630ea9def6d767d8923b07ba975faa54e051",
+    "run.py": "0bb12dc1203cdba63cef2537462f88e5238e98b36ea3e3405b49986ff0665d4f",
+    "freshwater.py": "4e7f7d0d4b1f148ef4e8b535db8a1f975a217b0d22e5ba1af47f6a1ed084a194",
+    "ridging.py": "7dbc5f453a5183986c8fc89971a3a18adde55d59030fcb769776fe44b6f58c2a",
+    "snow.py": "2bbe85c0d70c266d019b653a11866dcb4ed397c89a9125414562fed648c4c045",
+    "run_ridging.py": "4185f3bded10a4d90c43f3e4eba0b51b04b34e7b45ac7e0aef0c3eee84322ae0"
+  }
+}

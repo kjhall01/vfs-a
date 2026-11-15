@@ -62,6 +62,7 @@ class SnowReport:
     snowfall_mass: torch.Tensor  # kg, only snow intercepted by covered area
     snowfall_energy: torch.Tensor  # J, boundary enthalpy plus incorporation work
     melted_snow: torch.Tensor  # kg, transferred to liquid by phase change
+    freshwater: tuple | None = None  # optional reports from the two boundary half steps
 
 
 class SnowPhase(CategoryThermodynamics):
@@ -318,9 +319,12 @@ class SnowOceanIce:
         shortwave=None,
         heat_flux=None,
         wind_velocity=None,
+        freshwater=None,
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
+        if freshwater is not None and snowfall is not None:
+            raise ValueError("use freshwater.snowfall or snowfall, not both")
         if heat_flux is not None and (
             air_temperature is not None or shortwave is not None
         ):
@@ -338,7 +342,18 @@ class SnowOceanIce:
                 else self.surface_flux(current, air_temperature, shortwave).heat
             )
 
-        state, dm0, ep0 = self.accumulate(state, 0.5 * dt, snowfall)
+        reports = None
+        if freshwater is None:
+            state, dm0, ep0 = self.accumulate(state, 0.5 * dt, snowfall)
+            boundary0 = ep0
+        else:
+            from freshwater import FreshwaterBoundary
+
+            boundary = FreshwaterBoundary(self)
+            state, report0 = boundary.apply(state, 0.5 * dt, freshwater)
+            dm0 = report0.inputs["snowfall_on_ice"].sum()
+            ep0 = report0.energy_inputs["snowfall_on_ice"].sum()
+            boundary0 = report0.external_energy
         state, q0, melt0 = self.phase_step(state, 0.5 * dt, flux(state))
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
@@ -362,7 +377,19 @@ class SnowOceanIce:
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         state, q1, melt1 = self.phase_step(state, 0.5 * dt, flux(state))
-        state, dm1, ep1 = self.accumulate(state, 0.5 * dt, snowfall)
+        if freshwater is None:
+            state, dm1, ep1 = self.accumulate(state, 0.5 * dt, snowfall)
+            boundary1 = ep1
+        else:
+            state, report1 = boundary.apply(state, 0.5 * dt, freshwater)
+            dm1 = report1.inputs["snowfall_on_ice"].sum()
+            ep1 = report1.energy_inputs["snowfall_on_ice"].sum()
+            boundary1 = report1.external_energy
+            reports = (report0, report1)
         return state, SnowReport(
-            work + q0 + q1 + ep0 + ep1, dm0 + dm1, ep0 + ep1, melt0 + melt1
+            work + q0 + q1 + boundary0 + boundary1,
+            dm0 + dm1,
+            ep0 + ep1,
+            melt0 + melt1,
+            reports,
         )

@@ -10,6 +10,7 @@
 | Moist model and steppers | [Moist API](MOIST_MODULE_API.md) |
 | Stratified ocean and vertical remapping | [Ocean API](OCEAN_INTEGRATION.md) |
 | Prescribed ocean freshwater and heat exchange | [Surface exchange](OCEAN_SURFACE_EXCHANGE.md) |
+| Coupled ocean–ice–snow freshwater and runoff | [Research freshwater boundary](../validation/sea_ice/FRESHWATER.md) |
 | Ocean radiation and prescribed heating | [Surface heating](OCEAN_RADIATION.md) |
 | Ocean wind stress and bottom drag | [Boundary stress](OCEAN_BOUNDARY_STRESS.md) |
 | Optional prognostic ocean turbulence | [TKE closure](OCEAN_TKE.md) |

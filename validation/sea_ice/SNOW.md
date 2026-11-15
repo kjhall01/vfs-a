@@ -4,6 +4,11 @@
 albedo to the existing coupled ocean/category-ice model. It is opt-in research
 code. Existing model defaults and numerical kernels are unchanged.
 
+For whole-cell precipitation, evaporation, sublimation and prescribed rivers,
+use the optional [`freshwater=` boundary](FRESHWATER.md). The legacy `snowfall=`
+interface below continues to handle only the covered fraction; the two arguments
+are mutually exclusive.
+
 ## State and energy ownership
 
 ```python
