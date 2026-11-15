@@ -1,15 +1,18 @@
 # Current package documentation
 
-The experimental [PyAM21 workflow](../workflows/pyam21/README.md) connects actual
-AM2 column physics to the native moist atmosphere, entirely outside `vfs/`.
-It preserves column water sources and dry-air inventory, uses a work-adjoint
-wind transfer, transports cloud fraction alongside unchanged bounded stages,
-and explicitly owns physics/radiation memory and restart state. It requires
-CPU float64, prescribed-SST open ocean and a host configured with gravity 9.8.
-**AM2/VFS thermodynamic and finite-source energy differences remain measured
-and uncorrected. This is not a Hamiltonian-closed atmosphere–ocean coupler.**
-The examples omit radiation; scheduler/flux/cache tests use a synthetic radiation
-package with the real upstream driver. See [verification](../verification/atmosphere/pyam21/README.md).
+The experimental [PyAM21 workflow](../workflows/pyam21/README.md) now defaults to
+conservative layer-energy transfer into the native atmospheric full Hamiltonian.
+The explicit surface ledger includes water enthalpy, kinetic/potential energy and
+water momentum. A local analytic-Jacobian CP entropy solve transfers AM2 energy
+while retaining any upstream imbalance. The original temperature mapping is
+available as `energy_mode="legacy"`; modes cannot share restart payloads.
+Actual upstream endpoints and remaining-amount donor mapping avoid condensate
+exhaustion cancellation without a floor or state clipping. All changes remain
+outside `vfs/`; physics/cloud memory, bounded dynamics and package defaults are
+unchanged. CPU float64 and a stationary prescribed-SST ocean only; gravity is
+explicitly 9.8. Real radiation and interactive ocean/ice remain unqualified.
+See [energy contract](../workflows/pyam21/ENERGY.md) and
+[current verification](../verification/atmosphere/pyam21/energy/README.md).
 
 The opt-in [coupled freshwater boundary](../validation/sea_ice/FRESHWATER.md)
 adds rain, whole-cell snowfall, open-water evaporation, snow-first sublimation

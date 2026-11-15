@@ -14,7 +14,9 @@ from vfs import (
 from .adapter import AM2Adapter
 
 
-def example(source, *, cells=32, levels=24, aquaplanet=False):
+def example(
+    source, *, cells=32, levels=24, aquaplanet=False, energy_mode="conservative"
+):
     """Analytic moist profile with BOMEX physics options, not the BOMEX case.
 
     There is no SCM large-scale forcing or radiation in this example. Surface
@@ -32,7 +34,7 @@ def example(source, *, cells=32, levels=24, aquaplanet=False):
     # Explicit workflow configuration BEFORE any prognostic state exists. The
     # native dynamics and every mass/energy diagnostic use this same parameter.
     model.dynamics.kernel.gravity = GRAV
-    adapter = AM2Adapter(model, nml)
+    adapter = AM2Adapter(model, nml, energy_mode=energy_mode)
     p = model.interface_pressure(100000.0)
     sine_lat = mesh.cell_xyz[:, 2]
     surface = 300.0 - (25 * sine_lat.square() if aquaplanet else 0 * sine_lat)

@@ -2,7 +2,7 @@
 
 This is an audited finite physics update, not a claim that AM2 conserves VFS H.
 Water sources change actual atmospheric mass; dry-air inventory is retained.
-Thermodynamic and representation differences are returned, never repaired.
+Energy transfer preserves AM2's own imbalance and reports it separately.
 """
 
 from dataclasses import asdict, replace
@@ -15,8 +15,9 @@ from pyam21.physics.am2 import AM2Physics
 from pyam21.time_manager import set_date, set_time
 from vfs.atmosphere.moist_conservative import MoistState
 from vfs.atmosphere.moist_cp import interface_pressure_mass
-from .mapping import ColumnMap, average, distribute, species_increment
+from .mapping import ColumnMap, average, distribute, species_increment, species_endpoint
 from .state import PhysicsState, PhysicsReport, copy_tree
+from .energy import exchanges, transfer_energy
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
 RAD_FIELDS = ("lw_alarm", "sw_alarm", "saved", "coszen")
@@ -32,8 +33,12 @@ class AM2Adapter:
         radiation=None,
         radiation_id=None,
         hprime=0.0,
+        energy_mode="conservative",
     ):
         self.model = model
+        if energy_mode not in ("conservative", "legacy"):
+            raise ValueError("energy_mode must be conservative or legacy")
+        self.energy_mode = energy_mode
         ref = model.mesh.cell_area
         if ref.dtype != torch.float64 or ref.device.type != "cpu":
             raise ValueError("this workflow currently requires CPU float64")
@@ -75,7 +80,8 @@ class AM2Adapter:
             gravity=model.dynamics.kernel.gravity,
             radiation=None if radiation is None else asdict(radiation.c),
             radiation_id=radiation_id,
-            schema=1,
+            energy_mode=energy_mode,
+            schema=2,
         )
         digest = hashlib.sha256(json.dumps(config, sort_keys=True).encode())
         for field in (
@@ -240,6 +246,14 @@ class AM2Adapter:
                 flux_u=cpl["flux_u"],
                 flux_v=cpl["flux_v"],
                 radiation=dn["diag"].get("radiation"),
+                endpoint_temperature=up["moist"]["tin"],
+                endpoint_tracers=torch.stack(
+                    [
+                        up["moist"][k]
+                        for k in ("qin", "lsc_liquid", "lsc_ice", "lsc_cloud_area")
+                    ],
+                    -1,
+                ),
             )
             rad = (
                 {}
@@ -252,7 +266,7 @@ class AM2Adapter:
                 for k, value in original_rad.items():
                     setattr(self.radiation, k, value)
 
-    def apply(self, state, dt, *, omega=None):
+    def apply(self, state, dt, *, omega=None, water_boundary=None):
         """Advance physics once; dt is a positive whole number of seconds.
 
         Dynamics have already been advanced by the caller, so their tendencies
@@ -283,9 +297,13 @@ class AM2Adapter:
         s = state.atmosphere
         column, geom = self.mapping.columns(s, state.cloud_fraction, omega)
         out, surf, mem, rad = self.column_call(state, dt, column, geom)
-        return self.apply_result(state, dt, column, geom, out, surf, mem, rad)
+        return self.apply_result(
+            state, dt, column, geom, out, surf, mem, rad, water_boundary=water_boundary
+        )
 
-    def apply_result(self, state, dt, column, geom, out, surf, mem, rad):
+    def apply_result(
+        self, state, dt, column, geom, out, surf, mem, rad, *, water_boundary=None
+    ):
         """Apply a checked upstream result; also permits isolated mapping tests."""
         s = state.atmosphere
         model, mapping = self.model, self.mapping
@@ -295,6 +313,33 @@ class AM2Adapter:
         dp, mass = p.diff(), interface_pressure_mass(p.diff())
         T1, R1 = column["T"] + dt * out["tdt"], column["tracers"] + dt * out["rdt"]
         eps = torch.finfo(T1.dtype).eps
+        if self.energy_mode == "conservative" and "endpoint_tracers" in out:
+            Tend, Rend = out["endpoint_temperature"], out["endpoint_tracers"]
+            for actual, expected in ((Tend, T1), (Rend, R1)):
+                if (
+                    actual.shape != expected.shape
+                    or actual.dtype != expected.dtype
+                    or actual.device != expected.device
+                    or not torch.isfinite(actual).all()
+                ):
+                    raise ValueError("invalid explicit PyAM21 endpoint")
+            # The port exposes its actual endpoint as well as tendencies. Use
+            # it to avoid reconstructing an exhausted store by cancellation.
+            # Available water bounds intermediate liquid/vapor/ice transfers.
+            water_scale = torch.maximum(
+                column["tracers"][..., :3].abs().sum(-1).amax(),
+                Rend[..., :3].abs().sum(-1).amax(),
+            )
+            tolerance = torch.cat((water_scale.expand(3), water_scale.new_ones(1))) * (
+                128 * eps
+            )
+            if ((Tend - T1).abs() > 128 * eps * column["T"].abs().amax()).any() or (
+                (Rend - R1).abs() > tolerance
+            ).any():
+                raise ValueError(
+                    "PyAM21 endpoint and tendencies disagree beyond roundoff"
+                )
+            T1, R1 = Tend, Rend
         if not all(
             torch.isfinite(out[k]).all()
             for k in ("flux_t", "flux_q", "flux_u", "flux_v", "lprec", "fprec")
@@ -317,9 +362,17 @@ class AM2Adapter:
                 "PyAM21 returned an inadmissible finite column update; no clipping"
             )
         qw = s.water_content / mass[..., None]
-        amount = dt * dp[..., None] * out["rdt"][..., :3]
-        dw = species_increment(qw, amount)
-        water = s.water_content + dw
+        amount = (
+            dt * dp[..., None] * out["rdt"][..., :3]
+            if self.energy_mode == "legacy"
+            else dp[..., None] * (R1[..., :3] - column["tracers"][..., :3])
+        )
+        if self.energy_mode == "legacy":
+            dw = species_increment(qw, amount)
+            water = s.water_content + dw
+        else:
+            water = species_endpoint(s.water_content, dp, amount, R1[..., :3])
+            dw = water - s.water_content
         # Physics tendencies are interpreted as species amount sources on the
         # old carrier. Their sum changes ps, preserving column dry-air mass.
         ps = s.ps + amount.sum((1, 2))[:, None]
@@ -332,7 +385,12 @@ class AM2Adapter:
         # Map only the temperature increment. Never overwrite the original CP
         # profile with a lossy full-level round trip.
         Told = model.physical_fields(s)["temperature"]
-        Tnew = Told + distribute(dt * dp * out["tdt"]) / mass
+        heat_increment = (
+            dt * dp * out["tdt"]
+            if self.energy_mode == "legacy"
+            else dp * (T1 - column["T"])
+        )
+        Tnew = Told + distribute(heat_increment) / mass
         if (
             not torch.isfinite(Tnew).all()
             or (Tnew <= 0).any()
@@ -345,7 +403,11 @@ class AM2Adapter:
         entropy = torch.where(unchanged, s.entropy_content, entropy)
         # Cloud and clear fractions use complementary available stores for
         # increments, preserving [0,1] without clipping sharp boundaries.
-        dc = dt * dp * out["rdt"][..., 3]
+        dc = (
+            dt * dp * out["rdt"][..., 3]
+            if self.energy_mode == "legacy"
+            else dp * (R1[..., 3] - column["tracers"][..., 3])
+        )
         cloud = state.cloud_fraction
         positive = species_increment(1 - cloud, -dc.clamp_min(0))
         negative = species_increment(cloud, dc.clamp_max(0))
@@ -359,15 +421,29 @@ class AM2Adapter:
             s.mesh.cell_area[:, None, None] * dp[..., None] / g * velocity_increment
         )
         metric0, metric1 = mapping.metric(s), mapping.metric(trial)
-        u1 = s.u_e + impulse / metric1
+        budget = exchanges(self, state, dt, column, geom, out, water_boundary)
+        carrier_impulse = (
+            (metric1 - metric0) * s.u_e
+            if self.energy_mode == "legacy"
+            else budget["mass_impulse"]
+        )
+        u1 = (
+            s.u_e + impulse / metric1
+            if self.energy_mode == "legacy"
+            else s.u_e
+            + (impulse + carrier_impulse - (metric1 - metric0) * s.u_e) / metric1
+        )
         end = replace(trial, u_e=u1)
+        transfer = None
+        if self.energy_mode == "conservative":
+            end, transfer = transfer_energy(self, s, end, budget["target"])
+            transfer["target_layer_increment"] = budget["target"]
         result = PhysicsState(end, cloud1, mem, surf, rad, state.time_seconds + dt)
         self.check(result)
         actual_water = (water - s.water_content).sum(1) / g
         expected_water = amount.sum(1) / g
         dry0 = mass.sum(-1) - s.water_content.sum((1, 2))
         dry1 = mass1.sum(-1) - water.sum((1, 2))
-        carrier_impulse = (metric1 - metric0) * s.u_e
         fluxes = {
             k: out[k]
             for k in ("flux_t", "flux_q", "flux_u", "flux_v", "lprec", "fprec")
@@ -415,6 +491,8 @@ class AM2Adapter:
             + am2_constants.HLF * out["fprec"]
             + radiation_heat
         )
+        if self.energy_mode == "conservative":
+            am2_proxy_change = budget["am2_thermal"]
         delta_H = mapping.energy(end) - mapping.energy(s)
         native_ke = model.dynamics.kernel.cell_kinetic_energy
         ke0 = (dp / g * native_ke(model.dynamics.transport_state(s))).sum(-1)
@@ -437,9 +515,19 @@ class AM2Adapter:
                 mapping_and_carrier_difference=delta_H
                 - (ke1 - ke0)
                 - vfs_column_change,
+                am2_kinetic=budget["am2_kinetic"],
+                am2_boundary_energy=budget["am2_boundary"],
+                am2_energy_residual=budget["am2_residual"],
+                boundary_datum_change=budget["datum"],
+                external_energy=budget["external"],
+                radiation_flux_residual=budget["radiation_residual"],
+                transfer_residual=delta_H - budget["target"].sum(-1),
+                full_h_minus_external=delta_H - budget["external"],
+                **{"boundary_" + k: v for k, v in budget["terms"].items()},
             ),
             impulse,
             carrier_impulse,
             metric1 * u1 - metric0 * s.u_e - impulse - carrier_impulse,
             out,
+            transfer,
         )

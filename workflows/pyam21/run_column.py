@@ -19,7 +19,11 @@ def run(args, *, coupled=False):
     from workflows.pyam21.dynamics import step
 
     adapter, state = example(
-        args.source, cells=args.cells, levels=args.levels, aquaplanet=coupled
+        args.source,
+        cells=args.cells,
+        levels=args.levels,
+        aquaplanet=coupled,
+        energy_mode=args.energy_mode,
     )
     model = adapter.model
     area = model.mesh.cell_area
@@ -33,6 +37,9 @@ def run(args, *, coupled=False):
     declared_heat = torch.zeros_like(area)
     convention_change = torch.zeros_like(area)
     representation_change = torch.zeros_like(area)
+    external_energy = torch.zeros_like(area)
+    upstream_residual = torch.zeros_like(area)
+    transfer_residual = torch.zeros_like(area)
     rows = []
     start = time.perf_counter()
     seconds = args.hours * 3600
@@ -56,6 +63,9 @@ def run(args, *, coupled=False):
             representation_change += report.energy_changes[
                 "mapping_and_carrier_difference"
             ]
+            external_energy += report.energy_changes["external_energy"]
+            upstream_residual += report.energy_changes["am2_energy_residual"]
+            transfer_residual += report.energy_changes["transfer_residual"]
             now = model.diagnostics(state.atmosphere)
             water = now["species"].sum()
             dry = now["mass"] - water
@@ -80,6 +90,26 @@ def run(args, *, coupled=False):
                 temperature_min_K=float(
                     model.physical_fields(state.atmosphere)["temperature"].min()
                 ),
+                temperature_max_K=float(
+                    model.physical_fields(state.atmosphere)["temperature"].max()
+                ),
+                transfer_layer_max_J_m2=(
+                    0.0
+                    if report.energy_transfer is None
+                    else float(report.energy_transfer["layer_residual"].abs().max())
+                ),
+                transfer_log_temperature_max=(
+                    0.0
+                    if report.energy_transfer is None
+                    else float(
+                        report.energy_transfer["log_temperature_increment"].abs().max()
+                    )
+                ),
+                transfer_iterations=(
+                    0
+                    if report.energy_transfer is None
+                    else report.energy_transfer["iterations"]
+                ),
                 cloud_fraction_max=float(state.cloud_fraction.max()),
                 max_wind_m_s=float(state.atmosphere.u_e.abs().max()),
                 precipitation_kg_m2_s=mean(
@@ -91,6 +121,13 @@ def run(args, *, coupled=False):
                 cumulative_declared_heat_J_m2=mean(declared_heat),
                 cumulative_convention_change_J_m2=mean(convention_change),
                 cumulative_mapping_carrier_change_J_m2=mean(representation_change),
+                cumulative_external_energy_J_m2=mean(external_energy),
+                cumulative_am2_residual_J_m2=mean(upstream_residual),
+                cumulative_transfer_residual_J_m2=mean(transfer_residual),
+                cumulative_full_h_minus_external_J_m2=float(
+                    (now["energy"] - energy0) / area_total
+                )
+                - mean(external_energy),
                 vfs_minus_AM2_heat_ledger_J_m2=float(
                     (now["energy"] - energy0) / area_total
                 )
@@ -125,6 +162,9 @@ def run(args, *, coupled=False):
                 "water_flux_error_kg_m2",
                 "water_mapping_max_kg_m2",
                 "dynamics_energy_residual_J_m2",
+                "transfer_layer_max_J_m2",
+                "transfer_log_temperature_max",
+                "transfer_iterations",
             )
         },
         torch=torch.__version__,
@@ -154,6 +194,9 @@ def parser():
     p.add_argument("--dynamics-dt", type=float, default=15)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--verbose", action="store_true")
+    p.add_argument(
+        "--energy-mode", choices=("conservative", "legacy"), default="conservative"
+    )
     args = p.parse_args()
     if (
         args.cells < 16

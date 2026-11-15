@@ -1182,3 +1182,48 @@ ledger residual was 4.77e-12 kg/m² and peak relative dry-air change 2.13e-13.
 The six-hour mean VFS-minus-AM2-heat-ledger difference was +0.594 W/m² for
 columns, +0.424 W/m² with dynamics and +0.443 W/m² at half timestep. These
 remain unresolved energy-accounting differences, not a closure claim.
+
+## Conservative PyAM21 energy transfer
+
+The workflow now defaults to a finite conservative transfer of AM2 layer energy
+into native VFS full-H; `energy_mode="legacy"` retains the prior temperature
+mapping. No package source, defaults, dependencies or upstream physics changed.
+The independent surface ledger includes sensible heat, vapor/rain/snow enthalpy
+in the host mixture datum, transported-water kinetic/potential energy and net
+top-minus-bottom radiation. Water momentum enters through the same work-adjoint
+map at the bottom layer. The imposed ocean is stationary, hence zero stress work.
+Default precipitation temperature/velocity are the old lowest air level, with
+explicit overrides available; those are boundary assumptions, not AM2 outputs.
+
+Each native layer receives AM2's actual thermal/latent plus collocated kinetic
+increment and the surface-reference/mechanical difference. A cell-local CP
+entropy inversion uses an analytic two-entry-per-layer Jacobian and minimum-norm
+log-temperature Newton increments. It retains **any upstream energy imbalance**;
+an injected heat defect and actual disabled dissipative heating demonstrate this
+independently. Nonconvergence and invalid states reject without committing state.
+The allocation is a documented numerical choice, not an entropy-stability proof.
+
+Conservative mode uses actual upstream temperature/tracer endpoints, checking
+their agreement with the returned tendencies at roundoff. Remaining-amount donor
+mapping avoids subtraction errors when condensate is exhausted. Nonnegative
+interpolation weights transfer the supplied endpoint, including signed upstream
+roundoff; no moisture floor or state clipping is used. Focused regressions cover
+both exhaustion issues, explicit boundary momentum and topography, layer and
+global energy, phase/drag/precipitation signs, and a zero-source derivative.
+
+See [derivation and assumptions](../workflows/pyam21/ENERGY.md) and
+[current evidence](../verification/atmosphere/pyam21/energy/README.md).
+Interactive ocean/ice still requires a common enthalpy datum and shared flux
+record, reciprocal moving-surface stress and dissipation allocation. Full
+SeaEsfRad, production meshes, long climate runs and entropy stability remain
+unqualified; the examples continue to omit radiation.
+
+Final installed-wheel portable suite: 1,366 passed, 2 skipped, including 36
+workflow tests. Both frozen portable comparisons pass (142/93 tensors). Four
+conservative integrations complete 1,500 physics intervals over 19 model hours.
+The six-hour column full-H-minus-boundary residual is 1.03e-6 J/m²; aquaplanet
+residuals are 1.218e-3 J/m² at dt60/15 and 6.312e-4 J/m² at dt30/7.5, dominated
+by native dynamics drift. Accumulated transfer and upstream residuals stay near
+roundoff. The legacy six-hour run exactly reproduces all 7,920 archived scalar
+values. Final precipitation remains timestep-sensitive; energy closure is not
+cloud/climate accuracy qualification.

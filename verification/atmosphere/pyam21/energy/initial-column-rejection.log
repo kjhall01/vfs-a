@@ -1,0 +1,20 @@
+0.167 h: water residual 2.45e-16 kg/m2; Tmin 208.62 K; max wind 0 m/s
+0.333 h: water residual 1.13e-14 kg/m2; Tmin 208.49 K; max wind 0 m/s
+Traceback (most recent call last):
+  File "/workspace/scratch/b16610c53df7/pyam-energy-check/workflows/pyam21/run_column.py", line 215, in <module>
+    run(parser())
+  File "/workspace/scratch/b16610c53df7/pyam-energy-check/workflows/pyam21/run_column.py", line 52, in run
+    state, report = adapter.apply(state, dt)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b16610c53df7/pyam-energy-check/workflows/pyam21/adapter.py", line 292, in apply
+    return self.apply_result(
+           ^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b16610c53df7/pyam-energy-check/workflows/pyam21/adapter.py", line 387, in apply_result
+    end, transfer = transfer_energy(self, s, end, budget["target"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b16610c53df7/pyam-energy-check/workflows/pyam21/energy.py", line 201, in transfer_energy
+    ke1 = d.kernel.cell_kinetic_energy(d.transport_state(provisional))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py", line 460, in transport_state
+    raise ValueError(
+ValueError: require positive layer mass/vapor/dry air and nonnegative condensates (apart from admitted roundoff)
