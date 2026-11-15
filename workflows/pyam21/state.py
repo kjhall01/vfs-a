@@ -35,8 +35,9 @@ class PhysicsReport:
     dry_air_residual: torch.Tensor  # [cell] kg/m2
     water_mapping_residual: torch.Tensor  # [cell,3] kg/m2
     water_flux_residual: torch.Tensor  # [cell] kg/m2, actual increment - dt*(E-P)
-    energy_changes: dict  # [cell] J/m2; diagnostics, not an energy repair
+    energy_changes: dict  # [cell] J/m2; independent boundary/upstream/transfer ledgers
     edge_impulse: torch.Tensor  # [edge,level], kg m/s, work-adjoint physics impulse
-    carrier_impulse: torch.Tensor  # mass-source convention: co-moving native wind
+    carrier_impulse: torch.Tensor  # explicit surface-water impulse; legacy: co-moving
     momentum_residual: torch.Tensor
     column_result: dict  # exact outputs of the staged PyAM21 call
+    energy_transfer: dict | None = None  # layer constraints and nonlinear solve report

@@ -1,0 +1,40 @@
+0.167 h: water residual 8.58e-15 kg/m2; Tmin 208.62 K; max wind 0 m/s
+0.333 h: water residual -5.64e-15 kg/m2; Tmin 208.49 K; max wind 0 m/s
+0.500 h: water residual -6.37e-15 kg/m2; Tmin 208.45 K; max wind 0 m/s
+0.667 h: water residual -4.66e-15 kg/m2; Tmin 208.44 K; max wind 0 m/s
+0.833 h: water residual 4.9e-16 kg/m2; Tmin 208.43 K; max wind 0 m/s
+1.000 h: water residual -4.41e-15 kg/m2; Tmin 208.43 K; max wind 0 m/s
+1.167 h: water residual -2.45e-15 kg/m2; Tmin 208.42 K; max wind 0 m/s
+1.333 h: water residual -1.05e-14 kg/m2; Tmin 208.42 K; max wind 0 m/s
+1.500 h: water residual -6.37e-15 kg/m2; Tmin 208.41 K; max wind 0 m/s
+1.667 h: water residual -1.47e-15 kg/m2; Tmin 208.41 K; max wind 0 m/s
+1.833 h: water residual 4.9e-15 kg/m2; Tmin 208.40 K; max wind 0 m/s
+2.000 h: water residual 6.86e-15 kg/m2; Tmin 208.40 K; max wind 0 m/s
+2.167 h: water residual -3.43e-15 kg/m2; Tmin 208.39 K; max wind 0 m/s
+2.333 h: water residual 7.35e-15 kg/m2; Tmin 208.38 K; max wind 0 m/s
+2.500 h: water residual 1.27e-14 kg/m2; Tmin 208.38 K; max wind 0 m/s
+2.667 h: water residual 2.35e-14 kg/m2; Tmin 208.37 K; max wind 0 m/s
+2.833 h: water residual 1.76e-14 kg/m2; Tmin 208.37 K; max wind 0 m/s
+3.000 h: water residual 1.91e-14 kg/m2; Tmin 208.37 K; max wind 0 m/s
+3.167 h: water residual 1.91e-14 kg/m2; Tmin 208.36 K; max wind 0 m/s
+3.333 h: water residual 2.89e-14 kg/m2; Tmin 208.36 K; max wind 0 m/s
+3.500 h: water residual 1.99e-14 kg/m2; Tmin 208.34 K; max wind 0 m/s
+3.667 h: water residual 2.3e-14 kg/m2; Tmin 208.34 K; max wind 0 m/s
+3.833 h: water residual 1.96e-14 kg/m2; Tmin 208.34 K; max wind 0 m/s
+4.000 h: water residual 1.72e-14 kg/m2; Tmin 208.33 K; max wind 0 m/s
+4.167 h: water residual 2.35e-14 kg/m2; Tmin 208.33 K; max wind 0 m/s
+4.333 h: water residual 6.37e-15 kg/m2; Tmin 208.31 K; max wind 0 m/s
+4.500 h: water residual 1.72e-14 kg/m2; Tmin 208.31 K; max wind 0 m/s
+4.667 h: water residual 1.08e-14 kg/m2; Tmin 208.31 K; max wind 0 m/s
+Traceback (most recent call last):
+  File "/workspace/scratch/b16610c53df7/vfs-pyam21-energy/workflows/pyam21/run_column.py", line 215, in <module>
+    run(parser())
+  File "/workspace/scratch/b16610c53df7/vfs-pyam21-energy/workflows/pyam21/run_column.py", line 52, in run
+    state, report = adapter.apply(state, dt)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b16610c53df7/vfs-pyam21-energy/workflows/pyam21/adapter.py", line 292, in apply
+    return self.apply_result(
+           ^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/b16610c53df7/vfs-pyam21-energy/workflows/pyam21/adapter.py", line 326, in apply_result
+    raise ValueError(
+ValueError: PyAM21 returned an inadmissible finite column update; no clipping

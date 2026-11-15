@@ -31,6 +31,35 @@ def species_increment(fractions, amount):
     )
 
 
+def species_endpoint(contents, dp, amount, endpoint_fraction):
+    """Same donor map, evaluated from remaining amounts when a layer loses water.
+
+    Subtracting a nearly exhausted store can create a spurious negative CP amount.
+    The already-computed AM2 endpoint instead supplies the remaining layer store.
+    Nonnegative available stores define donor weights; admitted signed roundoff
+    cannot act as a negative donor. The endpoint itself is never clipped. A
+    species with no sources anywhere in a column retains its contents bitwise.
+    Additions retain the half-to-each convention for physical nonnegative stores.
+    """
+    fractions = contents / interface_pressure_mass(dp)[..., None]
+    remaining = dp[..., None] * endpoint_fraction
+    old_upper = 0.5 * dp[..., None] * fractions[:, :-1]
+    old_lower = 0.5 * dp[..., None] * fractions[:, 1:]
+    # These are interpolation weights, not clipped prognostic amounts. Their
+    # normalization transfers precisely the supplied (even signed) endpoint.
+    upper_weight = (old_upper + 0.5 * amount.clamp_min(0)).clamp_min(0)
+    lower_weight = (old_lower + 0.5 * amount.clamp_min(0)).clamp_min(0)
+    total_weight = upper_weight + lower_weight
+    denominator = torch.where(
+        total_weight > 0, total_weight, torch.ones_like(total_weight)
+    )
+    share = torch.where(total_weight > 0, upper_weight / denominator, 0.5)
+    upper, lower = remaining * share, remaining * (1 - share)
+    zero = torch.zeros_like(upper[:, :1])
+    result = torch.cat((upper, zero), 1) + torch.cat((zero, lower), 1)
+    return torch.where((amount == 0).all(1, keepdim=True), contents, result)
+
+
 class ColumnMap:
     def __init__(self, model):
         self.model = model

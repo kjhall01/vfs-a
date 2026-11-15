@@ -12,6 +12,13 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from workflows.pyam21.adapter import AM2Adapter
 from workflows.pyam21.state import copy_tree
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity, step
+from workflows.pyam21.energy import (
+    WaterBoundary,
+    exchanges,
+    layer_energy,
+    transfer_energy,
+)
+from workflows.pyam21.mapping import average, species_increment, species_endpoint
 from vfs import (
     MoistAtmosphere,
     VoronoiMesh,
@@ -78,9 +85,9 @@ def empty(columns):
     z = torch.zeros_like(columns["T"])
     r = torch.zeros_like(columns["tracers"])
     return dict(
-        tdt=z,
-        udt=z,
-        vdt=z,
+        tdt=z.clone(),
+        udt=z.clone(),
+        vdt=z.clone(),
         rdt=r,
         flux_t=z[:, 0],
         flux_q=z[:, 0],
@@ -311,6 +318,11 @@ def test_radiation_clock_fluxes_restart_and_failure_rollback(model):
     )
     adapter, state = initial(model, radiation=driver)
     a, report = adapter.apply(state, 60)
+    energy_close(adapter, state, a, report)
+    torch.testing.assert_close(
+        report.energy_changes["boundary_radiation"],
+        torch.full((model.mesh.nCells,), 600.0),
+    )
     assert a.radiation["saved"] is not None and driver.saved is None
     assert a.radiation["lw_alarm"] == 61
     torch.testing.assert_close(
@@ -382,3 +394,295 @@ def test_surface_temperature_backward_against_finite_difference(model):
     derivative = torch.autograd.grad(diagnostic(x), x)[0]
     finite = (diagnostic(0.01) - diagnostic(-0.01)) / 0.02
     torch.testing.assert_close(derivative, finite, rtol=2e-4, atol=1e-7)
+
+
+def energy_close(adapter, state, end, report):
+    """Independently recompute native H, without trusting reported H changes."""
+    old = adapter.model.diagnostics(state.atmosphere)["energy"]
+    new = adapter.model.diagnostics(end.atmosphere)["energy"]
+    expected = (
+        adapter.model.mesh.cell_area
+        * (
+            report.energy_changes["external_energy"]
+            + report.energy_changes["am2_energy_residual"]
+        )
+    ).sum()
+    c, g = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    q = c["tracers"][..., :3]
+    mixture = torch.cat((1 - q.sum(-1, keepdim=True), q), -1)
+    thermal_scale = (
+        g["phalf"].diff()
+        / GRAV
+        * adapter.model.dynamics.thermodynamics.heat_capacity_p(mixture)
+        * c["T"]
+    )
+    torch.testing.assert_close(
+        new - old,
+        expected,
+        rtol=0,
+        # Net H may nearly cancel between the thermal datum and topography.
+        # Bound floating-point evaluation by absolute thermal energy instead.
+        atol=float(
+            512
+            * torch.finfo(torch.float64).eps
+            * (adapter.model.mesh.cell_area[:, None] * thermal_scale).sum()
+        ),
+    )
+    actual_layers = layer_energy(adapter, end.atmosphere) - layer_energy(
+        adapter, state.atmosphere
+    )
+    scale = thermal_scale
+    error = actual_layers - report.energy_transfer["target_layer_increment"]
+    assert (error.abs() < 512 * torch.finfo(torch.float64).eps * scale).all()
+
+
+@pytest.mark.parametrize(
+    "kind", ["heat", "evaporation", "dew", "rain", "snow", "phase", "drag", "defect"]
+)
+def test_energy_transfer_and_independent_surface_ledger(model, kind):
+    adapter, state = initial(model, cloudy=True)
+    if kind == "snow":
+        water = state.atmosphere.water_content.clone()
+        water[..., 2] = water[..., 1]
+        water[..., 1] = 0
+        state = replace(
+            state, atmosphere=replace(state.atmosphere, water_content=water)
+        )
+    if kind in ("drag", "evaporation", "rain", "snow", "dew"):
+        state = replace(
+            state,
+            atmosphere=replace(
+                state.atmosphere, u_e=torch.ones_like(state.atmosphere.u_e) * 5
+            ),
+        )
+    c, g = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out, dt = empty(c), 60
+    mass = g["phalf"].diff() / GRAV
+    out["rdt"] = out["rdt"].clone()
+    if kind == "heat":
+        out["flux_t"] = out["flux_t"] + 20
+        out["tdt"][:, -1] = 20 / (CP_AIR * mass[:, -1])
+    elif kind in ("evaporation", "dew"):
+        out["flux_q"] = out["flux_q"] + (1e-5 if kind == "evaporation" else -1e-5)
+        out["rdt"][:, -1, 0] = out["flux_q"] / mass[:, -1]
+    elif kind in ("rain", "snow"):
+        species = 1 if kind == "rain" else 2
+        out["rdt"][..., species] = -0.2 * c["tracers"][..., species] / dt
+        out["lprec" if species == 1 else "fprec"] = -(
+            mass * out["rdt"][..., species]
+        ).sum(-1)
+    elif kind == "phase":
+        out["rdt"][..., 1] = -0.2 * c["tracers"][..., 1] / dt
+        out["rdt"][..., 0] = -out["rdt"][..., 1]
+        out["tdt"] = -2.5e6 / CP_AIR * out["rdt"][..., 0]
+    elif kind == "drag":
+        out["udt"], out["vdt"] = -0.02 * c["u"] / dt, -0.02 * c["v"] / dt
+        out["tdt"] = (
+            -(
+                (c["u"] + 0.5 * dt * out["udt"]) * out["udt"]
+                + (c["v"] + 0.5 * dt * out["vdt"]) * out["vdt"]
+            )
+            / CP_AIR
+        )
+    else:
+        out["tdt"] = out["tdt"] + 1e-5  # deliberately undeclared upstream heat
+    with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
+        end, report = apply_output(adapter, state, out, dt)
+    energy_close(adapter, state, end, report)
+    e = report.energy_changes
+    if kind == "defect":
+        assert e["external_energy"].abs().max() == 0
+        assert e["am2_energy_residual"].min() > 100
+        torch.testing.assert_close(
+            e["full_h_minus_external"], e["am2_energy_residual"], atol=2e-6, rtol=0
+        )
+    else:
+        assert e["am2_energy_residual"].abs().max() < 2e-10
+    if kind == "evaporation":
+        th = model.dynamics.thermodynamics
+        expected = (
+            dt
+            * out["flux_q"]
+            * (th.L_v_ref + th.cp_v * (state.surface["t_surf"] - th.T_ref))
+        )
+        torch.testing.assert_close(
+            e["external_energy"], expected, rtol=1e-15, atol=1e-12
+        )
+        assert report.carrier_impulse.abs().max() == 0  # stationary entering water
+    if kind == "drag":
+        assert e["external_energy"].abs().max() == 0
+        assert e["native_kinetic"].max() < 0
+
+
+def test_explicit_water_boundary_and_potential_energy(model):
+    column = CharneyPhillipsColumn(
+        model.column.n_levels,
+        model.column.A_interface.clone(),
+        model.column.B_interface.clone(),
+        phi_s=5000.0,
+        phi_full_mode="direct_u_gl2_adjoint",
+    )
+    raised = MoistAtmosphere(model.mesh, column)
+    raised.dynamics.kernel.gravity = GRAV
+    adapter, state = initial(raised)
+    c, g = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out, dt = empty(c), 30
+    out["flux_q"] = out["flux_q"] + 1e-5
+    out["rdt"][:, -1, 0] = out["flux_q"] * GRAV / g["phalf"].diff()[:, -1]
+    boundary = WaterBoundary.prescribed_ocean(adapter, state, c, out)
+    boundary = replace(
+        boundary,
+        vapor_temperature=boundary.vapor_temperature + 3,
+        vapor_velocity=adapter.mapping.east * 2,
+    )
+    end, report = adapter.apply_result(
+        state,
+        dt,
+        c,
+        g,
+        out,
+        copy_tree(state.surface),
+        copy_tree(state.memory),
+        {},
+        water_boundary=boundary,
+    )
+    energy_close(adapter, state, end, report)
+    torch.testing.assert_close(
+        report.energy_changes["boundary_water_potential"], dt * out["flux_q"] * 5000
+    )
+    torch.testing.assert_close(
+        report.energy_changes["boundary_water_kinetic"], dt * out["flux_q"] * 2
+    )
+    assert report.carrier_impulse.abs().max() > 0
+    with pytest.raises(ValueError, match="tangential"):
+        exchanges(
+            adapter,
+            state,
+            dt,
+            c,
+            g,
+            out,
+            replace(boundary, vapor_velocity=raised.mesh.cell_xyz),
+        )
+
+
+def test_energy_solve_derivative_at_zero_source_and_rejection(model):
+    adapter, state = initial(model)
+    s = state.atmosphere
+    target = torch.zeros(
+        (model.mesh.nCells, model.column.n_levels), dtype=torch.float64
+    )
+    x = torch.tensor(0.0, requires_grad=True)
+    end, _ = transfer_energy(adapter, s, s, target + x)
+    derivative = torch.autograd.grad(adapter.mapping.energy(end).sum(), x)[0]
+    torch.testing.assert_close(
+        derivative, torch.tensor(float(target.numel())), rtol=2e-13, atol=0
+    )
+    before = adapter.pack(state)
+    with pytest.raises(FloatingPointError, match="converge"):
+        transfer_energy(adapter, s, s, target - 1e10, max_iterations=0)
+    same_tree(adapter.pack(state), before)
+
+
+def test_nonzero_wind_zero_physics_and_legacy_restart_separation(model):
+    adapter, state = initial(model)
+    state = replace(
+        state,
+        atmosphere=replace(
+            state.atmosphere, u_e=torch.ones_like(state.atmosphere.u_e) * 3.2
+        ),
+    )
+    c, _ = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    end, _ = apply_output(adapter, state, empty(c))
+    for k in ("u_e", "ps", "water_content", "entropy_content"):
+        same_tree(getattr(end.atmosphere, k), getattr(state.atmosphere, k))
+    legacy = AM2Adapter(model, nml(), energy_mode="legacy")
+    with pytest.raises(ValueError, match="match"):
+        legacy.unpack(adapter.pack(state))
+
+
+def test_actual_energy_residual_is_upstream_not_mapping(model):
+    adapter, state = initial(model)
+    for _ in range(5):
+        end, report = adapter.apply(state, 60)
+        energy_close(adapter, state, end, report)
+        torch.testing.assert_close(
+            report.energy_changes["full_h_minus_external"],
+            report.energy_changes["am2_energy_residual"],
+            atol=3e-6,
+            rtol=0,
+        )
+        state = end
+
+
+def test_actual_disabled_dissipative_heating_is_not_silently_repaired(model):
+    adapter, state = initial(model)
+    assert not adapter.physics.vdiff.c.do_conserve_energy
+    state = replace(
+        state,
+        atmosphere=replace(
+            state.atmosphere, u_e=torch.ones_like(state.atmosphere.u_e) * 10
+        ),
+    )
+    end, report = adapter.apply(state, 60)
+    energy_close(adapter, state, end, report)
+    assert report.energy_changes["am2_energy_residual"].abs().max() > 1
+    torch.testing.assert_close(
+        report.energy_changes["full_h_minus_external"],
+        report.energy_changes["am2_energy_residual"],
+        atol=3e-6,
+        rtol=0,
+    )
+
+
+def test_exhausted_condensate_uses_remaining_amount_not_subtractive_cancellation():
+    dp = torch.tensor([[8595.237114325872]], dtype=torch.float64)
+    water = torch.tensor(
+        [[[4.7761293471473453e-05], [9.630083529881845e-05]]], dtype=torch.float64
+    )
+    q = water / interface_pressure_mass(dp)[..., None]
+    full = average(q)
+    tendency = -full / 60
+    endpoint = full + 60 * tendency
+    source = 60 * dp[..., None] * tendency
+    assert endpoint.abs().max() == 0
+    assert (water + species_increment(q, source)).min() < 0
+    result = species_endpoint(water, dp, source, endpoint)
+    assert result.abs().max() == 0  # exact prescribed exhaustion, no mass floor
+
+    # Admitted signed CP roundoff may remain at an unforced node adjacent to an
+    # exhausted layer. Reconstructing from endpoints removes the null-space
+    # tail without inventing or discarding the prescribed layer amount.
+    dp = torch.tensor([[2000.0, 3000.0]], dtype=torch.float64)
+    q = torch.tensor([[[-1e-30], [1e-30], [1e-8]]], dtype=torch.float64)
+    water = interface_pressure_mass(dp)[..., None] * q
+    source = -dp[..., None] * average(q)
+    result = species_endpoint(water, dp, source, torch.zeros_like(source))
+    assert result.abs().max() == 0
+    # A truly negative upstream endpoint is not silently clipped away.
+    endpoint = torch.full_like(source, -1e-35)
+    negative = species_endpoint(water, dp, source, endpoint)
+    assert negative.min() < 0
+    torch.testing.assert_close(
+        negative.sum(1), (dp[..., None] * endpoint).sum(1), rtol=1e-15, atol=0
+    )
+
+
+def test_explicit_upstream_endpoint_avoids_reconstruction_roundoff_and_checks_consistency(
+    model,
+):
+    adapter, state = initial(model, cloudy=True)
+    c, g = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out = empty(c)
+    out["rdt"][..., 1] = -c["tracers"][..., 1] / 60 - 1e-25
+    out["endpoint_temperature"] = c["T"].clone()
+    out["endpoint_tracers"] = c["tracers"].clone()
+    out["endpoint_tracers"][..., 1] = 0
+    out["lprec"] = (g["phalf"].diff() / GRAV * c["tracers"][..., 1]).sum(-1) / 60
+    assert (c["tracers"] + 60 * out["rdt"])[..., 1].min() < 0
+    end, report = apply_output(adapter, state, out)
+    assert end.atmosphere.water_content[..., 1].abs().max() == 0
+    energy_close(adapter, state, end, report)
+    out["endpoint_tracers"][..., 0] += 0.001
+    with pytest.raises(ValueError, match="beyond roundoff"):
+        apply_output(adapter, state, out)

@@ -1,5 +1,10 @@
 # External PyAM21 workflow: first integration checks
 
+This is the archived first-pass temperature-mapping report. The current adapter
+defaults to conservative layer-energy transfer; see [current results](energy/README.md)
+and [the energy contract](../../../workflows/pyam21/ENERGY.md).
+Use `--energy-mode legacy` with the drivers below to reproduce this mapping.
+
 VFS base `c392bc4302369014ebb4833623f554ca2448680a`, PyAM21
 `e1bdfcc3b23c05adea80b35af880702bb85718eb`; CPU float64, one thread,
 Python 3.12.14 and PyTorch 2.15.0+cpu. Both packages were installed separately;
@@ -77,7 +82,7 @@ python -I workflows/pyam21/run_aquaplanet.py --source /path/to/PyAM21 --hours 6 
 python -I workflows/pyam21/run_aquaplanet.py --source /path/to/PyAM21 --cells 128 --hours 1 --dt 60 --dynamics-dt 15 --output aqua128 --verbose
 ```
 
-The first next step is to reconcile the shared thermodynamic and mass-source
+The first next step identified by this archived pass was to reconcile the shared thermodynamic and mass-source
 energy convention, including exchanged-mass enthalpy and mechanical work.
 Then qualify real radiation with its data manifest and extend to interactive
 ocean/ice exchange. GPU, long climate integrations, large production meshes,

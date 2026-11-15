@@ -1,0 +1,112 @@
+0.167 h: water residual -6.59e-14 kg/m2; Tmin 207.85 K; max wind 0.833 m/s
+0.333 h: water residual -1.33e-13 kg/m2; Tmin 207.85 K; max wind 1.67 m/s
+0.500 h: water residual -2.06e-13 kg/m2; Tmin 207.85 K; max wind 2.51 m/s
+0.667 h: water residual -2.71e-13 kg/m2; Tmin 207.85 K; max wind 3.35 m/s
+0.833 h: water residual -3.42e-13 kg/m2; Tmin 207.86 K; max wind 4.18 m/s
+1.000 h: water residual -3.99e-13 kg/m2; Tmin 207.86 K; max wind 5 m/s
+1.167 h: water residual -4.68e-13 kg/m2; Tmin 207.87 K; max wind 5.82 m/s
+1.333 h: water residual -5.38e-13 kg/m2; Tmin 207.87 K; max wind 6.64 m/s
+1.500 h: water residual -6.03e-13 kg/m2; Tmin 207.88 K; max wind 7.43 m/s
+1.667 h: water residual -6.69e-13 kg/m2; Tmin 207.88 K; max wind 8.2 m/s
+1.833 h: water residual -7.37e-13 kg/m2; Tmin 207.89 K; max wind 8.95 m/s
+2.000 h: water residual -7.95e-13 kg/m2; Tmin 207.90 K; max wind 9.66 m/s
+2.167 h: water residual -8.72e-13 kg/m2; Tmin 207.91 K; max wind 10.3 m/s
+2.333 h: water residual -9.31e-13 kg/m2; Tmin 207.92 K; max wind 11 m/s
+2.500 h: water residual -9.98e-13 kg/m2; Tmin 207.92 K; max wind 11.6 m/s
+2.667 h: water residual -1.07e-12 kg/m2; Tmin 207.93 K; max wind 12.1 m/s
+2.833 h: water residual -1.13e-12 kg/m2; Tmin 207.94 K; max wind 12.6 m/s
+3.000 h: water residual -1.2e-12 kg/m2; Tmin 207.95 K; max wind 13 m/s
+3.167 h: water residual -1.26e-12 kg/m2; Tmin 207.96 K; max wind 13.4 m/s
+3.333 h: water residual -1.32e-12 kg/m2; Tmin 207.97 K; max wind 13.7 m/s
+3.500 h: water residual -1.4e-12 kg/m2; Tmin 207.98 K; max wind 14.1 m/s
+3.667 h: water residual -1.46e-12 kg/m2; Tmin 207.99 K; max wind 14.5 m/s
+3.833 h: water residual -1.53e-12 kg/m2; Tmin 208.00 K; max wind 14.9 m/s
+4.000 h: water residual -1.59e-12 kg/m2; Tmin 208.01 K; max wind 15.2 m/s
+4.167 h: water residual -1.66e-12 kg/m2; Tmin 208.02 K; max wind 15.5 m/s
+4.333 h: water residual -1.73e-12 kg/m2; Tmin 208.03 K; max wind 15.7 m/s
+4.500 h: water residual -1.79e-12 kg/m2; Tmin 208.04 K; max wind 15.9 m/s
+4.667 h: water residual -1.85e-12 kg/m2; Tmin 208.05 K; max wind 16 m/s
+4.833 h: water residual -1.92e-12 kg/m2; Tmin 208.06 K; max wind 16.1 m/s
+5.000 h: water residual -1.98e-12 kg/m2; Tmin 208.07 K; max wind 16.1 m/s
+5.167 h: water residual -2.05e-12 kg/m2; Tmin 208.08 K; max wind 16 m/s
+5.333 h: water residual -2.12e-12 kg/m2; Tmin 208.09 K; max wind 15.9 m/s
+5.500 h: water residual -2.18e-12 kg/m2; Tmin 208.09 K; max wind 15.8 m/s
+5.667 h: water residual -2.24e-12 kg/m2; Tmin 208.10 K; max wind 15.6 m/s
+5.833 h: water residual -2.3e-12 kg/m2; Tmin 208.11 K; max wind 15.4 m/s
+6.000 h: water residual -2.37e-12 kg/m2; Tmin 208.12 K; max wind 15.3 m/s
+{
+  "configuration": {
+    "source": "/workspace/scratch/b16610c53df7/PyAM21",
+    "cells": 32,
+    "levels": 24,
+    "hours": 6.0,
+    "dt": 60,
+    "dynamics_dt": 15.0,
+    "output": "/workspace/scratch/b16610c53df7/vfs-pyam21-energy/verification/atmosphere/pyam21/energy/legacy6h",
+    "verbose": true,
+    "energy_mode": "legacy"
+  },
+  "coupled_dynamics": true,
+  "radiation": "none",
+  "steps": 360,
+  "wall_seconds": 97.64525453900569,
+  "restart_fingerprint": "b4a772a6dcd37e02b56f13c0d9c461d0693151bced2d03a7a50af980f8078766",
+  "final": {
+    "seconds": 21600,
+    "dry_air_relative": -1.0642605034417007e-13,
+    "water_flux_error_kg_m2": -2.3742096669971197e-12,
+    "energy_change_J_m2": 767040.0777988484,
+    "dynamics_energy_residual_J_m2": 0.0007760939188301563,
+    "water_mapping_max_kg_m2": 1.231653667943533e-15,
+    "temperature_min_K": 208.11528462702006,
+    "temperature_max_K": 297.9154712425512,
+    "transfer_layer_max_J_m2": 0.0,
+    "transfer_log_temperature_max": 0.0,
+    "transfer_iterations": 0,
+    "cloud_fraction_max": 0.5633332756322508,
+    "max_wind_m_s": 15.319569529398569,
+    "precipitation_kg_m2_s": 3.436929965733472e-05,
+    "vfs_full_h_J_m2": 3617.4059774160055,
+    "native_kinetic_J_m2": -3.2762429551325534,
+    "vfs_fixed_mass_column_enthalpy_J_m2": 3620.5091568032035,
+    "am2_thermal_latent_proxy_J_m2": 3602.849903183349,
+    "declared_thermal_latent_forcing_J_m2": 3599.5723675508893,
+    "am2_proxy_minus_forcing_J_m2": 3.2775356324603644,
+    "thermodynamic_convention_difference_J_m2": 17.659253619854336,
+    "mapping_and_carrier_difference_J_m2": 0.17306356793421962,
+    "am2_kinetic_J_m2": -3.277535637264404,
+    "am2_boundary_energy_J_m2": 3599.5723675508893,
+    "am2_energy_residual_J_m2": -4.80427780160615e-09,
+    "boundary_datum_change_J_m2": -121.81639629345321,
+    "external_energy_J_m2": 3477.751755602098,
+    "radiation_flux_residual_J_m2": 0.0,
+    "transfer_residual_J_m2": 139.65422181871082,
+    "full_h_minus_external_J_m2": 139.65422181390653,
+    "boundary_sensible_J_m2": 116.41710350178481,
+    "boundary_vapor_enthalpy_J_m2": 3545.644979061792,
+    "boundary_rain_enthalpy_J_m2": -184.30611130614133,
+    "boundary_snow_enthalpy_J_m2": 0.0,
+    "boundary_water_potential_J_m2": 0.0,
+    "boundary_water_kinetic_J_m2": -0.004215655337107071,
+    "boundary_radiation_J_m2": 0.0,
+    "boundary_stress_work_J_m2": 0.0,
+    "cumulative_declared_heat_J_m2": 757887.4378322759,
+    "cumulative_convention_change_J_m2": 928.8823649445245,
+    "cumulative_mapping_carrier_change_J_m2": 8226.397140901769,
+    "cumulative_external_energy_J_m2": 667784.4032016426,
+    "cumulative_am2_residual_J_m2": 8.795108008309416e-08,
+    "cumulative_transfer_residual_J_m2": 99255.67382102397,
+    "cumulative_full_h_minus_external_J_m2": 99255.67459720583,
+    "vfs_minus_AM2_heat_ledger_J_m2": 9152.639966572518
+  },
+  "peaks": {
+    "dry_air_relative": 1.0642605034417007e-13,
+    "water_flux_error_kg_m2": 2.3742096669971197e-12,
+    "water_mapping_max_kg_m2": 2.0886070650760757e-15,
+    "dynamics_energy_residual_J_m2": 0.0007760939188301563,
+    "transfer_layer_max_J_m2": 0.0,
+    "transfer_log_temperature_max": 0.0,
+    "transfer_iterations": 0
+  },
+  "torch": "2.15.0+cpu"
+}

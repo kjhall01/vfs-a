@@ -1,0 +1,31 @@
+{
+  "reference": "PR86 aqua6h/series.csv",
+  "rows": 360,
+  "fields": 22,
+  "comparisons": 7920,
+  "all_values_exact": true,
+  "maximum_absolute_difference_by_field": {
+    "seconds": 0.0,
+    "dry_air_relative": 0.0,
+    "water_flux_error_kg_m2": 0.0,
+    "energy_change_J_m2": 0.0,
+    "dynamics_energy_residual_J_m2": 0.0,
+    "water_mapping_max_kg_m2": 0.0,
+    "temperature_min_K": 0.0,
+    "cloud_fraction_max": 0.0,
+    "max_wind_m_s": 0.0,
+    "precipitation_kg_m2_s": 0.0,
+    "vfs_full_h_J_m2": 0.0,
+    "native_kinetic_J_m2": 0.0,
+    "vfs_fixed_mass_column_enthalpy_J_m2": 0.0,
+    "am2_thermal_latent_proxy_J_m2": 0.0,
+    "declared_thermal_latent_forcing_J_m2": 0.0,
+    "am2_proxy_minus_forcing_J_m2": 0.0,
+    "thermodynamic_convention_difference_J_m2": 0.0,
+    "mapping_and_carrier_difference_J_m2": 0.0,
+    "cumulative_declared_heat_J_m2": 0.0,
+    "cumulative_convention_change_J_m2": 0.0,
+    "cumulative_mapping_carrier_change_J_m2": 0.0,
+    "vfs_minus_AM2_heat_ledger_J_m2": 0.0
+  }
+}

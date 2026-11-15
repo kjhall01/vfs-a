@@ -1,0 +1,92 @@
+{
+  "aqua128": {
+    "steps": 60,
+    "duration_seconds": 3600,
+    "peaks": {
+      "dry_air_relative": 1.813623986082628e-14,
+      "water_flux_error_kg_m2": 4.024001107771749e-13,
+      "water_mapping_max_kg_m2": 6.652664530371055e-15,
+      "dynamics_energy_residual_J_m2": 3.595205635065213e-05,
+      "transfer_layer_max_J_m2": 6.847147915323148e-08,
+      "transfer_log_temperature_max": 0.00023200382555542865,
+      "transfer_iterations": 2
+    },
+    "final_full_h_residual_J_m2": -3.5887089325115085e-05,
+    "peak_cumulative_full_h_residual_J_m2": 3.5887089325115085e-05,
+    "mean_full_h_residual_W_m2": -9.96863592364308e-09,
+    "upstream_J_m2": 3.5661442990297333e-08,
+    "transfer_J_m2": 2.930159939685337e-08
+  },
+  "aqua6h": {
+    "steps": 360,
+    "duration_seconds": 21600,
+    "peaks": {
+      "dry_air_relative": 1.0642605034417007e-13,
+      "water_flux_error_kg_m2": 2.392467162888045e-12,
+      "water_mapping_max_kg_m2": 6.168893521008023e-15,
+      "dynamics_energy_residual_J_m2": 0.0012175720185041428,
+      "transfer_layer_max_J_m2": 8.660072126076557e-08,
+      "transfer_log_temperature_max": 0.00023091903426148138,
+      "transfer_iterations": 2
+    },
+    "final_full_h_residual_J_m2": 0.0012178824981674552,
+    "peak_cumulative_full_h_residual_J_m2": 0.0012178824981674552,
+    "mean_full_h_residual_W_m2": 5.6383448989234036e-08,
+    "upstream_J_m2": 1.9463329042982437e-07,
+    "transfer_J_m2": 1.1590057470401412e-07
+  },
+  "aqua6h-dt30": {
+    "steps": 720,
+    "duration_seconds": 21600,
+    "peaks": {
+      "dry_air_relative": 2.1285210068834013e-13,
+      "water_flux_error_kg_m2": 4.8040495563733e-12,
+      "water_mapping_max_kg_m2": 6.314393452555578e-15,
+      "dynamics_energy_residual_J_m2": 0.000630556489340961,
+      "transfer_layer_max_J_m2": 8.643808297598143e-08,
+      "transfer_log_temperature_max": 0.00023088194904208532,
+      "transfer_iterations": 2
+    },
+    "final_full_h_residual_J_m2": 0.0006311575416475534,
+    "peak_cumulative_full_h_residual_J_m2": 0.0006311575416475534,
+    "mean_full_h_residual_W_m2": 2.9220256557757102e-08,
+    "upstream_J_m2": 5.617926604520596e-07,
+    "transfer_J_m2": 3.94563682336203e-08
+  },
+  "column6h": {
+    "steps": 360,
+    "duration_seconds": 21600,
+    "peaks": {
+      "dry_air_relative": 9.97908632365033e-16,
+      "water_flux_error_kg_m2": 5.5385155320122733e-14,
+      "water_mapping_max_kg_m2": 5.934705851751154e-15,
+      "dynamics_energy_residual_J_m2": 3.256136551499367e-07,
+      "transfer_layer_max_J_m2": 7.164908311096951e-08,
+      "transfer_log_temperature_max": 0.00023263171573464263,
+      "transfer_iterations": 2
+    },
+    "final_full_h_residual_J_m2": 1.0301591828465462e-06,
+    "peak_cumulative_full_h_residual_J_m2": 1.0994262993335724e-06,
+    "mean_full_h_residual_W_m2": 4.7692554761414177e-11,
+    "upstream_J_m2": 4.4607895688386634e-07,
+    "transfer_J_m2": 4.90334969072137e-07
+  },
+  "legacy6h": {
+    "steps": 360,
+    "duration_seconds": 21600,
+    "peaks": {
+      "dry_air_relative": 1.0642605034417007e-13,
+      "water_flux_error_kg_m2": 2.3742096669971197e-12,
+      "water_mapping_max_kg_m2": 2.0886070650760757e-15,
+      "dynamics_energy_residual_J_m2": 0.0007760939188301563,
+      "transfer_layer_max_J_m2": 0.0,
+      "transfer_log_temperature_max": 0.0,
+      "transfer_iterations": 0
+    },
+    "final_full_h_residual_J_m2": 99255.67459720583,
+    "peak_cumulative_full_h_residual_J_m2": 99255.67459720583,
+    "mean_full_h_residual_W_m2": 4.5951701202410105,
+    "upstream_J_m2": 8.795108008309416e-08,
+    "transfer_J_m2": 99255.67382102397
+  }
+}

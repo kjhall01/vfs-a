@@ -6,10 +6,13 @@ It calls the actual AM2.1 physics in Evan Wellmeyer's
 `e1bdfcc3b23c05adea80b35af880702bb85718eb`. Neither `vfs/` nor upstream PyAM21
 is edited. VFS's installed dependencies and defaults are unchanged.
 
-This first pass establishes state transfer, water/momentum accounting, explicit
-physics memory, restarts, and a short dynamics/physics workflow. **It does not
-establish VFS Hamiltonian closure for AM2 physics, or connect an interactive ocean
-or ice model.** Energy differences are measured and retained, not corrected.
+The default `energy_mode="conservative"` transfers AM2 layer energy into the
+native VFS Hamiltonian, including the enthalpy and momentum carried by exchanged
+water. A local CP entropy solve enforces each layer's transferred energy; any
+imbalance already present in AM2 is retained and reported separately. The previous
+temperature-increment mapping remains available as `energy_mode="legacy"`.
+See [the energy contract](ENERGY.md) for the derivation and explicit assumptions.
+**This does not yet connect an interactive ocean or ice model.**
 
 ## Install and run
 
@@ -47,6 +50,7 @@ verification files or model dependencies are vendored into this workflow.
 | --- | --- |
 | `adapter.py` | Staged upstream calls, finite physics update, exchange/budget reports, restart validation |
 | `mapping.py` | Conservative column readout and explicit CP/cell/edge transfer operators |
+| `energy.py` | Surface-water energy/momentum contract and layerwise CP enthalpy inversion |
 | `state.py` | Atmospheric state, CP cloud fraction, physics memory, surface state, radiation cache and clock |
 | `dynamics.py` | Existing bounded SSPRK3 with a passive cloudy/clear transport ledger |
 | `setup.py` | Explicit configuration and analytic initial conditions for examples |
@@ -82,6 +86,13 @@ state, report = physics.apply(state, 60)
 state, report = step(physics, state, 60, dynamics_dt=15)
 ```
 
+`physics.apply(..., water_boundary=WaterBoundary(...))` can supply explicit vapor,
+rain and snow temperatures and transported water velocities. With no override,
+incoming vapor uses SST and zero velocity; departing vapor and precipitation
+use the old lowest air level. These are declared boundary assumptions, since
+PyAM21 does not supply the precipitation temperatures. The stationary surface
+does zero stress work. Moving surfaces remain unsupported.
+
 The split driver advances dynamics first and calls physics once at that interval's
 clock time, passing zero dynamical tendencies into PyAM21 to avoid double counting.
 It is a **first-order sequential composition**. Physics memory is not advanced
@@ -105,26 +116,37 @@ composition. Thus the column enthalpy readout matches the native thermal + poten
 heights and Simmons–Burridge full pressures are supplied explicitly.
 
 Returning physics increments never replaces the original CP profile with an
-interpolated round trip. Layer temperature increments use the pressure-weighted
-transpose. Species additions are split equally across adjacent CP nodes; withdrawals
+interpolated round trip. A pressure-weighted temperature increment supplies an
+initial guess for the conservative layer-enthalpy solve; legacy mode retains that
+guess without a solve. Species additions are split equally across adjacent CP nodes; withdrawals
 use each node's contribution to that layer's species store. This preserves supplied
 amounts without making a clear node negative when a neighboring cloudy node loses
 condensate. Cloud-fraction increases/decreases draw from clear/cloudy contributions.
 
-The water tendencies are interpreted as amount sources on the **old** pressure
-carrier: `delta W_layer = dt * dp * rdt_water`. Their column sum updates surface
+Water increments are interpreted as amount sources on the **old** pressure
+carrier: `delta W_layer = dp * (q_endpoint - q_initial)` in conservative mode.
+The actual endpoint exposed by PyAM21's moist stage is checked against its returned
+tendencies and used directly, avoiding cancellation when condensate is exhausted.
+Legacy mode uses `dt * dp * rdt_water`. The column sum updates surface
 pressure, retaining dry-air inventory. Water contents receive precisely those
 sources; fractions are then recomputed on the new hybrid-coordinate mass weights.
 This is an explicit finite source convention, not a claim of exact equivalence
 to AM2's fixed-pressure fraction update or a resolved vertical mass-source remap.
-Entropy is reconstructed from updated CP temperature, pressure and composition.
+For withdrawals, remaining layer amounts are distributed with nonnegative donor
+weights; zero stores can therefore be exhausted exactly. Signed roundoff in an
+upstream endpoint is retained, not clipped. A species with zero sources throughout
+a column keeps its original contents bitwise. Entropy is then solved against the layer energy constraints at the new pressure,
+composition and native kinetic energy. The solve uses analytic derivatives and
+rejects nonconvergence, without changing water or momentum.
 
 Wind readout uses VFS's existing cell-vector reconstruction. Column forces return
 through its analytic transpose and the native edge mass metric. The tests check
-the work identity independently using differentiation. Mass sources/departures
-are assumed co-moving with the native air, and the resulting carrier impulse is
-reported separately. Complete precipitation/vapor-carried momentum and energy
-matching to a moving ocean is deferred.
+the work identity independently using differentiation. Surface-water momentum
+enters through the same transpose at the bottom layer; the new velocity follows
+from old momentum plus physics and water impulses divided by the new mass metric.
+The report's `carrier_impulse` now contains this water impulse. Legacy mode retains
+its previous co-moving native-air convention. A moving-ocean reciprocal-stress
+contract and cross-component thermodynamic references remain future work.
 
 ## Exchange outputs and energy audit
 
@@ -159,12 +181,24 @@ Energy reports retain all of these per-cell values in J/m²:
   from CP mapping, carrier change and geometry.
 
 The conventional heat ledger is **not** the complete energy carried by exchanged
-mass and momentum. The named differences are diagnostics, not assertions of error
-in the upstream Fortran port. VFS uses composition-dependent heat capacities and
-different reference constants, and finite mass/coordinate updates introduce further
-terms. No temperature rescaling, global energy correction or hidden source is used.
-The next thermodynamic pass must reconcile those terms before interactive ocean/ice
-coupling can claim a shared Hamiltonian budget.
+mass and momentum. The retained `thermodynamic_convention_difference` and
+`mapping_and_carrier_difference` fields compare with that old representation;
+they are not closure residuals in conservative mode. The new decisive fields are:
+
+- `external_energy`: sensible heat, water enthalpies, water potential/kinetic
+  energy and net absorbed radiation, in the VFS reference convention;
+- `am2_energy_residual`: AM2 thermal/latent plus collocated kinetic change minus
+  its independently measured boundary forcing;
+- `transfer_residual`: actual native full-H change minus transferred layer energy;
+- `full_h_minus_external`: equals the preceding two residuals, to roundoff;
+- `boundary_*`: each named external contribution, and `radiation_flux_residual`
+  comparing integrated upstream heating with top-minus-bottom net flux.
+
+`report.energy_transfer` contains the layer targets, residuals, Newton count and
+the entropy/log-temperature change from the provisional temperature mapping.
+Conservative mode intentionally changes temperatures to satisfy those local
+constraints; it is not an unchanged AM2 trajectory. No global rescaling or
+repair of upstream imbalance is applied. See [ENERGY.md](ENERGY.md).
 
 ## Radiation, memory and restart
 
@@ -183,7 +217,7 @@ prognostic physics state.
 `physics.pack(state)` returns only tensors and primitive containers; save it with
 `torch.save`. Restore with `physics.unpack(torch.load(path, weights_only=True))`.
 The fingerprint covers actual installed PyAM21 source, namelist, thermodynamics,
-start date, radiation configuration/ID and relevant geometry. Matching configuration
+energy mode, schema, start date, radiation configuration/ID and relevant geometry. Matching configuration
 and mesh must be recreated before loading; the payload is not a self-contained model.
 
 ## Rejection and tested scope
@@ -200,4 +234,5 @@ real PyAM21 driver with a **synthetic radiation package**. Full `SeaEsfRad` with
 the GFDL data bundle has not been exercised in this workflow. Selected smooth
 backward checks do not qualify threshold crossings or long trajectories.
 
-See [verification results](../../verification/atmosphere/pyam21/README.md).
+See [current energy verification](../../verification/atmosphere/pyam21/energy/README.md)
+and [the archived first-pass results](../../verification/atmosphere/pyam21/README.md).
