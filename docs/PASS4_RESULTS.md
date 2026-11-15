@@ -982,3 +982,13 @@ default-path state/ledger/backward tensors match `34cc640` bitwise.
 Isolated tendency median at 16384×40: 0.3811 s, eager one-thread CPU float64.
 Three RK evaluations imply about 1.14 s estimated incremental step cost (7.6%
 of the prior dynamics benchmark), not a measured combined-step speed claim.
+
+## Integrated ocean evaluation (2026-11-14)
+
+Seventeen low-resolution integrations completed (50,400 steps; 58 aggregate
+model days), plus two expected rejection checks. Energy and inventories remain
+well controlled, but backscatter strongly concentrates KE on short mesh edges;
+physical spatial quality is not qualified. Stratified bathymetric rest has small
+spurious currents that decrease with vertical refinement. No model methods were
+changed. See [evaluation evidence](../verification/ocean/integrated/README.md)
+and `validation/ocean_evaluation/README.md` for the reusable local runner.

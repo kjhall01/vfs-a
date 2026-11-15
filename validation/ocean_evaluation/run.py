@@ -62,7 +62,7 @@ class Experiment:
         east /= torch.linalg.vector_norm(east, dim=-1, keepdim=True)
         projection = (east * mesh.edge_normal).sum(-1)
         depth = torch.full((args.cells, 1), 1000.0)
-        if args.case == "rest":
+        if args.case in ("rest", "stratified-rest"):
             depth += 200 * mesh.cell_xyz[:, :1]
         wet = torch.ones(args.cells, dtype=torch.bool)
         if args.case == "channel":
@@ -98,6 +98,8 @@ class Experiment:
         sa = torch.full_like(h, 35.0)
         u = torch.zeros(mesh.nEdges, args.layers)
         self.forcing = {}
+        if args.case == "stratified-rest":
+            sa = 35.0 - 0.001 * z
         if args.case == "channel":
             y = radius * (lat - math.radians(40))
             sa = 35.0 - 0.001 * z + args.gradient * y + 0.001 * mesh.cell_xyz[:, :1]
@@ -126,7 +128,7 @@ class Experiment:
             absolute_salinity=sa,
             tracer=(1 + 0.2 * mesh.cell_xyz[:, 2:3]).expand_as(h)[..., None],
             tke=1e-4 if forced else 0.0,
-            eddy_energy=0.0 if args.case == "rest" else 0.1,
+            eddy_energy=0.0 if args.case in ("rest", "stratified-rest") else 0.1,
         )
         self.eddy = (
             None
@@ -137,7 +139,9 @@ class Experiment:
             )
         )
         self.decay = (
-            None if args.case == "rest" else EddyDissipation(args.decay_days * DAY)
+            None
+            if args.case in ("rest", "stratified-rest")
+            else EddyDissipation(args.decay_days * DAY)
         )
         if args.compile:
             self.model.compile_thermodynamics()
@@ -391,7 +395,11 @@ def run(args, variant):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--case", choices=("rest", "channel", "forced"), required=True)
+    p.add_argument(
+        "--case",
+        choices=("rest", "stratified-rest", "channel", "forced"),
+        required=True,
+    )
     p.add_argument(
         "--variants",
         nargs="+",
@@ -458,7 +466,9 @@ def main():
             vfs=vfs.__file__,
         ),
     )
-    variants = ["resolved"] if args.case == "rest" else args.variants
+    variants = (
+        ["resolved"] if args.case in ("rest", "stratified-rest") else args.variants
+    )
     results = [run(args, v) for v in variants]
     write_json(args.output / "campaign.json", results)
     return 0 if all(r["status"] == "completed" for r in results) else 1

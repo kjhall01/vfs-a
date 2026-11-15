@@ -1946,3 +1946,13 @@ smooth isolated test. See [current evidence](../verification/ocean/backscatter/i
 
 Current installed-wheel regression: 1217 passed, 2 skipped; both frozen
 comparisons and all 486 default-path bitwise comparisons pass.
+
+## Integrated ocean evaluation (2026-11-14)
+
+Seventeen low-resolution integrations completed (50,400 steps; 58 aggregate
+model days), plus two expected rejection checks. Energy and inventories remain
+well controlled, but backscatter strongly concentrates KE on short mesh edges;
+physical spatial quality is not qualified. Stratified bathymetric rest has small
+spurious currents that decrease with vertical refinement. No model methods were
+changed. See [evaluation evidence](../verification/ocean/integrated/README.md)
+and `validation/ocean_evaluation/README.md` for the reusable local runner.

@@ -58,7 +58,7 @@ def main():
             entry["error"] = d["error"]
         runs.append(entry)
     (a.root / "metrics.json").write_text(json.dumps(runs, indent=2) + "\n")
-    for case in ("channel", "forced", "rest"):
+    for case in ("channel", "forced", "rest", "stratified-rest"):
         paths = [
             p
             for p in a.root.glob("**/series.csv")

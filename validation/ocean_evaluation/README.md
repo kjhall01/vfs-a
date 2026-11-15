@@ -9,6 +9,8 @@ first. No optional physics is silently omitted or changed after a rejection.
 
 - `rest`: 800–1200 m smoothly varying bathymetry, uniform reference CT/SA,
   initially flat free surface and zero velocity. No forcing or closures.
+- `stratified-rest`: the same bathymetry with CT=10 and SA=35-.001*z;
+  screens pressure-gradient imbalance and vertical refinement without closures.
 - `channel`: a closed spherical wet band (15–65° N), 1000 m depth, radius
   1000 km, salinity stratification and a meridional salinity front with a small
   zonal perturbation. Initial shear uses continuum thermal wind with zero flow
@@ -98,3 +100,12 @@ The low-resolution runs screen conservation, integrated compatibility,
 positivity, drift and sensitivity. They cannot establish mesoscale spectra,
 eddy saturation, realistic overturning or climate skill. Fixed layer count,
 coarse coastal geometry and initially imperfect channel balance matter.
+
+## Spatial checks and recorded evaluation
+
+Run `python -I validation/ocean_evaluation/grid_diagnostics.py OUTPUT` to write
+`grid_metrics.json`: native edge-KE concentration, curl-based length proxy, and
+mesh dimensions at the speed maximum. These are screens, not energy spectra.
+See `verification/ocean/integrated/README.md` for the completed 17-run evaluation.
+Backscatter showed strong short-edge concentration despite small energy errors;
+the default parameters are experimental, not a recommended ocean setup.
