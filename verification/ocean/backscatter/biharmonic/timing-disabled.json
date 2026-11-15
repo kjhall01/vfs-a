@@ -1,0 +1,16 @@
+{
+  "biharmonic_viscosity": 0.0,
+  "cells": 16384,
+  "layers": 40,
+  "samples_s": [
+    0.5917569060038659,
+    0.4310991469974397,
+    0.42174619599973084
+  ],
+  "median_s": 0.4310991469974397,
+  "peak_rss_bytes": 779866112,
+  "threads": 1,
+  "compiled": false,
+  "dtype": "float64",
+  "torch": "2.15.0+cpu"
+}

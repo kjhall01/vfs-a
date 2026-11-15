@@ -54,12 +54,12 @@ def closure_step(model, state, op, dt):
     return blend(state, third, 1 / 3, 2 / 3), (r1, r2, r3)
 
 
-def budgets():
+def budgets(biharmonic_viscosity=0.0):
     cases = []
     for dynamics, viscosity in ((False, 1e7), (True, 1e7), (False, 1e12), (True, 1e12)):
         m, initial = channel(128, 8)
         state = initial
-        op = EddyBackscatter(viscosity, 86400.0, 0.25)
+        op = EddyBackscatter(viscosity, 86400.0, 0.25, biharmonic_viscosity)
         if dynamics:
             m.backscatter = op
         maxlocal = 0.0
@@ -101,9 +101,9 @@ def budgets():
     return cases
 
 
-def refinement():
+def refinement(biharmonic_viscosity=0.0):
     m, initial = channel(64, 4)
-    op = EddyBackscatter(1e7, 1000.0, 0.5)
+    op = EddyBackscatter(1e7, 1000.0, 0.5, biharmonic_viscosity)
     mass = (m.energy.mass_area(initial.ocean) * initial.ocean.h).sum()
 
     def sector(x):
@@ -123,19 +123,31 @@ def refinement():
     return rows
 
 
-def timing(cells, layers):
+def timing(cells, layers, biharmonic_viscosity=0.0, *, full_step=False):
     m, state = wave(cells, layers)
     state = m.with_eddy_reservoir(state, 0.1)
-    op = EddyBackscatter(viscosity=1e4, timescale=86400.0, fraction=0.25)
-    op.tendency(m, state)
+    op = EddyBackscatter(
+        viscosity=1e4,
+        timescale=86400.0,
+        fraction=0.25,
+        biharmonic_viscosity=biharmonic_viscosity,
+    )
+    if full_step:
+        m.backscatter = op
+        evaluate = lambda: m.step_with_report(state, 1.0)
+    else:
+        evaluate = lambda: op.tendency(m, state)
+    evaluate()
     samples = []
     for _ in range(3):
         gc.collect()
         start = time.perf_counter()
-        du, de, report = op.tendency(m, state)
+        result = evaluate()
         samples.append(time.perf_counter() - start)
-        del du, de, report
+        del result
     return dict(
+        full_step=full_step,
+        biharmonic_viscosity=biharmonic_viscosity,
         cells=cells,
         layers=layers,
         samples_s=samples,
@@ -152,8 +164,11 @@ def timing(cells, layers):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
-        "--mode", choices=("budgets", "time", "refinement"), default="budgets"
+        "--mode",
+        choices=("budgets", "time", "step-time", "refinement"),
+        default="budgets",
     )
+    p.add_argument("--biharmonic-viscosity", type=float, default=0.0)
     p.add_argument("--cells", type=int, default=16384)
     p.add_argument("--layers", type=int, default=40)
     p.add_argument("--output", type=Path, required=True)
@@ -162,9 +177,18 @@ def main():
     torch.set_num_threads(1)
     with torch.no_grad():
         result = (
-            budgets()
+            budgets(a.biharmonic_viscosity)
             if a.mode == "budgets"
-            else refinement() if a.mode == "refinement" else timing(a.cells, a.layers)
+            else (
+                refinement(a.biharmonic_viscosity)
+                if a.mode == "refinement"
+                else timing(
+                    a.cells,
+                    a.layers,
+                    a.biharmonic_viscosity,
+                    full_step=a.mode == "step-time",
+                )
+            )
         )
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(result, indent=2) + "\n")

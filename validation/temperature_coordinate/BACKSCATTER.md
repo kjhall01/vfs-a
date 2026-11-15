@@ -10,7 +10,8 @@ from roquet import RoquetOcean
 from backscatter import EddyBackscatter
 
 # Illustrative explicit parameters, not calibrated recommendations.
-closure = EddyBackscatter(viscosity=1e4, timescale=86400., fraction=.25)
+closure = EddyBackscatter(viscosity=1e4, timescale=86400., fraction=.25,
+                          biharmonic_viscosity=1e13)  # m^4/s; experimental
 model = RoquetOcean(mesh, column, backscatter=closure)
 # state must be EddyState, e.g. model.state(..., eddy_energy=.1)
 state, report = model.step_with_report(state, dt)
@@ -98,10 +99,69 @@ can be integrated with SSPRK3 weights (1/6,1/6,2/3) for accumulated exchange.
 At uniform thickness the forcing is negative rotational viscosity. It omits
 anti-diffusion of divergence; varying thickness/coasts do not imply exactly
 divergence-free increments or angular-momentum conservation. Negative viscosity
-can energize grid-scale noise. No new biharmonic sink, spectral calibration,
-resolution-dependent coefficient or long-run stability claim is supplied.
+can energize grid-scale noise. The optional biharmonic sink below supplies scale-selective dissipation.
+No spectral calibration, automatic resolution-dependent coefficient, or long-run
+stability claim is supplied.
 The literature motivates the approach ([Jansen et al., 2019](https://doi.org/10.1029/2019MS001750));
 this is not that paper's complete scale-aware closure.
 
 See [current verification](../../verification/ocean/backscatter/instantaneous/README.md).
 The parent report documents the superseded finite-step prototype.
+
+
+## Budgeted rotational biharmonic sink
+
+`biharmonic_viscosity=nu4` [m^4/s] enables the sink; its default is zero and
+preserves the previous tendency exactly. Let P be the active-edge projection
+and define, at the current RK stage,
+
+    L v = P (1/h_e) C*(h_v C(P v)).
+    F4 = -nu4 L(Lu).
+
+L is self-adjoint and nonnegative in M=rho0 A_e h_e. Thickness is frozen only
+while evaluating this instantaneous operator, then reevaluated at the next RK
+stage. Both applications include the coast projection. Consequently
+
+    sum_e M_e u_e F4_e = -nu4 sum_e M_e (Lu)_e^2 <= 0.
+
+For constant thickness in the planar Fourier analogy, L has eigenvalue k^2,
+so this sink damps at rate nu4*k^4, versus backscatter growth nu2*k^2 before its
+funding limiter acts. On the spherical irregular grid, the exact statement is
+quadratic damping in the eigenvalue of L, not a literal Fourier spectrum.
+No dense matrix is constructed in the implementation: the sink adds two
+curl/adjoint applications and local reductions.
+
+The nonnegative energy loss is assigned to cells using the existing positive
+geometric interpolation transpose:
+
+    D_c = I^T(nu4 M (Lu)^2)_c >= 0,
+    d(h e)_c/dt += D_c/(rho0 A_c).
+
+This uses the same full Hamiltonian and requires no energy floor or reservoir
+withdrawal. It works with an empty reservoir. Its deposition is not identical
+to minus the signed local mechanical work W4=I^T(M u F4): viscosity also moves
+energy among neighboring cells. The report therefore exposes the local
+conservative redistribution
+
+    R_c = W4_c + D_c,     sum_c R_c = 0 (up to roundoff).
+
+This is the discrete counterpart of viscous energy-flux convergence. The
+cellwise budget is W_total + reservoir_power - R = 0. It is not correct to
+claim zero cellwise mechanical-plus-reservoir work without including R.
+The global Hamiltonian contraction is zero without any repair. No global
+redistribution, normalization, or solve is used to enforce that identity.
+
+`kinetic_power` and `reservoir_power` report the combined operator. Additional
+fields `biharmonic_kinetic_power` (nonpositive), `biharmonic_reservoir_power`
+(nonnegative), and `local_energy_redistribution` expose the sink accounting.
+`local_power_residual` now includes the redistribution term. `power_allowance`
+and `vertex_scale` still describe only the funded negative-viscosity part;
+combined signed local mechanical work is not constrained by that allowance.
+
+Both tendencies enter the existing three SSPRK3 stages. There is no finite-step
+energy repair. Biharmonic damping introduces an explicit stability restriction
+set by nu4 times the largest squared discrete eigenvalue. The reservoir source
+bound alone does not guarantee this restriction or coupled-advection positivity.
+Coefficients must be assessed with mesh and timestep sensitivity; no automatic
+stability cap is currently imposed. This is rotational damping, not a complete
+strain-based viscosity or a claim of angular-momentum conservation.

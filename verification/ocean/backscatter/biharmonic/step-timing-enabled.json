@@ -1,0 +1,17 @@
+{
+  "full_step": true,
+  "biharmonic_viscosity": 10000000000000.0,
+  "cells": 16384,
+  "layers": 40,
+  "samples_s": [
+    16.82417335700302,
+    15.910848523999448,
+    16.876176932004455
+  ],
+  "median_s": 16.82417335700302,
+  "peak_rss_bytes": 2621673472,
+  "threads": 1,
+  "compiled": false,
+  "dtype": "float64",
+  "torch": "2.15.0+cpu"
+}

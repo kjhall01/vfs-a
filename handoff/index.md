@@ -1,5 +1,22 @@
 # Current package documentation
 
+The opt-in [snow-on-ice wrapper](../validation/sea_ice/SNOW.md) now adds
+accumulation, snow-first melt, category transport/ridging, insulation and albedo.
+Snow mass is a labelled subset of total frozen ice-equivalent volume; it is not
+counted twice in the shared Hamiltonian. Porous depth affects surface physics,
+while mechanics retain ice-equivalent geometry. Snowfall includes an explicit
+incoming mass/energy ledger and applies only to existing ice-covered area.
+See [verification](../verification/ocean/sea-ice/snow/README.md).
+
+The opt-in [coupled ocean–ice wrapper](../validation/sea_ice/COUPLED.md) now
+composes actual Roquet ocean dynamics with category transport, ice loading,
+bounded zero-work rotation, wind, reciprocal midpoint drag to ocean TKE,
+compression and category phase/momentum exchange. All use the same full-H
+functional; packaged defaults remain unchanged. It is compression-only research
+ice, without shear rheology or calibrated thickness distribution. See
+[coupled evidence](../verification/ocean/sea-ice/coupled/README.md) for budget,
+melting, coastal, timestep and installed-wheel checks. CPU float64 only.
+
 The opt-in [GM–Redi research operator](../validation/temperature_coordinate/GMREDI.md)
 now requires a prognostic mesoscale-energy reservoir, distinct from turbulent
 TKE. One full Roquet Hamiltonian supplies totals, discrete conjugates and finite
@@ -1946,3 +1963,68 @@ smooth isolated test. See [current evidence](../verification/ocean/backscatter/i
 
 Current installed-wheel regression: 1217 passed, 2 skipped; both frozen
 comparisons and all 486 default-path bitwise comparisons pass.
+
+## Integrated ocean evaluation (2026-11-14)
+
+Seventeen low-resolution integrations completed (50,400 steps; 58 aggregate
+model days), plus two expected rejection checks. Energy and inventories remain
+well controlled, but backscatter strongly concentrates KE on short mesh edges;
+physical spatial quality is not qualified. Stratified bathymetric rest has small
+spurious currents that decrease with vertical refinement. No model methods were
+changed. See [evaluation evidence](../verification/ocean/integrated/README.md)
+and `validation/ocean_evaluation/README.md` for the reusable local runner.
+
+## Budgeted biharmonic sink (2026-11-14)
+
+`EddyBackscatter(..., biharmonic_viscosity=nu4)` adds opt-in rotational
+biharmonic damping with nonnegative dissipation deposited into the mesoscale
+reservoir. The full Hamiltonian supplies the metric. Local viscous energy
+redistribution is explicit in the report; global pairing closes to roundoff.
+No finite-step repair, floor, or altered default is introduced.
+
+Installed-wheel CPU float64 suite: 1227 passed, 2 skipped; both frozen
+comparisons pass. Six two-day coupled comparisons complete. At 128 cells the
+peak-speed spike falls from 1.86 to .216 m/s and single-edge KE concentration
+from 22.1% to 5.24%; at 256 cells the concentration falls from 38.3% to 7.58%.
+This is a short-run improvement, not mesoscale calibration or climate skill.
+See [implementation/evidence](../verification/ocean/backscatter/biharmonic/README.md).
+
+## Global wave/trade-wind evaluation (2026-11-14)
+
+Seven global CPU float64 integrations completed (11,520 steps, 23 model days):
+a two-day rotating surface bump and five-day prescribed trade-wind aquaplanet,
+with closure ablations and a finer-step wave control. The paired closure changes
+wave elevation by ~0.025% relative to the finer-step baseline. Trade winds yield
+~7.4 cm/s mean westward tropical surface flow; full-H-minus-wind-work residual is
+~5.5e-9 J/kg. No model numerical methods changed. A new RMS broadcasting error
+was corrected in analysis from snapshots; raw records and the identical-endpoint
+repeat are retained. See [report](../verification/ocean/waves-and-trades/README.md)
+for limits, figures and local higher-resolution commands.
+
+## Stationary sea-ice foundation (2026-11-14)
+
+[Ice columns](../validation/sea_ice/README.md) add fresh zero-layer phase change
+and a conductive prescribed-air boundary against one combined ocean/ice
+Hamiltonian. Latent and ice gravitational energy, liquid mass and salt retention
+are explicit. Fifteen focused checks and two seasonal column integrations
+qualify CPU float64 thermodynamics; [evidence](../verification/ocean/sea-ice/README.md).
+No production defaults change. Nonzero ocean velocity is rejected: ice loading,
+phase momentum exchange, transport and stress-work coupling are not implemented.
+The archive's EVP must not be enabled without those derivations. This is a
+research column component, not an ERA5-ready global sea-ice model.
+
+## Compression/ridging mechanics (2026-11-14)
+
+[Two-category ridging](../validation/sea_ice/RIDGING.md) adds an isolated ice
+mechanics stage with ice KE and hydrostatic category-variance PE in the common
+Hamiltonian. Compression-driven thin-to-thick volume transfer is paired with
+its resisting stress; friction heats the ocean through the full-H thermal
+conjugate. No finite-step energy repair or clipping occurs. Thirteen new tests
+include independent full-H derivatives, coastal work, category birth, material
+budgets, smooth-branch backward sensitivity and RK refinement. All 28 ice tests
+pass. [Evidence](../verification/ocean/sea-ice/ridging/README.md).
+This is not a coupled moving-ice model: transport/loading/drag/phase momentum
+remain absent, the existing column phase API is unchanged, and only the thin
+category can be redistributed. Full shear/VP/EVP and calibration remain open.
+Installed-wheel portable suite: 1255 passed, 2 skipped; both frozen comparisons
+pass. CPU float64 only; no GPU or long coupled ocean–ice validation.

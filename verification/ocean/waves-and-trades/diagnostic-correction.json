@@ -1,0 +1,16 @@
+{
+  "repeated_fine_dt_endpoints_bitwise_equal": {
+    "cell_xyz": true,
+    "edge_xyz": true,
+    "wet_cell": true,
+    "u_e": true,
+    "h": true,
+    "CT": true,
+    "SA": true,
+    "eta": true,
+    "tracer_h": true,
+    "eddy_h": true,
+    "tke_h": true
+  },
+  "finite_saved_snapshots_checked": 124
+}

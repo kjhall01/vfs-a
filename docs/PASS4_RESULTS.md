@@ -982,3 +982,132 @@ default-path state/ledger/backward tensors match `34cc640` bitwise.
 Isolated tendency median at 16384×40: 0.3811 s, eager one-thread CPU float64.
 Three RK evaluations imply about 1.14 s estimated incremental step cost (7.6%
 of the prior dynamics benchmark), not a measured combined-step speed claim.
+
+## Integrated ocean evaluation (2026-11-14)
+
+Seventeen low-resolution integrations completed (50,400 steps; 58 aggregate
+model days), plus two expected rejection checks. Energy and inventories remain
+well controlled, but backscatter strongly concentrates KE on short mesh edges;
+physical spatial quality is not qualified. Stratified bathymetric rest has small
+spurious currents that decrease with vertical refinement. No model methods were
+changed. See [evaluation evidence](../verification/ocean/integrated/README.md)
+and `validation/ocean_evaluation/README.md` for the reusable local runner.
+
+## Budgeted biharmonic sink (2026-11-14)
+
+`EddyBackscatter(..., biharmonic_viscosity=nu4)` adds opt-in rotational
+biharmonic damping with nonnegative dissipation deposited into the mesoscale
+reservoir. The full Hamiltonian supplies the metric. Local viscous energy
+redistribution is explicit in the report; global pairing closes to roundoff.
+No finite-step repair, floor, or altered default is introduced.
+
+Installed-wheel CPU float64 suite: 1227 passed, 2 skipped; both frozen
+comparisons pass. Six two-day coupled comparisons complete. At 128 cells the
+peak-speed spike falls from 1.86 to .216 m/s and single-edge KE concentration
+from 22.1% to 5.24%; at 256 cells the concentration falls from 38.3% to 7.58%.
+This is a short-run improvement, not mesoscale calibration or climate skill.
+See [implementation/evidence](../verification/ocean/backscatter/biharmonic/README.md).
+
+## Global wave/trade-wind evaluation (2026-11-14)
+
+Seven global CPU float64 integrations completed (11,520 steps, 23 model days):
+a two-day rotating surface bump and five-day prescribed trade-wind aquaplanet,
+with closure ablations and a finer-step wave control. The paired closure changes
+wave elevation by ~0.025% relative to the finer-step baseline. Trade winds yield
+~7.4 cm/s mean westward tropical surface flow; full-H-minus-wind-work residual is
+~5.5e-9 J/kg. No model numerical methods changed. A new RMS broadcasting error
+was corrected in analysis from snapshots; raw records and the identical-endpoint
+repeat are retained. See [report](../verification/ocean/waves-and-trades/README.md)
+for limits, figures and local higher-resolution commands.
+
+## Hamiltonian stationary ocean–ice columns (2026-11-14)
+
+New opt-in research components use the existing full ocean Hamiltonian plus
+latent and gravitational ice energy for freezing/melting and external conductive
+heat exchange. Fifteen focused tests include independent derivative and actual
+energy-change checks, coastal/material conservation and a smooth-branch backward
+check. Two year-long prescribed-air column runs (daily/half-daily) retain maximum
+accumulated energy residuals 3.85e-5/8.09e-5 J/m² and water residuals below
+8.74e-11 kg/m². Peak ice thickness is 1.098/1.094 m. No packaged kernels changed.
+Moving ocean and ice dynamics remain explicitly unsupported pending common-H
+loading, momentum and stress-work terms. See [scope/evidence](../verification/ocean/sea-ice/README.md).
+
+External installed-wheel regression: 1239 passed, 2 skipped (including the first
+12 ice tests). The final 15-test ice suite then passed independently in that
+same harness, including the final near-salinity-limit bracket change. Both
+frozen fixture comparisons pass; no packaged source was modified.
+
+## Compression-only ice ridging (2026-11-14)
+
+Added an opt-in, two-category instantaneous mechanics operator, with common-H
+ice KE, hydrostatic subcell ridge PE and matched compressive stress. Thin-to-thick
+redistribution preserves cell ice volume; dissipative work warms the ocean via
+the full Roquet caloric conjugate. It does not alter TKE/eddy reservoirs or any
+packaged kernel/default. All 28 ice tests pass, including 13 new mechanics tests.
+A 1000-second isolated 32-cell experiment converts ~0.218 J/m² ice KE into equal
+ridge PE and heat for the chosen uncalibrated friction parameter. Step errors
+at dt500/250/125 s are 3.94e-7/2.19e-8/1.33e-9 J/m²; no energy repair occurs.
+Coastal and 128-cell experiments also complete. These are isolated mechanics
+experiments, not global ocean–ice integrations. See [scope and evidence](../verification/ocean/sea-ice/ridging/README.md).
+
+Final installed-wheel portable regression outside the checkout: 1255 passed,
+2 skipped. Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry
+helpers). Research modules were explicitly copied into the external harness;
+no packaged source changed. CPU float64 only.
+
+## Coupled moving ocean–ice research model (2026-11-15)
+
+Added category transport with energy-adjoint forces, ocean loading, bounded
+zero-work ice rotation, prescribed wind, reciprocal implicit drag to ocean TKE,
+all-category compression and category-aware freezing/melting with donor momentum
+transfer. The full Roquet/category Hamiltonian is shared throughout. The wrapper
+preserves existing vertical mixing and mesoscale backscatter composition. No
+packaged numerical kernels or defaults changed.
+
+Nine global/coastal experiments complete (2010 steps, 57 aggregate model hours),
+including one full day, moving ice margins and complete melting. Peak energy
+residuals range from 5.26e-7 to 1.82e-3 J/m²; water/salt relative errors remain
+below 1.19e-15. Melt-case timestep halving decreases the peak energy residual
+1.87e-4 → 2.32e-5 J/m². These are coarse numerical coupling checks, not climate
+qualification. Final focused coverage is 66 passing ice tests (38 new coupling
+tests); independent derivatives/work, phase momentum and smooth backward checks
+are included. Portable frozen comparisons pass. See [full evidence and external
+suite logs](../verification/ocean/sea-ice/coupled/README.md).
+
+Explicit drag and inverse-mass PV rotation failed near disappearing ice during
+development. Implicit midpoint drag and bounded harmonic-mass zero-work rotation
+resolve the demonstrated failure. The rotation extension claims energy closure,
+not discrete PV conservation. Compression-only ice remains without shear/elastic
+rheology, snow or brine physics. CPU float64 only; selected local backward checks
+are not a long-horizon differentiability qualification.
+
+External installed-wheel portable suite: 1292 passed, 2 skipped. The final
+partial-margin drag correction and one additional regression test then passed
+in the final 66-test ice suite (1293 distinct passing tests across both runs).
+Frozen tolerances are unchanged; the platform exact-mode mismatch is retained
+in the evidence rather than suppressed.
+
+## Zero-layer snow on moving category ice
+
+Added opt-in snow accumulation, carrier-consistent advection/ridging, snow-first
+melt, insulation and smoothly depth-dependent albedo. Snow is a labelled subset
+of total frozen ice-equivalent volume, with an explicit snowfall mass/energy
+boundary ledger. Snow-only melting preserves underlying ice volume and area.
+The shared Hamiltonian counts snow once; porous depth affects surface exchange
+while mechanical geometry remains ice-equivalent. No packaged default changed.
+
+Fifteen new tests cover mass/energy/momentum, analytic phase derivatives, snow
+transport and redistribution, coastal/open-water behavior, optical/thermal
+responses and a smooth backward check. The bare coupled step is bitwise equal
+to its predecessor. Five moving coupled experiments complete (1980 steps,
+54 aggregate model hours), including coastal ice and complete melting. Peak
+energy residuals are below 1.8e-5 J/m²; ordinary-cycle dt halving decreases the
+residual from 1.27e-5 to 1.02e-6 J/m². [Evidence and runnable commands](../verification/ocean/sea-ice/snow/README.md).
+
+This is zero-layer snow with fixed density and illustrative albedos, not porous
+snow gravitational geometry, snow enthalpy, separate basal/surface melt fronts,
+snow aging, brine or complete precipitation forcing. Incoming snow is co-moving
+and only the ice-covered fraction is intercepted. CPU float64 only.
+
+Final external installed-wheel portable regression: 1308 passed, 2 skipped.
+Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry helpers).
