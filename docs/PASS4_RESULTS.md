@@ -1007,3 +1007,15 @@ peak-speed spike falls from 1.86 to .216 m/s and single-edge KE concentration
 from 22.1% to 5.24%; at 256 cells the concentration falls from 38.3% to 7.58%.
 This is a short-run improvement, not mesoscale calibration or climate skill.
 See [implementation/evidence](../verification/ocean/backscatter/biharmonic/README.md).
+
+## Global wave/trade-wind evaluation (2026-11-14)
+
+Seven global CPU float64 integrations completed (11,520 steps, 23 model days):
+a two-day rotating surface bump and five-day prescribed trade-wind aquaplanet,
+with closure ablations and a finer-step wave control. The paired closure changes
+wave elevation by ~0.025% relative to the finer-step baseline. Trade winds yield
+~7.4 cm/s mean westward tropical surface flow; full-H-minus-wind-work residual is
+~5.5e-9 J/kg. No model numerical methods changed. A new RMS broadcasting error
+was corrected in analysis from snapshots; raw records and the identical-endpoint
+repeat are retained. See [report](../verification/ocean/waves-and-trades/README.md)
+for limits, figures and local higher-resolution commands.

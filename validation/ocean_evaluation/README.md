@@ -121,3 +121,45 @@ is zero. `biharmonic_gain_J_kg` records resolved KE returned to the reservoir;
 power-residual maximum includes both the local budget (with conservative
 viscous redistribution) and the global kinetic/reservoir power imbalance.
 These coefficient values are experimental, not calibrated or safe at all grids.
+
+
+## Rotating wave and prescribed trade-wind aquaplanet
+
+- `wave`: Earth radius, flat 1000 m depth, uniform CT=10 and SA=35. A smooth
+  0.1 m Gaussian-like surface bump centered at (0°,0°), minus its area mean,
+  is distributed over the layer thicknesses. Initial velocity is zero. There
+  is no external forcing or vertical mixing. Rotation remains enabled. This
+  tests propagation/adjustment and closure sensitivity, not an analytic
+  nonrotating-wave benchmark. Matched variants retain reservoir decay to heat.
+- `tradewinds`: Earth radius, flat 1000 m depth, vertically stratified CT/SA,
+  zero initial velocity, TKE mixing and bottom drag. Eastward stress is
+  `wind * [-exp(-(lat/20°)^2) + .5 exp(-((abs(lat)-45°)/15°)^2)]`, projected
+  onto native edge normals. Thus the tropical wind is westward and the
+  midlatitude wind eastward. No heating, freshwater, restoring or continents.
+
+`--snapshots` retains a state at each `--log-every` interval, enabling field
+comparisons rather than relying only on scalar budgets. Added CSV diagnostics
+are surface-elevation RMS, projection onto the initial bump (wave only), and
+area-weighted reconstructed surface eastward current within 20° of the equator.
+The last diagnostic is zero if a domain contains no cells in that band.
+
+Example larger local experiments (starting timesteps, not qualified limits):
+
+```sh
+python -I validation/ocean_evaluation/run.py --case tradewinds \
+  --cells 1024 --layers 16 --days 5 --dt 120 --wind .05 \
+  --biharmonic-viscosity 1e13 --variants gmredi backscatter \
+  --log-every 360 --snapshots --max-wall-seconds 86400 \
+  --output trades-1024
+python -I validation/ocean_evaluation/run.py --case wave \
+  --cells 1024 --layers 16 --days 2 --dt 120 \
+  --biharmonic-viscosity 1e13 --variants gmredi backscatter \
+  --log-every 60 --snapshots --output waves-1024
+```
+
+For a backscatter-without-sink control, use a fresh output and
+`--variants backscatter --biharmonic-viscosity 0`. Short global aquaplanet runs
+show initial wind-driven adjustment, not an equilibrated circulation or gyres.
+The `waves_and_trades.py ROOT` analyzer compares completed runs nested below
+ROOT and writes plots and `wave_trade_metrics.json`. Its wave reference is the
+smallest-dt GM–Redi run supplied, not an analytic or spatially converged truth.

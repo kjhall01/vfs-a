@@ -74,7 +74,7 @@ class Experiment:
         column = OceanColumn(
             args.layers, total_depth=depth, rest_thickness=1000 * fractions.diff()
         )
-        forced = args.case == "forced"
+        forced = args.case in ("forced", "tradewinds")
         self.model = RoquetOcean(
             mesh,
             column,
@@ -83,7 +83,7 @@ class Experiment:
                 RoquetMixing(2.0, substeps=math.ceil(args.dt / 30)) if forced else None
             ),
             boundary=TemperatureBoundary(0.0025) if forced else None,
-            heating=RoquetHeating(0.6, (0.5, 20.0)) if forced else None,
+            heating=RoquetHeating(0.6, (0.5, 20.0)) if args.case == "forced" else None,
             backscatter=(
                 EddyBackscatter(
                     args.viscosity,
@@ -96,6 +96,10 @@ class Experiment:
             ),
         )
         h = depth * fractions.diff()[None]
+        if args.case == "wave":
+            pulse = torch.exp((mesh.cell_xyz[:, :1] - 1) / 0.15)
+            pulse -= (mesh.cell_area[:, None] * pulse).sum() / mesh.cell_area.sum()
+            h = h + 0.1 * pulse * fractions.diff()[None]
         z = -(h.cumsum(-1) - 0.5 * h)
         ct = torch.full_like(h, 10.0)
         sa = torch.full_like(h, 35.0)
@@ -124,6 +128,20 @@ class Experiment:
                 shortwave=torch.full((args.cells,), 30.0),
                 surface_heat=heat - 30.0,
             )
+            if args.case == "tradewinds":
+                # Easterly tropical trades and weaker midlatitude westerlies.
+                # Stress is projected onto native edge normals, not a prescribed
+                # current. No heating, freshwater or temperature restoring.
+                tau = args.wind * (
+                    -torch.exp(-(edge_lat / math.radians(20)).square())
+                    + 0.5
+                    * torch.exp(
+                        -(
+                            (edge_lat.abs() - math.radians(45)) / math.radians(15)
+                        ).square()
+                    )
+                )
+                self.forcing = dict(surface_stress=tau * projection)
         self.initial = self.model.state(
             u_e=domain.apply_edge(u),
             h=h,
@@ -252,7 +270,24 @@ class Experiment:
         )
         means /= sums.clamp_min(1)[..., None]
         anomaly = uv - means[bins]
+        eta = s.column.eta(s.h).squeeze(-1)
+        eta0 = self.initial.ocean.column.eta(self.initial.ocean.h).squeeze(-1)
+        area = self.mesh.cell_area
+        initial_norm = (area * eta0.square()).sum()
+        tropics = wet & (xyz[:, 2].abs() < math.sin(math.radians(20)))
+        tropical_area = area[tropics]
         row = dict(
+            eta_rms_m=float(torch.sqrt((area * eta.square()).sum() / area.sum())),
+            initial_eta_projection=(
+                float((area * eta * eta0).sum() / initial_norm)
+                if self.args.case == "wave" and initial_norm > 0
+                else 0.0
+            ),
+            tropical_surface_east_m_s=(
+                float((tropical_area * uv[tropics, 0, 0]).sum() / tropical_area.sum())
+                if tropics.any()
+                else 0.0
+            ),
             time_days=seconds / DAY,
             energy_error_J_kg=energy_error,
             volume_relative_error=float((self.mass_area * s.h).sum())
@@ -380,6 +415,10 @@ def run(args, variant):
                         wall_seconds=time.perf_counter() - started,
                     )
                     write_json(directory / "summary.json", summary)
+                    if args.snapshots:
+                        experiment.save(
+                            state, directory / f"state-{int(round(seconds)):09d}s.npz"
+                        )
                     print(
                         f'{variant}: day={seconds/DAY:.4f} step={step} u_max={row["max_speed_m_s"]:.3e} '
                         f'energy residual={row["energy_error_J_kg"]:.3e} J/kg',
@@ -410,7 +449,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
         "--case",
-        choices=("rest", "stratified-rest", "channel", "forced"),
+        choices=("rest", "stratified-rest", "channel", "forced", "tradewinds", "wave"),
         required=True,
     )
     p.add_argument(
@@ -445,6 +484,9 @@ def main():
     p.add_argument("--decay-days", type=float, default=30.0)
     p.add_argument("--threads", type=int, default=1)
     p.add_argument("--compile", action="store_true")
+    p.add_argument(
+        "--snapshots", action="store_true", help="save state at each log interval"
+    )
     p.add_argument("--log-every", type=int, default=20)
     p.add_argument("--max-wall-seconds", type=float, default=7200.0)
     p.add_argument("--output", type=Path, required=True)
