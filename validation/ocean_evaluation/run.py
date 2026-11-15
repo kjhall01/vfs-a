@@ -328,7 +328,7 @@ def run(args, variant):
         write_json(directory / "summary.json", summary)
         with (directory / "series.csv").open("w", newline="") as stream:
             initial = experiment.diagnostics(state, 0.0)
-            writer = csv.DictWriter(stream, fieldnames=initial.keys())
+            writer = csv.DictWriter(stream, fieldnames=initial.keys(), lineterminator="\n")
             writer.writeheader()
             writer.writerow(initial)
             stream.flush()
