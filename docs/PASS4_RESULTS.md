@@ -1019,3 +1019,20 @@ wave elevation by ~0.025% relative to the finer-step baseline. Trade winds yield
 was corrected in analysis from snapshots; raw records and the identical-endpoint
 repeat are retained. See [report](../verification/ocean/waves-and-trades/README.md)
 for limits, figures and local higher-resolution commands.
+
+## Hamiltonian stationary ocean–ice columns (2026-11-14)
+
+New opt-in research components use the existing full ocean Hamiltonian plus
+latent and gravitational ice energy for freezing/melting and external conductive
+heat exchange. Fifteen focused tests include independent derivative and actual
+energy-change checks, coastal/material conservation and a smooth-branch backward
+check. Two year-long prescribed-air column runs (daily/half-daily) retain maximum
+accumulated energy residuals 3.85e-5/8.09e-5 J/m² and water residuals below
+8.74e-11 kg/m². Peak ice thickness is 1.098/1.094 m. No packaged kernels changed.
+Moving ocean and ice dynamics remain explicitly unsupported pending common-H
+loading, momentum and stress-work terms. See [scope/evidence](../verification/ocean/sea-ice/README.md).
+
+External installed-wheel regression: 1239 passed, 2 skipped (including the first
+12 ice tests). The final 15-test ice suite then passed independently in that
+same harness, including the final near-salinity-limit bracket change. Both
+frozen fixture comparisons pass; no packaged source was modified.

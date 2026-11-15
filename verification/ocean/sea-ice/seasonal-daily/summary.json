@@ -1,0 +1,30 @@
+{
+  "cells": 32,
+  "layers": 3,
+  "days": 365.0,
+  "dt": 86400.0,
+  "steps": 365,
+  "threads": 1,
+  "torch": "2.15.0+cpu",
+  "dtype": "float64",
+  "device": "cpu",
+  "median_step_seconds": 0.025662120002380107,
+  "peak_ice_m": 1.0980620795306624,
+  "peak_step_residual_J_m2": 8.552286234055147e-07,
+  "peak_cumulative_residual_J_m2": 3.849342465400696e-05,
+  "peak_water_residual_kg_m2": 5.820766091346741e-11,
+  "peak_relative_energy_residual": 2.5260044031278066e-14,
+  "final": {
+    "day": 365.0,
+    "ice_min_m": 0.6717487609676102,
+    "ice_max_m": 1.0086053852860244,
+    "ct_min_C": -1.9197050704471452,
+    "ct_max_C": -1.8945867044908433,
+    "max_energy_residual_J_m2": 3.8176774978637695e-05,
+    "max_water_residual_kg_m2": 2.9103830456733704e-11
+  },
+  "source_sha256": {
+    "run.py": "0bb12dc1203cdba63cef2537462f88e5238e98b36ea3e3405b49986ff0665d4f",
+    "ice.py": "96a73a9665ef1d632cc5e4f7373173a5a627817ebbafdab2eceecb6b9dc35f82"
+  }
+}

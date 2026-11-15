@@ -1983,3 +1983,15 @@ wave elevation by ~0.025% relative to the finer-step baseline. Trade winds yield
 was corrected in analysis from snapshots; raw records and the identical-endpoint
 repeat are retained. See [report](../verification/ocean/waves-and-trades/README.md)
 for limits, figures and local higher-resolution commands.
+
+## Stationary sea-ice foundation (2026-11-14)
+
+[Ice columns](../validation/sea_ice/README.md) add fresh zero-layer phase change
+and a conductive prescribed-air boundary against one combined ocean/ice
+Hamiltonian. Latent and ice gravitational energy, liquid mass and salt retention
+are explicit. Fifteen focused checks and two seasonal column integrations
+qualify CPU float64 thermodynamics; [evidence](../verification/ocean/sea-ice/README.md).
+No production defaults change. Nonzero ocean velocity is rejected: ice loading,
+phase momentum exchange, transport and stress-work coupling are not implemented.
+The archive's EVP must not be enabled without those derivations. This is a
+research column component, not an ERA5-ready global sea-ice model.
