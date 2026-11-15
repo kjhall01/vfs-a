@@ -81,7 +81,7 @@ class AM2Adapter:
             radiation=None if radiation is None else asdict(radiation.c),
             radiation_id=radiation_id,
             energy_mode=energy_mode,
-            schema=2,
+            schema=3,
         )
         digest = hashlib.sha256(json.dumps(config, sort_keys=True).encode())
         for field in (
@@ -183,7 +183,7 @@ class AM2Adapter:
         self.check(state)
         return state
 
-    def column_call(self, state, dt, columns, geometry):
+    def column_call(self, state, dt, columns, geometry, *, surface_tiles=None):
         """Call all four upstream stages, retaining their actual exchange outputs.
 
         surf/mem are copied. Radiation alarms/cache are installed temporarily,
@@ -203,18 +203,26 @@ class AM2Adapter:
                 geometry[k] for k in ("pfull", "phalf", "zfull", "zhalf", "omega")
             )
             zero = torch.zeros_like(T)
-            sfc = p.surface_layer(
-                T,
-                u,
-                v,
-                R,
-                ps,
-                zf[:, -1] - zh[:, -1],
-                pf[:, -1],
-                surf["t_surf"],
-                surf,
-                mem,
-            )
+            tile_raw = None
+            if surface_tiles is None:
+                sfc = p.surface_layer(
+                    T,
+                    u,
+                    v,
+                    R,
+                    ps,
+                    zf[:, -1] - zh[:, -1],
+                    pf[:, -1],
+                    surf["t_surf"],
+                    surf,
+                    mem,
+                )
+            else:
+                from .surface import surface_layer
+
+                sfc, tile_raw = surface_layer(
+                    self, columns, geometry, surf, mem, surface_tiles
+                )
             dn = p.down(
                 dt,
                 self.start + set_time(state.time_seconds),
@@ -235,7 +243,7 @@ class AM2Adapter:
                 mem,
                 surf["t_surf"],
             )
-            cpl = p.couple(dn["vd"], sfc, surf)
+            cpl = p.couple(dn["vd"], sfc, surf, update_ocean=surface_tiles is None)
             up = p.up(dt, T, u, v, R, pf, ph, zf, zh, omega, dn, cpl, surf, mem)
             out = {k: up[k] for k in ("udt", "vdt", "tdt", "rdt")}
             out.update(
@@ -255,6 +263,21 @@ class AM2Adapter:
                     -1,
                 ),
             )
+            if tile_raw is not None:
+                from .surface import tile_fluxes
+
+                out["tile_fluxes"] = tile_fluxes(tile_raw, surface_tiles, dn["vd"], cpl)
+                for key, value in out["tile_fluxes"].items():
+                    error = (value.sum(-1) - out[key]).abs()
+                    if (
+                        error
+                        > 256
+                        * torch.finfo(value.dtype).eps
+                        * value.abs().sum(-1).clamp_min(1)
+                    ).any():
+                        raise FloatingPointError(
+                            "tile and aggregate implicit fluxes disagree"
+                        )
             rad = (
                 {}
                 if self.radiation is None
@@ -305,6 +328,8 @@ class AM2Adapter:
         self, state, dt, column, geom, out, surf, mem, rad, *, water_boundary=None
     ):
         """Apply a checked upstream result; also permits isolated mapping tests."""
+        if water_boundary is not None and out.get("exchange") is not None:
+            raise ValueError("shared exchange owns water boundary")
         s = state.atmosphere
         model, mapping = self.model, self.mapping
         thermo = model.dynamics.thermodynamics
@@ -462,8 +487,7 @@ class AM2Adapter:
             fluxes.update(
                 sw_net_surface=r["flux_sw_surf"],
                 lw_down_surface=r["flux_lw_surf"],
-                lw_net_surface=r["flux_lw_surf"]
-                - am2_constants.STEFAN * state.surface["t_surf"] ** 4,
+                lw_net_surface=-r["flxnet"][:, -1],
                 toa_net_down=r["dfsw"][:, 0] - r["ufsw"][:, 0] - r["flxnet"][:, 0],
             )
             radiation_heat = (dp * am2_constants.CP_AIR / g * r["tdt_rad"]).sum(-1)

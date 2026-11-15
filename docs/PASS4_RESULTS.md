@@ -1227,3 +1227,29 @@ by native dynamics drift. Accumulated transfer and upstream residuals stay near
 roundoff. The legacy six-hour run exactly reproduces all 7,920 archived scalar
 values. Final precipitation remains timestep-sensitive; energy closure is not
 cloud/climate accuracy qualification.
+
+## Shared PyAM21–ocean–ice exchange and real-radiation setup
+
+An opt-in workflow outside all package code now produces one interval-integrated
+water/energy/momentum/radiation record and applies reciprocal transfers to actual
+AM2 physics and the research Roquet ocean/category-ice/snow Hamiltonian. Open-water
+and ice tile fluxes share a single implicit atmospheric bottom state; water and
+stress use the same work-adjoint native mapping. Recipient midpoint stress work
+and a local analytic surface first-law solve preserve the common energy contract.
+AM2's upstream defect remains explicit, including in a deliberate injected-heat
+test. Cached bottom LW is shared consistently when SST changes between calls.
+
+Installed-wheel portable suite: 1,381 passed, 3 skipped before the final extra
+rejection test; final focused suite 52 passed, 1 skipped. Both frozen comparisons
+pass (142/93 tensors). Three six-hour integrations cover column exchange and actual
+atmosphere/ocean/ice dynamics. Combined numerical energy residual falls from
+1.347e-3 to 6.184e-4 J/m² when the coupled/atmosphere timesteps halve. Water and salt
+remain near roundoff. See [evidence](../verification/atmosphere/pyam21/coupled/README.md).
+
+The [real SeaEsfRad builder](../workflows/pyam21/RADIATION.md) is wired with explicit
+GFDL data, content hashes, reference pressure columns and declared rectangular
+climatology sampling. Actual execution is **unverified** because data acquisition
+failed; all archived integrations above have radiation off, and synthetic tests
+are identified as such. Ice skin temperature remains prescribed in the example;
+a solved radiation/conduction skin balance and longer radiating qualification
+are still required. No claim of production coupled climate readiness is made.
