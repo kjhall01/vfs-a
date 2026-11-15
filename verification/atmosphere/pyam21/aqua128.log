@@ -1,0 +1,54 @@
+0.167 h: water residual -6.39e-14 kg/m2; Tmin 207.80 K; max wind 0.885 m/s
+0.333 h: water residual -1.31e-13 kg/m2; Tmin 207.80 K; max wind 1.77 m/s
+0.500 h: water residual -2.02e-13 kg/m2; Tmin 207.81 K; max wind 2.66 m/s
+0.667 h: water residual -2.67e-13 kg/m2; Tmin 207.81 K; max wind 3.53 m/s
+0.833 h: water residual -3.34e-13 kg/m2; Tmin 207.81 K; max wind 4.39 m/s
+1.000 h: water residual -4.04e-13 kg/m2; Tmin 207.82 K; max wind 5.24 m/s
+{
+  "configuration": {
+    "source": "/workspace/scratch/b16610c53df7/PyAM21",
+    "cells": 128,
+    "levels": 24,
+    "hours": 1.0,
+    "dt": 60,
+    "dynamics_dt": 15,
+    "output": "/workspace/scratch/b16610c53df7/vfs-pyam21/verification/atmosphere/pyam21/aqua128",
+    "verbose": true
+  },
+  "coupled_dynamics": true,
+  "radiation": "none",
+  "steps": 60,
+  "wall_seconds": 32.4252065269975,
+  "restart_fingerprint": "a01b52972aeb9bf38d36a9ffb6c368576ccbb2119d972812691531e992c5ff5b",
+  "final": {
+    "seconds": 3600,
+    "dry_air_relative": -1.8335539199956236e-14,
+    "water_flux_error_kg_m2": -4.0374797960133717e-13,
+    "energy_change_J_m2": 101764.83025513867,
+    "dynamics_energy_residual_J_m2": -1.9594066543504596e-05,
+    "water_mapping_max_kg_m2": 1.6046192152785466e-15,
+    "temperature_min_K": 207.81765954513142,
+    "cloud_fraction_max": 0.18395333185195398,
+    "max_wind_m_s": 5.237645796003418,
+    "precipitation_kg_m2_s": 3.4515203747295664e-05,
+    "vfs_full_h_J_m2": 1662.1187537401609,
+    "native_kinetic_J_m2": -0.05150338834837477,
+    "vfs_fixed_mass_column_enthalpy_J_m2": 1648.7781310709206,
+    "am2_thermal_latent_proxy_J_m2": 1648.4853479347707,
+    "declared_thermal_latent_forcing_J_m2": 1648.4345945186972,
+    "am2_proxy_minus_forcing_J_m2": 0.05075341607330538,
+    "thermodynamic_convention_difference_J_m2": 0.2927831361498957,
+    "mapping_and_carrier_difference_J_m2": 13.392126057588651,
+    "cumulative_declared_heat_J_m2": 98499.54481797201,
+    "cumulative_convention_change_J_m2": -670.8185003802362,
+    "cumulative_mapping_carrier_change_J_m2": 3936.1136250065697,
+    "vfs_minus_AM2_heat_ledger_J_m2": 3265.2854371666617
+  },
+  "peaks": {
+    "dry_air_relative": 1.8335539199956236e-14,
+    "water_flux_error_kg_m2": 4.0374797960133717e-13,
+    "water_mapping_max_kg_m2": 2.4494295480792516e-15,
+    "dynamics_energy_residual_J_m2": 2.098502591252327e-05
+  },
+  "torch": "2.15.0+cpu"
+}
