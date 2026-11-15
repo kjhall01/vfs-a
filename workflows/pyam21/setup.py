@@ -24,6 +24,9 @@ def example(
     radiation_data=None,
     radiation_step=3600,
     climatology_width_degrees=1.0,
+    start=(2000, 1, 1, 0, 0, 0),
+    mesh_options=None,
+    namelist_overrides=None,
 ):
     """Analytic moist profile with BOMEX physics options, not the BOMEX case.
 
@@ -36,7 +39,11 @@ def example(
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
     nml = read_namelist(str(Path(source) / "reference/input/gcss_bomex/input.nml"))
-    mesh = VoronoiMesh(n_cells=cells, lloyd_iters=0, verbose=False)
+    for group, values in (namelist_overrides or {}).items():
+        nml.setdefault(group, {}).update(values)
+    mesh = VoronoiMesh(
+        n_cells=cells, **({"lloyd_iters": 0, "verbose": False} | (mesh_options or {}))
+    )
     A, B = make_hybrid_coefficients(levels, p_top=1000.0)
     column = CharneyPhillipsColumn(levels, A, B, phi_full_mode="direct_u_gl2_adjoint")
     model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)
@@ -67,6 +74,7 @@ def example(
         model,
         nml,
         energy_mode=energy_mode,
+        start=start,
         radiation=None if rad is None else rad.driver,
         radiation_id=None if rad is None else rad.identity,
     )

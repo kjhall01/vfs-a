@@ -8,10 +8,10 @@ components. A failure returns neither updated state; inputs and radiation caches
 remain unchanged. The caller owns scheduling and must not replay an interval.
 
 This connects the actual AM2 surface/column physics to the existing Roquet
-Hamiltonian ocean, category ice and snow. It is a first coupled research boundary,
-not a qualified climate configuration. **Ice skin temperature is an explicit
-input.** The demonstration holds it at 270 K; a solved radiative/conductive ice
-skin balance is still needed. Full SeaEsfRad execution also awaits external data;
+Hamiltonian ocean, category ice and snow. The [365-day campaign](CAMPAIGN.md) adds prognostic ice temperature,
+conservative cold-content transport, conduction and a shared energy budget.
+The original `run.py` demonstration below retains its prescribed 270 K skin
+input for reproducibility. Neither path is a qualified climate configuration. Full SeaEsfRad execution also awaits external data;
 see [radiation setup](../pyam21/RADIATION.md).
 
 ## Run

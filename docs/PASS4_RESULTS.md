@@ -1253,3 +1253,12 @@ failed; all archived integrations above have radiation off, and synthetic tests
 are identified as such. Ice skin temperature remains prescribed in the example;
 a solved radiation/conduction skin balance and longer radiating qualification
 are still required. No claim of production coupled climate readiness is made.
+
+## Prognostic ice and one-year coupled campaign
+
+The external [campaign](../workflows/coupled/CAMPAIGN.md) adds one prognostic
+thermal node per ice/snow category, an extended energy budget and a 365-day
+seasonal-radiation configuration with 6-hour snapshots through day 14 and daily
+snapshots thereafter. See [verification](../verification/atmosphere/pyam21/campaign/README.md).
+Packaged kernels/defaults are unchanged. Actual SeaEsfRad execution and year-long
+stability remain unverified; the external data download returns HTTP 503 here.

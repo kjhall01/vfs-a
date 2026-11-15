@@ -1,0 +1,877 @@
+"""365-day coupled aquaplanet campaign, explicit CPU/float64 configuration."""
+
+import argparse
+import csv
+from dataclasses import asdict, dataclass, replace
+import hashlib
+import io
+import json
+import logging
+import math
+from pathlib import Path
+import sys
+import time
+import numpy as np
+import torch
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+from workflows.pyam21.setup import example
+from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
+from workflows.coupled.driver import exchange_step
+from workflows.coupled.ice_temperature import (
+    ThermalIceReceiver,
+    ThermalSnowOceanIce,
+    ThermalIceState,
+)
+from workflows.pyam21.state import copy_tree
+from ocean_ice import OceanIce
+from ridging import CategoryIce, RidgingState
+from snow import SnowState
+from roquet import RoquetOcean, RoquetMixing
+from vfs.ocean import OceanColumn
+
+DAY = 86400
+
+
+@dataclass(frozen=True)
+class CampaignConfig:
+    days: int = 365
+    start_year: int = 2001  # non-leap year on upstream Julian calendar
+    cells: int = 256
+    atmosphere_levels: int = 24
+    ocean_levels: int = 12
+    ocean_depth_m: float = 1000.0
+    top_layer_m: float = 20.0
+    lloyd_iterations: int = 10
+    physics_dt: int = 60
+    atmosphere_dt: int = 15
+    ocean_dt: int = 60
+    radiation_dt: int = 3600
+    solar_constant: float = 1361.0
+    obliquity_degrees: float = 23.44
+    eccentricity: float = 0.01671
+    ice_temperature_K: float = 265.0
+    mixing_length_m: float = 2.0
+    mixing_substeps: int = 2
+    threads: int = 1
+    diagnostic_hours: int = 6
+    restart_days: int = 5
+
+    def validate(self):
+        for key in (
+            "days",
+            "start_year",
+            "cells",
+            "atmosphere_levels",
+            "ocean_levels",
+            "physics_dt",
+            "atmosphere_dt",
+            "ocean_dt",
+            "radiation_dt",
+            "mixing_substeps",
+            "threads",
+            "diagnostic_hours",
+            "restart_days",
+        ):
+            if type(getattr(self, key)) is not int or getattr(self, key) <= 0:
+                raise ValueError(f"{key} must be a positive integer")
+        if self.start_year % 4 == 0 or self.days > 365:
+            raise ValueError(
+                "campaign requires a non-leap start year and at most 365 days"
+            )
+        if self.cells < 16 or self.atmosphere_levels < 4 or self.ocean_levels < 2:
+            raise ValueError("insufficient cells or levels")
+        if type(self.lloyd_iterations) is not int or self.lloyd_iterations < 0:
+            raise ValueError("lloyd_iterations must be a nonnegative integer")
+        for key in (
+            "ocean_depth_m",
+            "top_layer_m",
+            "solar_constant",
+            "mixing_length_m",
+            "ice_temperature_K",
+        ):
+            value = getattr(self, key)
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f"invalid {key}")
+        if (
+            self.ocean_depth_m <= self.top_layer_m
+            or not 0 < self.ice_temperature_K <= 273.15
+        ):
+            raise ValueError("invalid depth or ice temperature")
+        if not 0 <= self.obliquity_degrees < 90 or not 0 <= self.eccentricity < 1:
+            raise ValueError("invalid orbital parameters")
+        if any(
+            interval % self.physics_dt
+            for interval in (
+                6 * 3600,
+                DAY,
+                self.radiation_dt,
+                self.diagnostic_hours * 3600,
+                self.restart_days * DAY,
+            )
+        ):
+            raise ValueError("physics_dt must divide radiation and output cadences")
+        if self.physics_dt % self.atmosphere_dt or self.physics_dt % self.ocean_dt:
+            raise ValueError("component timesteps must divide physics_dt")
+        return self
+
+
+def snapshot_times(days=365):
+    """0,6h,...,day14,day15,...,day365. Includes day14 exactly once."""
+    end = days * DAY
+    early = list(range(0, min(14 * DAY, end) + 1, 6 * 3600))
+    return early + list(range(15 * DAY, end + 1, DAY))
+
+
+def load_mesh(config, path):
+    """Load saved unit-sphere generators, without additional relaxation.
+
+    Read/hash the same bytes. File location is provenance only; moving an
+    unchanged mesh file must not invalidate a restart.
+    """
+    if path is None:
+        return config, None, dict(kind="generated", cells=config.cells)
+    raw = Path(path).read_bytes()
+    xyz = np.load(io.BytesIO(raw), allow_pickle=False)
+    if (
+        not isinstance(xyz, np.ndarray)
+        or xyz.ndim != 2
+        or xyz.shape[1] != 3
+        or len(xyz) < 16
+        or xyz.dtype.kind != "f"
+        or not np.isfinite(xyz).all()
+        or not np.allclose(np.linalg.norm(xyz, axis=1), 1.0, rtol=0, atol=1e-6)
+        or len(np.unique(xyz, axis=0)) != len(xyz)
+    ):
+        raise ValueError(
+            "--mesh requires a .npy array of N>=16 distinct finite floating-point unit 3-vectors"
+        )
+    effective = replace(config, cells=len(xyz), lloyd_iterations=0).validate()
+    metadata = dict(
+        kind="saved_generators",
+        cells=len(xyz),
+        path=str(Path(path).resolve()),
+        sha256=hashlib.sha256(raw).hexdigest(),
+        bytes=len(raw),
+        additional_lloyd_iterations=0,
+    )
+    return effective, xyz, metadata
+
+
+def build(
+    config, source, radiation_data, *, smoke_no_radiation=False, generator_xyz=None
+):
+    config.validate()
+    if radiation_data is None and not smoke_no_radiation:
+        raise ValueError(
+            "--radiation-data /path/to/sea_esf is required for the seasonal campaign"
+        )
+    nml = dict(
+        astronomy_nml=dict(
+            obliq=config.obliquity_degrees,
+            ecc=config.eccentricity,
+            period=365 * DAY,
+            year_ae=config.start_year,
+            month_ae=9,
+            day_ae=23,
+            hour_ae=0,
+            minute_ae=0,
+            second_ae=0,
+        ),
+        radiation_driver_nml=dict(
+            solar_constant=config.solar_constant,
+            solar_dataset_entry=[1, 1, 1, 0, 0, 0],
+            time_varying_solar_constant=False,
+            zenith_spec="diurnally_varying",
+        ),
+    )
+    adapter, air = example(
+        source,
+        cells=config.cells,
+        levels=config.atmosphere_levels,
+        aquaplanet=True,
+        radiation_data=radiation_data,
+        radiation_step=config.radiation_dt,
+        start=(config.start_year, 1, 1, 0, 0, 0),
+        namelist_overrides=nml,
+        mesh_options=dict(
+            lloyd_iters=config.lloyd_iterations,
+            generator_xyz=generator_xyz,
+            rotation_scheme="compatible",
+            verbose=False,
+        ),
+    )
+    torch.set_num_threads(config.threads)
+    mesh = adapter.model.mesh
+    column = OceanColumn(
+        config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
+    )
+    model = RoquetOcean(
+        mesh,
+        column,
+        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps),
+    )
+    # Top layer fixed; deeper layers stretched geometrically and normalized.
+    tail = torch.logspace(0, 1, config.ocean_levels - 1)
+    dz = torch.cat(
+        (
+            torch.tensor([config.top_layer_m]),
+            tail / tail.sum() * (config.ocean_depth_m - config.top_layer_m),
+        )
+    )
+    h = dz[None].expand(mesh.nCells, -1).clone()
+    z = dz.cumsum(0) - dz / 2
+    sinlat = mesh.cell_xyz[:, 2]
+    sst = (28 - 37 * sinlat.square()).clamp_min(-0.054 * 34.0)
+    deep = torch.minimum(sst, torch.full_like(sst, 2.0))
+    ct = deep[:, None] + (sst - deep)[:, None] * torch.exp(-(z - z[0])[None] / 250.0)
+    ocean = model.state(
+        u_e=torch.zeros(mesh.nEdges, config.ocean_levels),
+        h=h,
+        conservative_temperature=ct,
+        absolute_salinity=torch.full_like(h, 34.0),
+        tracer=torch.ones_like(h)[..., None],
+        tke=1e-4,
+        eddy_energy=0.0,
+    )
+    # Smooth polar ice cap, with no prescribed velocity or ongoing restoring.
+    cover = ((sinlat.abs() - 0.90) / 0.08).clamp(0, 0.7)
+    area = cover[:, None] * torch.tensor([0.8, 0.2])
+    ice = CategoryIce(
+        area, area * torch.tensor([0.3, 1.0]), torch.zeros(mesh.nEdges, 1)
+    )
+    owner = ThermalSnowOceanIce(OceanIce(model))
+    bare = SnowState(RidgingState(ocean, ice), torch.zeros_like(area))
+    sea = owner.initialize(bare, config.ice_temperature_K)
+    receiver = ThermalIceReceiver(owner)
+    # Equilibrate the liquidus and latent/sensible storage without external heat.
+    sea, _, _ = owner.phase_step(sea, 1, torch.zeros_like(area[:, :1]))
+    return adapter, air, receiver, sea
+
+
+def advance(adapter, air, receiver, sea, dt, config):
+    """Atomic first-order composition; caller commits only after full success."""
+    evolved = air
+    for elapsed in range(0, dt, config.atmosphere_dt):
+        evolved = advance_dynamics(
+            adapter, evolved, min(config.atmosphere_dt, dt - elapsed)
+        )
+    water = sea
+    external = 0.0
+    A = adapter.model.mesh.cell_area
+    for elapsed in range(0, dt, config.ocean_dt):
+        water, r = receiver.snow.step(water, min(config.ocean_dt, dt - elapsed))
+        external += float(r.external_energy / A.sum())
+    evolved, water, x, ar, sr = exchange_step(
+        adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
+    )
+    # Immediately consume latent excess at the melting constraint, rather than
+    # leaving an artificially warm ice-covered top ocean layer until next step.
+    water, _, _ = receiver.snow.phase_step(
+        water, dt, torch.zeros_like(water.snow_mass[:, :1])
+    )
+    return (
+        evolved,
+        water,
+        dict(
+            external=external + float((A * x.toa).sum() / A.sum()),
+            upstream=float(
+                (A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum()
+            ),
+            surface_residual=float(sr.energy_residual.abs().max()),
+            air_residual=float(ar.energy_transfer["layer_residual"].abs().max()),
+            radiation_residual=float(
+                ar.energy_changes["radiation_flux_residual"].abs().max() / dt
+            ),
+        ),
+    )
+
+
+def inventories(adapter, air, receiver, sea):
+    A = adapter.model.mesh.cell_area
+    s = sea.coupled.ocean.ocean
+    air_diag = adapter.model.diagnostics(air.atmosphere)
+    return dict(
+        energy=float((air_diag["energy"] + receiver.snow.total_energy(sea)) / A.sum()),
+        water=float(
+            (
+                air_diag["species"].sum()
+                + (
+                    A
+                    * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(sea.coupled)[:, 0])
+                ).sum()
+            )
+            / A.sum()
+        ),
+        salt=float((A[:, None] * s.salt_h).sum() / A.sum()),
+    )
+
+
+def diagnostics(adapter, air, receiver, sea, ledger):
+    current = inventories(adapter, air, receiver, sea)
+    s = sea.coupled.ocean.ocean
+    ice = sea.coupled.ice
+    T = receiver.snow.temperature(sea)
+    present = ice.area > 0
+    A = adapter.model.mesh.cell_area
+    return dict(
+        seconds=air.time_seconds,
+        day=air.time_seconds / DAY,
+        energy_minus_toa_J_m2=current["energy"]
+        - ledger["initial"]["energy"]
+        - ledger["external"],
+        upstream_residual_J_m2=ledger["upstream"],
+        numerical_energy_residual_J_m2=current["energy"]
+        - ledger["initial"]["energy"]
+        - ledger["external"]
+        - ledger["upstream"],
+        water_residual_kg_m2=current["water"] - ledger["initial"]["water"],
+        salt_relative=(current["salt"] - ledger["initial"]["salt"])
+        / ledger["initial"]["salt"],
+        sst_min_K=float(s.temperature()[:, 0].min() + 273.15),
+        sst_max_K=float(s.temperature()[:, 0].max() + 273.15),
+        ice_min_K=float(T[present].min()) if present.any() else None,
+        ice_max_K=float(T[present].max()) if present.any() else None,
+        ice_mass_kg=float((A[:, None] * receiver.H.mass(sea.coupled)).sum()),
+        snow_mass_kg=float((A[:, None] * sea.snow_mass).sum()),
+        ice_sensible_J_m2=float((A[:, None] * sea.cold_content).sum() / A.sum()),
+        max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
+        max_ocean_speed_m_s=float(s.u_e.abs().max()),
+        max_ice_speed_m_s=float(ice.velocity.abs().max()),
+        **{
+            k: ledger[k]
+            for k in ("surface_residual", "air_residual", "radiation_residual")
+        },
+    )
+
+
+def source_hashes():
+    import vfs
+
+    result = {}
+    roots = {
+        "workflows": ROOT / "workflows",
+        "validation": ROOT / "validation",
+        "vfs": Path(vfs.__file__).parent,
+    }
+    for label, root in roots.items():
+        for p in sorted(root.rglob("*.py")):
+            result[f"{label}/{p.relative_to(root)}"] = hashlib.sha256(
+                p.read_bytes()
+            ).hexdigest()
+    return result
+
+
+def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
+    payload = dict(
+        schema=1,
+        config=asdict(config),
+        atmosphere=adapter.fingerprint,
+        source=hashes,
+        torch=str(torch.__version__),
+        numpy=np.__version__,
+        smoke_no_radiation=smoke_no_radiation,
+        mesh_sha256=mesh_sha256,
+    )
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+def pack(adapter, air, receiver, sea, identity, ledger):
+    receiver.snow.check(sea)
+    s = sea.coupled.ocean.ocean
+    return dict(
+        schema=1,
+        fingerprint=identity,
+        air=adapter.pack(air),
+        ledger=copy_tree(ledger),
+        ocean={
+            k: getattr(s, k).clone()
+            for k in ("u_e", "h", "temp_h", "salt_h", "tracer_h")
+        },
+        tke_h=sea.coupled.ocean.tke_h.clone(),
+        eddy_h=sea.coupled.ocean.eddy_h.clone(),
+        ice={
+            k: getattr(sea.coupled.ice, k).clone()
+            for k in ("area", "volume", "velocity")
+        },
+        snow_mass=sea.snow_mass.clone(),
+        cold_content=sea.cold_content.clone(),
+    )
+
+
+def unpack(payload, adapter, receiver, template, identity):
+    if payload.get("schema") != 1 or payload.get("fingerprint") != identity:
+        raise ValueError("campaign restart configuration/source/runtime does not match")
+    p = copy_tree(payload)
+    air = adapter.unpack(p["air"])
+    physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
+    ocean = replace(
+        template.coupled.ocean, ocean=physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"]
+    )
+    sea = ThermalIceState(
+        RidgingState(ocean, CategoryIce(**p["ice"])), p["snow_mass"], p["cold_content"]
+    )
+    receiver.snow.check(sea)
+    return air, sea, p["ledger"]
+
+
+def atomic_json(path, value):
+    temp = path.with_suffix(path.suffix + ".tmp")
+    temp.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+    temp.replace(path)
+
+
+def checkpoint(path, payload):
+    temp = path.with_suffix(path.suffix + ".tmp")
+    torch.save(payload, temp)
+    temp.replace(path)
+
+
+def snapshot(path, adapter, air, receiver, sea):
+    """Native mesh NetCDF; instantaneous snapshots, never time averages."""
+    import xarray as xr
+
+    mesh = adapter.model.mesh
+    f = adapter.model.physical_fields(air.atmosphere)
+    s = sea.coupled.ocean.ocean
+
+    def array(x):
+        return x.detach().cpu().numpy()
+
+    data = {
+        "cell_area": (("cell",), array(mesh.cell_area), {"units": "m2"}),
+        "latitude": (
+            ("cell",),
+            array(torch.asin(mesh.cell_xyz[:, 2]) * 180 / math.pi),
+            {"units": "degrees_north"},
+        ),
+        "longitude": (
+            ("cell",),
+            array(
+                torch.atan2(mesh.cell_xyz[:, 1], mesh.cell_xyz[:, 0]) * 180 / math.pi
+            ),
+            {"units": "degrees_east"},
+        ),
+        "cells_on_edge": (
+            ("edge", "pair"),
+            array(mesh.cellsOnEdge),
+            {"start_index": 0},
+        ),
+        "cell_xyz": (("cell", "xyz"), array(mesh.cell_xyz)),
+        "edge_xyz": (("edge", "xyz"), array(mesh.edge_xyz)),
+        "air_temperature": (
+            ("cell", "air_interface"),
+            array(f["temperature"]),
+            {"units": "K"},
+        ),
+        "air_pressure": (
+            ("cell", "air_interface"),
+            array(adapter.model.column.interface_pressure(air.atmosphere.ps)),
+            {"units": "Pa"},
+        ),
+        "surface_pressure": (
+            ("cell",),
+            array(air.atmosphere.ps.reshape(-1)),
+            {"units": "Pa"},
+        ),
+        "air_normal_wind": (
+            ("edge", "air_level"),
+            array(air.atmosphere.u_e),
+            {"units": "m s-1"},
+        ),
+        "cloud_fraction": (("cell", "air_interface"), array(air.cloud_fraction)),
+        "ocean_temperature": (
+            ("cell", "ocean_level"),
+            array(s.temperature()),
+            {"units": "degC", "long_name": "Conservative Temperature"},
+        ),
+        "ocean_salinity": (
+            ("cell", "ocean_level"),
+            array(s.salinity()),
+            {"units": "g kg-1"},
+        ),
+        "ocean_thickness": (("cell", "ocean_level"), array(s.h), {"units": "m"}),
+        "ocean_normal_wind": (
+            ("edge", "ocean_level"),
+            array(s.u_e),
+            {"units": "m s-1"},
+        ),
+        "ocean_tke": (
+            ("cell", "ocean_level"),
+            array(sea.coupled.ocean.tke_h / s.h),
+            {"units": "m2 s-2"},
+        ),
+        "ice_area": (("cell", "category"), array(sea.coupled.ice.area)),
+        "ice_volume": (
+            ("cell", "category"),
+            array(sea.coupled.ice.volume),
+            {"units": "m"},
+        ),
+        "ice_temperature": (
+            ("cell", "category"),
+            array(receiver.snow.temperature(sea)),
+            {
+                "units": "K",
+                "comment": "273.15 on absent categories; mask using ice_area",
+            },
+        ),
+        "ice_cold_content": (
+            ("cell", "category"),
+            array(sea.cold_content),
+            {"units": "J m-2"},
+        ),
+        "ice_normal_wind": (
+            ("edge", "ice_level"),
+            array(sea.coupled.ice.velocity),
+            {"units": "m s-1"},
+        ),
+        "snow_mass": (("cell", "category"), array(sea.snow_mass), {"units": "kg m-2"}),
+    }
+    for k in ("vapor", "liquid", "ice"):
+        data["air_" + k] = (
+            ("cell", "air_interface"),
+            array(f[k]),
+            {"units": "kg kg-1"},
+        )
+    start = adapter.configuration["start"]
+    ds = xr.Dataset(
+        data,
+        attrs=dict(
+            description="VFS coupled aquaplanet instantaneous state", calendar="julian"
+        ),
+    )
+    ds = ds.expand_dims(time=[air.time_seconds])
+    ds.time.attrs.update(
+        units=f"seconds since {start[0]:04d}-01-01 00:00:00", calendar="julian"
+    )
+    temp = path.with_suffix(".nc.tmp")
+    ds.to_netcdf(
+        temp,
+        engine="netcdf4",
+        encoding={k: {"zlib": True, "complevel": 1} for k in ds.data_vars},
+    )
+    temp.replace(path)
+
+
+def run_logger(output, verbose):
+    """One run owns its handlers; no global logging configuration is changed."""
+    logger = logging.Logger("vfs.coupled.campaign", level=logging.INFO)
+    logger.propagate = False
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s %(message)s", "%Y-%m-%dT%H:%M:%SZ"
+    )
+    formatter.converter = time.gmtime
+    file_handler = logging.FileHandler(output / "run.log", encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    if verbose:
+        console = logging.StreamHandler(sys.stdout)
+        console.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(console)
+    return logger
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(__file__).with_name("coupled_aquaplanet_1yr.yaml"),
+    )
+    parser.add_argument(
+        "--source",
+        type=Path,
+        required=True,
+        help="pinned PyAM21 checkout containing the physics namelist",
+    )
+    parser.add_argument("--radiation-data", type=Path)
+    parser.add_argument(
+        "--mesh",
+        type=Path,
+        help="Saved (N,3) .npy unit-sphere generators; infers cells and disables extra Lloyd relaxation",
+    )
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resume", type=Path)
+    parser.add_argument(
+        "--preflight",
+        action="store_true",
+        help="build and execute one coupled interval, including restart replay",
+    )
+    parser.add_argument(
+        "--stop-after-days",
+        type=float,
+        help="stop at this elapsed model day; retain full campaign restart identity",
+    )
+    parser.add_argument(
+        "--smoke-no-radiation",
+        action="store_true",
+        help="explicit radiation-OFF plumbing test, limited to one day",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Also print initialization/progress to the terminal; run.log is always written",
+    )
+    args = parser.parse_args(argv)
+    config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
+    end = (
+        config.days * DAY
+        if args.stop_after_days is None
+        else args.stop_after_days * DAY
+    )
+    if (
+        not math.isfinite(end)
+        or not 0 < end <= config.days * DAY
+        or not float(end).is_integer()
+    ):
+        parser.error("stop time must be positive integer seconds within the campaign")
+    end = int(end)
+    if args.smoke_no_radiation and (
+        args.radiation_data is not None or (not args.preflight and end > DAY)
+    ):
+        parser.error(
+            "radiation-OFF smoke requires --stop-after-days <=1 and no --radiation-data"
+        )
+    output = args.output
+    if output.exists() and any(output.iterdir()):
+        parser.error(
+            "output directory must be new/empty; resume into a new segment directory"
+        )
+    output.mkdir(parents=True, exist_ok=True)
+    atomic_json(output / "configuration.json", asdict(config))
+    air = sea = adapter = receiver = identity = ledger = None
+    start = time.perf_counter()
+    logger = run_logger(output, args.verbose)
+    try:
+        logger.info(
+            "Starting %s; target %.6f model days; radiation %s",
+            "preflight" if args.preflight else "campaign",
+            end / DAY,
+            "OFF (explicit smoke test)" if args.smoke_no_radiation else "SeaEsfRad",
+        )
+        config, generators, mesh_info = load_mesh(config, args.mesh)
+        atomic_json(output / "configuration.json", asdict(config))
+        logger.info(
+            "Initializing %d cells; mesh=%s; additional Lloyd iterations=%d",
+            config.cells,
+            mesh_info["kind"],
+            config.lloyd_iterations,
+        )
+        if args.mesh:
+            logger.info("Mesh %s; SHA256 %s", args.mesh, mesh_info["sha256"])
+        adapter, air, receiver, sea = build(
+            config,
+            args.source,
+            args.radiation_data,
+            smoke_no_radiation=args.smoke_no_radiation,
+            generator_xyz=generators,
+        )
+        hashes = source_hashes()
+        identity = fingerprint(
+            config, adapter, hashes, args.smoke_no_radiation, mesh_info.get("sha256")
+        )
+        logger.info("Initialization complete; restart fingerprint %s", identity)
+        atomic_json(
+            output / "manifest.json",
+            dict(
+                fingerprint=identity,
+                source_sha256=hashes,
+                radiation=adapter.radiation_manifest,
+                mesh=mesh_info,
+                configuration=asdict(config),
+                radiation_enabled=not args.smoke_no_radiation,
+                torch=str(torch.__version__),
+            ),
+        )
+        ledger = dict(
+            initial=inventories(adapter, air, receiver, sea),
+            external=0.0,
+            upstream=0.0,
+            surface_residual=0.0,
+            air_residual=0.0,
+            radiation_residual=0.0,
+            steps=0,
+        )
+        if args.resume:
+            air, sea, ledger = unpack(
+                torch.load(args.resume, map_location="cpu", weights_only=True),
+                adapter,
+                receiver,
+                sea,
+                identity,
+            )
+            logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
+        if air.time_seconds >= end:
+            raise ValueError("restart is already at or beyond requested end")
+        if args.preflight:
+            logger.info(
+                "Advancing one complete coupled interval and replaying its restart"
+            )
+            payload = pack(adapter, air, receiver, sea, identity, ledger)
+            with torch.no_grad():
+                a, s, r = advance(
+                    adapter, air, receiver, sea, config.physics_dt, config
+                )
+                ra, rs, _ = unpack(payload, adapter, receiver, sea, identity)
+                b, t, u = advance(adapter, ra, receiver, rs, config.physics_dt, config)
+            left = pack(adapter, a, receiver, s, identity, ledger)
+            right = pack(adapter, b, receiver, t, identity, ledger)
+
+            def equal(x, y):
+                if isinstance(x, torch.Tensor):
+                    return torch.equal(x, y)
+                if isinstance(x, dict):
+                    return x.keys() == y.keys() and all(equal(x[k], y[k]) for k in x)
+                if isinstance(x, (tuple, list)):
+                    return len(x) == len(y) and all(equal(i, j) for i, j in zip(x, y))
+                return x == y
+
+            if not equal(left, right) or r != u:
+                raise AssertionError("restart replay differs")
+            atomic_json(
+                output / "status.json",
+                dict(
+                    status="preflight_passed",
+                    radiation_enabled=not args.smoke_no_radiation,
+                    restart_replay="bitwise",
+                    wall_seconds=time.perf_counter() - start,
+                    interval=r,
+                ),
+            )
+            logger.info("Preflight passed; restart replay bitwise; %s", json.dumps(r))
+            print((output / "status.json").read_text(), flush=True)
+            return 0
+        scheduled = set(snapshot_times(config.days))
+        snapshot_dir = output / "snapshots"
+        snapshot_dir.mkdir()
+        restarts = output / "restarts"
+        restarts.mkdir()
+        if air.time_seconds in scheduled:
+            snapshot(
+                snapshot_dir / f"state_{air.time_seconds:08d}.nc",
+                adapter,
+                air,
+                receiver,
+                sea,
+            )
+            logger.info("Wrote initial snapshot at day %.6f", air.time_seconds / DAY)
+        checkpoint(
+            restarts / f"restart_{air.time_seconds:08d}.pt",
+            pack(adapter, air, receiver, sea, identity, ledger),
+        )
+        logger.info("Wrote initial restart at day %.6f", air.time_seconds / DAY)
+        last_log = time.perf_counter()
+        with (output / "diagnostics.csv").open("w") as f, torch.no_grad():
+            row = diagnostics(adapter, air, receiver, sea, ledger)
+            writer = csv.DictWriter(f, fieldnames=list(row), lineterminator="\n")
+            writer.writeheader()
+            writer.writerow(row)
+            f.flush()
+            while air.time_seconds < end:
+                dt = min(config.physics_dt, end - air.time_seconds)
+                candidate, water, report = advance(
+                    adapter, air, receiver, sea, dt, config
+                )
+                air, sea = candidate, water
+                ledger["steps"] += 1
+                ledger["external"] += report["external"]
+                ledger["upstream"] += report["upstream"]
+                for k in ("surface_residual", "air_residual", "radiation_residual"):
+                    ledger[k] = max(ledger[k], report[k])
+                seconds = air.time_seconds
+                if seconds in scheduled:
+                    snapshot(
+                        snapshot_dir / f"state_{seconds:08d}.nc",
+                        adapter,
+                        air,
+                        receiver,
+                        sea,
+                    )
+                    logger.info("Wrote snapshot at day %.6f", seconds / DAY)
+                if seconds % (config.diagnostic_hours * 3600) == 0 or seconds == end:
+                    row = diagnostics(adapter, air, receiver, sea, ledger)
+                    writer.writerow(row)
+                    f.flush()
+                    atomic_json(
+                        output / "status.json",
+                        dict(
+                            status="running",
+                            wall_seconds=time.perf_counter() - start,
+                            latest=row,
+                        ),
+                    )
+                    logger.info(
+                        "Diagnostics at day %.6f: numerical energy %.8g J/m2; water %.8g kg/m2; salt relative %.8g",
+                        seconds / DAY,
+                        row["numerical_energy_residual_J_m2"],
+                        row["water_residual_kg_m2"],
+                        row["salt_relative"],
+                    )
+                if seconds % (config.restart_days * DAY) == 0 or seconds == end:
+                    checkpoint(
+                        restarts / f"restart_{seconds:08d}.pt",
+                        pack(adapter, air, receiver, sea, identity, ledger),
+                    )
+                    logger.info("Wrote restart at day %.6f", seconds / DAY)
+                if time.perf_counter() - last_log >= 30 or seconds == end:
+                    logger.info(
+                        "day %.6f/%g; %d total steps; %.1f wall seconds",
+                        seconds / DAY,
+                        end / DAY,
+                        ledger["steps"],
+                        time.perf_counter() - start,
+                    )
+                    last_log = time.perf_counter()
+        atomic_json(
+            output / "status.json",
+            dict(
+                status="completed" if end == config.days * DAY else "segment_completed",
+                wall_seconds=time.perf_counter() - start,
+                latest=diagnostics(adapter, air, receiver, sea, ledger),
+            ),
+        )
+        logger.info(
+            "Run finished at day %.6f; %.1f wall seconds",
+            air.time_seconds / DAY,
+            time.perf_counter() - start,
+        )
+        print((output / "status.json").read_text(), flush=True)
+        return 0
+    except (Exception, KeyboardInterrupt) as exc:
+        status = dict(
+            status=(
+                "failed" if not isinstance(exc, KeyboardInterrupt) else "interrupted"
+            ),
+            error=f"{type(exc).__name__}: {exc}",
+            last_committed_seconds=None if air is None else air.time_seconds,
+            wall_seconds=time.perf_counter() - start,
+        )
+        logger.exception(
+            "Run %s at last committed second %s",
+            status["status"],
+            status["last_committed_seconds"],
+        )
+        if identity is not None and ledger is not None:
+            try:
+                checkpoint(
+                    output / "last_good_restart.pt",
+                    pack(adapter, air, receiver, sea, identity, ledger),
+                )
+                logger.info("Saved last_good_restart.pt at second %d", air.time_seconds)
+            except Exception as checkpoint_error:
+                status["checkpoint_error"] = str(checkpoint_error)
+                logger.exception("Could not save last-good restart")
+        atomic_json(output / "status.json", status)
+        print(json.dumps(status, indent=2), file=sys.stderr, flush=True)
+        return 1
+    finally:
+        for handler in logger.handlers[:]:
+            handler.close()
+            logger.removeHandler(handler)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

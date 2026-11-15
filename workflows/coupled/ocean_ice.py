@@ -183,13 +183,14 @@ class OceanIceReceiver:
         )
         return candidate, exchange, (Iw + Jw, Ii + Ji, residual)
 
-    def finish(self, initial, candidate, exchange, impulses):
+    def finish(self, initial, candidate, exchange, impulses, *, storage_change=None):
         H = self.H
         s = candidate.coupled.ocean.ocean
         A = s.mesh.cell_area
         before, provisional = H.terms(initial.coupled), H.terms(candidate.coupled)
         change = sum(provisional[k] - before[k] for k in before) / A
-        thermal = exchange.surface_energy - change
+        storage = torch.zeros_like(change) if storage_change is None else storage_change
+        thermal = exchange.surface_energy - change - storage
         mass = H.model.energy.mass_area(s) * s.h[:, :1]
         specific = torch.cat(
             ((A * thermal)[:, None] / mass, torch.zeros_like(s.h[:, 1:])), 1
@@ -205,7 +206,11 @@ class OceanIceReceiver:
         )
         self.snow.check(result)
         after = H.terms(result.coupled)
-        error = sum(after[k] - before[k] for k in before) / A - exchange.surface_energy
+        error = (
+            sum(after[k] - before[k] for k in before) / A
+            + storage
+            - exchange.surface_energy
+        )
         scale = (
             sum(v.abs() for v in before.values()) / A + exchange.surface_energy.abs()
         )

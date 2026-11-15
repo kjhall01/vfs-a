@@ -1,0 +1,22 @@
+# Initial spin-up experiment, CPU float64. Not an equilibrated climate control.
+days: 365
+start_year: 2001
+cells: 256
+atmosphere_levels: 24
+ocean_levels: 12
+ocean_depth_m: 1000.0
+top_layer_m: 20.0
+lloyd_iterations: 10
+physics_dt: 60
+atmosphere_dt: 15
+ocean_dt: 60
+radiation_dt: 3600
+solar_constant: 1361.0
+obliquity_degrees: 23.44
+eccentricity: 0.01671
+ice_temperature_K: 265.0
+mixing_length_m: 2.0
+mixing_substeps: 2
+threads: 1
+diagnostic_hours: 6
+restart_days: 5

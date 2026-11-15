@@ -3,8 +3,14 @@
 The [shared atmosphere–ocean–ice exchange](../workflows/coupled/README.md) now
 provides a common interval ledger, tiled moving-surface AM2 fluxes, reciprocal
 native impulses and local full-H transfer into the research Roquet ocean/ice/snow.
-Ice skin temperature remains explicit; example skin T is prescribed, with no
-solved radiation/conduction skin balance. The standalone adapter uses restart
+The [365-day campaign](../workflows/coupled/CAMPAIGN.md) now adds a prognostic
+category thermal store, conservative transport, conduction and phase-energy
+closure, plus scheduled NetCDF and validated full-state restarts. The older
+example retains its explicit skin input for reproducibility. Installed-wheel
+portable suite: 1400 passed, 3 skipped; 142/93 frozen comparisons pass. Radiation-off
+runs complete six hours at 32 cells and one hour at the default 256 cells.
+The campaign also accepts saved generators via `--mesh`, with automatic cell
+count/no extra relaxation, persistent `run.log`, and terminal `--verbose`. The standalone adapter uses restart
 schema 3 and consistent cached net LW. All changes remain outside packages.
 [Actual SeaEsfRad setup](../workflows/pyam21/RADIATION.md) constructs upstream
 radiation with hashed external data and explicit climatology sampling, but actual

@@ -1,0 +1,13 @@
+{
+  "status": "preflight_passed",
+  "radiation_enabled": false,
+  "restart_replay": "bitwise",
+  "wall_seconds": 2.6219384600001376,
+  "interval": {
+    "external": 0.0,
+    "upstream": -1.3124060284190753e-10,
+    "surface_residual": 8.534755465916533e-06,
+    "air_residual": 5.6937096815090626e-08,
+    "radiation_residual": 0.0
+  }
+}
