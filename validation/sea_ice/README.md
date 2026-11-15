@@ -88,3 +88,11 @@ ice transport; then a rheology with a provable discrete stress-work identity.
 The archive's EVP and global force correction have not been ported or qualified.
 
 See [verification](../../verification/ocean/sea-ice/README.md).
+
+## Separate compression mechanics prototype
+
+[Two-category ridging](RIDGING.md) now implements an isolated instantaneous
+stress/redistribution/heating stage with its own extended common Hamiltonian.
+It includes ice KE and subcell hydrostatic ridge energy. This does not remove
+the stationary restriction of the thermodynamic API above: category phase
+change, transport, ice loading and drag still require a combined integration.

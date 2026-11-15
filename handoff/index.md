@@ -1995,3 +1995,19 @@ No production defaults change. Nonzero ocean velocity is rejected: ice loading,
 phase momentum exchange, transport and stress-work coupling are not implemented.
 The archive's EVP must not be enabled without those derivations. This is a
 research column component, not an ERA5-ready global sea-ice model.
+
+## Compression/ridging mechanics (2026-11-14)
+
+[Two-category ridging](../validation/sea_ice/RIDGING.md) adds an isolated ice
+mechanics stage with ice KE and hydrostatic category-variance PE in the common
+Hamiltonian. Compression-driven thin-to-thick volume transfer is paired with
+its resisting stress; friction heats the ocean through the full-H thermal
+conjugate. No finite-step energy repair or clipping occurs. Thirteen new tests
+include independent full-H derivatives, coastal work, category birth, material
+budgets, smooth-branch backward sensitivity and RK refinement. All 28 ice tests
+pass. [Evidence](../verification/ocean/sea-ice/ridging/README.md).
+This is not a coupled moving-ice model: transport/loading/drag/phase momentum
+remain absent, the existing column phase API is unchanged, and only the thin
+category can be redistributed. Full shear/VP/EVP and calibration remain open.
+Installed-wheel portable suite: 1255 passed, 2 skipped; both frozen comparisons
+pass. CPU float64 only; no GPU or long coupled ocean–ice validation.

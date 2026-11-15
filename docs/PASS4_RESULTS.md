@@ -1036,3 +1036,21 @@ External installed-wheel regression: 1239 passed, 2 skipped (including the first
 12 ice tests). The final 15-test ice suite then passed independently in that
 same harness, including the final near-salinity-limit bracket change. Both
 frozen fixture comparisons pass; no packaged source was modified.
+
+## Compression-only ice ridging (2026-11-14)
+
+Added an opt-in, two-category instantaneous mechanics operator, with common-H
+ice KE, hydrostatic subcell ridge PE and matched compressive stress. Thin-to-thick
+redistribution preserves cell ice volume; dissipative work warms the ocean via
+the full Roquet caloric conjugate. It does not alter TKE/eddy reservoirs or any
+packaged kernel/default. All 28 ice tests pass, including 13 new mechanics tests.
+A 1000-second isolated 32-cell experiment converts ~0.218 J/m² ice KE into equal
+ridge PE and heat for the chosen uncalibrated friction parameter. Step errors
+at dt500/250/125 s are 3.94e-7/2.19e-8/1.33e-9 J/m²; no energy repair occurs.
+Coastal and 128-cell experiments also complete. These are isolated mechanics
+experiments, not global ocean–ice integrations. See [scope and evidence](../verification/ocean/sea-ice/ridging/README.md).
+
+Final installed-wheel portable regression outside the checkout: 1255 passed,
+2 skipped. Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry
+helpers). Research modules were explicitly copied into the external harness;
+no packaged source changed. CPU float64 only.

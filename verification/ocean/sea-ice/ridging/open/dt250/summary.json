@@ -1,0 +1,29 @@
+{
+  "cells": 32,
+  "coast": false,
+  "seconds": 1000.0,
+  "dt": 250.0,
+  "steps": 4,
+  "wall_seconds": 0.02578232499945443,
+  "seconds_per_step": 0.006445581249863608,
+  "peak_relative_rhs_residual": 3.473947510858157e-17,
+  "direct_full_H_error_J_m2": -6.518986469044034e-08,
+  "initial_full_H_J_m2": -355320523.9098372,
+  "max_cell_volume_change_m": 0.0,
+  "final": {
+    "seconds": 1000.0,
+    "ice_ke_change_J_m2": -0.21784434139571696,
+    "ridge_pe_change_J_m2": 0.10892218162314846,
+    "heating_J_m2": 0.10892218162314835,
+    "stable_energy_error_J_m2": 2.1850579857402407e-08,
+    "maximum_coverage": 0.85,
+    "ridged_volume_m3": 75407252200.89365
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1,
+  "dtype": "float64",
+  "source_sha256": {
+    "run_ridging.py": "4185f3bded10a4d90c43f3e4eba0b51b04b34e7b45ac7e0aef0c3eee84322ae0",
+    "ridging.py": "7dbc5f453a5183986c8fc89971a3a18adde55d59030fcb769776fe44b6f58c2a"
+  }
+}
