@@ -141,13 +141,44 @@ def exchanges(adapter, state, dt, column, geometry, out, boundary=None):
         radiation=rad_boundary,
         stress_work=torch.zeros_like(E),
     )
+    shared = out.get("exchange")
+    if shared is not None:
+        if shared.dt != dt or shared.start_seconds != state.time_seconds:
+            raise ValueError("shared exchange interval does not match atmosphere")
+        shared.validate(adapter.model.mesh)
+        # The energy/momentum record must describe the water actually supplied
+        # to the air, not merely an independently plausible surface budget.
+        for actual, recorded in (
+            (E, shared.vapor.sum(-1)),
+            (rain, shared.rain),
+            (snow, shared.snow),
+            (sensible, shared.sensible.sum(-1)),
+        ):
+            scale = torch.maximum(actual.abs(), recorded.abs()).clamp_min(1)
+            if (
+                (actual - recorded).abs() > 256 * torch.finfo(actual.dtype).eps * scale
+            ).any():
+                raise ValueError("shared record disagrees with actual atmospheric flux")
+        terms = shared.terms
+        datum = (
+            terms["vapor_enthalpy"]
+            + terms["rain_enthalpy"]
+            + terms["snow_enthalpy"]
+            - HLV * E
+            - HLF * snow
+        )
+        water_momentum = shared.water_impulse
+        layer_momentum = torch.cat((layer_momentum[:, :-1], water_momentum[:, None]), 1)
+        impulse = adapter.mapping.transpose(
+            adapter.model.mesh.cell_area[:, None, None] * layer_momentum
+        )
     external = sum(terms.values())
     residual = proxy_layer.sum(-1) + kinetic_layer.sum(-1) - am2_boundary
-    # Preserve the upstream increment, with only the declared surface reference
-    # and mechanical transport added. No subtraction of the upstream residual.
-    target = (
-        proxy_layer + kinetic_layer + bottom_only(datum + potential + mass_ke, mass)
+    # Transfer the declared boundary difference, retaining every upstream defect.
+    difference = (
+        external - am2_boundary if shared is not None else datum + potential + mass_ke
     )
+    target = proxy_layer + kinetic_layer + bottom_only(difference, mass)
     return dict(
         boundary=boundary,
         terms=terms,

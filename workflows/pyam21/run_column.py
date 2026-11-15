@@ -24,6 +24,9 @@ def run(args, *, coupled=False):
         levels=args.levels,
         aquaplanet=coupled,
         energy_mode=args.energy_mode,
+        radiation_data=args.radiation_data,
+        radiation_step=args.radiation_step,
+        climatology_width_degrees=args.climatology_width_degrees,
     )
     model = adapter.model
     area = model.mesh.cell_area
@@ -150,7 +153,7 @@ def run(args, *, coupled=False):
             k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()
         },
         coupled_dynamics=coupled,
-        radiation="none",
+        radiation=adapter.radiation_manifest,
         steps=len(rows),
         wall_seconds=time.perf_counter() - start,
         restart_fingerprint=adapter.fingerprint,
@@ -187,6 +190,13 @@ def parser():
         required=True,
         help="checkout of the pinned PyAM21 revision, for its example namelist",
     )
+    p.add_argument(
+        "--radiation-data",
+        type=Path,
+        help="extracted GFDL sea_esf directory; enables actual radiation",
+    )
+    p.add_argument("--radiation-step", type=int, default=3600)
+    p.add_argument("--climatology-width-degrees", type=float, default=1.0)
     p.add_argument("--cells", type=int, default=32)
     p.add_argument("--levels", type=int, default=24)
     p.add_argument("--hours", type=float, default=1)
@@ -199,7 +209,9 @@ def parser():
     )
     args = p.parse_args()
     if (
-        args.cells < 16
+        args.radiation_step < args.dt
+        or args.radiation_step % args.dt != 0
+        or args.cells < 16
         or args.levels < 4
         or args.dt <= 0
         or not all(math.isfinite(x) and x > 0 for x in (args.hours, args.dynamics_dt))

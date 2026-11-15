@@ -1,0 +1,63 @@
+{
+  "configuration": {
+    "source": "/workspace/scratch/b16610c53df7/PyAM21",
+    "output": "/workspace/scratch/b16610c53df7/coupled-results/ice-dynamics-dt60",
+    "cells": 32,
+    "levels": 24,
+    "dt": 60,
+    "hours": 6.0,
+    "dynamics": true,
+    "dynamics_dt": 15,
+    "ice": true,
+    "ice_skin_temperature": 270.0,
+    "radiation_data": null,
+    "radiation_step": 3600,
+    "verbose": true
+  },
+  "radiation": null,
+  "steps": 360,
+  "wall_seconds": 134.58276260200364,
+  "final": {
+    "seconds": 21600,
+    "combined_energy_minus_toa_J_m2": 0.001347270404439264,
+    "cumulative_upstream_residual_J_m2": 4.4946538899350624e-07,
+    "numerical_energy_residual_J_m2": 0.0013468209390502706,
+    "combined_water_residual_kg_m2": 0.0,
+    "salt_relative": 5.904674549485233e-16,
+    "surface_energy_residual_max_J_m2": 4.66100800622371e-06,
+    "atmosphere_transfer_max_J_m2": 5.34370230287351e-08,
+    "radiation_flux_residual_W_m2": 0.0,
+    "SST_min_K": 271.31400068223627,
+    "SST_max_K": 300.96475174333926,
+    "ice_kg": 3.841253913050593e+16,
+    "snow_kg": 642142419.8876467,
+    "max_ocean_speed_m_s": 0.04725567096749848,
+    "max_ice_speed_m_s": 0.025978541019224886
+  },
+  "peaks": {
+    "numerical_energy_residual_J_m2": 0.0013468209390502706,
+    "combined_water_residual_kg_m2": 6.424285909839936e-11,
+    "salt_relative": 5.904674549485233e-16,
+    "surface_energy_residual_max_J_m2": 5.795724518975476e-06,
+    "atmosphere_transfer_max_J_m2": 7.550054625937719e-08
+  },
+  "restart_fingerprint": "5279557e8de4abdef64e18d619d12243b27108b215d3e8e2d37cdc03ea618acf",
+  "torch": "2.15.0+cpu",
+  "workflow_sha256": {
+    "workflows/exchange.py": "0d033d697516988bea47526d6deae39feae611b7e7ba29ed7795ed896c83c267",
+    "workflows/coupled/ocean_ice.py": "384c76269949c62ac4bd9858c283aded1aa94a9b776a4ca227afe014250aa067",
+    "workflows/coupled/run.py": "93cdb42c59ec7bf7c7343fd4a8801e01b255cbacf06c751b391d529dd95592c3",
+    "workflows/coupled/driver.py": "4eb12e9ec87b5a02c70a5b1c978981ac26287f0b2cbd3d52a48c05ed49a3b038",
+    "workflows/pyam21/energy.py": "6c4df9c1688612c72e044699bcea4d7a2097e9ec0fb7b6a26c8dae3493ef915f",
+    "workflows/pyam21/run_column.py": "2c7551f397d08d978eef108d8d3ffab4ad8dbad2aeffcc0b250950761441fbc5",
+    "workflows/pyam21/adapter.py": "2d9c772a16a79b84f18280fbe47d93aa23a3d59e0791f54b84e3d4b4d715fa77",
+    "workflows/pyam21/__init__.py": "b5d5d8a5e576a480c8cb127c9e51422a196c96fe2c1ab6bb32ad96293fd1966c",
+    "workflows/pyam21/mapping.py": "dea16833d7da4c88a3925367d6a0340f68dca1a52f7e610e666a453a40a8da77",
+    "workflows/pyam21/run_aquaplanet.py": "ba17daeab9784b734f78ab51fda5139a2b9bfa3c4c71e0af7cd943faf28b107c",
+    "workflows/pyam21/state.py": "3620688c0268aed08e74c8affb7b2e20cb2ea6200a22666eefbc4dafb9ae6277",
+    "workflows/pyam21/radiation.py": "b6ad3a6de21c0820d4d3b4d85e9d12ab34abb4c00a764cf532e5477ca32ede44",
+    "workflows/pyam21/dynamics.py": "ad2d07ee66e3aa364086c2e6e2c5ba1f548cf2c287f7e8ea0ae359f0be63ef18",
+    "workflows/pyam21/setup.py": "9f4f0186c1746bc237e2995e89198a7a23c6ac3cd93f3efd85c51db80bef7a38",
+    "workflows/pyam21/surface.py": "a69fa1db029da86adac138dd48f9c99d7c7b92be497285560e3b7d2f8b9b106a"
+  }
+}

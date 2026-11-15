@@ -15,12 +15,21 @@ from .adapter import AM2Adapter
 
 
 def example(
-    source, *, cells=32, levels=24, aquaplanet=False, energy_mode="conservative"
+    source,
+    *,
+    cells=32,
+    levels=24,
+    aquaplanet=False,
+    energy_mode="conservative",
+    radiation_data=None,
+    radiation_step=3600,
+    climatology_width_degrees=1.0,
 ):
     """Analytic moist profile with BOMEX physics options, not the BOMEX case.
 
-    There is no SCM large-scale forcing or radiation in this example. Surface
-    fluxes, RAS convection, stratiform clouds and mixing are calculated by AM2.
+    There is no SCM large-scale forcing. Radiation is enabled only with an
+    explicit data directory. Surface fluxes, RAS convection, stratiform clouds
+    and mixing are calculated by AM2.
     Positive upper-air vapor and a positive pressure lid are explicit initial
     conditions required by VFS, not hidden modifications to a reference case.
     """
@@ -34,7 +43,34 @@ def example(
     # Explicit workflow configuration BEFORE any prognostic state exists. The
     # native dynamics and every mass/energy diagnostic use this same parameter.
     model.dynamics.kernel.gravity = GRAV
-    adapter = AM2Adapter(model, nml, energy_mode=energy_mode)
+    rad = None
+    if radiation_data is not None:
+        from .radiation import build_radiation
+
+        if (
+            isinstance(radiation_step, bool)
+            or not isinstance(radiation_step, int)
+            or radiation_step <= 0
+        ):
+            raise ValueError("radiation_step must be positive integer seconds")
+        nml.setdefault("physics_driver_nml", {})["do_radiation"] = True
+        nml.setdefault("radiation_driver_nml", {}).update(
+            rad_time_step=radiation_step,
+            lw_rad_time_step=radiation_step,
+            sw_rad_time_step=radiation_step,
+            renormalize_sw_fluxes=True,
+        )
+        rad = build_radiation(
+            nml, model, radiation_data, width_degrees=climatology_width_degrees
+        )
+    adapter = AM2Adapter(
+        model,
+        nml,
+        energy_mode=energy_mode,
+        radiation=None if rad is None else rad.driver,
+        radiation_id=None if rad is None else rad.identity,
+    )
+    adapter.radiation_manifest = None if rad is None else rad.manifest
     p = model.interface_pressure(100000.0)
     sine_lat = mesh.cell_xyz[:, 2]
     surface = 300.0 - (25 * sine_lat.square() if aquaplanet else 0 * sine_lat)

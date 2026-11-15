@@ -134,3 +134,10 @@ reciprocal stress and dissipation allocation for moving surfaces, and one shared
 time-integrated flux record. This pass prepares an explicit atmospheric boundary;
 it does not claim that simply wiring two existing ledgers together conserves the
 combined system. Real SeaEsfRad and its input-data manifest remain untested here.
+
+
+The standalone contract above is extended by the optional
+[shared exchange workflow](../coupled/README.md): one integrated record carries
+all tile fluxes to both components, and recipient midpoint stress work replaces
+zero stationary-surface work. Both sides consume the same cached net radiation.
+AM2's energy defect remains explicit. No package source is changed.

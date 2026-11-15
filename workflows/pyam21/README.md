@@ -12,7 +12,9 @@ water. A local CP entropy solve enforces each layer's transferred energy; any
 imbalance already present in AM2 is retained and reported separately. The previous
 temperature-increment mapping remains available as `energy_mode="legacy"`.
 See [the energy contract](ENERGY.md) for the derivation and explicit assumptions.
-**This does not yet connect an interactive ocean or ice model.**
+The separate [shared exchange workflow](../coupled/README.md) now connects an
+interactive ocean and category ice with reciprocal water, momentum and energy.
+The standalone examples below retain prescribed SST.
 
 ## Install and run
 
@@ -35,9 +37,12 @@ aquaplanet driver adds actual VFS dynamics and a meridional temperature gradient
 Both calculate surface exchange, boundary-layer mixing, RAS convection, cumulus
 momentum transport and stratiform cloud processes through PyAM21.
 
-**These example runs have no radiation.** The optional radiation interface below
-accepts PyAM21's radiation driver, but the GFDL input-data bundle is not downloaded
-or bundled here. These short runs are integration checks, not climate simulations.
+**Radiation is off by default.** Supply `--radiation-data /path/to/sea_esf` to
+construct actual upstream SeaEsfRad. [Setup and qualification status](RADIATION.md)
+explain the required GFDL data, manifest and explicit climatology sampling.
+The real package remains unverified because the data download failed here;
+regular tests use explicitly synthetic radiation. These are integration checks,
+not climate simulations.
 
 Use `-I` as shown: drivers append the workflow root after site-packages, and VFS
 and PyAM21 resolve to separately installed packages. Output is text: every-step
@@ -50,6 +55,8 @@ verification files or model dependencies are vendored into this workflow.
 | --- | --- |
 | `adapter.py` | Staged upstream calls, finite physics update, exchange/budget reports, restart validation |
 | `mapping.py` | Conservative column readout and explicit CP/cell/edge transfer operators |
+| `radiation.py`, `RADIATION.md` | Real SeaEsfRad construction, data manifest and explicit qualification status |
+| `surface.py` | Tiled moving-surface calls with one shared implicit bottom-air update |
 | `energy.py` | Surface-water energy/momentum contract and layerwise CP enthalpy inversion |
 | `state.py` | Atmospheric state, CP cloud fraction, physics memory, surface state, radiation cache and clock |
 | `dynamics.py` | Existing bounded SSPRK3 with a passive cloudy/clear transport ledger |
@@ -91,7 +98,7 @@ rain and snow temperatures and transported water velocities. With no override,
 incoming vapor uses SST and zero velocity; departing vapor and precipitation
 use the old lowest air level. These are declared boundary assumptions, since
 PyAM21 does not supply the precipitation temperatures. The stationary surface
-does zero stress work. Moving surfaces remain unsupported.
+does zero stress work. Moving surfaces use the separate [shared exchange driver](../coupled/README.md).
 
 The split driver advances dynamics first and calls physics once at that interval's
 clock time, passing zero dynamical tendencies into PyAM21 to avoid double counting.
@@ -145,8 +152,8 @@ the work identity independently using differentiation. Surface-water momentum
 enters through the same transpose at the bottom layer; the new velocity follows
 from old momentum plus physics and water impulses divided by the new mass metric.
 The report's `carrier_impulse` now contains this water impulse. Legacy mode retains
-its previous co-moving native-air convention. A moving-ocean reciprocal-stress
-contract and cross-component thermodynamic references remain future work.
+its previous co-moving native-air convention. The [shared exchange driver](../coupled/README.md) adds moving-surface reciprocal
+stress and one cross-component water-energy reference.
 
 ## Exchange outputs and energy audit
 
@@ -205,7 +212,8 @@ repair of upstream imbalance is applied. See [ENERGY.md](ENERGY.md).
 An externally constructed `pyam21.radiation.driver.RadiationDriver` can be passed as
 `radiation=driver`, together with `radiation_id="..."` identifying its package and
 input-data/configuration manifest. The adapter captures its LW/SW alarms, saved
-fluxes/heating and solar angle in `PhysicsState.radiation`. The ID is part of restart
+fluxes/heating and solar angle in `PhysicsState.radiation`. The builder in `radiation.py` hashes the actual tables, climatology footprints
+and reference pressures to construct this ID. The ID is part of restart
 validation; change it when external tables or climatology mapping change.
 
 Surface and physics dictionaries are cloned without detaching gradients. Radiation
@@ -217,7 +225,7 @@ prognostic physics state.
 `physics.pack(state)` returns only tensors and primitive containers; save it with
 `torch.save`. Restore with `physics.unpack(torch.load(path, weights_only=True))`.
 The fingerprint covers actual installed PyAM21 source, namelist, thermodynamics,
-energy mode, schema, start date, radiation configuration/ID and relevant geometry. Matching configuration
+energy mode, schema 3, start date, radiation configuration/ID and relevant geometry. Matching configuration
 and mesh must be recreated before loading; the payload is not a self-contained model.
 
 ## Rejection and tested scope

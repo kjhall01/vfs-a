@@ -1,5 +1,17 @@
 # Current package documentation
 
+The [shared atmosphere–ocean–ice exchange](../workflows/coupled/README.md) now
+provides a common interval ledger, tiled moving-surface AM2 fluxes, reciprocal
+native impulses and local full-H transfer into the research Roquet ocean/ice/snow.
+Ice skin temperature remains explicit; example skin T is prescribed, with no
+solved radiation/conduction skin balance. The standalone adapter uses restart
+schema 3 and consistent cached net LW. All changes remain outside packages.
+[Actual SeaEsfRad setup](../workflows/pyam21/RADIATION.md) constructs upstream
+radiation with hashed external data and explicit climatology sampling, but actual
+execution remains **unverified**: GFDL data acquisition failed from this runtime.
+See [current coupled evidence](../verification/atmosphere/pyam21/coupled/README.md).
+
+
 The experimental [PyAM21 workflow](../workflows/pyam21/README.md) now defaults to
 conservative layer-energy transfer into the native atmospheric full Hamiltonian.
 The explicit surface ledger includes water enthalpy, kinetic/potential energy and
@@ -10,7 +22,8 @@ Actual upstream endpoints and remaining-amount donor mapping avoid condensate
 exhaustion cancellation without a floor or state clipping. All changes remain
 outside `vfs/`; physics/cloud memory, bounded dynamics and package defaults are
 unchanged. CPU float64 and a stationary prescribed-SST ocean only; gravity is
-explicitly 9.8. Real radiation and interactive ocean/ice remain unqualified.
+explicitly 9.8. This earlier prescribed-SST qualification is supplemented by the shared exchange
+work above; real radiation remains unqualified.
 See [energy contract](../workflows/pyam21/ENERGY.md) and
 [current verification](../verification/atmosphere/pyam21/energy/README.md).
 
