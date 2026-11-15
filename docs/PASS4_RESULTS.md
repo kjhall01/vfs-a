@@ -1111,3 +1111,35 @@ and only the ice-covered fraction is intercepted. CPU float64 only.
 
 Final external installed-wheel portable regression: 1308 passed, 2 skipped.
 Both frozen comparisons pass (142 corrected-Gibbs tensors, 93 dry helpers).
+
+## Coupled freshwater and prescribed runoff
+
+Added an opt-in freshwater boundary to the moving ocean/ice/snow wrapper: rain
+drains to liquid, snowfall is partitioned by coverage, evaporation removes open
+water, sublimation consumes snow before ice, and prescribed rivers enter explicit
+wet receivers. The discharge adapter conserves mass and incoming thermal energy.
+Liquid thickness changes retain salt/passive-tracer contents and extensive
+TKE/mesoscale energy. Explicit boundary momentum, thermal enthalpy, latent cooling
+and hydrostatic incorporation work (including overlying ice) pair with a local
+analytic Roquet full-H thermal solve. No packaged kernel/default changed.
+
+Twenty-two new tests cover component and combined budgets, wet/dry routing,
+under-ice loading, snow-first removal and complete cover exhaustion, conservative
+river mapping, forcing rejection, no-flux equivalence and one smooth backward
+derivative. Final installed-wheel portable regression outside the checkout:
+1330 passed, 2 skipped. Both frozen comparisons pass (142 corrected-Gibbs tensors,
+93 dry helpers). Research modules were explicitly copied into the harness.
+
+Seven six-hour experiments complete (1980 steps, 42 aggregate model hours).
+Peak external-energy-adjusted residuals are 6.52e-7 to 1.75e-6 J/m²; relative
+combined-water and salt errors are at most 1.06e-15 and 5.91e-16 respectively.
+Energy residuals do not decrease monotonically with timestep here; background-H
+subtraction is near its floating-point resolution. Selected physical diagnostics
+change under refinement, so exact boundary closure is not a trajectory-order
+claim. See [commands, time series and scope](../verification/ocean/sea-ice/freshwater/README.md).
+
+This is prescribed forcing with constant latent heats and a declared cp*CT liquid
+thermal reference. It is not land hydrology, automatic river-mouth mapping, bulk
+atmospheric exchange, brine or resolved river plumes. Boundary and liquidus stages
+remain separate. CPU float64 forward checks and a local backward check do not
+qualify GPU, long integrations or long-horizon differentiation.

@@ -1,0 +1,55 @@
+0.25 h: energy -1.528e-07 J/m2
+0.50 h: energy 7.84e-08 J/m2
+0.75 h: energy -5.796e-07 J/m2
+1.00 h: energy -6.412e-07 J/m2
+1.25 h: energy -5.267e-07 J/m2
+1.50 h: energy -7.002e-07 J/m2
+1.75 h: energy -6.353e-07 J/m2
+2.00 h: energy 5.217e-08 J/m2
+2.25 h: energy -2.464e-07 J/m2
+2.50 h: energy -1.126e-07 J/m2
+2.75 h: energy -2.625e-07 J/m2
+3.00 h: energy -5.39e-07 J/m2
+3.25 h: energy -1.366e-07 J/m2
+3.50 h: energy -3.028e-07 J/m2
+3.75 h: energy -4.319e-07 J/m2
+4.00 h: energy 1.135e-07 J/m2
+4.25 h: energy 3.519e-07 J/m2
+4.50 h: energy -4.767e-08 J/m2
+4.75 h: energy 4.289e-07 J/m2
+5.00 h: energy -1.521e-07 J/m2
+5.25 h: energy -5.107e-07 J/m2
+5.50 h: energy -1.985e-07 J/m2
+5.75 h: energy -1.556e-07 J/m2
+6.00 h: energy -6.266e-07 J/m2
+{
+  "configuration": {
+    "cells": 32,
+    "hours": 6.0,
+    "dt": 30.0,
+    "coast": false,
+    "case": "mixed",
+    "verbose": true,
+    "output": "/workspace/scratch/b16610c53df7/vfs-freshwater/verification/ocean/sea-ice/freshwater/mixed32-dt30"
+  },
+  "steps": 720,
+  "wall_seconds": 73.06428788800258,
+  "peak_energy_error_J_m2": 1.0787339685507727e-06,
+  "peak_relative_water_error": 1.0533793309598937e-15,
+  "peak_relative_salt_error": 5.904674549485233e-16,
+  "peak_boundary_energy_error_J_m2": 4.380746580758406e-07,
+  "final": {
+    "seconds": 21600.0,
+    "energy_error_J_m2": -6.266248476457872e-07,
+    "relative_water_error": 1.0533793309598937e-15,
+    "relative_salt_error": 2.9523372747426167e-16,
+    "boundary_energy_error_J_m2": 3.5937495113697897e-07,
+    "boundary_water_kg": 236377306665284.1,
+    "snow_kg": 53138391436786.96,
+    "solid_kg": 1.1811139597221238e+17,
+    "min_salinity": 33.99999999999982,
+    "max_ice_speed_m_s": 0.07196548970771592
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1
+}

@@ -1,0 +1,37 @@
+1.00 h: energy -3.039e-07 J/m2
+2.00 h: energy -1.52e-07 J/m2
+3.00 h: energy -1.049e-07 J/m2
+4.00 h: energy -1.984e-07 J/m2
+5.00 h: energy 5.186e-07 J/m2
+6.00 h: energy 4.018e-07 J/m2
+{
+  "configuration": {
+    "cells": 32,
+    "hours": 6.0,
+    "dt": 120.0,
+    "coast": false,
+    "case": "evaporation",
+    "verbose": true,
+    "output": "/workspace/scratch/b16610c53df7/vfs-freshwater/verification/ocean/sea-ice/freshwater/evaporation"
+  },
+  "steps": 180,
+  "wall_seconds": 16.1139937629996,
+  "peak_energy_error_J_m2": 6.517277448384868e-07,
+  "peak_relative_water_error": 4.3525018580714043e-16,
+  "peak_relative_salt_error": 1.4761686373713084e-16,
+  "peak_boundary_energy_error_J_m2": 4.3029064140537945e-07,
+  "final": {
+    "seconds": 21600.0,
+    "energy_error_J_m2": 4.0177484080138953e-07,
+    "relative_water_error": 1.0835417471723951e-16,
+    "relative_salt_error": 0.0,
+    "boundary_energy_error_J_m2": 3.520157233342758e-07,
+    "boundary_water_kg": -87583639710798.53,
+    "snow_kg": 0.0,
+    "solid_kg": 1.1791483777258115e+17,
+    "min_salinity": 33.999999999999915,
+    "max_ice_speed_m_s": 0.07180019333447153
+  },
+  "torch": "2.15.0+cpu",
+  "threads": 1
+}
