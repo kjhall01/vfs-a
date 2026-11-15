@@ -1,0 +1,11 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "torch": "2.15.0+cpu",
+  "vfs_import": "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/vfs/__init__.py",
+  "pyam21_import": "/workspace/scratch/cb460db1b799/gmredi-env/lib/python3.12/site-packages/pyam21/constants.py",
+  "pyam21_revision": "e1bdfcc3b23c05adea80b35af880702bb85718eb",
+  "vfs_base_commit": "c392bc4302369014ebb4833623f554ca2448680a",
+  "workflow_excluded_from_wheel": true,
+  "platform": "CPU float64",
+  "package_source_changes": false
+}

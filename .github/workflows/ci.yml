@@ -36,9 +36,11 @@ jobs:
           # Independent research reference only; never a VFS runtime dependency.
           # GSW 3.6.23 requires Python >=3.11; this validation job uses 3.12.
           python -m pip install 'gsw==3.6.23'
+          # Optional workflow dependency, kept outside the VFS package metadata.
+          python -m pip install --no-deps -r workflows/pyam21/requirements.txt
           python -m pip check
           mkdir -p "$RUNNER_TEMP/vfs-check"
-          cp -R tests tools examples validation "$RUNNER_TEMP/vfs-check/"
+          cp -R tests tools examples validation workflows "$RUNNER_TEMP/vfs-check/"
       - name: Verify installed import and record CPU/backend environment
         working-directory: ${{ runner.temp }}/vfs-check
         run: |

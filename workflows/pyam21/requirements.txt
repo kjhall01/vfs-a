@@ -1,0 +1,2 @@
+# Separate optional dependency; never included in vfs install_requires.
+pyam21 @ git+https://github.com/evanwellmeyer/PyAM21.git@e1bdfcc3b23c05adea80b35af880702bb85718eb

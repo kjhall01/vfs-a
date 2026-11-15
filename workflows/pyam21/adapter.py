@@ -1,0 +1,445 @@
+"""Opt-in PyAM21 integration. No package monkeypatching or forward autograd.
+
+This is an audited finite physics update, not a claim that AM2 conserves VFS H.
+Water sources change actual atmospheric mass; dry-air inventory is retained.
+Thermodynamic and representation differences are returned, never repaired.
+"""
+
+from dataclasses import asdict, replace
+import hashlib
+import json
+from pathlib import Path
+import torch
+import pyam21.constants as am2_constants
+from pyam21.physics.am2 import AM2Physics
+from pyam21.time_manager import set_date, set_time
+from vfs.atmosphere.moist_conservative import MoistState
+from vfs.atmosphere.moist_cp import interface_pressure_mass
+from .mapping import ColumnMap, average, distribute, species_increment
+from .state import PhysicsState, PhysicsReport, copy_tree
+
+PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
+RAD_FIELDS = ("lw_alarm", "sw_alarm", "saved", "coszen")
+
+
+class AM2Adapter:
+    def __init__(
+        self,
+        model,
+        namelist,
+        *,
+        start=(2000, 1, 1, 0, 0, 0),
+        radiation=None,
+        radiation_id=None,
+        hprime=0.0,
+    ):
+        self.model = model
+        ref = model.mesh.cell_area
+        if ref.dtype != torch.float64 or ref.device.type != "cpu":
+            raise ValueError("this workflow currently requires CPU float64")
+        if model.dynamics.kernel.gravity != am2_constants.GRAV:
+            raise ValueError(
+                "configure the host kernel gravity to PyAM21 GRAV=9.8 before initializing state"
+            )
+        self.mapping = ColumnMap(model)
+        self.start = set_date(*start)
+        self.radiation = radiation
+        if radiation is not None and (
+            not isinstance(radiation_id, str) or not radiation_id
+        ):
+            raise ValueError(
+                "radiation_id must identify the package and input-data/configuration manifest for restart validation"
+            )
+        xyz = model.mesh.cell_xyz
+        lat = torch.asin(xyz[:, 2])
+        lon = torch.atan2(xyz[:, 1], xyz[:, 0])
+        self.physics = AM2Physics(
+            namelist,
+            lat,
+            lon,
+            hprime=hprime,
+            radiation=None if radiation is None else radiation.for_physics(),
+        )
+        # Pin the restart to actual installed source, configuration and geometry.
+        root = Path(am2_constants.__file__).parent
+        source = {
+            str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(root.rglob("*.py"))
+        }
+        config = dict(
+            namelist=namelist,
+            start=list(start),
+            source=source,
+            hprime=float(hprime),
+            thermo=asdict(model.dynamics.thermodynamics),
+            gravity=model.dynamics.kernel.gravity,
+            radiation=None if radiation is None else asdict(radiation.c),
+            radiation_id=radiation_id,
+            schema=1,
+        )
+        digest = hashlib.sha256(json.dumps(config, sort_keys=True).encode())
+        for field in (
+            model.mesh.cell_xyz,
+            model.mesh.cellsOnEdge,
+            model.mesh.cell_area,
+            model.column.A_interface,
+            model.column.B_interface,
+            model.column.phi_s,
+        ):
+            digest.update(field.detach().cpu().numpy().tobytes())
+        self.fingerprint = digest.hexdigest()
+        self.configuration = config
+
+    def check(self, state):
+        self.model._check_state(state.atmosphere)
+        self.model.dynamics.transport_state(state.atmosphere)
+        cloud = state.cloud_fraction
+        expected = state.atmosphere.entropy_content
+        cloud_tolerance = 128 * torch.finfo(expected.dtype).eps
+        if (
+            cloud.shape != expected.shape
+            or cloud.dtype != expected.dtype
+            or cloud.device != expected.device
+            or not torch.isfinite(cloud).all()
+            or (cloud < -cloud_tolerance).any()
+            or (cloud > 1 + cloud_tolerance).any()
+        ):
+            raise ValueError(
+                "cloud fraction must match CP shape and lie in [0,1] apart from roundoff"
+            )
+        if type(state.time_seconds) is not int or state.time_seconds < 0:
+            raise ValueError("time_seconds must be a nonnegative integer")
+
+    def initialize(self, atmosphere, *, sst, cloud_fraction=None):
+        c, i = atmosphere.entropy_content.shape
+        ref = atmosphere.entropy_content
+        if (
+            not isinstance(sst, torch.Tensor)
+            or sst.shape != (c,)
+            or sst.dtype != ref.dtype
+            or sst.device != ref.device
+        ):
+            raise ValueError(
+                "prescribed SST must be a matching [cell] tensor in kelvin"
+            )
+        if not torch.isfinite(sst).all() or (sst <= 0).any():
+            raise ValueError("positive finite SST required")
+        surface = self.physics.init_ocean_surface(c, dtype=ref.dtype, device=ref.device)
+        surface["t_surf"] = sst.clone()
+        radiation = (
+            {}
+            if self.radiation is None
+            else {k: copy_tree(getattr(self.radiation, k)) for k in RAD_FIELDS}
+        )
+        state = PhysicsState(
+            atmosphere,
+            torch.zeros_like(ref) if cloud_fraction is None else cloud_fraction.clone(),
+            self.physics.init_memory(c, i - 1, dtype=ref.dtype, device=ref.device),
+            surface,
+            radiation,
+            0,
+        )
+        self.check(state)
+        return state
+
+    def pack(self, state):
+        """Explicit tensor/primitive payload, compatible with weights_only=True."""
+        self.check(state)
+        return dict(
+            fingerprint=self.fingerprint,
+            atmosphere={
+                k: getattr(state.atmosphere, k).clone()
+                for k in ("u_e", "ps", "entropy_content", "water_content")
+            },
+            cloud_fraction=state.cloud_fraction.clone(),
+            memory=copy_tree(state.memory),
+            surface=copy_tree(state.surface),
+            radiation=copy_tree(state.radiation),
+            time_seconds=state.time_seconds,
+        )
+
+    def unpack(self, payload):
+        if payload["fingerprint"] != self.fingerprint:
+            raise ValueError(
+                "restart geometry/configuration/PyAM21 source does not match"
+            )
+        p = copy_tree(payload)
+        state = PhysicsState(
+            MoistState(
+                **p["atmosphere"], mesh=self.model.mesh, column=self.model.column
+            ),
+            p["cloud_fraction"],
+            p["memory"],
+            p["surface"],
+            p["radiation"],
+            p["time_seconds"],
+        )
+        self.check(state)
+        return state
+
+    def column_call(self, state, dt, columns, geometry):
+        """Call all four upstream stages, retaining their actual exchange outputs.
+
+        surf/mem are copied. Radiation alarms/cache are installed temporarily,
+        copied into the returned state and restored even after an exception.
+        An adapter instance is intentionally not reentrant/thread-safe.
+        """
+        surf, mem = copy_tree(state.surface), copy_tree(state.memory)
+        original_rad = None
+        if self.radiation is not None:
+            original_rad = {k: getattr(self.radiation, k) for k in RAD_FIELDS}
+            for k in RAD_FIELDS:
+                setattr(self.radiation, k, copy_tree(state.radiation[k]))
+        try:
+            p = self.physics
+            T, u, v, R, ps = (columns[k] for k in ("T", "u", "v", "tracers", "ps"))
+            pf, ph, zf, zh, omega = (
+                geometry[k] for k in ("pfull", "phalf", "zfull", "zhalf", "omega")
+            )
+            zero = torch.zeros_like(T)
+            sfc = p.surface_layer(
+                T,
+                u,
+                v,
+                R,
+                ps,
+                zf[:, -1] - zh[:, -1],
+                pf[:, -1],
+                surf["t_surf"],
+                surf,
+                mem,
+            )
+            dn = p.down(
+                dt,
+                self.start + set_time(state.time_seconds),
+                T,
+                u,
+                v,
+                R,
+                pf,
+                ph,
+                zf,
+                zh,
+                zero,
+                zero,
+                zero,
+                torch.zeros_like(R),
+                sfc,
+                surf,
+                mem,
+                surf["t_surf"],
+            )
+            cpl = p.couple(dn["vd"], sfc, surf)
+            up = p.up(dt, T, u, v, R, pf, ph, zf, zh, omega, dn, cpl, surf, mem)
+            out = {k: up[k] for k in ("udt", "vdt", "tdt", "rdt")}
+            out.update(
+                lprec=up["moist"]["lprec"],
+                fprec=up["moist"]["fprec"],
+                flux_t=cpl["flux_t"],
+                flux_q=cpl["flux_q"],
+                flux_u=cpl["flux_u"],
+                flux_v=cpl["flux_v"],
+                radiation=dn["diag"].get("radiation"),
+            )
+            rad = (
+                {}
+                if self.radiation is None
+                else {k: copy_tree(getattr(self.radiation, k)) for k in RAD_FIELDS}
+            )
+            return out, surf, mem, rad
+        finally:
+            if original_rad is not None:
+                for k, value in original_rad.items():
+                    setattr(self.radiation, k, value)
+
+    def apply(self, state, dt, *, omega=None):
+        """Advance physics once; dt is a positive whole number of seconds.
+
+        Dynamics have already been advanced by the caller, so their tendencies
+        are zero in PyAM21. Surface flux signs are positive into the atmosphere;
+        precipitation is positive downward. The first pass supports stationary,
+        prescribed-SST open ocean only.
+        """
+        self.check(state)
+        if (
+            isinstance(dt, bool)
+            or not isinstance(dt, (int, float))
+            or not float(dt).is_integer()
+            or dt <= 0
+        ):
+            raise ValueError("PyAM21 physics dt must be positive integer seconds")
+        dt = int(dt)
+        if state.surface["land"].any():
+            raise ValueError("this adapter supports prescribed-SST open ocean only")
+        sst = state.surface["t_surf"]
+        if (
+            sst.shape != state.atmosphere.ps[:, 0].shape
+            or not torch.isfinite(sst).all()
+            or (sst <= 0).any()
+        ):
+            raise ValueError(
+                "prescribed SST must remain finite, positive and cell-shaped"
+            )
+        s = state.atmosphere
+        column, geom = self.mapping.columns(s, state.cloud_fraction, omega)
+        out, surf, mem, rad = self.column_call(state, dt, column, geom)
+        return self.apply_result(state, dt, column, geom, out, surf, mem, rad)
+
+    def apply_result(self, state, dt, column, geom, out, surf, mem, rad):
+        """Apply a checked upstream result; also permits isolated mapping tests."""
+        s = state.atmosphere
+        model, mapping = self.model, self.mapping
+        thermo = model.dynamics.thermodynamics
+        g = model.dynamics.kernel.gravity
+        p = geom["phalf"]
+        dp, mass = p.diff(), interface_pressure_mass(p.diff())
+        T1, R1 = column["T"] + dt * out["tdt"], column["tracers"] + dt * out["rdt"]
+        eps = torch.finfo(T1.dtype).eps
+        if not all(
+            torch.isfinite(out[k]).all()
+            for k in ("flux_t", "flux_q", "flux_u", "flux_v", "lprec", "fprec")
+        ):
+            raise ValueError("nonfinite PyAM21 boundary flux")
+        # Upstream finite tendency addition can yield 1+~1e-14 cloud fraction
+        # or signed condensate roundoff at an exhausted store. Admit and report
+        # these unchanged, consistently with VFS's existing condensate policy.
+        condensate_tolerance = 32 * eps * R1[..., 1:3].abs().amax((0, 1))
+        if (
+            not all(torch.isfinite(out[k]).all() for k in ("tdt", "rdt", "udt", "vdt"))
+            or (T1 <= 0).any()
+            or (R1[..., 0] <= 0).any()
+            or (R1[..., 1:3] < -condensate_tolerance).any()
+            or (R1[..., :3].sum(-1) >= 1).any()
+            or (R1[..., 3] < -128 * eps).any()
+            or (R1[..., 3] > 1 + 128 * eps).any()
+        ):
+            raise ValueError(
+                "PyAM21 returned an inadmissible finite column update; no clipping"
+            )
+        qw = s.water_content / mass[..., None]
+        amount = dt * dp[..., None] * out["rdt"][..., :3]
+        dw = species_increment(qw, amount)
+        water = s.water_content + dw
+        # Physics tendencies are interpreted as species amount sources on the
+        # old carrier. Their sum changes ps, preserving column dry-air mass.
+        ps = s.ps + amount.sum((1, 2))[:, None]
+        p1 = s.column.interface_pressure(ps)
+        mass1 = interface_pressure_mass(p1.diff())
+        if (p1.diff() <= 0).any():
+            raise ValueError("physics update exhausts CP carrier; reduce dt")
+        q1 = water / mass1[..., None]
+        mix1 = torch.cat((1 - q1.sum(-1, keepdim=True), q1), -1)
+        # Map only the temperature increment. Never overwrite the original CP
+        # profile with a lossy full-level round trip.
+        Told = model.physical_fields(s)["temperature"]
+        Tnew = Told + distribute(dt * dp * out["tdt"]) / mass
+        if (
+            not torch.isfinite(Tnew).all()
+            or (Tnew <= 0).any()
+            or (mix1[..., 0] <= 0).any()
+            or (q1[..., 0] <= 0).any()
+        ):
+            raise ValueError("physics update exhausts positive vapor required by VFS")
+        entropy = mass1 * thermo.entropy(Tnew, p1, mix1)
+        unchanged = (dw == 0).all(-1) & (Tnew == Told) & (p1 == p)
+        entropy = torch.where(unchanged, s.entropy_content, entropy)
+        # Cloud and clear fractions use complementary available stores for
+        # increments, preserving [0,1] without clipping sharp boundaries.
+        dc = dt * dp * out["rdt"][..., 3]
+        cloud = state.cloud_fraction
+        positive = species_increment(1 - cloud, -dc.clamp_min(0))
+        negative = species_increment(cloud, dc.clamp_max(0))
+        cloud1 = cloud + (negative - positive) / mass
+        trial = MoistState(s.u_e, ps, entropy, water, s.mesh, s.column)
+        velocity_increment = dt * (
+            out["udt"][..., None] * mapping.east[:, None]
+            + out["vdt"][..., None] * mapping.north[:, None]
+        )
+        impulse = mapping.transpose(
+            s.mesh.cell_area[:, None, None] * dp[..., None] / g * velocity_increment
+        )
+        metric0, metric1 = mapping.metric(s), mapping.metric(trial)
+        u1 = s.u_e + impulse / metric1
+        end = replace(trial, u_e=u1)
+        result = PhysicsState(end, cloud1, mem, surf, rad, state.time_seconds + dt)
+        self.check(result)
+        actual_water = (water - s.water_content).sum(1) / g
+        expected_water = amount.sum(1) / g
+        dry0 = mass.sum(-1) - s.water_content.sum((1, 2))
+        dry1 = mass1.sum(-1) - water.sum((1, 2))
+        carrier_impulse = (metric1 - metric0) * s.u_e
+        fluxes = {
+            k: out[k]
+            for k in ("flux_t", "flux_q", "flux_u", "flux_v", "lprec", "fprec")
+        }
+        zero = torch.zeros_like(s.ps[:, 0])
+        radiation_heat = zero
+        for name in (
+            "sw_net_surface",
+            "lw_down_surface",
+            "lw_net_surface",
+            "toa_net_down",
+        ):
+            fluxes[name] = zero
+        if out["radiation"] is not None:
+            r = out["radiation"]
+            fluxes.update(
+                sw_net_surface=r["flux_sw_surf"],
+                lw_down_surface=r["flux_lw_surf"],
+                lw_net_surface=r["flux_lw_surf"]
+                - am2_constants.STEFAN * state.surface["t_surf"] ** 4,
+                toa_net_down=r["dfsw"][:, 0] - r["ufsw"][:, 0] - r["flxnet"][:, 0],
+            )
+            radiation_heat = (dp * am2_constants.CP_AIR / g * r["tdt_rad"]).sum(-1)
+        q0 = column["tracers"][..., :3]
+        qfixed1 = R1[..., :3]
+        mix0 = torch.cat((1 - q0.sum(-1, keepdim=True), q0), -1)
+        mix_fixed1 = torch.cat((1 - qfixed1.sum(-1, keepdim=True), qfixed1), -1)
+        vfs_column_change = (
+            dp
+            / g
+            * (thermo.enthalpy(T1, mix_fixed1) - thermo.enthalpy(column["T"], mix0))
+        ).sum(-1)
+        am2_proxy_change = (
+            dp
+            / g
+            * (
+                am2_constants.CP_AIR * dt * out["tdt"]
+                + am2_constants.HLV * dt * out["rdt"][..., 0]
+                - am2_constants.HLF * dt * out["rdt"][..., 2]
+            )
+        ).sum(-1)
+        declared_heat = dt * (
+            out["flux_t"]
+            + am2_constants.HLV * out["flux_q"]
+            + am2_constants.HLF * out["fprec"]
+            + radiation_heat
+        )
+        delta_H = mapping.energy(end) - mapping.energy(s)
+        native_ke = model.dynamics.kernel.cell_kinetic_energy
+        ke0 = (dp / g * native_ke(model.dynamics.transport_state(s))).sum(-1)
+        ke1 = (p1.diff() / g * native_ke(model.dynamics.transport_state(end))).sum(-1)
+        return result, PhysicsReport(
+            fluxes,
+            actual_water,
+            (dry1 - dry0) / g,
+            actual_water - expected_water,
+            actual_water.sum(-1) - dt * (out["flux_q"] - out["lprec"] - out["fprec"]),
+            dict(
+                vfs_full_h=delta_H,
+                native_kinetic=ke1 - ke0,
+                vfs_fixed_mass_column_enthalpy=vfs_column_change,
+                am2_thermal_latent_proxy=am2_proxy_change,
+                declared_thermal_latent_forcing=declared_heat,
+                am2_proxy_minus_forcing=am2_proxy_change - declared_heat,
+                thermodynamic_convention_difference=vfs_column_change
+                - am2_proxy_change,
+                mapping_and_carrier_difference=delta_H
+                - (ke1 - ke0)
+                - vfs_column_change,
+            ),
+            impulse,
+            carrier_impulse,
+            metric1 * u1 - metric0 * s.u_e - impulse - carrier_impulse,
+            out,
+        )

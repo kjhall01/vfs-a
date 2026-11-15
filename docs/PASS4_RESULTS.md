@@ -1143,3 +1143,42 @@ thermal reference. It is not land hydrology, automatic river-mouth mapping, bulk
 atmospheric exchange, brine or resolved river plumes. Boundary and liquidus stages
 remain separate. CPU float64 forward checks and a local backward check do not
 qualify GPU, long integrations or long-horizon differentiation.
+
+## External PyAM21 atmospheric workflow
+
+Added `workflows/pyam21/`, a separately installed-dependency integration with
+Evan Wellmeyer's PyAM21 at `e1bdfcc3b23c05adea80b35af880702bb85718eb`.
+No VFS package source, default, installed dependency or upstream physics source
+changed. CI installs the pinned optional dependency only to test the workflow.
+
+The adapter calls the four actual upstream stages and exposes post-coupling
+heat/moisture/stress, precipitation and optional radiation fluxes. Full-level
+readout preserves native integrated water and mixture enthalpy. Finite physics
+increments return to the original CP state, with donor-aware species withdrawals,
+surface-pressure changes retaining dry air, and analytic work-adjoint edge forces.
+Cloud fraction is a workflow-owned passive field using the unchanged atmospheric
+bounded Euler maps and SSP combinations. Physics/radiation memory, clocks and
+restart payloads are explicit and failed calls do not mutate the input state.
+
+Twenty-one focused tests cover amounts, work, no-flux identity, actual staged
+upstream equivalence, rejection, restart/cache behavior, bitwise preservation of
+the atmospheric dynamics, passive-cloud transport, and one smooth SST derivative.
+Radiation tests use the real PyAM21 scheduler with a synthetic package; full
+SeaEsfRad and its GFDL data bundle have not been exercised in this workflow.
+
+This first pass deliberately reports the difference between the native full-H
+change, AM2's fixed-pressure thermal/latent proxy, thermodynamic conventions,
+and finite mapping/carrier changes. Those differences are not corrected and
+must be reconciled before claiming shared-H atmospheric physics or interactive
+ocean/ice coupling. The example host is explicitly configured with gravity 9.8
+before initialization, matching PyAM21's pressure-to-mass conversion. The drivers
+use analytic columns, prescribed SST and no radiation. CPU float64 only.
+See [commands and numerical evidence](../verification/atmosphere/pyam21/README.md).
+
+Installed-wheel validation passed 1,351 tests with 2 skips; the corrected Gibbs
+and dry portable comparisons passed 142 and 93 tensor comparisons. Four actual
+physics runs completed (1,500 intervals, 19 aggregate model hours). Peak water
+ledger residual was 4.77e-12 kg/m² and peak relative dry-air change 2.13e-13.
+The six-hour mean VFS-minus-AM2-heat-ledger difference was +0.594 W/m² for
+columns, +0.424 W/m² with dynamics and +0.443 W/m² at half timestep. These
+remain unresolved energy-accounting differences, not a closure claim.
