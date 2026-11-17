@@ -195,6 +195,85 @@ def test_rejects_redi_negative_tracer_without_mutating_input():
     assert torch.equal(state.ocean.tracer_h, before)
 
 
+def test_positive_redi_transports_sharp_stores_without_clipping():
+    from eddy_campaign import make
+
+    torch.set_default_dtype(torch.float64)
+    m, state = make()
+    s = state.ocean
+    tracer = torch.zeros_like(s.tracer_h)
+    tracer[0, 3, 0] = s.h[0, 3]
+    k = torch.full_like(state.tke_h, 1e-20)
+    k[0, 3] = s.h[0, 3] * 1e-4
+    state = EddyState(
+        s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, tracer), k, state.eddy_h
+    )
+    before = tracer.clone()
+    with pytest.raises(FloatingPointError, match="not positivity preserving"):
+        GMRedi(0.0, 1000.0).apply(m, state, 1.0)
+    end, r = GMRedi(0.0, 1000.0, positive_redi=True).apply(m, state, 1.0)
+    assert r.redi_limited_fluxes > 0
+    assert (end.tke_h >= 0).all() and (end.ocean.tracer_h >= 0).all()
+    assert (end.eddy_h >= 0).all() and torch.equal(tracer, before)
+    # Independent global inventories and full-H subtraction.
+    mass = m.energy.mass_area(s)
+    for left, right in (
+        (k, end.tke_h),
+        (tracer[..., 0], end.ocean.tracer_h[..., 0]),
+        (s.salt_h, end.ocean.salt_h),
+    ):
+        torch.testing.assert_close(
+            (mass * left).sum(), (mass * right).sum(), rtol=2e-14, atol=0
+        )
+    torch.testing.assert_close(
+        m.total_energy(state), m.total_energy(end), rtol=2e-14, atol=0
+    )
+    q = GMRedi._contents(state) / s.h[..., None]
+    norm = (s.mesh.cell_area[:, None, None] * s.h[..., None] * q.square()).sum((0, 1))
+    assert (r.redi_variance_change <= 64 * torch.finfo(k.dtype).eps * norm).all()
+    scale = m.hamiltonian.finite_change(state, end, include_eddy=False).abs().sum()
+    scale += (mass * state.eddy_h).sum()
+    assert (
+        r.redi_local_energy_residual.abs().sum()
+        <= 256 * torch.finfo(k.dtype).eps * scale
+    )
+
+
+@pytest.mark.parametrize("coast", [False, True])
+def test_positive_row_fluxes_have_local_funding_and_conserve_each_field(mesh, coast):
+    m, state = setup(mesh, coast)
+    op = GMRedi(0.0, 1000.0)
+    *_, operator, measure = op._geometry(m, state)
+    shape = (*state.ocean.h.shape, 3)
+    generator = torch.Generator().manual_seed(87)
+    amounts = torch.rand(shape, generator=generator, dtype=state.ocean.h.dtype)
+    amounts[::3, 1, 0] = 0
+    transfer = 1e6 * torch.randn(
+        (*measure.shape, 3), generator=generator, dtype=amounts.dtype
+    )
+    alpha = operator.positive_flux_scale(transfer, amounts)
+    assert ((alpha >= 0) & (alpha <= 1)).all() and (alpha < 1).any()
+    change = operator.transpose(alpha * transfer)
+    assert (amounts + change >= 0).all()
+    torch.testing.assert_close(
+        change.sum((0, 1)), torch.zeros(3, dtype=amounts.dtype), rtol=0, atol=1e-12
+    )
+    # A smooth positive field with a tiny flux is exactly unchanged by the limiter.
+    ones = operator.positive_flux_scale(transfer * 1e-30, torch.ones_like(amounts))
+    assert torch.equal(ones, torch.ones_like(ones))
+
+
+def test_positive_redi_is_exactly_original_when_unlimited(mesh):
+    m, state = setup(mesh)
+    original, old = GMRedi(100.0, 100.0).apply(m, state, 1.0)
+    enabled, new = GMRedi(100.0, 100.0, positive_redi=True).apply(m, state, 1.0)
+    assert new.redi_limited_fluxes == 0
+    for name in ("temp_h", "salt_h", "tracer_h", "h", "u_e"):
+        assert torch.equal(getattr(original.ocean, name), getattr(enabled.ocean, name))
+    assert torch.equal(original.tke_h, enabled.tke_h)
+    assert torch.equal(original.eddy_h, enabled.eddy_h)
+
+
 def test_finite_energy_work_against_independent_midpoint_gradient(mesh):
     m, state = setup(mesh)
     end, report = GMRedi(1000.0, 1000.0).apply(m, state, 3600.0)

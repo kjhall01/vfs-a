@@ -39,6 +39,7 @@ from vfs.ocean import OceanColumn
 DAY = 86400
 OCEAN_SUMS = (
     "gmredi_steps",
+    "redi_limited_fluxes",
     "eddy_decay_steps",
     "ale_steps",
     "ale_changed_columns",
@@ -81,6 +82,7 @@ class CampaignConfig:
     gm_efficiency: float = 0.1
     gm_kinetic_fraction: float = 0.5
     redi_diffusivity_m2_s: float = 100.0
+    redi_positive_transport: bool = True
     eddy_initial_energy_J_kg: float = 0.1
     eddy_substeps: int = 10
     eddy_dissipation: bool = True
@@ -114,7 +116,13 @@ class CampaignConfig:
         ):
             if type(getattr(self, key)) is not int or getattr(self, key) <= 0:
                 raise ValueError(f"{key} must be a positive integer")
-        for key in ("gm_redi", "eddy_dissipation", "backscatter", "ale_remap"):
+        for key in (
+            "gm_redi",
+            "redi_positive_transport",
+            "eddy_dissipation",
+            "backscatter",
+            "ale_remap",
+        ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
         if self.start_year % 4 == 0 or self.days > 365:
@@ -211,6 +219,7 @@ def mesoscale_step(receiver, sea, dt, config):
     if config.gm_redi:
         eddy = GMRedi(
             kappa_redi=config.redi_diffusivity_m2_s,
+            positive_redi=config.redi_positive_transport,
             energy_closure=EddyMixingLength(
                 config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
             ),
@@ -218,6 +227,7 @@ def mesoscale_step(receiver, sea, dt, config):
         for _ in range(config.eddy_substeps):
             ocean, r = eddy.apply(model, ocean, dt / config.eddy_substeps)
             report["gmredi_steps"] += 1
+            report["redi_limited_fluxes"] += r.redi_limited_fluxes
             report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
             report["redi_exchange_J_m2"] += float(
                 r.redi_reservoir_exchange / area.sum()
@@ -859,6 +869,11 @@ def main(argv=None):
             config.backscatter_viscosity_m2_s,
             config.biharmonic_viscosity_m4_s,
             config.ale_remap,
+        )
+        logger.info(
+            "Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",
+            config.redi_positive_transport,
+            config.eddy_initial_energy_J_kg,
         )
         atomic_json(
             output / "manifest.json",

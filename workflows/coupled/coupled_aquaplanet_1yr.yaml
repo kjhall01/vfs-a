@@ -23,6 +23,7 @@ gm_length_m: 10000.0
 gm_efficiency: 0.1
 gm_kinetic_fraction: 0.5
 redi_diffusivity_m2_s: 100.0
+redi_positive_transport: true
 # Initial unresolved mesoscale energy, independent of resolved rest and TKE.
 eddy_initial_energy_J_kg: 0.1
 eddy_substeps: 10
