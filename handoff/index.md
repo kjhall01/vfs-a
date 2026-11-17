@@ -2,9 +2,12 @@
 
 PR #89 is merged as `116eed948874c4ffc7e2464618cc80dc3eec0d1b` after its final CI
 passed. The subsequent seasonal-radiation attempt is blocked before initialization
-by missing GFDL `sea_esf` tables. Setup now explicitly enables both aerosol optical
-flags for radiation-on runs: inherited BOMEX flags otherwise fail the upstream
-SeaEsfRad configuration validator. Radiation-off behavior is unchanged; caller
+by missing GFDL `sea_esf` tables in this runtime. The user's downloaded-data run
+exposed a second setup omission: BOMEX has a blank aerosol dataset and no optical
+model list. Radiation-on setup now reads both band flags, the Shettle–Fenn dataset,
+optical filename and complete model list from the pinned ASTEX namelist. The
+regression reaches upstream `AerosolOptics` file I/O, beyond the package-level
+validator which missed these fields. Radiation-off behavior is unchanged; caller
 overrides remain explicit. See the [attempt and configuration evidence](../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
 This is not evidence of an executed real-radiation run.
 

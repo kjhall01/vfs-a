@@ -3,6 +3,7 @@
 from dataclasses import replace
 import json
 from pathlib import Path
+import shutil
 from types import SimpleNamespace
 from unittest.mock import patch
 import pytest
@@ -23,6 +24,11 @@ def source(tmp_path):
     p.parent.mkdir(parents=True)
     p.write_text(
         "&moist_processes_nml\n do_lsc=.false., do_mca=.false., do_ras=.true., do_strat=.true., do_cmt=.true.\n/\n&vert_turb_driver_nml\n do_mellor_yamada=.false., do_entrain=.true., do_stable_bl=.true., use_tau=.false., gust_scheme='beljaars'\n/\n&damping_driver_nml\n do_conserve_energy=.true.\n/\n"
+    )
+    aerosol = p.parents[1] / "gcss_astex/input.nml"
+    aerosol.parent.mkdir()
+    shutil.copyfile(
+        Path(__file__).parent / "fixtures/pyam21/astex-aerosol.nml", aerosol
     )
     return tmp_path / "source"
 
@@ -51,6 +57,12 @@ def synthetic(nml, model, data_dir, **options):
         "synthetic-campaign-test",
         {"synthetic": True, "namelist": nml},
     )
+
+
+def test_radiation_off_needs_only_bomex_namelist(source, config):
+    (source / "reference/input/gcss_astex/input.nml").unlink()
+    adapter, *_ = c.build(config, source, None, smoke_no_radiation=True)
+    assert adapter.radiation is None
 
 
 def test_output_schedule_and_nonleap_year():

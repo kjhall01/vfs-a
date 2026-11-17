@@ -59,11 +59,15 @@ seconds, at least one physics interval and multiples of the example physics step
 The examples enable SW renormalization at every physics step and share LW/SW
 cadence. Upstream gas configuration, aerosol/cloud optics and fixed-year
 climatology settings otherwise come from the pinned BOMEX namelist. When data
-are supplied, setup explicitly enables shortwave and longwave aerosol optical
-effects, matching the supported ASTEX/MPACE radiation configuration. BOMEX has
-those flags off; leaving them off caused the actual SeaEsfRad constructor to
-reject even before reading tables. Caller overrides are still honored and an
-unsupported override still rejects. The radiation-off setup is unchanged. Enabling
+are supplied, setup reads five aerosol optical settings from the same checkout's
+`reference/input/gcss_astex/input.nml`: `do_lwaerosol`, `do_swaerosol`,
+`aerosol_data_set`, `optical_filename` and `aerosol_optical_names`. This selects
+Shettle–Fenn optics with the full sulfate-humidity, carbon, sea-salt and dust
+model list. BOMEX disables both bands, leaves its dataset blank and omits the
+model list; enabling only the two flags is insufficient. Its aerosol composition,
+fixed climatology year and other physics choices remain unchanged.
+Caller overrides are still honored and an unsupported override still rejects.
+The radiation-off setup needs only the BOMEX namelist. Enabling
 radiation does not turn this analytic experiment into a BOMEX reproduction.
 
 The default climatology footprint is an explicit 1° rectangle around each cell

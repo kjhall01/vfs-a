@@ -29,11 +29,41 @@ rejects. Radiation-off configuration is unchanged. The table download URL in
 the missing-data error now follows the current official quickstart.
 
 The two regressions execute the upstream configuration validator unmocked and
-intercept setup before loading external tables. They establish configuration
-compatibility and override behavior, **not radiative flux correctness**.
+intercept setup before loading external tables. They establish compatibility
+with that validator and override behavior, **not full constructor compatibility
+or radiative flux correctness**.
 External installed-wheel shared-exchange/campaign checks: **47 passed, 1 skipped**;
 the skip is the real-data radiation test. Package kernels and upstream sources
 are unchanged. The frozen 142/93 portable comparisons are recorded here too.
+
+## Follow-up: complete aerosol optical settings
+
+The user's real-data initialization on 16,384 saved generators passed the
+package-level validator but then rejected in `AerosolOptics` with
+`NotImplementedError: aerosol_data_set other than shettle_fenn`. No timestep had
+committed. The BOMEX namelist has a blank dataset and no optical-model list;
+enabling the SW/LW flags alone was insufficient.
+
+Setup now reads `do_lwaerosol`, `do_swaerosol`, `aerosol_data_set`,
+`optical_filename` and `aerosol_optical_names` from the pinned PyAM21 checkout's
+`reference/input/gcss_astex/input.nml`. BOMEX aerosol composition, fixed-year
+climatology and other physics choices remain unchanged. Caller overrides apply
+last, and radiation-off initialization does not read the ASTEX namelist.
+
+Tests use unmodified namelist sections from PyAM21 commit
+`e1bdfcc3b23c05adea80b35af880702bb85718eb`, parse them with the actual reader and
+execute both `_check_config` and the actual `AerosolOptics` constructor. Before
+the fix, two cases reproduced the user's exact exception. After the fix, the
+constructor reaches its expected optical-file open; the selected model names
+cover every configured species and required sulfate humidity bin. Invalid
+explicit band/dataset overrides still reject, and an explicit optical filename
+is honored. No optical tables or radiative fluxes are fabricated by these tests.
+
+External installed-wheel shared/campaign checks: **50 passed, 1 skipped**;
+see [test output](aerosol-followup.txt). The skip remains the real-data test.
+The corrected-Gibbs **142** and dry-helper **93** portable comparisons were
+rerun and pass. The runtime still lacks the external tables, so this correction
+does not establish a completed radiation-on integration or 16,384-cell stability.
 
 ## Requested configuration
 

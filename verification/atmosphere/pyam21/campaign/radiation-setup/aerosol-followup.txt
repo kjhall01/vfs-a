@@ -1,0 +1,23 @@
+Command: /workspace/scratch/79205660e358/env/bin/python -I -m pytest tests/test_shared_exchange.py tests/test_coupled_campaign.py --fixture-mode=portable -q
+CWD: /workspace/scratch/79205660e358/wheel-check (no vfs source tree)
+Python 3.12; PyTorch 2.15.0+cpu; installed VFS wheel; CPU float64.
+PyAM21: e1bdfcc3b23c05adea80b35af880702bb85718eb.
+
+Before the setup fix: 2 failed, 2 passed in the four-case setup regression.
+Both failing cases reproduced: NotImplementedError: aerosol_data_set other than shettle_fenn.
+
+After the setup fix:
+.........s.........................................                      [100%]
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+50 passed, 1 skipped, 1 warning in 15.32s
+
+Frozen portable comparisons rerun: corrected-gibbs-v1 142 pass; dry helpers 93 pass.
+Actual radiation data unavailable; no radiative flux/integration qualification.

@@ -4,6 +4,7 @@ from dataclasses import replace
 import json
 import os
 from pathlib import Path
+import shutil
 from unittest.mock import patch
 import pytest
 import torch
@@ -242,47 +243,63 @@ def test_real_seaesf_opt_in():
     assert u.column_result["radiation"]["do_rad"]
 
 
-@pytest.mark.parametrize("disable_aerosols", [False, True])
+@pytest.mark.parametrize(
+    "overrides, error, match",
+    [
+        ({}, FileNotFoundError, "aerosol.optical.dat"),
+        ({"do_swaerosol": False}, NotImplementedError, "both the SW and the LW"),
+        ({"aerosol_data_set": "   "}, NotImplementedError, "shettle_fenn"),
+        (
+            {"optical_filename": "custom.optical.dat"},
+            FileNotFoundError,
+            "custom.optical.dat",
+        ),
+    ],
+)
 def test_radiation_setup_selects_supported_aerosols_before_loading_tables(
-    tmp_path, disable_aerosols
+    tmp_path, overrides, error, match
 ):
     from workflows.pyam21.setup import example
+    from pyam21.radiation.aerosol import AerosolOptics, SULFATE_INDICES, _TARGET
     from pyam21.radiation.sea_esf import _check_config
 
-    # Minimal actual BOMEX radiation choices that triggered the rejection.
-    # The upstream validator runs unmocked; no flux/table calculation is claimed.
-    namelist = dict(
-        sealw99_nml=dict(
-            continuum_form="ckd2.1", linecatalog_form="hitran_2000", do_lwcldemiss=True
-        ),
-        aerosolrad_package_nml=dict(do_lwaerosol=False, do_swaerosol=False),
-    )
-
-    class ReachedSupportedRadiation(Exception):
-        pass
+    # Parse unchanged upstream namelist sections. The actual aerosol constructor
+    # must reach its missing optical file, beyond the package's shallower check.
+    fixtures = Path(__file__).parent / "fixtures/pyam21"
+    for case, name in (
+        ("gcss_bomex", "bomex-radiation.nml"),
+        ("gcss_astex", "astex-aerosol.nml"),
+    ):
+        target = tmp_path / "reference/input" / case / "input.nml"
+        target.parent.mkdir(parents=True)
+        shutil.copyfile(fixtures / name, target)
 
     def inspect(nml, *args, **kwargs):
         _check_config(nml)
         assert nml["physics_driver_nml"]["do_radiation"]
-        raise ReachedSupportedRadiation
+        species = nml["aerosol_nml"]["data_names"]
+        # No fabricated optical data: real file I/O intentionally stops here.
+        try:
+            AerosolOptics(nml, str(tmp_path), None, species)
+        except FileNotFoundError:
+            names = nml["aerosolrad_package_nml"]["aerosol_optical_names"]
+            required = {f"sulfate_{v}%" for v in SULFATE_INDICES}
+            required.update(
+                _TARGET.get(n, n) for n in species if not n.startswith("so4")
+            )
+            assert required <= set(names)
+            raise
 
-    overrides = (
-        {"aerosolrad_package_nml": {"do_swaerosol": False}}
-        if disable_aerosols
-        else None
-    )
-    expected = NotImplementedError if disable_aerosols else ReachedSupportedRadiation
     with (
-        patch("workflows.pyam21.setup.read_namelist", return_value=namelist),
         patch("workflows.pyam21.radiation.build_radiation", side_effect=inspect),
-        pytest.raises(expected),
+        pytest.raises(error, match=match),
     ):
         example(
             tmp_path,
             cells=16,
             levels=12,
             radiation_data=tmp_path,
-            namelist_overrides=overrides,
+            namelist_overrides={"aerosolrad_package_nml": overrides},
         )
 
 

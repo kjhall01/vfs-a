@@ -1341,3 +1341,15 @@ radiation-off behavior is unchanged. Two regressions call the upstream validator
 without loading tables. External installed-wheel shared/campaign tests: 47 passed,
 1 real-data skip. The 142/93 frozen portable comparisons also pass. See
 [recorded attempt, data inventory and reproduction](../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+
+The user's downloaded-data run subsequently reached `AerosolOptics` and rejected
+the inherited blank `aerosol_data_set`; BOMEX also omits `aerosol_optical_names`.
+Enabling only the two band flags was incomplete. Setup now reads all five optical
+settings from the pinned checkout's radiating ASTEX namelist before caller
+overrides, retaining BOMEX composition, climatology and other physics options.
+Regression tests parse unmodified upstream sections and exercise the actual
+aerosol constructor through its optical-file open; they reproduce the user's
+exception before the fix and verify model coverage and explicit overrides after
+it. A radiation-off test needs no ASTEX file. External installed-wheel focused
+checks: **50 passed, 1 real-data skip**; frozen portable comparisons: **142/93 pass**.
+This verifies setup, not real radiative fluxes or a run on the user's mesh.
