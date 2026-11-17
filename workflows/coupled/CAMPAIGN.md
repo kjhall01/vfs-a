@@ -61,7 +61,8 @@ in float64 with one thread. Physics/ocean steps are 1200 seconds, atmospheric
 substeps 240 seconds, radiation hourly. Mixing and GM–Redi each use ten
 substeps per ocean step (120 seconds). The earlier ocean sweep supports the
 chosen ocean step under its tested conditions; it does not validate the entire
-coupled configuration. There is no compiled/GPU qualification.
+coupled configuration. Optional regional CPU compilation is described below;
+GPU execution remains unqualified.
 
 All three components start with **zero velocity**, with analytic moist
 atmospheric stratification, a meridional SST gradient, stable ocean temperature
@@ -132,10 +133,68 @@ python -I workflows/coupled/campaign.py \
   --output aquaplanet-16384-365d --verbose
 ```
 
-This requests the configured 365 days. Append `--stop-after-days 1` for a one-day
-qualification attempt; the current 256-cell check fails as described above.
+This requests the configured 365 days. Append `--stop-after-days 2` for a two-day
+qualification attempt before committing to the year.
 Continue a successfully completed segment with its saved restart and a new output folder. The
-16,384-cell coupled timestep and runtime are not qualified by the smaller tests.
+smaller radiation-off checks do not establish seasonal stability on this mesh.
+
+## Optional compilation
+
+Append `--compile` to either the preflight or campaign command. The default is
+eager execution (`compile: false` in YAML); `--no-compile` explicitly overrides
+`compile: true`. Neither flag changes the timesteps, thread count or physics.
+
+```bash
+python -I workflows/coupled/campaign.py \
+  --config aquaplanet-local.yaml \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --source /path/to/PyAM21 \
+  --radiation-data /path/to/input_data/sea_esf \
+  --output aquaplanet-compiled-preflight --preflight --compile --verbose
+```
+
+After this passes, remove `--preflight`, select a new output directory, and add
+`--stop-after-days 2` for the initial segment. Retain `--compile` on its resume.
+Switching between eager and compiled modes requires a fresh run: the compilation
+policy/backend, effective configuration and source hashes are restart identity.
+Compiled replay is required to be bitwise within the same supported environment;
+eager/compiled trajectories can differ through floating-point reassociation.
+
+The switch uses Inductor for nine repeated tensor kernels: four shared mesh
+gradient/divergence/interpolation operations used by atmosphere, ocean and ice,
+the atmospheric mixture-energy gradients, and four Roquet ocean thermodynamic
+kernels. Each region requires full-graph capture. Public state checks,
+positivity limiting, nonlinear solvers, PyAM21 column control flow and radiation
+scheduling/optics retain their existing eager execution. GM–Redi, mixing,
+backscatter, ALE and ice remain enabled as configured and use the shared compiled
+operations where applicable. No package classes are patched globally.
+
+Inductor needs a working native compiler. Setup, initial diagnostics and first
+intervals can take minutes while kernels compile; a new shape may trigger another
+compilation later. `run.log` and `manifest.json` record the selected regions and
+backend. A compiler error fails visibly through the existing failure/restart
+path, without silently retrying eagerly. Time several intervals after warmup
+before assessing speed; output and fresh radiation calls still cost time.
+
+For an eager/compiled comparison on your actual mesh and optical tables:
+
+```bash
+python -I validation/coupled_compile/run.py \
+  --config aquaplanet-local.yaml \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --source /path/to/PyAM21 \
+  --radiation-data /path/to/input_data/sea_esf \
+  --steps 8 --warmup 2 --output compile-comparison
+```
+
+This records setup separately, alternates execution order, compares final state
+and whole-system budgets, and requires bitwise compiled restart replay. The
+reported median excludes the first two intervals; inspect individual timings
+because fresh radiation occurs only on its configured cadence. It times advance
+calls, excluding NetCDF output and diagnostic inventories. Omitting
+`--radiation-data` explicitly selects a radiation-off benchmark; the production
+campaign still requires tables unless its smoke flag is explicitly selected.
+See [CPU measurements and qualification limits](../../verification/atmosphere/pyam21/campaign/compilation/README.md).
 
 ## Logging and verbosity
 

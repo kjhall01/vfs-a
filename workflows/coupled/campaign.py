@@ -27,6 +27,7 @@ from workflows.coupled.ice_temperature import (
     ThermalIceState,
 )
 from workflows.pyam21.state import copy_tree
+from workflows.coupled.compilation import configure_compilation
 from ocean_ice import OceanIce
 from ridging import CategoryIce, RidgingState
 from snow import SnowState
@@ -94,6 +95,7 @@ class CampaignConfig:
     biharmonic_viscosity_m4_s: float = 1e13
     ale_remap: bool = True
     threads: int = 1
+    compile: bool = False
     diagnostic_hours: int = 6
     restart_days: int = 5
 
@@ -122,6 +124,7 @@ class CampaignConfig:
             "eddy_dissipation",
             "backscatter",
             "ale_remap",
+            "compile",
         ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
@@ -416,6 +419,7 @@ def build(
     receiver = ThermalIceReceiver(owner)
     # Equilibrate the liquidus and latent/sensible storage without external heat.
     sea, _, _ = owner.phase_step(sea, 1, torch.zeros_like(area[:, :1]))
+    configure_compilation(adapter, receiver, enabled=config.compile)
     return adapter, air, receiver, sea
 
 
@@ -560,6 +564,7 @@ def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
         numpy=np.__version__,
         smoke_no_radiation=smoke_no_radiation,
         mesh_sha256=mesh_sha256,
+        compilation=adapter.compilation_manifest,
     )
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -764,6 +769,7 @@ def run_logger(output, verbose):
     return logger
 
 
+@torch.no_grad()
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -786,6 +792,10 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", type=Path)
     parser.add_argument(
+        "--compile", action=argparse.BooleanOptionalAction, default=None,
+        help="Compile shared mesh and atmosphere/ocean thermal kernels with Inductor; first calls include compilation (overrides YAML)",
+    )
+    parser.add_argument(
         "--preflight",
         action="store_true",
         help="build and execute one coupled interval, including restart replay",
@@ -807,6 +817,8 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
+    if args.compile is not None:
+        config = replace(config, compile=args.compile).validate()
     end = (
         config.days * DAY
         if args.stop_after_days is None
@@ -852,6 +864,8 @@ def main(argv=None):
         )
         if args.mesh:
             logger.info("Mesh %s; SHA256 %s", args.mesh, mesh_info["sha256"])
+        if config.compile:
+            logger.info("Enabling regional torch.compile with Inductor; first kernel calls can take several minutes")
         adapter, air, receiver, sea = build(
             config,
             args.source,
@@ -864,6 +878,9 @@ def main(argv=None):
             config, adapter, hashes, args.smoke_no_radiation, mesh_info.get("sha256")
         )
         logger.info("Initialization complete; restart fingerprint %s", identity)
+        logger.info("Compilation: %s", json.dumps(adapter.compilation_manifest))
+        if config.compile:
+            logger.info("Initial diagnostics and first intervals include compilation; later new tensor shapes may compile once too")
         logger.info(
             "Ocean processes: GM-Redi=%s (Redi %.8g m2/s; %d substeps); eddy decay=%s (%g days); backscatter=%s (nu2=%g m2/s, nu4=%g m4/s); ALE=%s (every coupled interval)",
             config.gm_redi,
@@ -890,6 +907,7 @@ def main(argv=None):
                 mesh=mesh_info,
                 configuration=asdict(config),
                 radiation_enabled=not args.smoke_no_radiation,
+                compilation=adapter.compilation_manifest,
                 torch=str(torch.__version__),
             ),
         )

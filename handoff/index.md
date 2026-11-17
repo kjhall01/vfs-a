@@ -1,5 +1,31 @@
 # Current package documentation
 
+The full coupled campaign now has opt-in `--compile` / `--no-compile` and
+YAML `compile: false`. Nine full-graph Inductor regions cover shared
+atmosphere/ocean/ice mesh operators, atmospheric mixture-energy gradients and
+Roquet thermodynamics. State checks, limiting, nonlinear solver control,
+PyAM21 column/radiation control and I/O remain eager; physical configuration
+is unchanged. Per-instance setup avoids global monkey-patching. Compilation
+policy is logged and included in restart identity; no silent eager fallback.
+The campaign CLI consistently disables gradient tracking, while its Python
+build/advance APIs retain their existing behavior.
+
+Installed-wheel focused checks: **74 passed, 1 optional GSW skip**, followed by
+**one passing native Inductor test** covering analytic radiation fresh/cache/fresh,
+independent budgets and bitwise compiled restart. Native qualification is now
+required in installed-wheel CI. Frozen **142/93** comparisons pass. The new
+`validation/coupled_compile/run.py` measures complete intervals, separates setup
+and warmup, compares fields/budgets, and checks compiled replay.
+Radiation-off benchmarks complete with bitwise compiled replay: 256 cells
+(6000 s) and the user's hash-matched 16384 mesh (4800 s). At 16384, steady
+median interval time is 82.753 s eager / 65.454 s compiled (1.264× throughput;
+two intervals per mode after two warmups on this Linux host). Final numerical
+energy residual differs by 6.08e-10 J/m², with zero recorded water/salt drift.
+A separate 512-cell/default-Lloyd pilot rejects in eager ocean mixing during
+interval five; it is retained as a failed pilot, not a successful benchmark.
+Real-table radiation, Mac/GPU performance, long-run stability and full-coupling
+backward execution remain unqualified. See [compilation evidence](../verification/atmosphere/pyam21/campaign/compilation/README.md).
+
 The user's later ALE rejection at second 67200 prompted a stored-temperature
 acceptance fix in the research remapper. The loop had checked temporary T,
 while the final check reconstructed T from h*T; a deterministic cold-column
