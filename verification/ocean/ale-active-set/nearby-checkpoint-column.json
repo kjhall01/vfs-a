@@ -1,0 +1,277 @@
+{
+  "before": {
+    "status": "failed",
+    "error": "adaptive thermal projection decreases column entropy (column=16266, change/tolerance=-1.00012837, iterations=24)",
+    "records": [
+      {
+        "iteration": 0,
+        "entropy_change": 1.455160710079166e-14,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": 8.343139999873202e-10,
+        "max_step": 2.0900256471877283e-13,
+        "predicted_entropy_change": -3.0603902596024237e-12,
+        "orthogonal_relative_norm": 8.783117797391837e-10
+      },
+      {
+        "iteration": 1,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 2,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 3,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 4,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 5,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 6,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 7,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 8,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 9,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 10,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 11,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 12,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 13,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 14,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 15,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 16,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 17,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 18,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 19,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 20,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 21,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 22,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      },
+      {
+        "iteration": 23,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 5.884383504828389e-17,
+        "predicted_entropy_change": -3.0603434185262016e-12,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      }
+    ]
+  },
+  "after": {
+    "status": "passed",
+    "iterations": 3,
+    "max_energy_ratio": 0.006858024869022501,
+    "min_entropy_ratio": -0.9830115874868296,
+    "target_entropy_ratio": 0.0,
+    "records": [
+      {
+        "iteration": 0,
+        "entropy_change": 1.455160710079166e-14,
+        "activation_tolerance": 3.0606742692797615e-12,
+        "active": false,
+        "energy_residual": 8.343139999873202e-10,
+        "max_step": 2.0900256471877283e-13,
+        "predicted_entropy_change": -3.0603902596024237e-12,
+        "orthogonal_relative_norm": 8.783117797391837e-10
+      },
+      {
+        "iteration": 1,
+        "entropy_change": -3.0610671801666844e-12,
+        "activation_tolerance": 0.0,
+        "active": true,
+        "energy_residual": -1.963751626415563e-13,
+        "max_step": 1.0588511498212858e-08,
+        "predicted_entropy_change": -1.2313282442014974e-19,
+        "orthogonal_relative_norm": 8.783117797425814e-10
+      }
+    ]
+  }
+}

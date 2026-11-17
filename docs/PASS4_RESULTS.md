@@ -1427,3 +1427,24 @@ A separate 512-cell/default-Lloyd pilot rejects in eager ocean mixing during
 interval five; it is retained as a failed pilot, not a successful benchmark.
 Real-table radiation, Mac/GPU performance, long-run stability and full-coupling
 backward execution remain unqualified. See [compilation evidence](../verification/atmosphere/pyam21/campaign/compilation/README.md).
+
+## ALE stored-entropy active constraint (2026-11-17)
+
+The second uploaded campaign failure at second 38400 exposed an ALE
+active-constraint stall. A stored candidate can violate entropy while the
+linearized prediction remains inside tolerance; the resulting sub-ulp step
+changes no temperature and repeats for 24 iterations. Once stored entropy
+violates its bound, the solver now retains a zero entropy activation threshold
+for that column through the remaining solve. Final acceptance tolerances,
+iteration cap and physical configuration remain unchanged.
+
+A deterministic 16-column case changes from 24-iteration rejection to acceptance
+in four iterations. A nearby state of the actual column 16266 changes from a
+24-iteration rejection to acceptance in three, with maximum energy residual
+0.00685802 of tolerance. The unmodified uploaded checkpoint passes Linux under
+both solvers; the exact Mac rejection is not claimed reproduced. Corrected
+eager and native compiled diagnostic replays advance 38400→39600 using original
+cached radiation, without fresh optics. A reusable one-interval diagnostic now
+captures the pre-ALE state. Installed-wheel checks: **107 passed, 1 optional GSW
+skip**; frozen **142/93** comparisons pass. Mac/fresh-table seasonal rerun and
+long-run stability remain unverified. See [active-constraint evidence](../verification/ocean/ale-active-set/README.md).

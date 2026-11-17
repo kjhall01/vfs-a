@@ -119,6 +119,7 @@ class TemperatureRemapper:
         node,qweight=base._quadrature(after.h)
         z=base.height(after)[...,None]+after.h[...,None]*(node-.5)
         theta=theta0;ever_active=torch.zeros_like(wet)
+        entropy_violated=torch.zeros_like(wet)
         for iteration in range(24):
             physical=after.with_tensors(after.u_e,after.h,after.h*theta,after.salt_h,after.tracer_h)
             terms,_=column_terms(energy,physical)
@@ -134,8 +135,15 @@ class TemperatureRemapper:
             _,pt,_,_=base.parcel_potential(stored_theta[...,None],physical.salinity()[...,None],z)
             g=weights*(ref['h_theta']+(pt*qweight).sum(-1))
             s=weights*ref['entropy_theta']
+            # A rounded stored candidate can violate entropy even when the
+            # next linearized prediction lies just inside its tolerance.
+            # Once that happens, keep the entropy constraint engaged toward
+            # zero change instead of repeatedly taking the same ineffective
+            # unconstrained step. Final acceptance tolerances are unchanged.
+            entropy_violated=entropy_violated|(entropy_change < -entropy_tolerance)
+            activation_tolerance=torch.where(entropy_violated,torch.zeros_like(entropy_tolerance),entropy_tolerance)
             step,active=minimum_change_step(theta-theta0,g,s,residual/safe_mass,
-                entropy_change/safe_mass,weights,entropy_tolerance/safe_mass)
+                entropy_change/safe_mass,weights,activation_tolerance/safe_mass)
             ever_active=ever_active|(active&wet)
             step=torch.where(wet[:,None],step,torch.zeros_like(step))
             # Fraction-to-boundary damping changes the attempted step, never

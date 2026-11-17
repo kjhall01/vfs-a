@@ -393,5 +393,24 @@ The tolerances are unchanged; unsuccessful solves report the worst column,
 residual relative to tolerance, and iteration count. Retain `run.log`,
 `configuration.json`, the mesh and `last_good_restart.pt` for diagnosis.
 See the [cold-column regression and checkpoint replay](../../verification/ocean/ale-cold-columns/README.md).
+An additional near-tolerance stall was found in the user's later run. Once an
+actual stored candidate violates entropy, the projection now retains a zero
+entropy-change activation threshold for that column through the remaining
+iterations. This prevents an ineffective sub-ulp correction from repeating
+until the iteration cap. Final energy/entropy tolerances and the cap are unchanged.
+See the [active-constraint regression and replay](../../verification/ocean/ale-active-set/README.md).
+For a single-interval diagnostic using the checkpoint's original radiation cache:
+
+```bash
+python -I validation/coupled_debug/replay_ale.py \
+  --source /path/to/PyAM21 --config /path/to/configuration.json \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --restart /path/to/last_good_restart.pt --output ale-diagnostic
+```
+
+This explicitly reconstructs state for diagnosis across source versions. It
+writes the pre-ALE ocean input and a result report, not a production restart.
+It fails if the interval needs a fresh optics call; cached fields are never
+extended past their scheduled refresh. `--compile` is available for comparison.
 Start in a new output directory after updating source; the normal restart
 fingerprint checks intentionally reject checkpoints from the previous code.

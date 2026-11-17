@@ -13,7 +13,7 @@ from vfs.ocean import OceanColumn
 from vfs.ocean.stratified.energy_columns import column_terms
 
 
-def cold_columns():
+def cold_columns(*, seed=10, salinity_scale=1.7105959511064084):
     """Deterministic counterexample; no user checkpoint or radiation data needed.
 
     Seed 10 and the salinity contrast place a cold column within one rounding
@@ -26,12 +26,12 @@ def cold_columns():
     model = RoquetOcean(mesh, OceanColumn(12, total_depth=1000., gravity=9.8))
     tail = torch.logspace(0, 1, 11)
     target = torch.cat((torch.tensor([20.]), 980 * tail / tail.sum())).expand(16, -1).clone()
-    generator = torch.Generator().manual_seed(10)
+    generator = torch.Generator().manual_seed(seed)
     amplitude = .001 + torch.rand(16, 1, generator=generator) * .002
     theta = -1.836 + amplitude * torch.exp(-torch.arange(12)[None, :] * 7.)
     h = target * (1 + torch.randn(16, 12, generator=generator) * 2e-5)
     h = h / h.sum(-1, keepdim=True) * 1000
-    salt = 34 + torch.rand(16, 12, generator=generator) * .01 * 1.7105959511064084
+    salt = 34 + torch.rand(16, 12, generator=generator) * .01 * salinity_scale
     state = model.state(u_e=torch.zeros(mesh.nEdges, 12), h=h,
                         conservative_temperature=theta, absolute_salinity=salt,
                         tracer=torch.ones(16, 12, 1), tke=1e-4, eddy_energy=.1)
@@ -39,8 +39,12 @@ def cold_columns():
 
 
 @pytest.mark.parametrize('threads', [1, 4])
-def test_cold_ale_accepts_the_stored_state_and_conserves_columns(threads):
-    model, initial, target = cold_columns()
+@pytest.mark.parametrize('seed,salinity_scale', [
+    (10, 1.7105959511064084),  # temporary/stored-temperature disagreement
+    (26, 4.257426495909136),  # stored entropy stalls outside tolerance for 24 iterations
+])
+def test_cold_ale_accepts_the_stored_state_and_conserves_columns(threads, seed, salinity_scale):
+    model, initial, target = cold_columns(seed=seed, salinity_scale=salinity_scale)
     torch.set_num_threads(threads)
     try:
         end, report = model.remap_with_report(initial, target)

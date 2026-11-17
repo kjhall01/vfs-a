@@ -12,6 +12,8 @@ import torch
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(__doc__)
 parser.add_argument('--research-root', type=Path, default=ROOT)
+parser.add_argument('--seed', type=int, default=10)
+parser.add_argument('--salinity-scale', type=float, default=1.7105959511064084)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
 sys.path[:0] = [str(args.research_root / 'validation' / name)
@@ -22,7 +24,7 @@ sys.path.insert(0, str(ROOT / 'tests/ocean'))
 from test_temperature_ale_roundoff import cold_columns
 from vfs.ocean.stratified.energy_columns import column_terms
 
-model, state, target = cold_columns()
+model, state, target = cold_columns(seed=args.seed, salinity_scale=args.salinity_scale)
 try:
     end, report = model.remap_with_report(state, target)
     old, _ = column_terms(model.energy, state.ocean)
