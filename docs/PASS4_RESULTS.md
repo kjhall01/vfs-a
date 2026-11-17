@@ -1327,3 +1327,17 @@ the nonfinite surface outputs explicitly; no gust floor is introduced. Restart
 schema 4 rejects old-map payloads. Real radiation, the user's mesh, full-year,
 GPU and full-coupling backward behavior remain unqualified. See
 [diagnosis, controls and reproduction](../verification/atmosphere/pyam21/campaign/momentum-map/README.md).
+
+## Seasonal radiation setup follow-up (2026-11-17)
+
+PR #89 merged after final CI passed. A requested actual-radiation preflight could
+not initialize: the GFDL input tables are absent and the official FTP download
+fails from this environment. No seasonal-radiation timestep was executed.
+
+An independent configuration check exposed that the inherited BOMEX aerosol
+flags are off, whereas the pinned SeaEsfRad supports both SW/LW aerosol effects
+on. Radiation-on setup now selects those supported flags before caller overrides;
+radiation-off behavior is unchanged. Two regressions call the upstream validator
+without loading tables. External installed-wheel shared/campaign tests: 47 passed,
+1 real-data skip. The 142/93 frozen portable comparisons also pass. See
+[recorded attempt, data inventory and reproduction](../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).

@@ -39,6 +39,14 @@ def example(
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
     nml = read_namelist(str(Path(source) / "reference/input/gcss_bomex/input.nml"))
+    if radiation_data is not None:
+        # BOMEX has radiation disabled, including aerosol optical effects.
+        # The pinned SeaEsfRad supports the radiating SCM configuration with
+        # aerosols active in both bands (as in ASTEX and MPACE). Select it
+        # explicitly; subsequent caller overrides are still honored/validated.
+        nml.setdefault("aerosolrad_package_nml", {}).update(
+            do_lwaerosol=True, do_swaerosol=True
+        )
     for group, values in (namelist_overrides or {}).items():
         nml.setdefault(group, {}).update(values)
     mesh = VoronoiMesh(

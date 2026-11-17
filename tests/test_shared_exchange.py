@@ -242,6 +242,50 @@ def test_real_seaesf_opt_in():
     assert u.column_result["radiation"]["do_rad"]
 
 
+@pytest.mark.parametrize("disable_aerosols", [False, True])
+def test_radiation_setup_selects_supported_aerosols_before_loading_tables(
+    tmp_path, disable_aerosols
+):
+    from workflows.pyam21.setup import example
+    from pyam21.radiation.sea_esf import _check_config
+
+    # Minimal actual BOMEX radiation choices that triggered the rejection.
+    # The upstream validator runs unmocked; no flux/table calculation is claimed.
+    namelist = dict(
+        sealw99_nml=dict(
+            continuum_form="ckd2.1", linecatalog_form="hitran_2000", do_lwcldemiss=True
+        ),
+        aerosolrad_package_nml=dict(do_lwaerosol=False, do_swaerosol=False),
+    )
+
+    class ReachedSupportedRadiation(Exception):
+        pass
+
+    def inspect(nml, *args, **kwargs):
+        _check_config(nml)
+        assert nml["physics_driver_nml"]["do_radiation"]
+        raise ReachedSupportedRadiation
+
+    overrides = (
+        {"aerosolrad_package_nml": {"do_swaerosol": False}}
+        if disable_aerosols
+        else None
+    )
+    expected = NotImplementedError if disable_aerosols else ReachedSupportedRadiation
+    with (
+        patch("workflows.pyam21.setup.read_namelist", return_value=namelist),
+        patch("workflows.pyam21.radiation.build_radiation", side_effect=inspect),
+        pytest.raises(expected),
+    ):
+        example(
+            tmp_path,
+            cells=16,
+            levels=12,
+            radiation_data=tmp_path,
+            namelist_overrides=overrides,
+        )
+
+
 def test_shared_exchange_retains_deliberate_upstream_heat_defect(model):
     adapter, air = initial(model)
     receiver, water = surface_case(model)

@@ -7,17 +7,39 @@ the same Simmons–Burridge full-pressure readout as the adapter. Neither upstre
 code nor package defaults are changed. Missing inputs fail with an actionable
 path; there is no synthetic fallback or network access during stepping.
 
-**Status: wiring and synthetic orchestration tests pass; full SeaEsfRad execution
-has not been verified.** On 2026-11-15 the advertised GFDL FTP connection failed
-from this environment; HTTP and HTTPS on that host returned 503. Candidate
-nomads/data1 HTTPS paths returned 404. No reference data were fabricated or
-substituted, and none are committed to this repository.
+**Status: full SeaEsfRad execution has not been verified.** The radiation-on
+preflight on 2026-11-17 could not initialize because the external data are absent.
+Both the historical `/perm/pjp/SCM/` and currently advertised
+`/perm/GFDL_pubrelease/SCM/` FTP locations failed from this environment; HTTPS on
+the FTP host returned 503 and the candidate nomads/data1 HTTPS locations returned
+404. No reference data were fabricated or substituted. See the
+[recorded attempt and configuration correction](../../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+
+PyAM21 includes the parameterization algorithms, but its `reference/input_data/`
+is excluded from Git. Supply the extracted `input_data/sea_esf` directory. These
+are physical lookup tables and prescribed composition, not a saved sequence of
+radiative heating rates:
+
+| Input family | Role |
+| --- | --- |
+| `stdlvls`, `cns_*` (or supported `.nc` equivalents) | Reference pressures and gas-transmission lookup tables |
+| `h2ocoeff_*`, `h2o12001400_hi00_data`, `h2ockd2.1_data`, `h2ockd2.1_corrdata`, `o39001200_hi00_data`, `radfn_5-2995_100-490k` | Longwave gas/continuum absorption and supporting spectral data |
+| `esf_sw_input_data_n38b18` | Solar spectrum and coefficients for the configured 18-band shortwave scheme |
+| `aerosol.optical.dat` | Aerosol optical properties |
+| `o3.climatology.nc`, `aerosol.climatology.nc` | Prescribed monthly ozone and aerosol composition |
+| `co2_gblannualdata`, `ch4_gblannualdata`, `n2o_gblannualdata`, `f11_gblannualdata`, `f12_gblannualdata`, `f113_gblannualdata`, `f22_gblannualdata` | Gas concentration records, sampled at configured fixed entry dates |
+
+Take the complete directory rather than guessing individual table variants.
+The model computes seasonal/diurnal solar geometry from date and orbital
+settings, then computes radiation using its simulated temperature, humidity and
+clouds. The campaign's fixed solar constant does not require a historical solar
+irradiance forcing series.
 
 Obtain the SCM input bundle linked from the
 [GFDL quickstart](https://www.gfdl.noaa.gov/scm-quickstart/):
 
 ```bash
-curl -O ftp://ftp.gfdl.noaa.gov/perm/pjp/SCM/input_data.tar.gz
+curl -O ftp://ftp.gfdl.noaa.gov/perm/GFDL_pubrelease/SCM/input_data.tar.gz
 ```
 
 Inspect/extract the archive locally and supply the directory containing `stdlvls`,
@@ -36,7 +58,12 @@ accepts `--radiation-data` and `--radiation-step`. Cadences are positive whole
 seconds, at least one physics interval and multiples of the example physics step.
 The examples enable SW renormalization at every physics step and share LW/SW
 cadence. Upstream gas configuration, aerosol/cloud optics and fixed-year
-climatology settings otherwise come from the pinned BOMEX namelist. Enabling
+climatology settings otherwise come from the pinned BOMEX namelist. When data
+are supplied, setup explicitly enables shortwave and longwave aerosol optical
+effects, matching the supported ASTEX/MPACE radiation configuration. BOMEX has
+those flags off; leaving them off caused the actual SeaEsfRad constructor to
+reject even before reading tables. Caller overrides are still honored and an
+unsupported override still rejects. The radiation-off setup is unchanged. Enabling
 radiation does not turn this analytic experiment into a BOMEX reproduction.
 
 The default climatology footprint is an explicit 1° rectangle around each cell

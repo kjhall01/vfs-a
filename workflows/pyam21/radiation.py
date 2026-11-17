@@ -14,7 +14,7 @@ import torch
 from pyam21.radiation.driver import RadiationDriver
 from pyam21.radiation.sea_esf import SeaEsfRad
 
-DATA_URL = "ftp://ftp.gfdl.noaa.gov/perm/pjp/SCM/input_data.tar.gz"
+DATA_URL = "ftp://ftp.gfdl.noaa.gov/perm/GFDL_pubrelease/SCM/input_data.tar.gz"
 
 
 @dataclass(frozen=True)

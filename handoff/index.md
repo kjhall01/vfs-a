@@ -1,5 +1,13 @@
 # Current package documentation
 
+PR #89 is merged as `116eed948874c4ffc7e2464618cc80dc3eec0d1b` after its final CI
+passed. The subsequent seasonal-radiation attempt is blocked before initialization
+by missing GFDL `sea_esf` tables. Setup now explicitly enables both aerosol optical
+flags for radiation-on runs: inherited BOMEX flags otherwise fail the upstream
+SeaEsfRad configuration validator. Radiation-off behavior is unchanged; caller
+overrides remain explicit. See the [attempt and configuration evidence](../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+This is not evidence of an executed real-radiation run.
+
 The [coupled campaign ocean follow-up](../verification/atmosphere/pyam21/campaign/ocean-processes/README.md)
 explicitly schedules GM–Redi with energy feedback, eddy decay, funded backscatter
 and budgeted biharmonic dissipation, and post-exchange adaptive thermal ALE.
