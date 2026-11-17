@@ -38,6 +38,7 @@ class EddyReport:
     gm_local_energy_residual: torch.Tensor
     redi_local_energy_residual: torch.Tensor
     gm_diffusivity: torch.Tensor | None = None  # active edge × layer, feedback only
+    redi_limited_fluxes: int = 0  # row/positive-field fluxes reduced, opt-in only
 
 
 class _RediGradient:
@@ -102,13 +103,54 @@ class _RediGradient:
         )
         return self.transpose((measure * row_sum)[..., None], absolute=True)[..., 0]
 
+    def positive_flux_scale(self, transfer, amounts):
+        """Locally fund row fluxes from nonnegative cell/layer inventories.
+
+        |R|^T |transfer| bounds every node's total possible withdrawal before
+        cancellations. A row takes the smallest allowance of its donor entries,
+        independently for each field. Scaling the WHOLE row retains R^T's zero
+        column sum and the negative-semidefinite diffusion form R^T M alpha R.
+        No tracer amount is clipped, and no nonlocal minimum is taken.
+        """
+        demand = self.transpose(transfer.abs(), absolute=True)
+        safe = torch.where(demand > 0, demand, torch.ones_like(demand))
+        ratio = torch.minimum(torch.ones_like(amounts), amounts / safe)
+        ratio = torch.where(demand > 0, ratio, torch.ones_like(ratio))
+        # Leave summation room only on limited fluxes; this is not a state floor.
+        ratio = torch.where(
+            ratio < 1, ratio * (1 - 64 * torch.finfo(ratio.dtype).eps), ratio
+        )
+        scale = torch.ones_like(transfer)
+
+        def fund(weight, allowance):
+            nonlocal scale
+            scale = torch.minimum(
+                scale,
+                torch.where(
+                    weight[..., None] * transfer < 0, allowance, torch.ones_like(scale)
+                ),
+            )
+
+        fund(-1 / self.dc, ratio[self.i])
+        fund(1 / self.dc, ratio[self.j])
+        flat = ratio.reshape(-1, ratio.shape[-1])
+        for cells in (self.i, self.j):
+            for k in range(3):
+                fund(
+                    0.5 * self.relative * self.weights[cells, :, k],
+                    flat[self.ids[cells, :, k]],
+                )
+        return scale
+
 
 class GMRedi:
     """Optional first-order split step; coefficients in m²/s, N² floor in s⁻².
 
-    GM uses donor advection. Redi dissipates tracer variance but its rotated
-    stencil has no maximum principle: reject negative passives/TKE or invalid
-    CT/SA rather than clipping. Coefficients are prescribed, not calibrated.
+    GM uses donor advection. The default rotated Redi stencil has no maximum
+    principle: reject negative stores rather than clipping. Opt-in positive_redi
+    funds local row fluxes from SA/passive/TKE/eddy inventories; the same limited
+    flux supplies the energy ledger. This preserves positivity and variance
+    dissipation, not a full maximum principle. Coefficients are not calibrated.
     Every call rebuilds geometry/slopes from its input; no hidden state/cache.
     """
 
@@ -121,6 +163,7 @@ class GMRedi:
         min_n2=1e-8,
         cfl=0.8,
         energy_closure=None,
+        positive_redi=False,
     ):
         values = (kappa_gm, kappa_redi, max_slope, min_n2, cfl)
         if not all(math.isfinite(x) for x in values):
@@ -138,6 +181,9 @@ class GMRedi:
             if kappa_gm != 0:
                 raise ValueError("choose prescribed kappa_gm OR energy_closure")
         self.energy_closure = energy_closure
+        if type(positive_redi) is not bool:
+            raise ValueError("positive_redi must be boolean")
+        self.positive_redi = positive_redi
         self.kappa_gm, self.kappa_redi = kappa_gm, kappa_redi
         self.max_slope, self.min_n2, self.cfl = max_slope, min_n2, cfl
 
@@ -380,11 +426,21 @@ class GMRedi:
         column_values = values.reshape(*h.shape, -1)
         gradient = operator.apply(column_values)
         flux = measure[..., None] * gradient
-        rate_amount = operator.transpose(-dt * flux).reshape_as(values)
         bound = operator.step_bound(measure).flatten() / volume
         step_number = dt * bound
         if (step_number > self.cfl).any():
             raise FloatingPointError("Redi explicit step exceeds bound; reduce dt")
+        limited_fluxes = 0
+        if self.positive_redi:
+            # CT is signed; SA, passives, TKE and mesoscale energy are positive
+            # inventories. Use the SAME limited flux in both transport and H.
+            scale = operator.positive_flux_scale(
+                -dt * flux[..., 1:],
+                volume.reshape(*h.shape, 1) * column_values[..., 1:],
+            )
+            limited_fluxes = int((scale < 1).sum())
+            flux = torch.cat((flux[..., :1], flux[..., 1:] * scale), -1)
+        rate_amount = operator.transpose(-dt * flux).reshape_as(values)
         final_values = values + rate_amount / volume[:, None]
         redi_transport = self._unpack(model, gm, final_values, values)
         mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(
@@ -431,5 +487,6 @@ class GMRedi:
             gm_residual,
             redi_residual,
             gm_diffusivity,
+            limited_fluxes,
         )
         return end, report

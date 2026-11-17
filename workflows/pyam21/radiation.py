@@ -97,6 +97,18 @@ def build_radiation(namelist, model, data_dir, *, width_degrees=1.0):
             namelist.get("radiation_driver_nml", {}).get("do_clear_sky_pass", False)
         ),
     )
+    # Upstream SeaEsfRad does not forward the fixed solar constant to its SW
+    # constructor. Configure the owned package explicitly without source edits.
+    fixed_solar = namelist.get("radiation_driver_nml", {}).get("solar_constant")
+    if fixed_solar is not None:
+        fixed_solar = float(fixed_solar)
+        if not math.isfinite(fixed_solar) or fixed_solar <= 0:
+            raise ValueError("positive finite solar constant required")
+        if namelist["radiation_driver_nml"].get(
+            "solar_dataset_entry", [1, 1, 1, 0, 0, 0]
+        ) != [1, 1, 1, 0, 0, 0]:
+            raise ValueError("choose fixed solar constant or spectral time series")
+        package.sw.solar_constant = fixed_solar
     return RadiationSetup(
         RadiationDriver.from_nml(namelist, package), identity, manifest
     )

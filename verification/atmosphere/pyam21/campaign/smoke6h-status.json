@@ -1,0 +1,26 @@
+{
+  "status": "segment_completed",
+  "wall_seconds": 184.708096694,
+  "latest": {
+    "seconds": 21600,
+    "day": 0.25,
+    "energy_minus_toa_J_m2": 0.0012683868408203125,
+    "upstream_residual_J_m2": 3.014667746468948e-07,
+    "numerical_energy_residual_J_m2": 0.0012680853740456657,
+    "water_residual_kg_m2": 8.731149137020111e-10,
+    "salt_relative": 4.547473508864642e-15,
+    "sst_min_K": 271.3138642935147,
+    "sst_max_K": 301.10081093110006,
+    "ice_min_K": 265.1916887688435,
+    "ice_max_K": 266.4988610331294,
+    "ice_mass_kg": 9564051997325788.0,
+    "snow_mass_kg": 420905087.0129347,
+    "ice_sensible_J_m2": -285375.4086921785,
+    "max_air_speed_m_s": 15.507764617583803,
+    "max_ocean_speed_m_s": 0.019521142732261503,
+    "max_ice_speed_m_s": 0.03392181602494211,
+    "surface_residual": 3.1625495466869324e-06,
+    "air_residual": 8.025173076076086e-08,
+    "radiation_residual": 0.0
+  }
+}

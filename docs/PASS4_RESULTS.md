@@ -1253,3 +1253,77 @@ failed; all archived integrations above have radiation off, and synthetic tests
 are identified as such. Ice skin temperature remains prescribed in the example;
 a solved radiation/conduction skin balance and longer radiating qualification
 are still required. No claim of production coupled climate readiness is made.
+
+## Prognostic ice and one-year coupled campaign
+
+The external [campaign](../workflows/coupled/CAMPAIGN.md) adds one prognostic
+thermal node per ice/snow category, an extended energy budget and a 365-day
+seasonal-radiation configuration with 6-hour snapshots through day 14 and daily
+snapshots thereafter. See [verification](../verification/atmosphere/pyam21/campaign/README.md).
+Packaged kernels/defaults are unchanged. Actual SeaEsfRad execution and year-long
+stability remain unverified; the external data download returns HTTP 503 here.
+
+## Coupled campaign ocean-process follow-up (2026-11-17)
+
+The campaign now calls GM–Redi and eddy decay after each ocean dynamics/mixing
+step, includes funded backscatter/budgeted biharmonic dissipation inside RK
+stages, and remaps after the shared surface exchange and ice phase solve. ALE
+uses the initial stretched layer fractions of current depth, retaining water
+mass, salt, passives, TKE, eddy energy and the combined ocean/ice energy budget.
+Explicit YAML switches, coefficients, actual call counts, local budget diagnostics
+and NetCDF eddy energy make the enabled composition inspectable.
+
+A separate numerical correction adds opt-in positive Redi flux funding. The old
+rotated stencil drove near-zero TKE negative after two hours, even with increased
+subcycling. The new local row limiter conserves inventories, uses the same flux
+in the full-H ledger, and does not clip state or add floors; the default standalone
+operator is unchanged. Sharp-store/coastal/variance/energy tests and unlimited
+bitwise comparisons pass. Package kernels and upstream AM2 sources are unchanged.
+
+External installed-wheel focused tests: 202 passed, 2 skips (optional GSW and real
+radiation data); frozen portable comparisons: 142 corrected-Gibbs and 93 dry.
+All runs here are CPU float64 with radiation off. At 256 cells, 24 air levels and
+12 ocean layers, the requested ocean/physics 1200 s, atmosphere 240 s, radiation
+3600 s and ten mixing/eddy substeps complete six hours, with numerical energy
+residual -0.836594 J/m2, water -3.49e-10 kg/m2, salt -2.14e-16 relative.
+
+The one-day attempt fails after 20 h in atmospheric CP energy transfer with
+rapidly growing atmospheric winds. The reduced-ocean control also fails after
+18 h 20 min; an atmosphere-dt60 trial fails after 20 h 40 min. These failures
+remain unresolved and are not attributed solely to the newly enabled processes.
+No full-day, real-radiation, 16,384-cell or long-run qualification is claimed.
+See [raw statuses, diagnostics and limitations](../verification/atmosphere/pyam21/campaign/ocean-processes/README.md).
+
+## Coupling momentum debugging (2026-11-17)
+
+Stage tracing isolates the former 20-hour rejection to the external wind map.
+At 70,800 s, the old mapping converts upstream increments no larger than
+1.327/3.581 m/s into a native edge wind of 1107.762 m/s, from 46.015 m/s after
+dynamics. Dynamics alone completes 24 hours. The energy solve rejects the next
+interval rather than causing the initial acceleration.
+
+The unweighted diagnostic fit gave tiny edges order-one impulse shares, then
+divided by their tiny native kinetic mass. The shared coupling now uses native
+kinetic-energy ownership weights in a local two-dimensional least-squares fit
+and its exact transpose. On this mesh the largest mass-normalized read/scatter
+eigenvalue falls from 144.270574 to 1.017534. Atmosphere and ocean/ice surface
+exchange share the correction; reciprocal generalized momentum and finite
+energy budgets are retained. Packaged dynamics, diagnostic reconstruction,
+upstream sources and the legacy atmosphere map are unchanged.
+
+External installed-wheel checks: 173 passed, 1 real-radiation skip; corrected-Gibbs
+142 and dry-helper 93 portable comparisons pass. Short-edge finite drag, local
+tangent reproduction and the independently differentiated adjoint are covered.
+Default full-stack preflight replays bitwise. A fresh radiation-off 256-cell
+two-day run completes with unchanged requested timesteps, 1440 GM–Redi substeps
+and 144 ALE calls. Endpoint maximum air wind is 23.179 m/s (peak across recorded
+stages 31.818 m/s), numerical energy residual -6.39188 J/m2, water -2.56e-9 kg/m2
+and relative salt -6.42e-16. The day-one endpoint independently reproduces the
+normal campaign driver's completed one-day result.
+
+The separate exactly resting physics-only control exposes an upstream zero-gust
+surface singularity after one accepted interval. Early stage checks now identify
+the nonfinite surface outputs explicitly; no gust floor is introduced. Restart
+schema 4 rejects old-map payloads. Real radiation, the user's mesh, full-year,
+GPU and full-coupling backward behavior remain unqualified. See
+[diagnosis, controls and reproduction](../verification/atmosphere/pyam21/campaign/momentum-map/README.md).

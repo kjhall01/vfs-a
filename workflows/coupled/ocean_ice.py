@@ -17,9 +17,10 @@ for directory in ("sea_ice", "temperature_coordinate", "ocean_column"):
     if path not in sys.path:
         sys.path.insert(0, path)
 from roquet import RoquetWorkspace
-from ocean_ice import vector_transpose, safe
+from ocean_ice import safe
 from vfs.ocean.energy import ConstantDensityEnergy
 from workflows.exchange import SurfaceTiles
+from workflows.momentum import KineticWindMap
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ class OceanIceReceiver:
     def __init__(self, snow):
         self.snow = snow
         self.H = snow.hamiltonian
+        self.wind = KineticWindMap(self.H.model.ocean.mesh)
 
     def tiles(self, state, ice_temperature):
         """Explicit CT+273.15 SST approximation; caller supplies ice skin K.
@@ -54,8 +56,8 @@ class OceanIceReceiver:
         alpha = p.ice_albedo + (p.albedo - p.ice_albedo) * hs / (hs + p.patch_depth)
         opened = 1 - ice.area.sum(-1, keepdim=True)
         temp = torch.cat((s.temperature()[:, :1] + 273.15, ice_temperature), -1)
-        vwater = s.mesh.cell_wind_vector(s.u_e)[:, 0]
-        vice = s.mesh.cell_wind_vector(ice.velocity)[:, 0]
+        vwater = self.wind.vector(s.u_e)[:, 0]
+        vice = self.wind.vector(ice.velocity)[:, 0]
         tiles = SurfaceTiles(
             torch.cat((opened, ice.area), -1),
             temp,
@@ -139,9 +141,9 @@ class OceanIceReceiver:
         into_ice = snowfall.sum(-1, keepdim=True) * exchange.precipitation_velocity - (
             exchange.vapor[:, 1:, None] * exchange.vapor_velocity[:, 1:]
         ).sum(1)
-        Iw, Ii = (vector_transpose(mesh, A * x) for x in (into_ocean, into_ice))
+        Iw, Ii = (self.wind.transpose((A * x)[:, None]) for x in (into_ocean, into_ice))
         Jw, Ji = (
-            vector_transpose(mesh, -A * x)
+            self.wind.transpose((-A * x)[:, None])
             for x in (exchange.stress[:, 0], exchange.stress[:, 1:].sum(1))
         )
         mechanical = H.model.energy.base.mechanical
@@ -183,13 +185,14 @@ class OceanIceReceiver:
         )
         return candidate, exchange, (Iw + Jw, Ii + Ji, residual)
 
-    def finish(self, initial, candidate, exchange, impulses):
+    def finish(self, initial, candidate, exchange, impulses, *, storage_change=None):
         H = self.H
         s = candidate.coupled.ocean.ocean
         A = s.mesh.cell_area
         before, provisional = H.terms(initial.coupled), H.terms(candidate.coupled)
         change = sum(provisional[k] - before[k] for k in before) / A
-        thermal = exchange.surface_energy - change
+        storage = torch.zeros_like(change) if storage_change is None else storage_change
+        thermal = exchange.surface_energy - change - storage
         mass = H.model.energy.mass_area(s) * s.h[:, :1]
         specific = torch.cat(
             ((A * thermal)[:, None] / mass, torch.zeros_like(s.h[:, 1:])), 1
@@ -205,7 +208,11 @@ class OceanIceReceiver:
         )
         self.snow.check(result)
         after = H.terms(result.coupled)
-        error = sum(after[k] - before[k] for k in before) / A - exchange.surface_energy
+        error = (
+            sum(after[k] - before[k] for k in before) / A
+            + storage
+            - exchange.surface_energy
+        )
         scale = (
             sum(v.abs() for v in before.values()) / A + exchange.surface_energy.abs()
         )

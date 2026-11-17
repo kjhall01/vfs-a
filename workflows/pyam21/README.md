@@ -146,13 +146,16 @@ a column keeps its original contents bitwise. Entropy is then solved against the
 composition and native kinetic energy. The solve uses analytic derivatives and
 rejects nonconvergence, without changing water or momentum.
 
-Wind readout uses VFS's existing cell-vector reconstruction. Column forces return
-through its analytic transpose and the native edge mass metric. The tests check
+Conservative wind readout uses the shared kinetic-energy-weighted local
+least-squares map in `workflows/momentum.py`. Its weights are the native edge
+kinetic-energy contributions owned by each cell. This prevents a short edge
+from receiving a large impulse divided by its tiny mass. Column forces return
+through its exact transpose and the native edge mass metric. The tests check
 the work identity independently using differentiation. Surface-water momentum
 enters through the same transpose at the bottom layer; the new velocity follows
 from old momentum plus physics and water impulses divided by the new mass metric.
 The report's `carrier_impulse` now contains this water impulse. Legacy mode retains
-its previous co-moving native-air convention. The [shared exchange driver](../coupled/README.md) adds moving-surface reciprocal
+its previous diagnostic wind map and co-moving native-air convention. The [shared exchange driver](../coupled/README.md) adds moving-surface reciprocal
 stress and one cross-component water-energy reference.
 
 ## Exchange outputs and energy audit
@@ -225,7 +228,7 @@ prognostic physics state.
 `physics.pack(state)` returns only tensors and primitive containers; save it with
 `torch.save`. Restore with `physics.unpack(torch.load(path, weights_only=True))`.
 The fingerprint covers actual installed PyAM21 source, namelist, thermodynamics,
-energy mode, schema 3, start date, radiation configuration/ID and relevant geometry. Matching configuration
+energy mode, schema 4, start date, radiation configuration/ID and relevant geometry. Matching configuration
 and mesh must be recreated before loading; the payload is not a self-contained model.
 
 ## Rejection and tested scope

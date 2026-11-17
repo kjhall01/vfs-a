@@ -1,0 +1,24 @@
+2026-11-17T19:30:05Z INFO Starting campaign; target 1.000000 model days; radiation OFF (explicit smoke test)
+2026-11-17T19:30:05Z INFO Initializing 256 cells; mesh=generated; additional Lloyd iterations=10
+2026-11-17T19:30:05Z INFO Initialization complete; restart fingerprint 08e10eb795ec46306ba1862fae34596ffcd20d03ca497bd556c75d2b2e88fdce
+2026-11-17T19:30:05Z INFO Ocean processes: GM-Redi=True (Redi 100 m2/s; 10 substeps); eddy decay=True (30 days); backscatter=True (nu2=10000 m2/s, nu4=1e+13 m4/s); ALE=True (every coupled interval)
+2026-11-17T19:30:06Z INFO Wrote initial snapshot at day 0.000000
+2026-11-17T19:30:06Z INFO Wrote initial restart at day 0.000000
+2026-11-17T19:30:20Z ERROR Run failed at last committed second 7200
+Traceback (most recent call last):
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 962, in main
+    candidate, water, report = advance(
+                               ^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 426, in advance
+    water, r = mesoscale_step(
+               ^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 219, in mesoscale_step
+    ocean, r = eddy.apply(model, ocean, dt / config.eddy_substeps)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/validation/temperature_coordinate/eddy.py", line 389, in apply
+    redi_transport = self._unpack(model, gm, final_values, values)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/validation/temperature_coordinate/eddy.py", line 293, in _unpack
+    raise FloatingPointError(
+FloatingPointError: negative passive/TKE/reservoir: rotated Redi is not positivity preserving
+2026-11-17T19:30:20Z INFO Saved last_good_restart.pt at second 7200

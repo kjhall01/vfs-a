@@ -46,7 +46,7 @@ class AM2Adapter:
             raise ValueError(
                 "configure the host kernel gravity to PyAM21 GRAV=9.8 before initializing state"
             )
-        self.mapping = ColumnMap(model)
+        self.mapping = ColumnMap(model, legacy=energy_mode == "legacy")
         self.start = set_date(*start)
         self.radiation = radiation
         if radiation is not None and (
@@ -81,7 +81,7 @@ class AM2Adapter:
             radiation=None if radiation is None else asdict(radiation.c),
             radiation_id=radiation_id,
             energy_mode=energy_mode,
-            schema=3,
+            schema=4,
         )
         digest = hashlib.sha256(json.dumps(config, sort_keys=True).encode())
         for field in (
@@ -223,6 +223,13 @@ class AM2Adapter:
                 sfc, tile_raw = surface_layer(
                     self, columns, geometry, surf, mem, surface_tiles
                 )
+            bad_surface = [k for k, v in sfc.items() if not torch.isfinite(v).all()]
+            if bad_surface:
+                raise FloatingPointError(
+                    "PyAM21 surface layer returned nonfinite "
+                    + ", ".join(bad_surface)
+                    + f"; minimum gust={float(mem['gust'].min()):g} m/s; no state committed"
+                )
             dn = p.down(
                 dt,
                 self.start + set_time(state.time_seconds),
@@ -263,6 +270,15 @@ class AM2Adapter:
                     -1,
                 ),
             )
+            bad_column = [
+                k for k, v in out.items()
+                if isinstance(v, torch.Tensor) and not torch.isfinite(v).all()
+            ]
+            if bad_column:
+                raise FloatingPointError(
+                    "PyAM21 column physics returned nonfinite "
+                    + ", ".join(bad_column) + "; no state committed"
+                )
             if tile_raw is not None:
                 from .surface import tile_fluxes
 

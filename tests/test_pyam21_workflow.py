@@ -258,6 +258,17 @@ def test_actual_water_budget_and_input_is_not_mutated(model):
     }
 
 
+def test_exact_calm_zero_gust_identifies_upstream_surface_failure(model):
+    adapter, state = initial(model)
+    state = replace(state, memory={**state.memory, "gust": torch.zeros_like(state.memory["gust"])})
+    before = adapter.pack(state)
+    # The pinned upstream surface routine divides by wind/gust magnitude.
+    # Report that upstream degeneracy at its origin, without inventing a floor.
+    with pytest.raises(FloatingPointError, match="PyAM21 surface layer returned nonfinite"):
+        adapter.apply(state, 1200)
+    same_tree(adapter.pack(state), before)
+
+
 def test_cloud_roundoff_is_retained_without_clipping(model):
     adapter, state = initial(model)
     c, _ = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)

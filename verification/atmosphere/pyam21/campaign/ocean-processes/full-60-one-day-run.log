@@ -1,0 +1,43 @@
+2026-11-17T19:39:25Z INFO Starting campaign; target 1.000000 model days; radiation OFF (explicit smoke test)
+2026-11-17T19:39:25Z INFO Initializing 256 cells; mesh=generated; additional Lloyd iterations=10
+2026-11-17T19:39:26Z INFO Initialization complete; restart fingerprint c8aa25e29ca7fb2e665036a17b5e3343342f1b66188e5d028eaa771d9b4c0ccc
+2026-11-17T19:39:26Z INFO Ocean processes: GM-Redi=True (Redi 100 m2/s; 10 substeps); eddy decay=True (30 days); backscatter=True (nu2=10000 m2/s, nu4=1e+13 m4/s); ALE=True (every coupled interval)
+2026-11-17T19:39:26Z INFO Redi conservative positive-inventory transport=True; initial eddy energy=0.1 J/kg
+2026-11-17T19:39:26Z INFO Wrote initial snapshot at day 0.000000
+2026-11-17T19:39:26Z INFO Wrote initial restart at day 0.000000
+2026-11-17T19:39:57Z INFO day 0.069444/1; 5 total steps; 31.3 wall seconds
+2026-11-17T19:40:28Z INFO day 0.138889/1; 10 total steps; 62.9 wall seconds
+2026-11-17T19:40:58Z INFO day 0.208333/1; 15 total steps; 92.9 wall seconds
+2026-11-17T19:41:17Z INFO Wrote snapshot at day 0.250000
+2026-11-17T19:41:17Z INFO Diagnostics at day 0.250000: numerical energy -0.039001481 J/m2; water -3.4924597e-10 kg/m2; salt relative -2.1399875e-16
+2026-11-17T19:41:29Z INFO day 0.277778/1; 20 total steps; 124.0 wall seconds
+2026-11-17T19:42:00Z INFO day 0.347222/1; 25 total steps; 155.1 wall seconds
+2026-11-17T19:42:33Z INFO day 0.416667/1; 30 total steps; 187.5 wall seconds
+2026-11-17T19:43:05Z INFO day 0.486111/1; 35 total steps; 219.8 wall seconds
+2026-11-17T19:43:12Z INFO Wrote snapshot at day 0.500000
+2026-11-17T19:43:12Z INFO Diagnostics at day 0.500000: numerical energy -0.076576277 J/m2; water -5.8207661e-10 kg/m2; salt relative -2.1399875e-16
+2026-11-17T19:43:38Z INFO day 0.555556/1; 40 total steps; 253.1 wall seconds
+2026-11-17T19:44:10Z INFO day 0.625000/1; 45 total steps; 285.2 wall seconds
+2026-11-17T19:44:43Z INFO day 0.694444/1; 50 total steps; 317.3 wall seconds
+2026-11-17T19:45:08Z INFO Wrote snapshot at day 0.750000
+2026-11-17T19:45:08Z INFO Diagnostics at day 0.750000: numerical energy -0.1150094 J/m2; water -1.1641532e-09 kg/m2; salt relative -4.2799751e-16
+2026-11-17T19:45:15Z INFO day 0.763889/1; 55 total steps; 349.4 wall seconds
+2026-11-17T19:45:47Z INFO day 0.833333/1; 60 total steps; 381.8 wall seconds
+2026-11-17T19:46:07Z ERROR Run failed at last committed second 74400
+Traceback (most recent call last):
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 977, in main
+    candidate, water, report = advance(
+                               ^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 440, in advance
+    evolved, water, x, ar, sr = exchange_step(
+                                ^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/driver.py", line 42, in exchange_step
+    air, report = adapter.apply_result(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/adapter.py", line 464, in apply_result
+    end, transfer = transfer_energy(self, s, end, budget["target"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/energy.py", line 303, in transfer_energy
+    raise FloatingPointError("CP energy transfer did not converge; no state committed")
+FloatingPointError: CP energy transfer did not converge; no state committed
+2026-11-17T19:46:07Z INFO Saved last_good_restart.pt at second 74400

@@ -8,10 +8,13 @@ components. A failure returns neither updated state; inputs and radiation caches
 remain unchanged. The caller owns scheduling and must not replay an interval.
 
 This connects the actual AM2 surface/column physics to the existing Roquet
-Hamiltonian ocean, category ice and snow. It is a first coupled research boundary,
-not a qualified climate configuration. **Ice skin temperature is an explicit
-input.** The demonstration holds it at 270 K; a solved radiative/conductive ice
-skin balance is still needed. Full SeaEsfRad execution also awaits external data;
+Hamiltonian ocean, category ice and snow. The [365-day campaign](CAMPAIGN.md) adds prognostic ice temperature,
+conservative cold-content transport, conduction and a shared energy budget.
+It explicitly schedules GM–Redi, eddy-energy decay, funded backscatter with a
+budgeted biharmonic sink, and post-physics adaptive thermal ALE; the YAML and
+startup log identify the enabled components.
+The original `run.py` demonstration below retains its prescribed 270 K skin
+input for reproducibility. Neither path is a qualified climate configuration. Full SeaEsfRad execution also awaits external data;
 see [radiation setup](../pyam21/RADIATION.md).
 
 ## Run
@@ -90,8 +93,10 @@ snow first, then underlying ice; deposition on ice joins snow. Category volume
 already includes snow mass. Liquid thickness changes, while salt, passive tracer,
 TKE and EKE **contents** stay in the liquid. No salt dilution approximation is used.
 
-Cell water/stress impulses use the exact transpose of native cell-wind
-reconstruction on both sides. Reciprocal impulses therefore cancel in the native
+Cell water/stress impulses use the exact transpose of the shared kinetic-weighted
+cell-wind reconstruction on both sides. This external map weights observations
+by native edge kinetic-energy ownership, avoiding short-edge impulse amplification.
+Reciprocal impulses therefore cancel in the native
 generalized edge momentum. This is a discrete work/impulse identity, not a new
 claim of global Cartesian or angular-momentum conservation on the spherical mesh.
 Water first changes mass and momentum. The subsequent surface stress kick uses
@@ -117,6 +122,6 @@ then redistributed by the existing phase operator on the next split step. A
 resolved ice sensible-energy reservoir, brine physics, shear rheology, solved
 skin balance, long climate runs, GPU/backward qualification and a combined
 restart-file format remain future work. Atmospheric physics/cache restart remains
-available; restart schema 3 rejects older atmospheric payloads.
+available; restart schema 4 rejects atmospheric payloads from the old momentum map.
 
 See [verification](../../verification/atmosphere/pyam21/coupled/README.md).

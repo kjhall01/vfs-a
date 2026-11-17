@@ -1,6 +1,7 @@
 """Explicit CP/column and work-adjoint cell/edge mappings for this workflow."""
 
 import torch
+from workflows.momentum import KineticWindMap
 from vfs.atmosphere.moist_cp import interface_pressure_mass, reconstruct_moist_cp
 
 
@@ -61,7 +62,7 @@ def species_endpoint(contents, dp, amount, endpoint_fraction):
 
 
 class ColumnMap:
-    def __init__(self, model):
+    def __init__(self, model, *, legacy=False):
         self.model = model
         mesh = model.mesh
         xyz = mesh.cell_xyz
@@ -75,8 +76,9 @@ class ColumnMap:
             / radius[:, None]
         )
         self.north = torch.linalg.cross(xyz, self.east)
-        # Exact coefficients of the existing cell_wind_vector reconstruction.
-        self.coefficients = (
+        self.wind = None if legacy else KineticWindMap(mesh)
+        # Retain the historical diagnostic map only for explicit legacy mode.
+        self.coefficients = self.wind.coefficients if self.wind is not None else (
             (
                 mesh.cell_rec_w1[..., None] * mesh.cell_rec_basis1[:, None, :]
                 + mesh.cell_rec_w2[..., None] * mesh.cell_rec_basis2[:, None, :]
@@ -86,10 +88,14 @@ class ColumnMap:
         )
 
     def vector(self, wind):
-        return self.model.mesh.cell_wind_vector(wind)
+        if self.wind is None:
+            return self.model.mesh.cell_wind_vector(wind)
+        return self.wind.vector(wind)
 
     def transpose(self, covector):
         """Euclidean transpose of native wind -> cell Cartesian vector."""
+        if self.wind is not None:
+            return self.wind.transpose(covector)
         mesh = self.model.mesh
         value = torch.einsum("cem,clm->cel", self.coefficients, covector)
         return torch.zeros(

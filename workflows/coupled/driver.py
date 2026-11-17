@@ -6,7 +6,7 @@ from workflows.pyam21.surface import prepare_surface
 
 
 def exchange_step(
-    adapter, atmosphere, receiver, surface, dt, *, ice_temperature, omega=None
+    adapter, atmosphere, receiver, surface, dt, *, ice_temperature=None, omega=None
 ):
     if (
         isinstance(dt, bool)

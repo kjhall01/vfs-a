@@ -72,6 +72,7 @@ class Exchange:
     sw_surface: torch.Tensor
     lw_surface: torch.Tensor
     toa: torch.Tensor
+    surface_thermal: torch.Tensor | None = None  # [C,3], J/m2; no mechanical work
 
     def validate(self, mesh):
         ref = mesh.cell_area
@@ -124,6 +125,15 @@ class Exchange:
             ):
                 raise ValueError("invalid exchange energy ledger")
         eps = torch.finfo(ref.dtype).eps
+        if self.surface_thermal is not None:
+            x = self.surface_thermal
+            if (
+                x.shape != (c, 3)
+                or x.dtype != ref.dtype
+                or x.device != ref.device
+                or not torch.isfinite(x).all()
+            ):
+                raise ValueError("invalid tiled surface thermal energy")
         for x in (self.vapor_velocity, self.stress):
             radial = (x * mesh.cell_xyz[:, None]).sum(-1)
             if (radial.abs() > 128 * eps * x.abs().amax(-1).clamp_min(1)).any():
@@ -204,6 +214,25 @@ class Exchange:
             radiation=toa - sw - lw,
             stress_work=(stress * tiles.velocity).sum((1, 2)),
         )
+        # Partition the SAME cached net radiation, preserving its cell sum.
+        # SW follows tile absorptivity; LW uses unit emissivity and a common
+        # downward flux inferred from that cached net. This is a mosaic closure,
+        # not three independently calculated atmospheric radiation columns.
+        absorption = tiles.fraction * (1 - tiles.albedo)
+        denom = absorption.sum(-1, keepdim=True)
+        weights = torch.where(
+            denom > 0, absorption / denom.clamp_min(1e-300), tiles.fraction
+        )
+        thermal = sw[:, None] * weights + lw[:, None] * tiles.fraction
+        if r is not None:
+            emission = 5.670374419e-8 * tiles.temperature**4
+            thermal = thermal + dt * tiles.fraction * (
+                (tiles.fraction * emission).sum(-1, keepdim=True) - emission
+            )
+        thermal = thermal - sensible - vapor * hv
+        # Rain drains through ice. Snow is intercepted by each tile.
+        thermal = thermal + snow[:, None] * tiles.fraction * hi[:, None]
+        thermal = thermal + torch.stack((rain * hl, zero, zero), -1)
         return cls(
             int(dt),
             state.time_seconds,
@@ -218,4 +247,5 @@ class Exchange:
             sw,
             lw,
             toa,
+            thermal,
         )

@@ -19,7 +19,7 @@ from workflows.pyam21.radiation import (
 )
 from workflows.coupled.ocean_ice import OceanIceReceiver
 from workflows.coupled.driver import exchange_step
-from ocean_ice import OceanIce, vector_transpose
+from ocean_ice import OceanIce
 from ridging import CategoryIce, RidgingState
 from snow import SnowOceanIce
 from roquet import RoquetOcean
@@ -104,8 +104,8 @@ def test_combined_first_law_and_reciprocal_impulse(model, cover, radiation):
     torch.testing.assert_close(sea.coupled.ocean.ocean.salt_h, salt0, rtol=0, atol=0)
     assert sr.energy_residual.abs().max() < 2e-6
     assert sr.water_residual.abs().max() < 1e-10
-    opposite = vector_transpose(
-        model.mesh, A[:, None] * (x.water_impulse + x.stress.sum(1))
+    opposite = adapter.mapping.transpose(
+        (A[:, None] * (x.water_impulse + x.stress.sum(1)))[:, None]
     )
     scale = (sr.ocean_impulse.abs() + sr.ice_impulse.abs() + opposite.abs()).clamp_min(
         1
