@@ -31,9 +31,29 @@ from ocean_ice import OceanIce
 from ridging import CategoryIce, RidgingState
 from snow import SnowState
 from roquet import RoquetOcean, RoquetMixing
+from eddy import GMRedi
+from eddy_energy import EddyMixingLength, EddyDissipation
+from backscatter import EddyBackscatter
 from vfs.ocean import OceanColumn
 
 DAY = 86400
+OCEAN_SUMS = (
+    "gmredi_steps",
+    "eddy_decay_steps",
+    "ale_steps",
+    "ale_changed_columns",
+    "gm_exchange_J_m2",
+    "redi_exchange_J_m2",
+    "eddy_dissipation_J_m2",
+    "ale_energy_change_J_m2",
+)
+OCEAN_PEAKS = (
+    "gm_outflow_fraction",
+    "redi_step_number",
+    "gmredi_local_residual_J_m2",
+    "eddy_decay_local_residual_J_m2",
+    "ale_column_residual_J_m2",
+)
 
 
 @dataclass(frozen=True)
@@ -46,16 +66,31 @@ class CampaignConfig:
     ocean_depth_m: float = 1000.0
     top_layer_m: float = 20.0
     lloyd_iterations: int = 10
-    physics_dt: int = 60
-    atmosphere_dt: int = 15
-    ocean_dt: int = 60
+    physics_dt: int = 1200
+    atmosphere_dt: int = 240
+    ocean_dt: int = 1200
     radiation_dt: int = 3600
     solar_constant: float = 1361.0
     obliquity_degrees: float = 23.44
     eccentricity: float = 0.01671
     ice_temperature_K: float = 265.0
     mixing_length_m: float = 2.0
-    mixing_substeps: int = 2
+    mixing_substeps: int = 10
+    gm_redi: bool = True
+    gm_length_m: float = 10000.0
+    gm_efficiency: float = 0.1
+    gm_kinetic_fraction: float = 0.5
+    redi_diffusivity_m2_s: float = 100.0
+    eddy_initial_energy_J_kg: float = 0.1
+    eddy_substeps: int = 10
+    eddy_dissipation: bool = True
+    eddy_decay_days: float = 30.0
+    backscatter: bool = True
+    backscatter_viscosity_m2_s: float = 10000.0
+    backscatter_days: float = 1.0
+    backscatter_fraction: float = 0.25
+    biharmonic_viscosity_m4_s: float = 1e13
+    ale_remap: bool = True
     threads: int = 1
     diagnostic_hours: int = 6
     restart_days: int = 5
@@ -72,12 +107,16 @@ class CampaignConfig:
             "ocean_dt",
             "radiation_dt",
             "mixing_substeps",
+            "eddy_substeps",
             "threads",
             "diagnostic_hours",
             "restart_days",
         ):
             if type(getattr(self, key)) is not int or getattr(self, key) <= 0:
                 raise ValueError(f"{key} must be a positive integer")
+        for key in ("gm_redi", "eddy_dissipation", "backscatter", "ale_remap"):
+            if type(getattr(self, key)) is not bool:
+                raise ValueError(f"{key} must be a YAML boolean (true/false)")
         if self.start_year % 4 == 0 or self.days > 365:
             raise ValueError(
                 "campaign requires a non-leap start year and at most 365 days"
@@ -92,10 +131,32 @@ class CampaignConfig:
             "solar_constant",
             "mixing_length_m",
             "ice_temperature_K",
+            "gm_length_m",
+            "gm_efficiency",
+            "gm_kinetic_fraction",
+            "eddy_decay_days",
+            "backscatter_days",
         ):
             value = getattr(self, key)
             if not math.isfinite(value) or value <= 0:
                 raise ValueError(f"invalid {key}")
+        for key in (
+            "redi_diffusivity_m2_s",
+            "eddy_initial_energy_J_kg",
+            "backscatter_viscosity_m2_s",
+            "backscatter_fraction",
+            "biharmonic_viscosity_m4_s",
+        ):
+            value = getattr(self, key)
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f"{key} must be finite and nonnegative")
+        if self.gm_kinetic_fraction > 1 or self.backscatter_fraction > 1:
+            raise ValueError("eddy kinetic and backscatter fractions must be <= 1")
+        if (
+            self.backscatter
+            and self.ocean_dt * self.backscatter_fraction > self.backscatter_days * DAY
+        ):
+            raise ValueError("backscatter requires ocean_dt*fraction <= timescale")
         if (
             self.ocean_depth_m <= self.top_layer_m
             or not 0 < self.ice_temperature_K <= 273.15
@@ -124,6 +185,99 @@ def snapshot_times(days=365):
     end = days * DAY
     early = list(range(0, min(14 * DAY, end) + 1, 6 * 3600))
     return early + list(range(15 * DAY, end + 1, DAY))
+
+
+def rest_thickness(config):
+    """Shared initial/ALE layer distribution, with a nominal fixed top depth."""
+    tail = torch.logspace(0, 1, config.ocean_levels - 1)
+    return torch.cat(
+        (
+            torch.tensor([config.top_layer_m]),
+            tail / tail.sum() * (config.ocean_depth_m - config.top_layer_m),
+        )
+    )
+
+
+def mesoscale_step(receiver, sea, dt, config):
+    """Explicit GM/Redi then eddy decay; both exchange energy internally.
+
+    Fixed-h tracer changes do not alter ice loading/KE or its cold content.
+    Operators own parameters only: all prognostic energy is in the restart state.
+    """
+    model = receiver.H.model
+    area = sea.coupled.ocean.ocean.mesh.cell_area
+    report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
+    ocean = sea.coupled.ocean
+    if config.gm_redi:
+        eddy = GMRedi(
+            kappa_redi=config.redi_diffusivity_m2_s,
+            energy_closure=EddyMixingLength(
+                config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
+            ),
+        )
+        for _ in range(config.eddy_substeps):
+            ocean, r = eddy.apply(model, ocean, dt / config.eddy_substeps)
+            report["gmredi_steps"] += 1
+            report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
+            report["redi_exchange_J_m2"] += float(
+                r.redi_reservoir_exchange / area.sum()
+            )
+            report["gm_outflow_fraction"] = max(
+                report["gm_outflow_fraction"], float(r.gm_outflow_fraction.max())
+            )
+            report["redi_step_number"] = max(
+                report["redi_step_number"], float(r.redi_step_number.max())
+            )
+            for residual in (r.gm_local_energy_residual, r.redi_local_energy_residual):
+                report["gmredi_local_residual_J_m2"] = max(
+                    report["gmredi_local_residual_J_m2"],
+                    float((residual / area[:, None]).abs().max()),
+                )
+    if config.eddy_dissipation:
+        ocean, r = EddyDissipation(config.eddy_decay_days * DAY).apply(model, ocean, dt)
+        report["eddy_decay_steps"] = 1
+        report["eddy_dissipation_J_m2"] = float(r.dissipated_energy / area.sum())
+        report["eddy_decay_local_residual_J_m2"] = float(
+            (r.local_energy_residual / area[:, None]).abs().max()
+        )
+    return replace(sea, coupled=replace(sea.coupled, ocean=ocean)), report
+
+
+def ale_step(receiver, sea, config):
+    """Post-exchange adaptive thermal ALE, retaining the current water depth.
+
+    Returning to the initial stretched fractions does not restore water mass.
+    Ice energy depends on total liquid depth, not its layer partition: the
+    existing ocean column-energy remapper therefore also closes combined H.
+    """
+    report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
+    if not config.ale_remap:
+        return sea, report
+    model = receiver.H.model
+    initial = sea.coupled.ocean
+    s = initial.ocean
+    fractions = rest_thickness(config).to(s.h)
+    fractions = fractions / fractions.sum()
+    target = s.h.sum(-1, keepdim=True) * fractions[None]
+    ocean, r = model.remap_with_report(initial, target)
+    report["ale_steps"] = 1
+    report["ale_changed_columns"] = r.changed_columns
+    # Keep remap error visible in the numerical ledger, never external forcing.
+    report["ale_energy_change_J_m2"] = float(
+        (model.total_energy(ocean) - model.total_energy(initial))
+        / s.mesh.cell_area.sum()
+    )
+    report["ale_column_residual_J_m2"] = float(
+        (r.column_energy_residual / s.mesh.cell_area).abs().max()
+    )
+    return replace(sea, coupled=replace(sea.coupled, ocean=ocean)), report
+
+
+def accumulate_ocean(report, addition):
+    for key in OCEAN_SUMS:
+        report[key] += addition[key]
+    for key in OCEAN_PEAKS:
+        report[key] = max(report[key], addition[key])
 
 
 def load_mesh(config, path):
@@ -213,15 +367,18 @@ def build(
         mesh,
         column,
         closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps),
+        backscatter=(
+            EddyBackscatter(
+                config.backscatter_viscosity_m2_s,
+                config.backscatter_days * DAY,
+                config.backscatter_fraction,
+                config.biharmonic_viscosity_m4_s,
+            )
+            if config.backscatter
+            else None
+        ),
     )
-    # Top layer fixed; deeper layers stretched geometrically and normalized.
-    tail = torch.logspace(0, 1, config.ocean_levels - 1)
-    dz = torch.cat(
-        (
-            torch.tensor([config.top_layer_m]),
-            tail / tail.sum() * (config.ocean_depth_m - config.top_layer_m),
-        )
-    )
+    dz = rest_thickness(config)
     h = dz[None].expand(mesh.nCells, -1).clone()
     z = dz.cumsum(0) - dz / 2
     sinlat = mesh.cell_xyz[:, 2]
@@ -235,7 +392,7 @@ def build(
         absolute_salinity=torch.full_like(h, 34.0),
         tracer=torch.ones_like(h)[..., None],
         tke=1e-4,
-        eddy_energy=0.0,
+        eddy_energy=config.eddy_initial_energy_J_kg,
     )
     # Smooth polar ice cap, with no prescribed velocity or ongoing restoring.
     cover = ((sinlat.abs() - 0.90) / 0.08).clamp(0, 0.7)
@@ -261,10 +418,15 @@ def advance(adapter, air, receiver, sea, dt, config):
         )
     water = sea
     external = 0.0
+    ocean_report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     A = adapter.model.mesh.cell_area
     for elapsed in range(0, dt, config.ocean_dt):
         water, r = receiver.snow.step(water, min(config.ocean_dt, dt - elapsed))
         external += float(r.external_energy / A.sum())
+        water, r = mesoscale_step(
+            receiver, water, min(config.ocean_dt, dt - elapsed), config
+        )
+        accumulate_ocean(ocean_report, r)
     evolved, water, x, ar, sr = exchange_step(
         adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
     )
@@ -273,10 +435,13 @@ def advance(adapter, air, receiver, sea, dt, config):
     water, _, _ = receiver.snow.phase_step(
         water, dt, torch.zeros_like(water.snow_mass[:, :1])
     )
+    water, r = ale_step(receiver, water, config)
+    accumulate_ocean(ocean_report, r)
     return (
         evolved,
         water,
         dict(
+            **ocean_report,
             external=external + float((A * x.toa).sum() / A.sum()),
             upstream=float(
                 (A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum()
@@ -341,6 +506,10 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
         max_ocean_speed_m_s=float(s.u_e.abs().max()),
         max_ice_speed_m_s=float(ice.velocity.abs().max()),
+        min_ocean_thickness_m=float(s.h.min()),
+        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().min()),
+        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().max()),
+        **{k: ledger[k] for k in OCEAN_SUMS + OCEAN_PEAKS},
         **{
             k: ledger[k]
             for k in ("surface_residual", "air_residual", "radiation_residual")
@@ -503,6 +672,11 @@ def snapshot(path, adapter, air, receiver, sea):
             ("cell", "ocean_level"),
             array(sea.coupled.ocean.tke_h / s.h),
             {"units": "m2 s-2"},
+        ),
+        "ocean_eddy_energy": (
+            ("cell", "ocean_level"),
+            array(sea.coupled.ocean.specific_eddy_energy()),
+            {"units": "J kg-1", "long_name": "mesoscale eddy energy reservoir"},
         ),
         "ice_area": (("cell", "category"), array(sea.coupled.ice.area)),
         "ice_volume": (
@@ -674,6 +848,18 @@ def main(argv=None):
             config, adapter, hashes, args.smoke_no_radiation, mesh_info.get("sha256")
         )
         logger.info("Initialization complete; restart fingerprint %s", identity)
+        logger.info(
+            "Ocean processes: GM-Redi=%s (Redi %.8g m2/s; %d substeps); eddy decay=%s (%g days); backscatter=%s (nu2=%g m2/s, nu4=%g m4/s); ALE=%s (every coupled interval)",
+            config.gm_redi,
+            config.redi_diffusivity_m2_s,
+            config.eddy_substeps,
+            config.eddy_dissipation,
+            config.eddy_decay_days,
+            config.backscatter,
+            config.backscatter_viscosity_m2_s,
+            config.biharmonic_viscosity_m4_s,
+            config.ale_remap,
+        )
         atomic_json(
             output / "manifest.json",
             dict(
@@ -687,6 +873,7 @@ def main(argv=None):
             ),
         )
         ledger = dict(
+            **dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0),
             initial=inventories(adapter, air, receiver, sea),
             external=0.0,
             upstream=0.0,
@@ -779,6 +966,7 @@ def main(argv=None):
                 ledger["steps"] += 1
                 ledger["external"] += report["external"]
                 ledger["upstream"] += report["upstream"]
+                accumulate_ocean(ledger, report)
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds

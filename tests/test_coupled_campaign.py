@@ -36,6 +36,11 @@ def config():
         ocean_depth_m=200.0,
         lloyd_iterations=0,
         radiation_dt=120,
+        physics_dt=60,
+        atmosphere_dt=15,
+        ocean_dt=60,
+        mixing_substeps=2,
+        eddy_substeps=2,
     )
 
 
@@ -137,6 +142,10 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path):
             torch.tensor(ds.ice_temperature.values[0]), receiver.snow.temperature(water)
         )
         assert ds.air_temperature.sizes["air_interface"] == config.atmosphere_levels + 1
+        torch.testing.assert_close(
+            torch.tensor(ds.ocean_eddy_energy.values[0]),
+            water.coupled.ocean.specific_eddy_energy(),
+        )
 
 
 def test_cli_resume_and_last_good_on_failure(source, config, tmp_path, capsys):
@@ -286,3 +295,164 @@ def test_mesh_cli_preflight_logs_and_resolved_configuration(
     log = (out / "run.log").read_text()
     assert "Initializing 32 cells" in log and "Preflight passed" in log
     assert "INFO" in log and "SHA256" in log
+    assert "GM-Redi=True" in log and "backscatter=True" in log and "ALE=True" in log
+
+
+def test_full_ocean_schedule_calls_backscatter_and_changes_state(source, config):
+    config = replace(config, ocean_dt=30)
+    adapter, air, receiver, sea = c.build(config, source, None, smoke_no_radiation=True)
+    initial = c.pack(adapter, air, receiver, sea, "id", {})
+    actual = c.EddyBackscatter.tendency
+    powers = []
+
+    def tracked(op, model, state):
+        du, de, report = actual(op, model, state)
+        powers.append(float(report.kinetic_power))
+        return du, de, report
+
+    with torch.no_grad(), patch.object(c.EddyBackscatter, "tendency", tracked):
+        end_air, end, report = c.advance(adapter, air, receiver, sea, 60, config)
+    assert len(powers) == 6  # three actual RK stages per ocean step
+    assert any(p != 0 for p in powers)
+    assert report["gmredi_steps"] == 2 * config.eddy_substeps
+    assert report["eddy_decay_steps"] == 2
+    assert report["ale_steps"] == 1
+    assert report["ale_changed_columns"] > 0
+    assert report["gm_outflow_fraction"] > 0 and report["redi_step_number"] > 0
+    assert report["gm_exchange_J_m2"] != 0 and report["redi_exchange_J_m2"] != 0
+    assert report["eddy_dissipation_J_m2"] > 0
+    assert not torch.equal(end.coupled.ocean.eddy_h, sea.coupled.ocean.eddy_h)
+    same_tree(initial, c.pack(adapter, air, receiver, sea, "id", {}))
+
+
+def test_mesoscale_and_nontrivial_ale_conserve_combined_ice_energy(source, config):
+    _, _, receiver, sea = c.build(config, source, None, smoke_no_radiation=True)
+    original = sea.coupled.ocean
+    s = original.ocean
+    # A deliberately displaced layer interface tests actual ALE, not identity.
+    h = s.h.clone()
+    h[:, 0] += 1
+    h[:, 1] -= 1
+    physical = s.with_tensors(
+        u_e=s.u_e,
+        h=h,
+        temp_h=h * s.temperature(),
+        salt_h=h * s.salinity(),
+        tracer_h=h[..., None] * s.tracer_h / s.h[..., None],
+    )
+    ocean = replace(
+        original,
+        ocean=physical,
+        tke_h=h * original.tke_h / s.h,
+        eddy_h=h * original.eddy_h / s.h,
+    )
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
+    before_energy = receiver.snow.total_energy(sea)
+    area = s.mesh.cell_area[:, None]
+    with torch.no_grad():
+        mixed, gm = c.mesoscale_step(receiver, sea, 60, config)
+        end, ale = c.ale_step(receiver, mixed, config)
+    final = end.coupled.ocean.ocean
+    torch.testing.assert_close(
+        receiver.snow.total_energy(end), before_energy, rtol=5e-13, atol=0
+    )
+    torch.testing.assert_close(final.h.sum(-1), physical.h.sum(-1), rtol=2e-15, atol=0)
+    torch.testing.assert_close(
+        (area * final.salt_h).sum(), (area * physical.salt_h).sum(), rtol=2e-15, atol=0
+    )
+    expected = c.rest_thickness(config) / c.rest_thickness(config).sum()
+    torch.testing.assert_close(
+        final.h / final.h.sum(-1, keepdim=True),
+        expected[None].expand_as(final.h),
+        rtol=2e-15,
+        atol=0,
+    )
+    assert ale["ale_changed_columns"] == config.cells
+    assert gm["eddy_dissipation_J_m2"] > 0
+    assert end.coupled.ice is sea.coupled.ice
+    assert end.snow_mass is sea.snow_mass and end.cold_content is sea.cold_content
+    # ALE carries the reservoirs conservatively, independently of its heat solve.
+    for name in ("eddy_h", "tke_h"):
+        torch.testing.assert_close(
+            getattr(end.coupled.ocean, name).sum(-1),
+            getattr(mixed.coupled.ocean, name).sum(-1),
+            rtol=2e-15,
+            atol=0,
+        )
+
+
+def test_ocean_switches_and_failure_keep_inputs_intact(source, config):
+    disabled = replace(
+        config,
+        gm_redi=False,
+        eddy_dissipation=False,
+        backscatter=False,
+        ale_remap=False,
+        eddy_initial_energy_J_kg=0.0,
+    )
+    adapter, air, receiver, sea = c.build(
+        disabled, source, None, smoke_no_radiation=True
+    )
+    assert receiver.H.model.backscatter is None
+    with (
+        patch.object(c.GMRedi, "apply", side_effect=AssertionError("disabled GM")),
+        patch.object(
+            c.EddyDissipation, "apply", side_effect=AssertionError("disabled decay")
+        ),
+        patch.object(
+            receiver.H.model,
+            "remap_with_report",
+            side_effect=AssertionError("disabled ALE"),
+        ),
+        torch.no_grad(),
+    ):
+        _, _, report = c.advance(adapter, air, receiver, sea, 60, disabled)
+    assert all(report[k] == 0 for k in c.OCEAN_SUMS + c.OCEAN_PEAKS)
+    assert c.fingerprint(config, adapter, {}, True) != c.fingerprint(
+        disabled, adapter, {}, True
+    )
+    adapter, air, receiver, sea = c.build(config, source, None, smoke_no_radiation=True)
+    initial = c.pack(adapter, air, receiver, sea, "id", {})
+    with (
+        patch.object(
+            receiver.H.model, "remap_with_report", side_effect=ValueError("ALE failure")
+        ),
+        torch.no_grad(),
+        pytest.raises(ValueError, match="ALE failure"),
+    ):
+        c.advance(adapter, air, receiver, sea, 60, config)
+    same_tree(initial, c.pack(adapter, air, receiver, sea, "id", {}))
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"gm_redi": "false"},
+        {"ale_remap": 1},
+        {"eddy_substeps": 0},
+        {"gm_length_m": 0},
+        {"gm_efficiency": -1},
+        {"gm_kinetic_fraction": 1.1},
+        {"redi_diffusivity_m2_s": -1},
+        {"eddy_initial_energy_J_kg": -1},
+        {"eddy_decay_days": 0},
+        {"backscatter_fraction": 1.1},
+        {"backscatter_days": 1e-6},
+        {"biharmonic_viscosity_m4_s": float("nan")},
+    ],
+)
+def test_invalid_ocean_process_settings_reject(config, changes):
+    with pytest.raises(ValueError):
+        replace(config, **changes).validate()
+
+
+def test_published_config_enables_full_ocean_and_requested_timesteps():
+    path = Path(c.__file__).with_name("coupled_aquaplanet_1yr.yaml")
+    configured = c.CampaignConfig(**yaml.safe_load(path.read_text())).validate()
+    assert configured == c.CampaignConfig().validate()
+    assert configured.gm_redi and configured.eddy_dissipation
+    assert configured.backscatter and configured.ale_remap
+    assert configured.biharmonic_viscosity_m4_s > 0
+    assert configured.physics_dt == configured.ocean_dt == 1200
+    assert configured.atmosphere_dt == 240 and configured.radiation_dt == 3600
+    assert configured.mixing_substeps == 10 and configured.eddy_substeps == 10
