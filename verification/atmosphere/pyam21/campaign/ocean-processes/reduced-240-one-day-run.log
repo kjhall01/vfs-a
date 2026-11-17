@@ -1,0 +1,34 @@
+2026-11-17T19:39:26Z INFO Starting campaign; target 1.000000 model days; radiation OFF (explicit smoke test)
+2026-11-17T19:39:26Z INFO Initializing 256 cells; mesh=generated; additional Lloyd iterations=10
+2026-11-17T19:39:27Z INFO Initialization complete; restart fingerprint cd4a7e02e7faa5955a58e85dcb2cbc9f8a9fef893291beae79ffd66c2dd6abb1
+2026-11-17T19:39:27Z INFO Ocean processes: GM-Redi=False (Redi 100 m2/s; 10 substeps); eddy decay=False (30 days); backscatter=False (nu2=10000 m2/s, nu4=1e+13 m4/s); ALE=False (every coupled interval)
+2026-11-17T19:39:27Z INFO Redi conservative positive-inventory transport=True; initial eddy energy=0 J/kg
+2026-11-17T19:39:27Z INFO Wrote initial snapshot at day 0.000000
+2026-11-17T19:39:27Z INFO Wrote initial restart at day 0.000000
+2026-11-17T19:39:58Z INFO day 0.208333/1; 15 total steps; 31.8 wall seconds
+2026-11-17T19:40:04Z INFO Wrote snapshot at day 0.250000
+2026-11-17T19:40:04Z INFO Diagnostics at day 0.250000: numerical energy -0.83662034 J/m2; water 1.1641532e-10 kg/m2; salt relative 2.1399875e-16
+2026-11-17T19:40:30Z INFO day 0.416667/1; 30 total steps; 63.6 wall seconds
+2026-11-17T19:40:42Z INFO Wrote snapshot at day 0.500000
+2026-11-17T19:40:42Z INFO Diagnostics at day 0.500000: numerical energy -1.658577 J/m2; water 1.1641532e-10 kg/m2; salt relative 2.1399875e-16
+2026-11-17T19:41:01Z INFO day 0.625000/1; 45 total steps; 95.0 wall seconds
+2026-11-17T19:41:23Z INFO Wrote snapshot at day 0.750000
+2026-11-17T19:41:23Z INFO Diagnostics at day 0.750000: numerical energy -2.4501229 J/m2; water 2.3283064e-10 kg/m2; salt relative 2.1399875e-16
+2026-11-17T19:41:27Z ERROR Run failed at last committed second 66000
+Traceback (most recent call last):
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 977, in main
+    candidate, water, report = advance(
+                               ^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 440, in advance
+    evolved, water, x, ar, sr = exchange_step(
+                                ^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/driver.py", line 42, in exchange_step
+    air, report = adapter.apply_result(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/adapter.py", line 464, in apply_result
+    end, transfer = transfer_energy(self, s, end, budget["target"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/energy.py", line 303, in transfer_energy
+    raise FloatingPointError("CP energy transfer did not converge; no state committed")
+FloatingPointError: CP energy transfer did not converge; no state committed
+2026-11-17T19:41:27Z INFO Saved last_good_restart.pt at second 66000

@@ -10,6 +10,9 @@ remain unchanged. The caller owns scheduling and must not replay an interval.
 This connects the actual AM2 surface/column physics to the existing Roquet
 Hamiltonian ocean, category ice and snow. The [365-day campaign](CAMPAIGN.md) adds prognostic ice temperature,
 conservative cold-content transport, conduction and a shared energy budget.
+It explicitly schedules GM–Redi, eddy-energy decay, funded backscatter with a
+budgeted biharmonic sink, and post-physics adaptive thermal ALE; the YAML and
+startup log identify the enabled components.
 The original `run.py` demonstration below retains its prescribed 270 K skin
 input for reproducibility. Neither path is a qualified climate configuration. Full SeaEsfRad execution also awaits external data;
 see [radiation setup](../pyam21/RADIATION.md).

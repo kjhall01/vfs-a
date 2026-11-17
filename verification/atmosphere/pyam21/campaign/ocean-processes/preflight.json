@@ -1,0 +1,27 @@
+{
+  "status": "preflight_passed",
+  "radiation_enabled": false,
+  "restart_replay": "bitwise",
+  "wall_seconds": 4.865775410999959,
+  "interval": {
+    "gmredi_steps": 10.0,
+    "redi_limited_fluxes": 0.0,
+    "eddy_decay_steps": 1.0,
+    "ale_steps": 1.0,
+    "ale_changed_columns": 256.0,
+    "gm_exchange_J_m2": 0.3782931439174083,
+    "redi_exchange_J_m2": 0.036172919820147156,
+    "eddy_dissipation_J_m2": 47.4429125830599,
+    "ale_energy_change_J_m2": 0.0,
+    "gm_outflow_fraction": 1.804922512250606e-05,
+    "redi_step_number": 0.003906277785844291,
+    "gmredi_local_residual_J_m2": 2.002831671007852e-12,
+    "eddy_decay_local_residual_J_m2": 2.3255682843857648e-07,
+    "ale_column_residual_J_m2": 7.505009187782711e-06,
+    "external": 0.0,
+    "upstream": -1.2524589674864802e-09,
+    "surface_residual": 7.244911103043705e-06,
+    "air_residual": 9.459654393140227e-08,
+    "radiation_residual": 0.0
+  }
+}

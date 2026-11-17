@@ -1262,3 +1262,34 @@ seasonal-radiation configuration with 6-hour snapshots through day 14 and daily
 snapshots thereafter. See [verification](../verification/atmosphere/pyam21/campaign/README.md).
 Packaged kernels/defaults are unchanged. Actual SeaEsfRad execution and year-long
 stability remain unverified; the external data download returns HTTP 503 here.
+
+## Coupled campaign ocean-process follow-up (2026-11-17)
+
+The campaign now calls GM–Redi and eddy decay after each ocean dynamics/mixing
+step, includes funded backscatter/budgeted biharmonic dissipation inside RK
+stages, and remaps after the shared surface exchange and ice phase solve. ALE
+uses the initial stretched layer fractions of current depth, retaining water
+mass, salt, passives, TKE, eddy energy and the combined ocean/ice energy budget.
+Explicit YAML switches, coefficients, actual call counts, local budget diagnostics
+and NetCDF eddy energy make the enabled composition inspectable.
+
+A separate numerical correction adds opt-in positive Redi flux funding. The old
+rotated stencil drove near-zero TKE negative after two hours, even with increased
+subcycling. The new local row limiter conserves inventories, uses the same flux
+in the full-H ledger, and does not clip state or add floors; the default standalone
+operator is unchanged. Sharp-store/coastal/variance/energy tests and unlimited
+bitwise comparisons pass. Package kernels and upstream AM2 sources are unchanged.
+
+External installed-wheel focused tests: 202 passed, 2 skips (optional GSW and real
+radiation data); frozen portable comparisons: 142 corrected-Gibbs and 93 dry.
+All runs here are CPU float64 with radiation off. At 256 cells, 24 air levels and
+12 ocean layers, the requested ocean/physics 1200 s, atmosphere 240 s, radiation
+3600 s and ten mixing/eddy substeps complete six hours, with numerical energy
+residual -0.836594 J/m2, water -3.49e-10 kg/m2, salt -2.14e-16 relative.
+
+The one-day attempt fails after 20 h in atmospheric CP energy transfer with
+rapidly growing atmospheric winds. The reduced-ocean control also fails after
+18 h 20 min; an atmosphere-dt60 trial fails after 20 h 40 min. These failures
+remain unresolved and are not attributed solely to the newly enabled processes.
+No full-day, real-radiation, 16,384-cell or long-run qualification is claimed.
+See [raw statuses, diagnostics and limitations](../verification/atmosphere/pyam21/campaign/ocean-processes/README.md).

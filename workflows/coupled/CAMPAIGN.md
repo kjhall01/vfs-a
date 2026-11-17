@@ -1,10 +1,20 @@
 # One-year coupled aquaplanet
 
 The campaign advances the actual VFS moist atmosphere with PyAM21 physics,
-Roquet ocean dynamics/TKE mixing, and moving two-category ice/snow. Ice has a
+Roquet ocean dynamics/TKE mixing, GM–Redi, mesoscale energy feedback/decay,
+funded backscatter with a budgeted biharmonic sink, adaptive thermal ALE,
+and moving two-category ice/snow. Ice has a
 prognostic thermal store; its temperature is no longer a prescribed boundary.
 It starts from merged PR #88. This is an initial spin-up experiment: no
 365-day stability or equilibrated-climate result is claimed.
+
+**Current long-run blocker:** the full ocean configuration completes a six-hour
+radiation-off check at 256 cells, but the one-day attempt stops after 20 h in
+the atmospheric CP energy-transfer solve with rapidly growing winds. A reduced
+ocean control also fails; reducing the atmospheric step to 60 s fails after
+20 h 40 min. The requested 1200/240/1200/3600-second settings are retained as
+experimental choices, not a year-stable configuration. See the
+[failure evidence](../../verification/atmosphere/pyam21/campaign/ocean-processes/README.md).
 
 ## Install and preflight
 
@@ -47,13 +57,17 @@ The default [configuration](coupled_aquaplanet_1yr.yaml) is editable; select
 another with `--config FILE.yaml`. Defaults are 256 cells, 24 atmospheric
 levels, 12 stretched ocean layers and 1000 m depth with a 20 m top layer.
 The compatible rotation mesh has ten Lloyd iterations. Everything runs on CPU
-in float64 with one thread. Physics/ocean steps are 60 seconds, atmospheric
-substeps 15 seconds, radiation hourly. These are explicit initial choices, not
-established maximum stable timesteps. There is no compiled/GPU qualification.
+in float64 with one thread. Physics/ocean steps are 1200 seconds, atmospheric
+substeps 240 seconds, radiation hourly. Mixing and GM–Redi each use ten
+substeps per ocean step (120 seconds). The earlier ocean sweep supports the
+chosen ocean step under its tested conditions; it does not validate the entire
+coupled configuration. There is no compiled/GPU qualification.
 
 All three components start with **zero velocity**, with analytic moist
 atmospheric stratification, a meridional SST gradient, stable ocean temperature
-profiles, uniform 34 g/kg salinity, seed TKE, and thin/thick polar ice at 265 K.
+profiles, uniform 34 g/kg salinity, TKE of 1e-4 J/kg, mesoscale eddy energy of
+0.1 J/kg, and thin/thick polar ice at 265 K. The eddy initial condition is an
+explicit unresolved-energy reservoir, distinct from the resolved velocities.
 A local energy-conserving phase solve initializes ice/ocean liquidus equilibrium.
 No observational initialization, spun-up jet/current, SST restoring or ongoing
 prescribed wind/heat flux is imposed. Initial dynamical adjustment is expected;
@@ -98,10 +112,12 @@ atmosphere_levels: 24
 ocean_levels: 12
 ocean_depth_m: 1000.0
 top_layer_m: 20.0
-physics_dt: 60
-atmosphere_dt: 15
-ocean_dt: 60
+physics_dt: 1200
+atmosphere_dt: 240
+ocean_dt: 1200
 radiation_dt: 3600
+mixing_substeps: 10
+eddy_substeps: 10
 threads: 1
 ```
 
@@ -116,8 +132,9 @@ python -I workflows/coupled/campaign.py \
   --output aquaplanet-16384-365d --verbose
 ```
 
-This runs the configured 365 days. Append `--stop-after-days 1` for a one-day
-first segment; continue with its saved restart and a new output folder. The
+This requests the configured 365 days. Append `--stop-after-days 1` for a one-day
+qualification attempt; the current 256-cell check fails as described above.
+Continue a successfully completed segment with its saved restart and a new output folder. The
 16,384-cell coupled timestep and runtime are not qualified by the smaller tests.
 
 ## Logging and verbosity
@@ -131,6 +148,12 @@ to the terminal; without it, the terminal retains the final JSON status/error.
 Numerical diagnostics remain in `diagnostics.csv` and machine-readable status
 in `status.json`.
 
+Startup lists the enabled ocean processes, coefficients and substeps.
+`diagnostics.csv` records actual GM–Redi/decay/ALE call counts, the number of
+changed ALE columns, limited Redi fluxes, reservoir transfers, explicit-step
+numbers, and local energy residuals. An enabled flag alone is not the evidence
+that the process ran.
+
 ```bash
 tail -f aquaplanet-16384-365d/run.log
 ```
@@ -139,7 +162,7 @@ tail -f aquaplanet-16384-365d/run.log
 
 | Output | Schedule | Contents |
 | --- | --- | --- |
-| `snapshots/state_*.nc` | Initial state, every 6 h through day 14 inclusive, daily on days 15–365 | 408 instantaneous native-mesh snapshots for a complete year; atmosphere T/p/water/wind/cloud, ocean CT/SA/layers/wind/TKE, ice area/volume/T/wind/cold content and snow |
+| `snapshots/state_*.nc` | Initial state, every 6 h through day 14 inclusive, daily on days 15–365 | 408 instantaneous native-mesh snapshots for a complete year; atmosphere T/p/water/wind/cloud, ocean CT/SA/layers/wind/TKE/mesoscale energy, ice area/volume/T/wind/cold content and snow |
 | `diagnostics.csv` | Initial state, every 6 h, segment endpoint | Combined full energy minus TOA, separately retained upstream AM2 imbalance, numerical residual, water/salt, component extrema and peak local exchange residuals |
 | `restarts/restart_*.pt` | Initial state, every 5 days, segment endpoint | Atmosphere/cloud/physics/radiation caches and clock, all ocean/ice/snow tensors, cold content, accumulated budget ledgers |
 | `manifest.json` | Initialization | Actual code, configuration, dependency and radiation-data identity |
@@ -181,6 +204,68 @@ python -I workflows/coupled/campaign.py --source /path/to/PyAM21 \
 This is visibly labelled radiation-OFF and cannot run more than one model day.
 It is not the requested seasonal experiment.
 
+## Ocean process configuration and order
+
+The supplied YAML enables the existing research ocean process suite. Parameters
+match the earlier integrated trade-wind experiment, including its 1e13 m4/s
+rotational biharmonic sink; these are explicit experimental coefficients, not
+calibrated climate values.
+
+```yaml
+gm_redi: true
+gm_length_m: 10000.0
+gm_efficiency: 0.1
+gm_kinetic_fraction: 0.5
+redi_diffusivity_m2_s: 100.0
+redi_positive_transport: true
+eddy_initial_energy_J_kg: 0.1
+eddy_substeps: 10
+eddy_dissipation: true
+eddy_decay_days: 30.0
+backscatter: true
+backscatter_viscosity_m2_s: 10000.0
+backscatter_days: 1.0
+backscatter_fraction: 0.25
+biharmonic_viscosity_m4_s: 10000000000000.0
+ale_remap: true
+```
+
+Each physics interval advances atmospheric dynamics, then the ocean/ice
+substeps. Every ocean substep includes existing phase/drag/mechanics/TKE mixing
+and backscatter inside the SSPRK3 stages, followed by the configured GM–Redi
+substeps and exact exponential eddy decay to heat. GM diffusivity is
+`efficiency * length * sqrt(2 * kinetic_fraction * eddy_energy)`; it starts
+near 316 m2/s with this reservoir. There is no continuous energy injection or
+diffusivity floor. GM–Redi exchanges actual finite Hamiltonian work with the
+reservoir; backscatter transfers funded energy into resolved flow, and the
+biharmonic sink returns lost KE to the reservoir.
+
+Shared atmospheric exchange and the final ice phase solve then run. ALE follows
+**once per physics interval**, using the existing conservative PLM remap and
+column-energy/entropy thermal projection. Its target is the initial stretched
+layer **fractions of current column depth**: it preserves freshwater/free-surface
+changes and does not restore the initial water mass or flatten the layers to
+equal thickness. Passive tracers, TKE and eddy energy are remapped conservatively;
+ice/snow/cold-content tensors are retained. Remap energy residuals remain in
+the numerical budget, never counted as external forcing.
+
+The optional positive Redi path limits whole local stencil-row fluxes separately
+for salinity/passives/TKE/eddy energy, using available donor inventory. Signed CT
+retains its original diffusion. The same limited flux enters the finite-energy
+ledger. This prevents the rotated stencil from withdrawing TKE from an empty
+layer without clipping state or adding a floor. The old standalone GM–Redi
+default remains unchanged. Positivity is not a full maximum principle, and
+inadmissible thermodynamics or unfunded energy conversions still reject.
+
+To reproduce the previous reduced campaign, set `gm_redi`, `eddy_dissipation`,
+`backscatter`, and `ale_remap` to `false`, and `eddy_initial_energy_J_kg: 0.0`.
+`backscatter: false` also disables its biharmonic sink; use viscosity/fraction
+zero with backscatter enabled for a sink-only case. Old YAML files inherit the
+new process defaults, but retain any timesteps explicitly written in those files.
+Update those entries or copy the supplied YAML to use the new timestep choices.
+**Start a fresh run after this update:** existing checkpoints reject changed
+source/configuration, including these process switches.
+
 ## Prognostic ice temperature and energy
 
 For category k, the new tensor is `E_k = cp_i rho_i V_k (T_k - 273.15)` in J/m²
@@ -221,7 +306,7 @@ The phase/momentum/thermal boundary remains first-order split. Upstream AM2
 energy defects and finite-step dynamics errors remain visible.
 
 Limitations include the existing idealized liquidus, compression-only ice
-mechanics, no brine, no resolved ice/snow thermal profile, no GM–Redi/backscatter
-in this campaign, and no ALE remap. Radiation climatologies retain the previous
+mechanics, no brine, no resolved ice/snow thermal profile, and uncalibrated
+mesoscale closures. Radiation climatologies retain the previous
 local rectangular sampling approximation. Full-year stability and physically
 credible climate statistics require the actual local experiment.

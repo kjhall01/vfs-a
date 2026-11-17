@@ -1,4 +1,6 @@
 # Initial spin-up experiment, CPU float64. Not an equilibrated climate control.
+# Long-run blocker: the 256-cell one-day check currently rejects in atmospheric
+# energy transfer near 20 h. See CAMPAIGN.md; these are experimental timesteps.
 days: 365
 start_year: 2001
 cells: 256

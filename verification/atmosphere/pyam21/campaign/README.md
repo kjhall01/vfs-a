@@ -34,7 +34,10 @@ and after the initial formatting pass at local checkpoint `d532f1c`; run manifes
 identify the preformat bytes. The subsequent mesh/logging pass changes campaign
 input/output orchestration; it does not rerun or relabel these archived experiments.
 
-Reproduce the six-hour case by selecting its saved configuration JSON (also
+Reproduce these original reduced-ocean cases at commit `351dfca`. The later
+ocean-process follow-up enables GM–Redi/backscatter/ALE by default and has its
+own [evidence](ocean-processes/README.md); these historical numbers do not apply
+to that composition. Select the saved configuration JSON (also
 valid YAML) with `--config`, and adding `--stop-after-days .25
 --smoke-no-radiation` to the documented campaign invocation. The default
 one-hour case uses `--stop-after-days 0.041666666666666664`. Use an explicit

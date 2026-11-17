@@ -1,5 +1,18 @@
 # Current package documentation
 
+The [coupled campaign ocean follow-up](../verification/atmosphere/pyam21/campaign/ocean-processes/README.md)
+explicitly schedules GM–Redi with energy feedback, eddy decay, funded backscatter
+and budgeted biharmonic dissipation, and post-exchange adaptive thermal ALE.
+The YAML uses the requested ocean/physics 1200 s, atmosphere 240 s, radiation
+3600 s and ten mixing/eddy substeps. A separate opt-in conservative Redi flux
+limiter prevents near-zero TKE undershoots; standalone defaults are preserved.
+External installed-wheel focused checks: 202 passed, 2 optional-dependency skips;
+142/93 frozen comparisons pass. A 256-cell radiation-off six-hour check completes.
+**Long-run blocker:** atmospheric CP energy transfer rejects after 20 h; the
+reduced-ocean control and a 60 s atmospheric-step trial also reject. Neither a
+completed day nor a year-stable coupled configuration is claimed. Process
+activity and budgets are explicit in startup logging, diagnostics and restarts.
+
 The [shared atmosphere–ocean–ice exchange](../workflows/coupled/README.md) now
 provides a common interval ledger, tiled moving-surface AM2 fluxes, reciprocal
 native impulses and local full-H transfer into the research Roquet ocean/ice/snow.
