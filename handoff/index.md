@@ -1,5 +1,19 @@
 # Current package documentation
 
+The user's later ALE rejection at second 67200 prompted a stored-temperature
+acceptance fix in the research remapper. The loop had checked temporary T,
+while the final check reconstructed T from h*T; a deterministic cold-column
+case crosses the entropy tolerance solely at that boundary. Both checks now
+use stored T, retaining the same energy/entropy tolerances and iteration cap.
+The counterexample changes from a three-iteration final rejection to four
+accepted iterations. Failures report column, normalized residual and iterations.
+External installed-wheel checks: **99 passed, 1 optional GSW skip**; frozen
+142/93 comparisons pass. The uploaded checkpoint and hash-matched 16384 mesh
+advance 67200→68400 s with cached original radiation on Linux, under both old
+and corrected remappers. No fresh optical tables were called, and the exact
+Mac rejection was not reproduced. This does not validate a longer seasonal run
+or migrate old restart fingerprints. See [evidence](../verification/ocean/ale-cold-columns/README.md).
+
 The user's six-hour real-data campaign reports near-roundoff water/salt, an
 upstream energy residual equivalent to -2.035 W/m² and a peak column radiation
 residual of 17.362 W/m². An isolated test confirms a radiation/host pressure-grid

@@ -323,3 +323,16 @@ mechanics, no brine, no resolved ice/snow thermal profile, and uncalibrated
 mesoscale closures. Radiation climatologies retain the previous
 local rectangular sampling approximation. Full-year stability and physically
 credible climate statistics require the actual local experiment.
+
+## ALE entropy rejection diagnostics
+
+The thermal projection checks column energy and nondecreasing model entropy.
+It now evaluates both iteration and final acceptance using temperature
+reconstructed from the stored `h*T`. Earlier code could falsely converge at an
+entropy boundary and then reject that same candidate in the final check.
+The tolerances are unchanged; unsuccessful solves report the worst column,
+residual relative to tolerance, and iteration count. Retain `run.log`,
+`configuration.json`, the mesh and `last_good_restart.pt` for diagnosis.
+See the [cold-column regression and checkpoint replay](../../verification/ocean/ale-cold-columns/README.md).
+Start in a new output directory after updating source; the normal restart
+fingerprint checks intentionally reject checkpoints from the previous code.

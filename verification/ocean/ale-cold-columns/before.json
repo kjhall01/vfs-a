@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "error": "adaptive thermal projection decreases column entropy",
+  "iterations": 3,
+  "column": 11,
+  "temporary_entropy_change_over_tolerance": -0.9997166075379913,
+  "stored_entropy_change_over_tolerance": -1.0000137657810488,
+  "maximum_energy_residual_over_tolerance": 0.0029901283108412164
+}

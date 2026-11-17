@@ -1377,3 +1377,25 @@ signed cumulative global radiation residual from remaining upstream residual.
 Actual optical tables are still unavailable here: no real-data reproduction or
 complete attribution of the user's -2.035 W/m² loss is claimed. See
 [evidence and reproduction](../verification/atmosphere/pyam21/campaign/radiation-grid/README.md).
+
+## Stored-temperature ALE acceptance (2026-11-17)
+
+The 16384-cell campaign reported an entropy rejection after second 67200.
+The research temperature remapper evaluated iteration entropy at temporary T
+but final entropy at reconstructed (h*T)/h. A deterministic 16-column cold
+case passes the loop at -0.999716608 entropy tolerances, then fails the final
+stored-state check at -1.000013766. Both evaluations now use the actual stored
+candidate; this case converges in four iterations with unchanged 256/512-epsilon
+energy/entropy tolerances. No clipping, timestep change or acceptance bypass.
+Unsuccessful projections now report the worst column, normalized residual and
+iteration count.
+
+External installed-wheel focused suite: **99 passed, 1 optional GSW skip**,
+including one/four-thread regression, conservative salt/tracer/TKE/EKE contents
+and continued rejection of a stalled solve. Frozen **142/93** comparisons pass.
+The user checkpoint and hash-matched mesh replay 67200→68400 s on Linux with
+both old and corrected code; pre-ALE candidate tensors agree bitwise. Original
+cached radiation is sufficient for that interval, with zero fresh optical
+calls. Corrected maximum ALE column residual is 1.31845624e-5 J/m². The exact
+Mac rejection, corrected fresh-table seasonal integration, GPU behavior and
+long-run stability remain unverified. See [evidence](../verification/ocean/ale-cold-columns/README.md).
