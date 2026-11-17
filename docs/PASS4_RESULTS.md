@@ -1353,3 +1353,27 @@ exception before the fix and verify model coverage and explicit overrides after
 it. A radiation-off test needs no ASTEX file. External installed-wheel focused
 checks: **50 passed, 1 real-data skip**; frozen portable comparisons: **142/93 pass**.
 This verifies setup, not real radiative fluxes or a run on the user's mesh.
+
+## Conservative radiation-to-host heating (2026-11-17)
+
+The user reported a completed six-hour real-data segment with peak radiation
+heating/flux residual 17.362 W/m² and accumulated upstream loss -43947.269 J/m².
+SeaEsfRad's native radiation layer masses differ from the VFS host layer masses;
+unchanged K/s rates therefore do not conserve their integrated heating.
+`HostRadiationDriver` now transfers the native extensive SW/LW heating by
+fractional-pressure overlap and divides by current host masses on every physics
+call. Native cache/fluxes remain unchanged, cache geometry is restart state, and
+the unresolved above-lid cap is explicitly included in the top host layer.
+No heat is inferred from flux divergence to conceal an upstream discrepancy.
+
+Installed-wheel focused tests outside the checkout: **105 passed, 1 real-data
+skip**. Coverage includes independent overlap integration, 12/24/40 levels,
+1200/3600 s physics/radiation cadence, fresh/cached calls, changing pressure,
+day/night, solar renormalization, a retained injected +3 W/m² package defect,
+bitwise atmosphere/coupled restart and failure rollback. Frozen **142/93**
+portable comparisons pass. The analytic comparison reduces the old 3.14–5.92
+W/m² residual to at most 1.71e-13 W/m² with zero flux change. The CSV now separates
+signed cumulative global radiation residual from remaining upstream residual.
+Actual optical tables are still unavailable here: no real-data reproduction or
+complete attribution of the user's -2.035 W/m² loss is claimed. See
+[evidence and reproduction](../verification/atmosphere/pyam21/campaign/radiation-grid/README.md).

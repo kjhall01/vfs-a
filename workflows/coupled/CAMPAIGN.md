@@ -154,6 +154,16 @@ changed ALE columns, limited Redi fluxes, reservoir transfers, explicit-step
 numbers, and local energy residuals. An enabled flag alone is not the evidence
 that the process ran.
 
+`radiation_residual` is the running maximum absolute column heating/flux
+discrepancy in W/m², not a global mean. The signed cumulative area-mean
+`radiation_energy_residual_J_m2` isolates its contribution to the upstream
+energy residual; `upstream_minus_radiation_residual_J_m2` is the remainder.
+Divide these accumulated quantities by elapsed model seconds for mean W/m².
+Neither is an additional energy loss to add to `upstream_residual_J_m2`.
+The [radiation-grid transfer](../pyam21/RADIATION.md#radiation-and-model-layer-masses)
+conserves native radiative heating on the current host layers, including cached
+calls. Real-data validation of this correction remains pending.
+
 ```bash
 tail -f aquaplanet-16384-365d/run.log
 ```

@@ -209,6 +209,11 @@ def test_radiation_manifest_binds_actual_files_and_geometry(model, tmp_path):
     assert a.identity != b.identity and a.identity != c.identity
     assert len(constructor.call_args.args[2]) == model.mesh.nCells
     assert a.manifest["package"].endswith("SeaEsfRad")
+    from workflows.pyam21.radiation import HostRadiationDriver
+
+    assert isinstance(a.driver, HostRadiationDriver)
+    assert a.manifest["schema"] == 2
+    assert "above-lid" in a.manifest["radiation_lid_policy"]
 
 
 @pytest.mark.skipif(
@@ -241,6 +246,12 @@ def test_real_seaesf_opt_in():
     )
     third, u = adapter.apply(end, 60)
     assert u.column_result["radiation"]["do_rad"]
+    for report in (r, s, t, u):
+        torch.testing.assert_close(
+            report.energy_changes["radiation_flux_residual"] / 60,
+            torch.zeros_like(report.energy_changes["radiation_flux_residual"]),
+            rtol=0, atol=1e-8,
+        )
 
 
 @pytest.mark.parametrize(

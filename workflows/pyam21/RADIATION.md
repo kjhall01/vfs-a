@@ -2,18 +2,56 @@
 
 `radiation.build_radiation` constructs **PyAM21's real `SeaEsfRad` and
 `RadiationDriver`**, using the supplied GFDL radiation tables and climatologies.
+The workflow's `HostRadiationDriver` adds an explicit conservative heating
+transfer after the upstream scheduler; its optical calculations and native
+fluxes are unchanged.
 It computes the two reference pressure columns from the VFS hybrid grid using
 the same Simmons–Burridge full-pressure readout as the adapter. Neither upstream
 code nor package defaults are changed. Missing inputs fail with an actionable
 path; there is no synthetic fallback or network access during stepping.
 
-**Status: full SeaEsfRad execution has not been verified.** The radiation-on
-preflight on 2026-11-17 could not initialize because the external data are absent.
+**Status: the user reports six hours with real data, but the corrected mapping
+has not yet been rerun with those data.** The radiation-on preflight in this
+runtime on 2026-11-17 could not initialize because the external data are absent.
 Both the historical `/perm/pjp/SCM/` and currently advertised
 `/perm/GFDL_pubrelease/SCM/` FTP locations failed from this environment; HTTPS on
 the FTP host returned 503 and the candidate nomads/data1 HTTPS locations returned
 404. No reference data were fabricated or substituted. See the
 [recorded attempt and configuration correction](../../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+
+## Radiation and model layer masses
+
+SeaEsfRad constructs `pflux` from adjacent full pressures, starting at zero;
+these are not the host's hybrid interfaces. Its K/s heating uses
+`diff(pflux)/g` as layer mass. Applying it unchanged with `diff(phalf)/g` creates
+an energy error even if the package heating and boundary fluxes agree exactly.
+Cached native heating must also retain the pressure grid on which it was computed.
+
+The workflow now forms each native layer's integrated SW/LW heating, transfers
+it by fractional-pressure overlap to host layers, and divides by the current
+host layer mass. The constants cp/g cancel in this transfer. Cumulative
+integrated heating is interpolated linearly at host interfaces; endpoint
+differences conserve the whole column. SW and LW are mapped separately,
+including the LW tendency used by boundary-layer turbulence.
+
+The cache remains native, including saved radiation pressure interfaces. Each
+physics call maps the current solar-rescaled native heating once, using the
+current host masses. The extra cache tensor participates in the existing atomic
+state/restart handling. All native interface and TOA/surface fluxes are retained.
+This transfers the package's actual heating, not a replacement inferred from
+flux divergence, so a genuine upstream heating/flux discrepancy remains visible.
+
+**Explicit lid approximation:** VFS has a positive pressure lid (1000 Pa in this
+campaign), while the radiation column reaches zero pressure. Absorption in that
+unresolved cap is included in the top host layer, which retains its actual mass.
+This preserves true TOA/surface energy boundaries but does not resolve the
+thermal structure above the lid. Between radiation calls, fractional-pressure
+coordinates keep the cached column complete as surface pressure changes.
+
+Manifest schema 2 records the transfer, lid convention, native flux grid and
+cache semantics. Start a fresh run after updating; old source/data identities
+cannot be resumed into this changed heating treatment. See the
+[analytic comparison and tests](../../verification/atmosphere/pyam21/campaign/radiation-grid/README.md).
 
 PyAM21 includes the parameterization algorithms, but its `reference/input_data/`
 is excluded from Git. Supply the extracted `input_data/sea_esf` directory. These

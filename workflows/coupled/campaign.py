@@ -461,6 +461,9 @@ def advance(adapter, air, receiver, sea, dt, config):
             radiation_residual=float(
                 ar.energy_changes["radiation_flux_residual"].abs().max() / dt
             ),
+            radiation_energy_residual=float(
+                (A * ar.energy_changes["radiation_flux_residual"]).sum() / A.sum()
+            ),
         ),
     )
 
@@ -499,6 +502,9 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         - ledger["initial"]["energy"]
         - ledger["external"],
         upstream_residual_J_m2=ledger["upstream"],
+        radiation_energy_residual_J_m2=ledger["radiation_energy_residual"],
+        upstream_minus_radiation_residual_J_m2=ledger["upstream"]
+        - ledger["radiation_energy_residual"],
         numerical_energy_residual_J_m2=current["energy"]
         - ledger["initial"]["energy"]
         - ledger["external"]
@@ -892,6 +898,7 @@ def main(argv=None):
             initial=inventories(adapter, air, receiver, sea),
             external=0.0,
             upstream=0.0,
+            radiation_energy_residual=0.0,
             surface_residual=0.0,
             air_residual=0.0,
             radiation_residual=0.0,
@@ -981,6 +988,7 @@ def main(argv=None):
                 ledger["steps"] += 1
                 ledger["external"] += report["external"]
                 ledger["upstream"] += report["upstream"]
+                ledger["radiation_energy_residual"] += report["radiation_energy_residual"]
                 accumulate_ocean(ledger, report)
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])

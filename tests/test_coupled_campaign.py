@@ -121,8 +121,20 @@ def test_builder_applies_solar_constant_to_upstream_package(source, config, tmp_
     )
 
 
-def test_coupled_restart_including_cached_radiation(source, config, tmp_path):
-    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+@pytest.mark.parametrize("native_grid", [False, True])
+def test_coupled_restart_including_cached_radiation(source, config, tmp_path, native_grid):
+    def builder(nml, model, data_dir, **options):
+        if not native_grid:
+            return synthetic(nml, model, data_dir, **options)
+        from test_radiation_mapping import NativeGridRadiationPackage
+        from workflows.pyam21.radiation import HostRadiationDriver
+
+        return RadiationSetup(
+            HostRadiationDriver.from_nml(nml, NativeGridRadiationPackage()),
+            "analytic-native-grid-campaign-test", {"synthetic": True},
+        )
+
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=builder):
         adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
     with torch.no_grad():
         air, sea, _ = c.advance(adapter, air, receiver, sea, 60, config)
@@ -142,6 +154,9 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path):
         c.pack(adapter, right, receiver, replay, "id", ledger),
     )
     assert r == t
+    if native_grid:
+        assert r["radiation_residual"] < 2e-10
+        assert abs(r["radiation_energy_residual"]) < 2e-10 * 60
     with pytest.raises(ValueError, match="does not match"):
         c.unpack(p, adapter, receiver, sea, "different")
     c.snapshot(tmp_path / "snapshot.nc", adapter, left, receiver, water)

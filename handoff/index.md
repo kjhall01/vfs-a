@@ -1,5 +1,19 @@
 # Current package documentation
 
+The user's six-hour real-data campaign reports near-roundoff water/salt, an
+upstream energy residual equivalent to -2.035 W/m² and a peak column radiation
+residual of 17.362 W/m². An isolated test confirms a radiation/host pressure-grid
+mass mismatch in the previous coupling. `HostRadiationDriver` now conservatively
+transfers native SW/LW layer heating onto current host masses after scheduling,
+preserving the native cache/fluxes and retaining genuine package defects. The
+positive-lid cap is explicitly assigned to the top host layer. Signed cumulative
+radiation and remaining upstream residuals are now separate CSV columns.
+External installed-wheel checks: 105 passed, 1 real-data skip; 142/93 frozen
+comparisons pass. Analytic 12/24/40-level errors fall from 3.14–5.92 W/m² to at
+most 1.71e-13 W/m², with identical fluxes. Real-table rerun remains pending; the
+reported 2.035 W/m² loss is not yet fully attributed. See
+[mapping evidence and limitations](../verification/atmosphere/pyam21/campaign/radiation-grid/README.md).
+
 PR #89 is merged as `116eed948874c4ffc7e2464618cc80dc3eec0d1b` after its final CI
 passed. The subsequent seasonal-radiation attempt is blocked before initialization
 by missing GFDL `sea_esf` tables in this runtime. The user's downloaded-data run
