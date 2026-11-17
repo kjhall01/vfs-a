@@ -17,9 +17,10 @@ for directory in ("sea_ice", "temperature_coordinate", "ocean_column"):
     if path not in sys.path:
         sys.path.insert(0, path)
 from roquet import RoquetWorkspace
-from ocean_ice import vector_transpose, safe
+from ocean_ice import safe
 from vfs.ocean.energy import ConstantDensityEnergy
 from workflows.exchange import SurfaceTiles
+from workflows.momentum import KineticWindMap
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ class OceanIceReceiver:
     def __init__(self, snow):
         self.snow = snow
         self.H = snow.hamiltonian
+        self.wind = KineticWindMap(self.H.model.ocean.mesh)
 
     def tiles(self, state, ice_temperature):
         """Explicit CT+273.15 SST approximation; caller supplies ice skin K.
@@ -54,8 +56,8 @@ class OceanIceReceiver:
         alpha = p.ice_albedo + (p.albedo - p.ice_albedo) * hs / (hs + p.patch_depth)
         opened = 1 - ice.area.sum(-1, keepdim=True)
         temp = torch.cat((s.temperature()[:, :1] + 273.15, ice_temperature), -1)
-        vwater = s.mesh.cell_wind_vector(s.u_e)[:, 0]
-        vice = s.mesh.cell_wind_vector(ice.velocity)[:, 0]
+        vwater = self.wind.vector(s.u_e)[:, 0]
+        vice = self.wind.vector(ice.velocity)[:, 0]
         tiles = SurfaceTiles(
             torch.cat((opened, ice.area), -1),
             temp,
@@ -139,9 +141,9 @@ class OceanIceReceiver:
         into_ice = snowfall.sum(-1, keepdim=True) * exchange.precipitation_velocity - (
             exchange.vapor[:, 1:, None] * exchange.vapor_velocity[:, 1:]
         ).sum(1)
-        Iw, Ii = (vector_transpose(mesh, A * x) for x in (into_ocean, into_ice))
+        Iw, Ii = (self.wind.transpose((A * x)[:, None]) for x in (into_ocean, into_ice))
         Jw, Ji = (
-            vector_transpose(mesh, -A * x)
+            self.wind.transpose((-A * x)[:, None])
             for x in (exchange.stress[:, 0], exchange.stress[:, 1:].sum(1))
         )
         mechanical = H.model.energy.base.mechanical
