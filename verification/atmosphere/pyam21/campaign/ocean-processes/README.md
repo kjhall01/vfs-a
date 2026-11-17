@@ -1,5 +1,10 @@
 # Explicit coupled ocean processes — 17 November 2026
 
+**Follow-up:** the atmospheric failures archived here were subsequently traced
+to short-edge momentum amplification in the coupling map. See the
+[correction and new verification](../momentum-map/README.md). The failed-run
+records below are retained unchanged as evidence.
+
 The original campaign constructed an eddy-capable Roquet model but did not
 schedule GM–Redi or ALE and initialized its unused mesoscale reservoir to zero.
 The follow-up explicitly enables the existing energy-dependent GM transport,

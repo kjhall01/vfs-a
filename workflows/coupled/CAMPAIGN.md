@@ -8,13 +8,13 @@ prognostic thermal store; its temperature is no longer a prescribed boundary.
 It starts from merged PR #88. This is an initial spin-up experiment: no
 365-day stability or equilibrated-climate result is claimed.
 
-**Current long-run blocker:** the full ocean configuration completes a six-hour
-radiation-off check at 256 cells, but the one-day attempt stops after 20 h in
-the atmospheric CP energy-transfer solve with rapidly growing winds. A reduced
-ocean control also fails; reducing the atmospheric step to 60 s fails after
-20 h 40 min. The requested 1200/240/1200/3600-second settings are retained as
-experimental choices, not a year-stable configuration. See the
-[failure evidence](../../verification/atmosphere/pyam21/campaign/ocean-processes/README.md).
+The former 20-hour failure was traced to the VFS/PyAM21 momentum map: the
+transpose of an unweighted diagnostic reconstruction amplified impulses onto
+very short edges. A shared kinetic-weighted reconstruction fixes that defect
+while retaining reciprocal impulses and the energy ledger. A fresh 256-cell
+radiation-off full-ocean run completes two days at the requested timesteps.
+This does not establish year-long or real-radiation stability. See the
+[debugging evidence and remaining limits](../../verification/atmosphere/pyam21/campaign/momentum-map/README.md).
 
 ## Install and preflight
 
@@ -175,6 +175,9 @@ these with `ice_area`. NetCDF writes are atomic. A restart uses tensor/primitive
 payloads with `weights_only=True`, not pickled model objects. It rejects changed
 mesh, physics, runtime, configuration, source or radiation data. Binary output
 files stay in your specified run directory.
+
+The momentum-map correction changes the restart identity (standalone adapter
+schema 4). Start a fresh run after pulling it; do not relabel old checkpoints.
 
 For an initial shorter segment, append `--stop-after-days 2`. To continue, keep
 the same configuration and give a **new** output directory:

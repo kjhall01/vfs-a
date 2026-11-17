@@ -8,10 +8,18 @@ The YAML uses the requested ocean/physics 1200 s, atmosphere 240 s, radiation
 limiter prevents near-zero TKE undershoots; standalone defaults are preserved.
 External installed-wheel focused checks: 202 passed, 2 optional-dependency skips;
 142/93 frozen comparisons pass. A 256-cell radiation-off six-hour check completes.
-**Long-run blocker:** atmospheric CP energy transfer rejects after 20 h; the
-reduced-ocean control and a 60 s atmospheric-step trial also reject. Neither a
-completed day nor a year-stable coupled configuration is claimed. Process
-activity and budgets are explicit in startup logging, diagnostics and restarts.
+The former 20-hour atmospheric rejection was traced to the coupling wind map:
+unweighted diagnostic reconstruction amplified finite impulses onto tiny edges.
+The shared kinetic-weighted fit and exact transpose fix that defect; a fresh
+full-ocean radiation-off two-day run completes at the requested timesteps
+(endpoint maximum air wind 23.179 m/s; 1440 GM–Redi substeps, 144 ALE calls).
+Current focused checks: 173 passed, 1 skipped;
+142/93 frozen comparisons and bitwise preflight pass. See the
+[debugging evidence and remaining limits](../verification/atmosphere/pyam21/campaign/momentum-map/README.md).
+Real radiation, the user's 16,384-cell mesh and full-year stability remain
+unqualified. An exactly calm/zero-gust upstream surface degeneracy is diagnosed
+separately with an early error; no floor is added. Process activity and budgets
+are explicit in startup logging, diagnostics and restarts.
 
 The [shared atmosphere–ocean–ice exchange](../workflows/coupled/README.md) now
 provides a common interval ledger, tiled moving-surface AM2 fluxes, reciprocal
@@ -24,7 +32,7 @@ portable suite: 1400 passed, 3 skipped; 142/93 frozen comparisons pass. Radiatio
 runs complete six hours at 32 cells and one hour at the default 256 cells.
 The campaign also accepts saved generators via `--mesh`, with automatic cell
 count/no extra relaxation, persistent `run.log`, and terminal `--verbose`. The standalone adapter uses restart
-schema 3 and consistent cached net LW. All changes remain outside packages.
+schema 4 and consistent cached net LW. All changes remain outside packages.
 [Actual SeaEsfRad setup](../workflows/pyam21/RADIATION.md) constructs upstream
 radiation with hashed external data and explicit climatology sampling, but actual
 execution remains **unverified**: GFDL data acquisition failed from this runtime.

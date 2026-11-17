@@ -1293,3 +1293,37 @@ rapidly growing atmospheric winds. The reduced-ocean control also fails after
 remain unresolved and are not attributed solely to the newly enabled processes.
 No full-day, real-radiation, 16,384-cell or long-run qualification is claimed.
 See [raw statuses, diagnostics and limitations](../verification/atmosphere/pyam21/campaign/ocean-processes/README.md).
+
+## Coupling momentum debugging (2026-11-17)
+
+Stage tracing isolates the former 20-hour rejection to the external wind map.
+At 70,800 s, the old mapping converts upstream increments no larger than
+1.327/3.581 m/s into a native edge wind of 1107.762 m/s, from 46.015 m/s after
+dynamics. Dynamics alone completes 24 hours. The energy solve rejects the next
+interval rather than causing the initial acceleration.
+
+The unweighted diagnostic fit gave tiny edges order-one impulse shares, then
+divided by their tiny native kinetic mass. The shared coupling now uses native
+kinetic-energy ownership weights in a local two-dimensional least-squares fit
+and its exact transpose. On this mesh the largest mass-normalized read/scatter
+eigenvalue falls from 144.270574 to 1.017534. Atmosphere and ocean/ice surface
+exchange share the correction; reciprocal generalized momentum and finite
+energy budgets are retained. Packaged dynamics, diagnostic reconstruction,
+upstream sources and the legacy atmosphere map are unchanged.
+
+External installed-wheel checks: 173 passed, 1 real-radiation skip; corrected-Gibbs
+142 and dry-helper 93 portable comparisons pass. Short-edge finite drag, local
+tangent reproduction and the independently differentiated adjoint are covered.
+Default full-stack preflight replays bitwise. A fresh radiation-off 256-cell
+two-day run completes with unchanged requested timesteps, 1440 GM–Redi substeps
+and 144 ALE calls. Endpoint maximum air wind is 23.179 m/s (peak across recorded
+stages 31.818 m/s), numerical energy residual -6.39188 J/m2, water -2.56e-9 kg/m2
+and relative salt -6.42e-16. The day-one endpoint independently reproduces the
+normal campaign driver's completed one-day result.
+
+The separate exactly resting physics-only control exposes an upstream zero-gust
+surface singularity after one accepted interval. Early stage checks now identify
+the nonfinite surface outputs explicitly; no gust floor is introduced. Restart
+schema 4 rejects old-map payloads. Real radiation, the user's mesh, full-year,
+GPU and full-coupling backward behavior remain unqualified. See
+[diagnosis, controls and reproduction](../verification/atmosphere/pyam21/campaign/momentum-map/README.md).

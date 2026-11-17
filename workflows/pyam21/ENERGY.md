@@ -44,10 +44,17 @@ rain/snow temperatures and water velocities can be passed explicitly. The bounda
 object is an input to each call; replay must supply the same overrides.
 
 Water momentum is `dt*(E*v_E - (P_l+P_i)*v_P)`, placed at the bottom layer and
-mapped by the existing cell-vector transpose. Native edge momentum obeys
+mapped by the shared kinetic-weighted cell-vector transpose. Native edge momentum obeys
 `M1*u1 = M0*u0 + I_physics + I_water`. The altered mass metric therefore does not
 silently add momentum by making new water co-moving throughout the column.
 Global Cartesian angular momentum is not asserted by this generalized work map.
+
+The former unweighted diagnostic reconstruction gave tiny Voronoi edges an
+order-one share of cell impulses. Division by their native mass made finite
+physics updates unstable. The corrected coupling uses the native KE ownership
+weights in a two-dimensional local least-squares fit and its exact transpose,
+on both sides of surface exchange. Packaged diagnostic/dynamics operators remain
+unchanged. See the [debugging evidence](../../verification/atmosphere/pyam21/campaign/momentum-map/README.md).
 
 ## Preserve the upstream energy residual
 

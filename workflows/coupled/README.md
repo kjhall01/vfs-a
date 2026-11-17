@@ -93,8 +93,10 @@ snow first, then underlying ice; deposition on ice joins snow. Category volume
 already includes snow mass. Liquid thickness changes, while salt, passive tracer,
 TKE and EKE **contents** stay in the liquid. No salt dilution approximation is used.
 
-Cell water/stress impulses use the exact transpose of native cell-wind
-reconstruction on both sides. Reciprocal impulses therefore cancel in the native
+Cell water/stress impulses use the exact transpose of the shared kinetic-weighted
+cell-wind reconstruction on both sides. This external map weights observations
+by native edge kinetic-energy ownership, avoiding short-edge impulse amplification.
+Reciprocal impulses therefore cancel in the native
 generalized edge momentum. This is a discrete work/impulse identity, not a new
 claim of global Cartesian or angular-momentum conservation on the spherical mesh.
 Water first changes mass and momentum. The subsequent surface stress kick uses
@@ -120,6 +122,6 @@ then redistributed by the existing phase operator on the next split step. A
 resolved ice sensible-energy reservoir, brine physics, shear rheology, solved
 skin balance, long climate runs, GPU/backward qualification and a combined
 restart-file format remain future work. Atmospheric physics/cache restart remains
-available; restart schema 3 rejects older atmospheric payloads.
+available; restart schema 4 rejects atmospheric payloads from the old momentum map.
 
 See [verification](../../verification/atmosphere/pyam21/coupled/README.md).
