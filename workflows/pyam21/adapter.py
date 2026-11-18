@@ -40,8 +40,8 @@ class AM2Adapter:
             raise ValueError("energy_mode must be conservative or legacy")
         self.energy_mode = energy_mode
         ref = model.mesh.cell_area
-        if ref.dtype != torch.float64 or ref.device.type not in ("cpu", "cuda"):
-            raise ValueError("this workflow requires CPU or CUDA float64")
+        from workflows.coupled.device import validate_precision
+        validate_precision(ref.device, ref.dtype)
         if model.dynamics.kernel.gravity != am2_constants.GRAV:
             raise ValueError(
                 "configure the host kernel gravity to PyAM21 GRAV=9.8 before initializing state"

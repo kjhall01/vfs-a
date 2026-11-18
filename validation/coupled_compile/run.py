@@ -62,7 +62,8 @@ def main(argv=None):
     parser.add_argument('--mesh', type=Path)
     parser.add_argument('--cells', type=int)
     parser.add_argument('--threads', type=int)
-    parser.add_argument('--device', help='cpu, cuda, or cuda:N (overrides YAML)')
+    parser.add_argument('--device', help='cpu, cuda, cuda:N, or mps (overrides YAML)')
+    parser.add_argument('--dtype', choices=('float32', 'float64'), help='Floating-point precision (overrides YAML)')
     parser.add_argument('--radiation-data', type=Path)
     parser.add_argument('--steps', type=int, default=5, help='total intervals per mode, including warmup')
     parser.add_argument('--warmup', type=int, default=2, help='initial intervals excluded from steady timing')
@@ -74,7 +75,7 @@ def main(argv=None):
         parser.error('output must be new/empty')
     args.output.mkdir(parents=True, exist_ok=True)
     config = c.CampaignConfig(**yaml.safe_load(args.config.read_text()))
-    changes = {name: getattr(args, name) for name in ('cells', 'threads', 'device') if getattr(args, name) is not None}
+    changes = {name: getattr(args, name) for name in ('cells', 'threads', 'device', 'dtype') if getattr(args, name) is not None}
     config = replace(config, **changes, compile=False).validate()
     config, xyz, mesh_info = c.load_mesh(config, args.mesh)
     result = dict(status='running', torch=str(torch.__version__), configuration=asdict(config),
@@ -86,7 +87,7 @@ def main(argv=None):
     try:
         device = resolve_device(config.device)
         execution.enter_context(execution_context(device))
-        result['execution'] = runtime_manifest(device)
+        result['execution'] = runtime_manifest(device, config.dtype)
         for label, compiled in (('eager', False), ('compiled', True)):
             print(f'Building {label}; initial calls may compile', flush=True)
             cfg = replace(config, compile=compiled)

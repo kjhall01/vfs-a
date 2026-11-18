@@ -1,5 +1,22 @@
 # Pass 4 — physical-field workflow
 
+## Coupled dtype/MPS preparation (2026-11-17)
+
+The single-GPU draft now accepts CPU/CUDA/MPS and float32/float64, including
+CLI/YAML, physics state/cache ownership, restart storage, timing and comparison
+drivers. MPS requires explicit float32; half precision and silent CPU fallback
+are rejected. Setup restores the caller's default dtype. CPU float32 eager and
+native compiled all-component tests run, while GPU cases remain unexecuted.
+Two impossible sub-ulp FP32 checks were given explicit dtype-aware defaults:
+lagged mixing budget `max(1e-9,32*eps)` and midpoint drag `max(1e-12,32*eps)`.
+No physical process is disabled. Float64 keeps the original thresholds and
+matches 240 tensors/127 metadata leaves against the merged base bitwise.
+
+Float32 is experimental: after four default-cadence intervals at 32 cells,
+maximum specific eddy-energy difference is 0.0753 J/kg and native numerical
+energy residual is 2781.84 J/m², versus -0.1284 J/m² for float64. Native budgets
+include diagnostic rounding. See [measurements and tests](../verification/atmosphere/pyam21/campaign/precision/README.md).
+
 ## Coupled single-device CUDA preparation (2026-11-17)
 
 After PR #90 merged, the coupled workflow gained explicit CPU/CUDA float64

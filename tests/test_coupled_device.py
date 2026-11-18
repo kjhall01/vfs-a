@@ -13,13 +13,14 @@ pytest.importorskip("pyam21")
 from test_coupled_campaign import source, config
 from test_coupled_compilation import radiating
 from workflows.coupled import campaign as c
-from workflows.coupled.device import device_spec, resolve_device, execution_context, runtime_manifest
+from workflows.coupled.device import (device_spec, dtype_spec, validate_precision,
+    resolve_device, execution_context, runtime_manifest, synchronize)
 from workflows.pyam21.state import copy_tree
 from workflows.pyam21.radiation import reference_pressures
 from validation.coupled_device.run import tensors, equal, differences
 
 
-@pytest.mark.parametrize("value", ["mps", "meta", "cpu:0", "cuda:-1", "nonsense", None])
+@pytest.mark.parametrize("value", ["mps:1", "meta", "cpu:0", "cuda:-1", "nonsense", None])
 def test_unsupported_device_is_explicit(value):
     with pytest.raises(ValueError, match="cpu"):
         replace(c.CampaignConfig(), device=value).validate()
@@ -34,6 +35,40 @@ def test_device_validation_does_not_require_hardware_and_resolution_never_falls_
     with patch("torch.cuda.is_available", return_value=True), patch("torch.cuda.device_count", return_value=1):
         with pytest.raises(ValueError, match="outside"):
             resolve_device("cuda:1")
+    assert device_spec("mps") == torch.device("mps")
+    with patch("torch.backends.mps.is_available", return_value=False):
+        with pytest.raises(RuntimeError, match="MPS requested but unavailable"):
+            resolve_device("mps")
+    with patch("torch.backends.mps.is_available", return_value=True):
+        assert resolve_device("mps") == torch.device("mps:0")
+
+
+def test_precision_pairs_and_explicit_rejections():
+    assert dtype_spec("float32") == dtype_spec(torch.float32) == torch.float32
+    assert dtype_spec("float64") == torch.float64
+    replace(c.CampaignConfig(), device="mps", dtype="float32").validate()
+    with pytest.raises(ValueError, match="MPS does not support float64"):
+        replace(c.CampaignConfig(), device="mps").validate()
+    for value in ("float16", "bfloat16", "int64", None, torch.float16):
+        with pytest.raises(ValueError, match="dtype must"):
+            dtype_spec(value)
+
+
+def test_mps_policy_and_synchronization_without_claiming_hardware_execution(monkeypatch):
+    before = torch.are_deterministic_algorithms_enabled()
+    monkeypatch.delenv("PYTORCH_ENABLE_MPS_FALLBACK", raising=False)
+    with patch("workflows.coupled.device.resolve_device", return_value=torch.device("mps:0")):
+        with execution_context("mps"):
+            assert torch.are_deterministic_algorithms_enabled()
+            assert runtime_manifest("mps", "float32")["dtype"] == "float32"
+        assert torch.are_deterministic_algorithms_enabled() == before
+        monkeypatch.setenv("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+        with pytest.raises(ValueError, match="FALLBACK"):
+            with execution_context("mps"):
+                pytest.fail("hidden CPU fallback accepted")
+    with patch("torch.mps.synchronize") as sync:
+        synchronize("mps")
+        sync.assert_called_once_with()
 
 
 def test_cpu_policy_leaves_caller_settings_and_tree_gradients_intact(monkeypatch):
@@ -42,7 +77,8 @@ def test_cpu_policy_leaves_caller_settings_and_tree_gradients_intact(monkeypatch
         assert runtime_manifest("cpu")["deterministic_algorithms"] == before
     x = torch.tensor([2.0], dtype=torch.float64, requires_grad=True)
     original = dict(x=x, nested=[torch.tensor([True]), (torch.tensor([7]), None)])
-    copied = copy_tree(original, device="cpu")
+    copied = copy_tree(original, device="cpu", dtype=torch.float32)
+    assert copied["x"].dtype == torch.float32
     assert copied["x"].data_ptr() != x.data_ptr()
     assert copied["nested"][0].dtype == torch.bool
     assert copied["nested"][1][0].dtype == torch.int64
@@ -65,16 +101,18 @@ def test_cpu_policy_leaves_caller_settings_and_tree_gradients_intact(monkeypatch
                 pytest.fail("incompatible workspace accepted")
 
 
+@pytest.mark.parametrize("dtype", ["float64", "float32"])
 @torch.no_grad()
-def test_cpu_device_cli_manifest_and_disk_restart(source, config, tmp_path):
+def test_cpu_device_cli_manifest_and_disk_restart(source, config, tmp_path, dtype):
     path = tmp_path / "config.yaml"
     path.write_text(yaml.safe_dump(c.asdict(replace(config, device="cuda:0"))))
     output = tmp_path / "cpu"
     assert c.main(["--source", str(source), "--config", str(path), "--device", "cpu",
-                   "--threads", "1", "--output", str(output), "--smoke-no-radiation", "--preflight"]) == 0
+                   "--dtype", dtype, "--threads", "1", "--output", str(output), "--smoke-no-radiation", "--preflight"]) == 0
     manifest = json.loads((output / "manifest.json").read_text())
     assert manifest["configuration"]["device"] == "cpu"
     assert manifest["execution"]["device"] == "cpu"
+    assert manifest["configuration"]["dtype"] == manifest["execution"]["dtype"] == dtype
     assert "Execution:" in (output / "run.log").read_text()
     adapter, air, receiver, sea = c.build(config, source, None, smoke_no_radiation=True)
     identity = c.fingerprint(config, adapter, {}, True)
@@ -98,8 +136,9 @@ def test_unavailable_cuda_logs_failure_before_build(source, config, tmp_path):
     assert "CUDA requested but unavailable" in status["error"]
 
 
+@pytest.mark.parametrize("dtype", ["float64", "float32"])
 @torch.no_grad()
-def test_device_comparison_driver_real_scheduler_with_analytic_optics(source, config, tmp_path):
+def test_device_comparison_driver_real_scheduler_with_analytic_optics(source, config, tmp_path, dtype):
     import numpy as np
     from vfs.geometry.mesh.grid import _fibonacci_xyz
     from validation.coupled_device.run import main
@@ -110,7 +149,8 @@ def test_device_comparison_driver_real_scheduler_with_analytic_optics(source, co
     output = tmp_path / "comparison"
     with patch("workflows.pyam21.radiation.build_radiation", radiating):
         assert main(["--source", str(source), "--radiation-data", "synthetic", "--config", str(path),
-                     "--mesh", str(mesh), "--device", "cpu", "--steps", "3", "--output", str(output)]) == 0
+                     "--mesh", str(mesh), "--device", "cpu", "--dtype", dtype, "--reference-dtype", "float64",
+                     "--steps", "3", "--output", str(output)]) == 0
     report = json.loads((output / "comparison.json").read_text())
     assert report["status"] == "comparison_completed"
     assert report["radiation_enabled"]
@@ -118,9 +158,92 @@ def test_device_comparison_driver_real_scheduler_with_analytic_optics(source, co
         assert mode["restart_bitwise"]
         assert len(mode["intervals"]) == 3
         assert mode["steady_median_seconds"] > 0
-    assert all(value.get("max_absolute", value.get("unequal")) == 0
-               for value in report["state_differences"].values())
+    if dtype == "float64":
+        assert all(value.get("max_absolute", value.get("unequal")) == 0
+                   for value in report["state_differences"].values())
+    else:
+        assert report["modes"]["cpu"]["execution"]["dtype"] == "float64"
+        assert report["modes"]["device"]["execution"]["dtype"] == "float32"
+        assert any(value.get("max_absolute", 0) > 0 for value in report["state_differences"].values())
     assert (output / "device/final.nc").is_file()
+
+
+@pytest.mark.parametrize("device", ["cpu", "cuda:0", "mps"])
+@pytest.mark.parametrize("compiled", [False, True])
+@torch.no_grad()
+def test_float32_full_physics_radiation_and_restart(source, config, tmp_path, device, compiled):
+    if device.startswith("cuda") and not torch.cuda.is_available():
+        pytest.skip("requires CUDA hardware")
+    if device == "mps" and not torch.backends.mps.is_available():
+        pytest.skip("requires MPS hardware")
+    compile_env = {"cpu": "VFS_TEST_INDUCTOR", "cuda:0": "VFS_TEST_CUDA_COMPILE", "mps": "VFS_TEST_MPS_COMPILE"}[device]
+    if compiled and os.environ.get(compile_env) != "1":
+        pytest.skip(f"set {compile_env}=1 for native compiler qualification")
+    selected = replace(config, device=device, dtype="float32", compile=compiled)
+    default = torch.get_default_dtype()
+    with patch("workflows.pyam21.radiation.build_radiation", radiating), execution_context(device):
+        adapter, air, receiver, sea = c.build(selected, source, Path("synthetic"))
+        assert torch.get_default_dtype() == default
+        target = resolve_device(device)
+        initial = c.inventories(adapter, air, receiver, sea)
+        external = upstream = 0.0
+        for _ in range(3):
+            c.checkpoint(tmp_path / "input.pt", c.pack(adapter, air, receiver, sea, "fp32", {}))
+            air, sea, report = c.advance(adapter, air, receiver, sea, selected.physics_dt, selected)
+            external += report["external"]
+            upstream += report["upstream"]
+            assert report["gmredi_steps"] == selected.eddy_substeps
+            assert report["eddy_decay_steps"] == report["ale_steps"] == 1
+        payload = c.pack(adapter, air, receiver, sea, "fp32", {})
+        for name, value in tensors(payload):
+            assert value.device == target, name
+            if value.is_floating_point():
+                assert value.dtype == torch.float32, name
+                assert torch.isfinite(value).all(), name
+        final = c.inventories(adapter, air, receiver, sea)
+        eps = torch.finfo(torch.float32).eps
+        assert abs(final["energy"] - initial["energy"] - external - upstream) <= 512 * eps * abs(initial["energy"])
+        for key in ("water", "salt"):
+            assert abs(final[key] - initial[key]) <= 512 * eps * abs(initial[key])
+        disk = torch.load(tmp_path / "input.pt", map_location="cpu", weights_only=True)
+        ra, rs, _ = c.unpack(disk, adapter, receiver, sea, "fp32")
+        ra, rs, rr = c.advance(adapter, ra, receiver, rs, selected.physics_dt, selected)
+        assert equal(report, rr)
+        assert equal(payload, c.pack(adapter, ra, receiver, rs, "fp32", {}))
+        c.snapshot(tmp_path / "fp32.nc", adapter, air, receiver, sea)
+
+
+@torch.no_grad()
+def test_float32_budget_policy_still_rejects_unfunded_numerical_increment(source, config):
+    from lagged import Factor
+    selected = replace(config, dtype="float32")
+    adapter, air, receiver, sea = c.build(selected, source, None, smoke_no_radiation=True)
+    original = Factor.solve
+    def defective(self, rhs):
+        return 1.01 * original(self, rhs)
+    with patch.object(Factor, "solve", defective):
+        with pytest.raises(FloatingPointError, match="lagged local budget failed"):
+            c.advance(adapter, air, receiver, sea, selected.physics_dt, selected)
+
+
+@torch.no_grad()
+def test_float32_drag_ke_loss_matches_tke_and_reciprocal_momentum(source, config):
+    _, _, receiver, sea = c.build(replace(config, dtype="float32"), source, None, smoke_no_radiation=True)
+    coupled = receiver.snow.coupled
+    initial = sea.coupled
+    active = coupled.ridge.active_edges(initial)
+    initial = replace(initial, ice=replace(initial.ice,
+        velocity=torch.where(active, 0.05, 0.0).to(initial.ice.velocity)))
+    end, report = coupled.drag_step(initial, 3600.0)
+    eps = torch.finfo(torch.float32).eps
+    assert report.relative_solver_residual <= 32 * eps
+    assert report.tke_gain.sum() > 0
+    assert report.energy_residual.abs() <= 128 * eps * report.tke_gain.sum()
+    Mi = coupled.hamiltonian.metric(initial)
+    Mo = coupled.ocean.energy.base.mechanical.metric(initial.ocean.ocean)[:, :1]
+    change = Mi * (end.ice.velocity - initial.ice.velocity)
+    change += Mo * (end.ocean.ocean.u_e[:, :1] - initial.ocean.ocean.u_e[:, :1])
+    assert change.abs().max() <= 32 * eps * (Mi * initial.ice.velocity).abs().max()
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="requires an allocated CUDA GPU")

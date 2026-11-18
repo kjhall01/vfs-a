@@ -1,4 +1,4 @@
-"""365-day coupled aquaplanet campaign, explicit CPU/CUDA float64 configuration."""
+"""365-day coupled aquaplanet campaign with explicit device and precision."""
 
 import argparse
 import csv
@@ -29,7 +29,8 @@ from workflows.coupled.ice_temperature import (
 )
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
-from workflows.coupled.device import device_spec, resolve_device, execution_context, runtime_manifest, synchronize
+from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
+    runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
 from ocean_ice import OceanIce
 from ridging import CategoryIce, RidgingState
 from snow import SnowState
@@ -99,11 +100,12 @@ class CampaignConfig:
     threads: int = 1
     compile: bool = False
     device: str = "cpu"
+    dtype: str = "float64"
     diagnostic_hours: int = 6
     restart_days: int = 5
 
     def validate(self):
-        device_spec(self.device)
+        validate_precision(self.device, self.dtype)
         for key in (
             "days",
             "start_year",
@@ -204,10 +206,10 @@ def snapshot_times(days=365):
 
 def rest_thickness(config):
     """Shared initial/ALE layer distribution, with a nominal fixed top depth."""
-    tail = torch.logspace(0, 1, config.ocean_levels - 1)
+    tail = torch.logspace(0, 1, config.ocean_levels - 1, dtype=torch.float64)
     return torch.cat(
         (
-            torch.tensor([config.top_layer_m]),
+            torch.tensor([config.top_layer_m], dtype=torch.float64),
             tail / tail.sum() * (config.ocean_depth_m - config.top_layer_m),
         )
     )
@@ -337,6 +339,7 @@ def build(
 ):
     config.validate()
     device = resolve_device(config.device)
+    dtype = validate_precision(device, config.dtype)
     if radiation_data is None and not smoke_no_radiation:
         raise ValueError(
             "--radiation-data /path/to/sea_esf is required for the seasonal campaign"
@@ -370,6 +373,7 @@ def build(
         start=(config.start_year, 1, 1, 0, 0, 0),
         namelist_overrides=nml,
         device=device,
+        dtype=dtype,
         mesh_options=dict(
             lloyd_iters=config.lloyd_iterations,
             generator_xyz=generator_xyz,
@@ -379,13 +383,15 @@ def build(
     )
     torch.set_num_threads(config.threads)
     mesh = adapter.model.mesh
-    column = OceanColumn(
-        config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
-    ).to(device=device, dtype=torch.float64)
+    with initialization_dtype(torch.float64):
+        column = OceanColumn(
+            config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
+        ).to(device=device, dtype=dtype)
     model = RoquetOcean(
         mesh,
         column,
-        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps),
+        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps,
+                            budget_rtol=mixing_budget_rtol(dtype)),
         backscatter=(
             EddyBackscatter(
                 config.backscatter_viscosity_m2_s,
@@ -571,7 +577,7 @@ def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
         smoke_no_radiation=smoke_no_radiation,
         mesh_sha256=mesh_sha256,
         compilation=adapter.compilation_manifest,
-        execution=runtime_manifest(adapter.model.mesh.cell_area.device),
+        execution=runtime_manifest(adapter.model.mesh.cell_area.device, adapter.model.mesh.cell_area.dtype),
     )
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -799,8 +805,9 @@ def main(argv=None):
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", type=Path)
-    parser.add_argument("--device", help="cpu, cuda, or cuda:N; float64 throughout (overrides YAML)")
-    parser.add_argument("--threads", type=int, help="CPU thread count, including host work for CUDA (overrides YAML)")
+    parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
+    parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
+    parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
     parser.add_argument(
         "--compile", action=argparse.BooleanOptionalAction, default=None,
         help="Compile shared mesh and atmosphere/ocean thermal kernels with Inductor; first calls include compilation (overrides YAML)",
@@ -827,7 +834,7 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
-    for name in ("device", "threads"):
+    for name in ("device", "dtype", "threads"):
         if getattr(args, name) is not None:
             config = replace(config, **{name: getattr(args, name)}).validate()
     if args.compile is not None:
@@ -865,7 +872,7 @@ def main(argv=None):
         device = resolve_device(config.device)
         config = replace(config, device=str(device))
         execution.enter_context(execution_context(device))
-        runtime = runtime_manifest(device)
+        runtime = runtime_manifest(device, config.dtype)
         logger.info("Execution: %s", json.dumps(runtime))
         logger.info(
             "Starting %s; target %.6f model days; radiation %s",

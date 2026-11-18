@@ -1,4 +1,4 @@
-"""Compare full seasonal CPU and CUDA campaigns on exactly the same mesh/config.
+"""Compare full seasonal CPU and GPU campaigns on exactly the same mesh/config.
 
 Real radiation data are mandatory. Run through at least a fresh/cache/fresh
 radiation sequence; report field differences, independent budgets, completed
@@ -51,16 +51,22 @@ def differences(left, right):
     result = {}
     for name, x in a.items():
         y = b[name]
-        if x.shape != y.shape or x.dtype != y.dtype:
-            raise AssertionError(f"CPU/device shape or dtype differs: {name}")
+        if x.shape != y.shape or x.is_floating_point() != y.is_floating_point():
+            raise AssertionError(f"CPU/device shape or tensor kind differs: {name}")
         if not x.is_floating_point():
+            if x.dtype != y.dtype:
+                raise AssertionError(f"integer/bool dtype differs: {name}")
             result[name] = dict(unequal=int((x != y).sum()))
         else:
             if not torch.isfinite(x).all() or not torch.isfinite(y).all():
                 raise ValueError(f"nonfinite state: {name}")
-            error = float((x - y).abs().max()) if x.numel() else 0.0
-            scale = float(x.abs().max()) if x.numel() else 0.0
-            result[name] = dict(max_absolute=error, max_scaled=error / max(1.0, scale))
+            # Reporting boundary only: compare on CPU in FP64, including MPS
+            # results. Never request unsupported doubles on the MPS device.
+            dx, dy = x.to(device="cpu", dtype=torch.float64), y.to(device="cpu", dtype=torch.float64)
+            error = float((dx - dy).abs().max()) if x.numel() else 0.0
+            scale = float(dx.abs().max()) if x.numel() else 0.0
+            result[name] = dict(max_absolute=error, max_scaled=error / max(1.0, scale),
+                                reference_dtype=str(x.dtype), candidate_dtype=str(y.dtype))
     return result
 
 
@@ -73,7 +79,7 @@ def run_mode(config, source, data, xyz, steps, warmup, directory, progress):
         synchronize(device)
         initial = c.inventories(adapter, air, receiver, sea)
         identity = c.fingerprint(config, adapter, c.source_hashes(), False)
-        row = dict(configuration=asdict(config), execution=runtime_manifest(device),
+        row = dict(configuration=asdict(config), execution=runtime_manifest(device, config.dtype),
                    compilation=adapter.compilation_manifest, radiation=adapter.radiation_manifest,
                    setup_seconds=time.perf_counter() - start, initial=initial, intervals=[])
         external = upstream = 0.0
@@ -97,6 +103,8 @@ def run_mode(config, source, data, xyz, steps, warmup, directory, progress):
             for name, value in tensors(c.pack(adapter, air, receiver, sea, identity, {})):
                 if value.device != device:
                     raise AssertionError(f"state tensor escaped {device}: {name} on {value.device}")
+                if value.is_floating_point() and str(value.dtype).removeprefix("torch.") != config.dtype:
+                    raise AssertionError(f"state tensor changed precision: {name} has {value.dtype}")
             progress(f"interval {step + 1}/{steps}: {elapsed:.3f} s", row)
         final = copy_tree(c.pack(adapter, air, receiver, sea, identity, {}), device="cpu")
         payload = torch.load(directory / "replay_input.pt", map_location="cpu", weights_only=True)
@@ -111,6 +119,9 @@ def run_mode(config, source, data, xyz, steps, warmup, directory, progress):
         row.update(steady_median_seconds=median, steady_sypd=config.physics_dt / (365 * median))
         if device.type == "cuda":
             row["peak_allocated_bytes"] = torch.cuda.max_memory_allocated(device)
+        elif device.type == "mps":
+            row["current_allocated_bytes"] = torch.mps.current_allocated_memory()
+            row["driver_allocated_bytes"] = torch.mps.driver_allocated_memory()
         c.checkpoint(directory / "final.pt", final)
         c.snapshot(directory / "final.nc", adapter, air, receiver, sea)
         return row, final
@@ -124,6 +135,9 @@ def main(argv=None):
     parser.add_argument("--config", type=Path, default=ROOT / "workflows/coupled/coupled_aquaplanet_1yr.yaml")
     parser.add_argument("--mesh", type=Path, required=True)
     parser.add_argument("--device", default="cuda:0")
+    parser.add_argument("--dtype", choices=("float32", "float64"))
+    parser.add_argument("--reference-dtype", choices=("float32", "float64"),
+                        help="CPU reference precision (default: same as --dtype/YAML)")
     parser.add_argument("--compile", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--threads", type=int)
     parser.add_argument("--steps", type=int, default=4)
@@ -131,8 +145,8 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     config = c.CampaignConfig(**yaml.safe_load(args.config.read_text()))
-    if args.threads is not None:
-        config = replace(config, threads=args.threads)
+    config = replace(config, device=args.device, **{name: getattr(args, name)
+        for name in ("threads", "dtype") if getattr(args, name) is not None})
     config.validate()
     if args.warmup < 1 or args.steps <= args.warmup:
         parser.error("require steps > warmup >= 1")
@@ -157,7 +171,8 @@ def main(argv=None):
                 result["modes"][label] = row
                 c.atomic_json(args.output / "comparison.json", result)
                 print(f"{label}: {message}", flush=True)
-            row, final = run_mode(replace(config, device=target, compile=compiled),
+            precision = args.reference_dtype if label == "cpu" and args.reference_dtype else config.dtype
+            row, final = run_mode(replace(config, device=target, dtype=precision, compile=compiled),
                 args.source, args.radiation_data, xyz, args.steps, args.warmup, directory, progress)
             result["modes"][label] = row
             payloads[label] = final

@@ -1,5 +1,15 @@
 # Current package documentation
 
+The GPU draft now also exposes `--dtype float32|float64` and `--device mps`
+(explicit float32 required). CPU float64 defaults and the four-interval merged
+baseline are bitwise unchanged. CPU float32 eager/compiled integration, disk
+restart and all configured processes are tested. Mixing and drag use documented
+dtype-aware roundoff thresholds with unchanged float64 values. Float32 remains
+experimental: the 32-cell/default-timestep comparison differs by up to
+0.0753 J/kg in specific eddy energy after 4800 s. CUDA/MPS and actual optical
+tables remain unexecuted here. See [precision evidence](../verification/atmosphere/pyam21/campaign/precision/README.md)
+and [generic GPU instructions](../workflows/coupled/GPU.md).
+
 PR #90 is merged at `969400ef0ae1f900fc148907d46a2541d0f149ff`, following the
 user's reported successful two-day seasonal 16384-cell Mac run. A subsequent
 single-device CUDA pass adds campaign `--device cpu|cuda|cuda:N`, host

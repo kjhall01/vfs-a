@@ -60,8 +60,8 @@ def test_compiled_shared_mesh_retains_adjoint_pairs(source, config):
     configure_compilation(a, r, enabled=True, backend='eager')
     mesh = a.model.mesh
     gen = torch.Generator().manual_seed(37)
-    x = torch.randn(mesh.nCells, 5, generator=gen)
-    y = torch.randn(mesh.nEdges, 5, generator=gen)
+    x = torch.randn(mesh.nCells, 5, generator=gen, dtype=mesh.cell_area.dtype)
+    y = torch.randn(mesh.nEdges, 5, generator=gen, dtype=mesh.cell_area.dtype)
     edge = (mesh.dc_edge * mesh.dv_edge)[:, None]
     left = (edge * mesh.grad(x) * y).sum()
     right = -(mesh.cell_area[:, None] * x * mesh.div(y)).sum()
