@@ -1,5 +1,64 @@
 # Pass 4 — physical-field workflow
 
+## Endpoint/tendency failure diagnostic (2026-11-18)
+
+User logs report two-day real-table float64 completion on T4 eager and L4 with
+regional Inductor. The latter continued from its day-two restart and rejected
+the next interval after second 249600 at the explicit PyAM21 endpoint/tendency
+consistency check. This does not establish whether the cause is roundoff,
+upstream physics or device-specific behavior. The actual failed state has not
+been reproduced locally.
+
+The new standalone `tools/diagnose_pyam21_endpoint.py` preserves the complete
+configuration, restart identity and numerical checks, capturing per-field
+discrepancies and selected columns' moist-process inputs only on this failure.
+It leaves the original rejection active and its replay status failed. The tool,
+tests and Markdown documentation do not alter campaign-hashed Python source;
+existing checkpoints can be diagnosed on their original runtime. No numerical
+fix, tolerance relaxation or production restart migration is introduced.
+
+Validation outside the checkout against installed VFS: 41 endpoint/workflow
+tests pass, including unchanged successful physics and a deliberately inconsistent
+endpoint that remains rejected and produces a CPU-loadable moist replay bundle.
+Frozen portable comparisons pass for 142 corrected-Gibbs and 93 dry-helper
+tensors. All fingerprinted Python files match the user's `33e888c` source
+byte-for-byte. Actual L4 failure capture remains pending.
+
+## Coupled dtype/MPS preparation (2026-11-17)
+
+The single-GPU draft now accepts CPU/CUDA/MPS and float32/float64, including
+CLI/YAML, physics state/cache ownership, restart storage, timing and comparison
+drivers. MPS requires explicit float32; half precision and silent CPU fallback
+are rejected. Setup restores the caller's default dtype. CPU float32 eager and
+native compiled all-component tests run, while GPU cases remain unexecuted.
+Two impossible sub-ulp FP32 checks were given explicit dtype-aware defaults:
+lagged mixing budget `max(1e-9,32*eps)` and midpoint drag `max(1e-12,32*eps)`.
+No physical process is disabled. Float64 keeps the original thresholds and
+matches 240 tensors/127 metadata leaves against the merged base bitwise.
+
+Float32 is experimental: after four default-cadence intervals at 32 cells,
+maximum specific eddy-energy difference is 0.0753 J/kg and native numerical
+energy residual is 2781.84 J/m², versus -0.1284 J/m² for float64. Native budgets
+include diagnostic rounding. See [measurements and tests](../verification/atmosphere/pyam21/campaign/precision/README.md).
+
+## Coupled single-device CUDA preparation (2026-11-17)
+
+After PR #90 merged, the coupled workflow gained explicit CPU/CUDA float64
+placement, device/host-thread CLI switches, CPU-stored restart tensors restored
+onto the model device, deterministic CUDA replay policy, hardware/runtime
+provenance and synchronized comparison timing. Physical settings and packaged
+numerical kernels are unchanged. CUDA is a single-device path; no component
+parallelism is claimed. The upstream PyAM21 revision is unchanged.
+
+Installed-wheel focused validation: **110 passed, 2 CUDA skips** with native
+CPU Inductor enabled; frozen portable **142/93** comparisons pass. Against the
+merged CPU base, a four-interval 32-cell/default-level/default-timestep analytic
+radiation campaign agrees bitwise across **240 tensors and 127 scalar leaves**.
+CUDA tests and a full real-table CPU/CUDA comparison command are provided but
+cannot be executed on this CPU-only host. See
+[evidence](../verification/atmosphere/pyam21/campaign/cuda/README.md) and
+[GPU setup](../workflows/coupled/GPU.md).
+
 > Current numerical-fix evidence: [paired Gibbs revision](../verification/GIBBS_FIX_RESULTS.md).
 > Historical fixtures below remain unchanged; the proposed revision fails their moist gates.
 >

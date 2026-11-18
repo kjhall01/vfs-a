@@ -5,6 +5,7 @@ independent inventory ledgers and a bitwise compiled restart replay. No optical
 tables are inferred: omit --radiation-data for an explicit radiation-OFF trial.
 """
 import argparse
+from contextlib import ExitStack
 from dataclasses import asdict, replace
 import json
 from pathlib import Path
@@ -17,6 +18,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from workflows.coupled import campaign as c
+from workflows.coupled.device import execution_context, resolve_device, runtime_manifest, synchronize
 
 
 def tensors(value, path=''):
@@ -60,6 +62,8 @@ def main(argv=None):
     parser.add_argument('--mesh', type=Path)
     parser.add_argument('--cells', type=int)
     parser.add_argument('--threads', type=int)
+    parser.add_argument('--device', help='cpu, cuda, cuda:N, or mps (overrides YAML)')
+    parser.add_argument('--dtype', choices=('float32', 'float64'), help='Floating-point precision (overrides YAML)')
     parser.add_argument('--radiation-data', type=Path)
     parser.add_argument('--steps', type=int, default=5, help='total intervals per mode, including warmup')
     parser.add_argument('--warmup', type=int, default=2, help='initial intervals excluded from steady timing')
@@ -71,7 +75,7 @@ def main(argv=None):
         parser.error('output must be new/empty')
     args.output.mkdir(parents=True, exist_ok=True)
     config = c.CampaignConfig(**yaml.safe_load(args.config.read_text()))
-    changes = {name: getattr(args, name) for name in ('cells', 'threads') if getattr(args, name) is not None}
+    changes = {name: getattr(args, name) for name in ('cells', 'threads', 'device', 'dtype') if getattr(args, name) is not None}
     config = replace(config, **changes, compile=False).validate()
     config, xyz, mesh_info = c.load_mesh(config, args.mesh)
     result = dict(status='running', torch=str(torch.__version__), configuration=asdict(config),
@@ -79,7 +83,11 @@ def main(argv=None):
                   steps=args.steps, warmup=args.warmup, source_sha256=c.source_hashes(), modes={})
     c.atomic_json(args.output/'comparison.json', result)
     models = {}
+    execution = ExitStack()
     try:
+        device = resolve_device(config.device)
+        execution.enter_context(execution_context(device))
+        result['execution'] = runtime_manifest(device, config.dtype)
         for label, compiled in (('eager', False), ('compiled', True)):
             print(f'Building {label}; initial calls may compile', flush=True)
             cfg = replace(config, compile=compiled)
@@ -87,6 +95,7 @@ def main(argv=None):
             a, air, r, sea = c.build(cfg, args.source, args.radiation_data,
                                     smoke_no_radiation=args.radiation_data is None, generator_xyz=xyz)
             initial = c.inventories(a, air, r, sea)
+            synchronize(device)
             models[label] = [a, air, r, sea, cfg]
             result['modes'][label] = dict(setup_and_initial_diagnostics_seconds=time.perf_counter()-start,
                 compilation=a.compilation_manifest, initial=initial, intervals=[], external=0., upstream=0.)
@@ -97,8 +106,10 @@ def main(argv=None):
                 a, air, r, sea, cfg = models[label]
                 if label == 'compiled' and step == args.steps-1:
                     saved = c.pack(a, air, r, sea, 'benchmark', {})
+                synchronize(device)
                 start = time.perf_counter()
                 air, sea, report = c.advance(a, air, r, sea, cfg.physics_dt, cfg)
+                synchronize(device)
                 elapsed = time.perf_counter()-start
                 models[label][1], models[label][3] = air, sea
                 row = result['modes'][label]
@@ -115,6 +126,7 @@ def main(argv=None):
         a, air, r, sea, cfg = models['compiled']
         ra, rs, _ = c.unpack(saved, a, r, sea, 'benchmark')
         ra, rs, rr = c.advance(a, ra, r, rs, cfg.physics_dt, cfg)
+        synchronize(device)
         result['compiled_restart_bitwise'] = equal(c.pack(a,ra,r,rs,'compare',{}), payloads['compiled']) and equal(rr,result['modes']['compiled']['intervals'][-1]['report'])
         if not result['compiled_restart_bitwise']:
             raise AssertionError('compiled restart replay differs')
@@ -128,6 +140,8 @@ def main(argv=None):
         result.update(status='failed', error=f'{type(error).__name__}: {error}')
         c.atomic_json(args.output/'comparison.json', result)
         raise
+    finally:
+        execution.close()
     c.atomic_json(args.output/'comparison.json', result)
     print(json.dumps({k: result[k] for k in ('status', 'steady_speedup', 'compiled_restart_bitwise')}), flush=True)
     return 0

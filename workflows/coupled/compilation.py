@@ -1,4 +1,4 @@
-"""Opt-in regional compilation for the coupled CPU/float64 campaign.
+"""Opt-in regional compilation for the coupled device/precision configuration.
 
 Compile repeated tensor algebra, with the same functions and parameters. The
 shared mesh kernels serve atmosphere, ocean and ice. Atmospheric Hamiltonian

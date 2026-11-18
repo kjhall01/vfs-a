@@ -1,7 +1,8 @@
-"""365-day coupled aquaplanet campaign, explicit CPU/float64 configuration."""
+"""365-day coupled aquaplanet campaign with explicit device and precision."""
 
 import argparse
 import csv
+from contextlib import ExitStack
 from dataclasses import asdict, dataclass, replace
 import hashlib
 import io
@@ -28,6 +29,8 @@ from workflows.coupled.ice_temperature import (
 )
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
+from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
+    runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
 from ocean_ice import OceanIce
 from ridging import CategoryIce, RidgingState
 from snow import SnowState
@@ -96,10 +99,13 @@ class CampaignConfig:
     ale_remap: bool = True
     threads: int = 1
     compile: bool = False
+    device: str = "cpu"
+    dtype: str = "float64"
     diagnostic_hours: int = 6
     restart_days: int = 5
 
     def validate(self):
+        validate_precision(self.device, self.dtype)
         for key in (
             "days",
             "start_year",
@@ -200,10 +206,10 @@ def snapshot_times(days=365):
 
 def rest_thickness(config):
     """Shared initial/ALE layer distribution, with a nominal fixed top depth."""
-    tail = torch.logspace(0, 1, config.ocean_levels - 1)
+    tail = torch.logspace(0, 1, config.ocean_levels - 1, dtype=torch.float64)
     return torch.cat(
         (
-            torch.tensor([config.top_layer_m]),
+            torch.tensor([config.top_layer_m], dtype=torch.float64),
             tail / tail.sum() * (config.ocean_depth_m - config.top_layer_m),
         )
     )
@@ -332,6 +338,8 @@ def build(
     config, source, radiation_data, *, smoke_no_radiation=False, generator_xyz=None
 ):
     config.validate()
+    device = resolve_device(config.device)
+    dtype = validate_precision(device, config.dtype)
     if radiation_data is None and not smoke_no_radiation:
         raise ValueError(
             "--radiation-data /path/to/sea_esf is required for the seasonal campaign"
@@ -364,6 +372,8 @@ def build(
         radiation_step=config.radiation_dt,
         start=(config.start_year, 1, 1, 0, 0, 0),
         namelist_overrides=nml,
+        device=device,
+        dtype=dtype,
         mesh_options=dict(
             lloyd_iters=config.lloyd_iterations,
             generator_xyz=generator_xyz,
@@ -373,13 +383,15 @@ def build(
     )
     torch.set_num_threads(config.threads)
     mesh = adapter.model.mesh
-    column = OceanColumn(
-        config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
-    )
+    with initialization_dtype(torch.float64):
+        column = OceanColumn(
+            config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
+        ).to(device=device, dtype=dtype)
     model = RoquetOcean(
         mesh,
         column,
-        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps),
+        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps,
+                            budget_rtol=mixing_budget_rtol(dtype)),
         backscatter=(
             EddyBackscatter(
                 config.backscatter_viscosity_m2_s,
@@ -391,7 +403,7 @@ def build(
             else None
         ),
     )
-    dz = rest_thickness(config)
+    dz = rest_thickness(config).to(mesh.cell_area)
     h = dz[None].expand(mesh.nCells, -1).clone()
     z = dz.cumsum(0) - dz / 2
     sinlat = mesh.cell_xyz[:, 2]
@@ -399,7 +411,7 @@ def build(
     deep = torch.minimum(sst, torch.full_like(sst, 2.0))
     ct = deep[:, None] + (sst - deep)[:, None] * torch.exp(-(z - z[0])[None] / 250.0)
     ocean = model.state(
-        u_e=torch.zeros(mesh.nEdges, config.ocean_levels),
+        u_e=h.new_zeros(mesh.nEdges, config.ocean_levels),
         h=h,
         conservative_temperature=ct,
         absolute_salinity=torch.full_like(h, 34.0),
@@ -409,9 +421,9 @@ def build(
     )
     # Smooth polar ice cap, with no prescribed velocity or ongoing restoring.
     cover = ((sinlat.abs() - 0.90) / 0.08).clamp(0, 0.7)
-    area = cover[:, None] * torch.tensor([0.8, 0.2])
+    area = cover[:, None] * cover.new_tensor([0.8, 0.2])
     ice = CategoryIce(
-        area, area * torch.tensor([0.3, 1.0]), torch.zeros(mesh.nEdges, 1)
+        area, area * area.new_tensor([0.3, 1.0]), area.new_zeros(mesh.nEdges, 1)
     )
     owner = ThermalSnowOceanIce(OceanIce(model))
     bare = SnowState(RidgingState(ocean, ice), torch.zeros_like(area))
@@ -565,6 +577,7 @@ def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
         smoke_no_radiation=smoke_no_radiation,
         mesh_sha256=mesh_sha256,
         compilation=adapter.compilation_manifest,
+        execution=runtime_manifest(adapter.model.mesh.cell_area.device, adapter.model.mesh.cell_area.dtype),
     )
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -595,7 +608,7 @@ def pack(adapter, air, receiver, sea, identity, ledger):
 def unpack(payload, adapter, receiver, template, identity):
     if payload.get("schema") != 1 or payload.get("fingerprint") != identity:
         raise ValueError("campaign restart configuration/source/runtime does not match")
-    p = copy_tree(payload)
+    p = copy_tree(payload, device=adapter.model.mesh.cell_area.device)
     air = adapter.unpack(p["air"])
     physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
     ocean = replace(
@@ -616,7 +629,8 @@ def atomic_json(path, value):
 
 def checkpoint(path, payload):
     temp = path.with_suffix(path.suffix + ".tmp")
-    torch.save(payload, temp)
+    # Portable host storage; unpack explicitly restores the selected device.
+    torch.save(copy_tree(payload, device="cpu"), temp)
     temp.replace(path)
 
 
@@ -791,6 +805,9 @@ def main(argv=None):
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
+    parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
+    parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
     parser.add_argument(
         "--compile", action=argparse.BooleanOptionalAction, default=None,
         help="Compile shared mesh and atmosphere/ocean thermal kernels with Inductor; first calls include compilation (overrides YAML)",
@@ -817,6 +834,9 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
+    for name in ("device", "dtype", "threads"):
+        if getattr(args, name) is not None:
+            config = replace(config, **{name: getattr(args, name)}).validate()
     if args.compile is not None:
         config = replace(config, compile=args.compile).validate()
     end = (
@@ -847,7 +867,13 @@ def main(argv=None):
     air = sea = adapter = receiver = identity = ledger = None
     start = time.perf_counter()
     logger = run_logger(output, args.verbose)
+    execution = ExitStack()
     try:
+        device = resolve_device(config.device)
+        config = replace(config, device=str(device))
+        execution.enter_context(execution_context(device))
+        runtime = runtime_manifest(device, config.dtype)
+        logger.info("Execution: %s", json.dumps(runtime))
         logger.info(
             "Starting %s; target %.6f model days; radiation %s",
             "preflight" if args.preflight else "campaign",
@@ -908,6 +934,7 @@ def main(argv=None):
                 configuration=asdict(config),
                 radiation_enabled=not args.smoke_no_radiation,
                 compilation=adapter.compilation_manifest,
+                execution=runtime,
                 torch=str(torch.__version__),
             ),
         )
@@ -938,12 +965,17 @@ def main(argv=None):
                 "Advancing one complete coupled interval and replaying its restart"
             )
             payload = pack(adapter, air, receiver, sea, identity, ledger)
+            checkpoint(output / "preflight_restart.pt", payload)
             with torch.no_grad():
                 a, s, r = advance(
                     adapter, air, receiver, sea, config.physics_dt, config
                 )
-                ra, rs, _ = unpack(payload, adapter, receiver, sea, identity)
+                ra, rs, _ = unpack(
+                    torch.load(output / "preflight_restart.pt", map_location="cpu", weights_only=True),
+                    adapter, receiver, sea, identity,
+                )
                 b, t, u = advance(adapter, ra, receiver, rs, config.physics_dt, config)
+                synchronize(device)
             left = pack(adapter, a, receiver, s, identity, ledger)
             right = pack(adapter, b, receiver, t, identity, ledger)
 
@@ -1002,6 +1034,8 @@ def main(argv=None):
                 candidate, water, report = advance(
                     adapter, air, receiver, sea, dt, config
                 )
+                # An asynchronous CUDA failure must be observed before commit.
+                synchronize(device)
                 air, sea = candidate, water
                 ledger["steps"] += 1
                 ledger["external"] += report["external"]
@@ -1097,6 +1131,7 @@ def main(argv=None):
         print(json.dumps(status, indent=2), file=sys.stderr, flush=True)
         return 1
     finally:
+        execution.close()
         for handler in logger.handlers[:]:
             handler.close()
             logger.removeHandler(handler)

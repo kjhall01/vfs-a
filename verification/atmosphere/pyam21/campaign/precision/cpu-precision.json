@@ -1,0 +1,362 @@
+{
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "optics": "analytic through actual fresh/cache/cache/fresh scheduler",
+  "cells": 32,
+  "atmosphere_levels": 24,
+  "ocean_levels": 12,
+  "physics_ocean_dt": 1200,
+  "atmosphere_dt": 240,
+  "radiation_dt": 3600,
+  "mixing_and_eddy_substeps": 10,
+  "intervals": 4,
+  "all_configured_processes": true,
+  "float64_exact_against_969400e": true,
+  "compared_tensors": 240,
+  "modes": {
+    "float64": {
+      "initial": {
+        "energy": 21194225140.91903,
+        "water": 1025047.4768539596,
+        "salt": 34000.00000000001
+      },
+      "final": {
+        "energy": 21193732899.919872,
+        "water": 1025047.4768539595,
+        "salt": 34000.00000000001
+      },
+      "external_J_m2": -492240.44613492413,
+      "upstream_J_m2": -0.4246511194581375,
+      "native_numerical_energy_residual_J_m2": -0.12837090831424813,
+      "native_water_change_kg_m2": -1.1641532182693481e-10,
+      "native_salt_relative": 0.0
+    },
+    "float32": {
+      "initial": {
+        "energy": 21194223616.0,
+        "water": 1025047.4375,
+        "salt": 33999.99609375
+      },
+      "final": {
+        "energy": 21193734144.0,
+        "water": 1025047.375,
+        "salt": 34000.0
+      },
+      "external_J_m2": -492240.625,
+      "upstream_J_m2": -13.218303114175797,
+      "native_numerical_energy_residual_J_m2": 2781.843303114176,
+      "native_water_change_kg_m2": -0.0625,
+      "native_salt_relative": 1.1488971908199897e-07
+    }
+  },
+  "final_tensor_differences": {
+    "/state/air/atmosphere/u_e": {
+      "max_absolute": 4.4898585346508924e-05,
+      "max_scaled": 6.854399037325934e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/atmosphere/ps": {
+      "max_absolute": 0.11950105370488018,
+      "max_scaled": 1.1906684368453193e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/atmosphere/entropy_content": {
+      "max_absolute": 24.849592466722243,
+      "max_scaled": 1.5053988594992176e-05,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/atmosphere/water_content": {
+      "max_absolute": 0.0029451773375512857,
+      "max_scaled": 3.094877125368915e-05,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/cloud_fraction": {
+      "max_absolute": 2.718774109043004e-06,
+      "max_scaled": 2.718774109043004e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/diff_cu_mo": {
+      "max_absolute": 0.005651578959479764,
+      "max_scaled": 0.00022845570710934741,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/convect": {
+      "unequal": 0
+    },
+    "/state/air/memory/radturbten": {
+      "max_absolute": 0.0,
+      "max_scaled": 0.0,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/pbltop": {
+      "max_absolute": 0.0010197982111321835,
+      "max_scaled": 2.751886378565333e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/gust": {
+      "max_absolute": 2.0461390879356056e-05,
+      "max_scaled": 2.0461390879356056e-05,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/diff_t": {
+      "max_absolute": 1.9099288072088605e-05,
+      "max_scaled": 1.9099288072088605e-05,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/memory/diff_m": {
+      "max_absolute": 0.001083107213016632,
+      "max_scaled": 6.543830056730915e-05,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/land": {
+      "unequal": 0
+    },
+    "/state/air/surface/albedo": {
+      "max_absolute": 4.56585348848626e-07,
+      "max_scaled": 4.56585348848626e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/coszen": {
+      "max_absolute": 2.2862207388341105e-07,
+      "max_scaled": 2.2862207388341105e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/rough_mom": {
+      "max_absolute": 1.445179804819563e-12,
+      "max_scaled": 1.445179804819563e-12,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/rough_heat": {
+      "max_absolute": 1.445179804819563e-12,
+      "max_scaled": 1.445179804819563e-12,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/rough_moist": {
+      "max_absolute": 1.445179804819563e-12,
+      "max_scaled": 1.445179804819563e-12,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/rough_scale": {
+      "max_absolute": 1.445179804819563e-12,
+      "max_scaled": 1.445179804819563e-12,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/t_surf": {
+      "max_absolute": 3.445085286557514e-05,
+      "max_scaled": 1.1441393308675222e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/albedo_bands/asfc_vis_dir": {
+      "max_absolute": 4.56585348848626e-07,
+      "max_scaled": 4.56585348848626e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/albedo_bands/asfc_nir_dir": {
+      "max_absolute": 4.56585348848626e-07,
+      "max_scaled": 4.56585348848626e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/albedo_bands/asfc_vis_dif": {
+      "max_absolute": 4.56585348848626e-07,
+      "max_scaled": 4.56585348848626e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/surface/albedo_bands/asfc_nir_dif": {
+      "max_absolute": 4.56585348848626e-07,
+      "max_scaled": 4.56585348848626e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/tdtsw": {
+      "max_absolute": 9.58501719529705e-10,
+      "max_scaled": 9.58501719529705e-10,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/ufsw": {
+      "max_absolute": 2.5292188642112023e-05,
+      "max_scaled": 4.2392597173724335e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/dfsw": {
+      "max_absolute": 0.00027276688096478097,
+      "max_scaled": 4.220201071331217e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/tdtlw": {
+      "max_absolute": 5.284732178821643e-10,
+      "max_scaled": 5.284732178821643e-10,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/flxnet": {
+      "max_absolute": 4.514940806643608e-05,
+      "max_scaled": 1.7365156948629262e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/tdt_rad": {
+      "max_absolute": 1.1722602259695925e-09,
+      "max_scaled": 1.1722602259695925e-09,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/flux_sw_surf": {
+      "max_absolute": 9.787718028775316e-05,
+      "max_scaled": 4.2415917181632786e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/flux_lw_surf": {
+      "max_absolute": 0.0002341698843792983,
+      "max_scaled": 6.060817482475267e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/solar_save": {
+      "max_absolute": 3.7659199303430313e-07,
+      "max_scaled": 3.722655609501688e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/sw_heating_save": {
+      "max_absolute": 9.102158577908599e-10,
+      "max_scaled": 9.102158577908599e-10,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/tot_heating_save": {
+      "max_absolute": 1.082451631760216e-09,
+      "max_scaled": 1.082451631760216e-09,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/ufsw_save": {
+      "max_absolute": 2.3429984608469567e-05,
+      "max_scaled": 3.8601353386232936e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/dfsw_save": {
+      "max_absolute": 0.00023411556406927048,
+      "max_scaled": 3.5603993139057326e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/flux_sw_surf_save": {
+      "max_absolute": 7.21890451558238e-05,
+      "max_scaled": 3.0750035869021215e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/saved/vfs_radiation_pflux": {
+      "max_absolute": 0.1194920561829349,
+      "max_scaled": 1.1905787884670705e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/air/radiation/coszen": {
+      "max_absolute": 2.2862207388341105e-07,
+      "max_scaled": 2.2862207388341105e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ocean/u_e": {
+      "max_absolute": 1.8261194428175268e-06,
+      "max_scaled": 1.8261194428175268e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ocean/h": {
+      "max_absolute": 5.977131675649616e-05,
+      "max_scaled": 2.7298841768718077e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ocean/temp_h": {
+      "max_absolute": 0.0016635491657552848,
+      "max_scaled": 1.929435009004163e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ocean/salt_h": {
+      "max_absolute": 0.01403130098060501,
+      "max_scaled": 1.8848223434035095e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ocean/tracer_h": {
+      "max_absolute": 0.000422558657078298,
+      "max_scaled": 1.9299159770189843e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/tke_h": {
+      "max_absolute": 8.835920482449817e-08,
+      "max_scaled": 8.835920482449817e-08,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/eddy_h": {
+      "max_absolute": 3.6529070048508387,
+      "max_scaled": 0.16712928516204656,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ice/area": {
+      "max_absolute": 1.1393469638992793e-06,
+      "max_scaled": 1.1393469638992793e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ice/volume": {
+      "max_absolute": 3.394202807913138e-07,
+      "max_scaled": 3.394202807913138e-07,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/ice/velocity": {
+      "max_absolute": 2.7970437326101105e-06,
+      "max_scaled": 2.7970437326101105e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/snow_mass": {
+      "max_absolute": 9.985517637757041e-06,
+      "max_scaled": 9.985517637757041e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    },
+    "/state/cold_content": {
+      "max_absolute": 3.0002383291721344,
+      "max_scaled": 1.107985923590955e-06,
+      "reference_dtype": "torch.float64",
+      "candidate_dtype": "torch.float32"
+    }
+  },
+  "max_ocean_temperature_difference_K": 5.3634989978235126e-05,
+  "max_eddy_specific_energy_difference_J_kg": 0.0753063799187334
+}
