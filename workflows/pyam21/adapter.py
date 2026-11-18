@@ -40,8 +40,8 @@ class AM2Adapter:
             raise ValueError("energy_mode must be conservative or legacy")
         self.energy_mode = energy_mode
         ref = model.mesh.cell_area
-        if ref.dtype != torch.float64 or ref.device.type != "cpu":
-            raise ValueError("this workflow currently requires CPU float64")
+        if ref.dtype != torch.float64 or ref.device.type not in ("cpu", "cuda"):
+            raise ValueError("this workflow requires CPU or CUDA float64")
         if model.dynamics.kernel.gravity != am2_constants.GRAV:
             raise ValueError(
                 "configure the host kernel gravity to PyAM21 GRAV=9.8 before initializing state"
@@ -64,7 +64,7 @@ class AM2Adapter:
             lon,
             hprime=hprime,
             radiation=None if radiation is None else radiation.for_physics(),
-        )
+        ).to(device=ref.device, dtype=ref.dtype)
         # Pin the restart to actual installed source, configuration and geometry.
         root = Path(am2_constants.__file__).parent
         source = {

@@ -56,12 +56,15 @@ python -I workflows/coupled/campaign.py \
 The default [configuration](coupled_aquaplanet_1yr.yaml) is editable; select
 another with `--config FILE.yaml`. Defaults are 256 cells, 24 atmospheric
 levels, 12 stretched ocean layers and 1000 m depth with a 20 m top layer.
-The compatible rotation mesh has ten Lloyd iterations. Everything runs on CPU
-in float64 with one thread. Physics/ocean steps are 1200 seconds, atmospheric
+The compatible rotation mesh has ten Lloyd iterations. The default is CPU
+float64 with one thread; `--device cuda:0` selects a single visible NVIDIA GPU,
+still in float64. `--threads N` overrides host threads. See the
+[GPU setup and qualification guide](GPU.md) before a CUDA campaign.
+Physics/ocean steps are 1200 seconds, atmospheric
 substeps 240 seconds, radiation hourly. Mixing and GM–Redi each use ten
 substeps per ocean step (120 seconds). The earlier ocean sweep supports the
 chosen ocean step under its tested conditions; it does not validate the entire
-coupled configuration. Optional regional CPU compilation is described below;
+coupled configuration. Optional regional compilation is described below;
 GPU execution remains unqualified.
 
 All three components start with **zero velocity**, with analytic moist

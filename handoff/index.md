@@ -1,5 +1,24 @@
 # Current package documentation
 
+PR #90 is merged at `969400ef0ae1f900fc148907d46a2541d0f149ff`, following the
+user's reported successful two-day seasonal 16384-cell Mac run. A subsequent
+single-device CUDA pass adds campaign `--device cpu|cuda|cuda:N`, host
+`--threads`, explicit geometry/state placement, CPU-stored checkpoints restored
+to the selected device, deterministic CUDA execution policy and synchronized
+timing. Full physical settings, float64, solver tolerances and upstream sources
+are retained; multi-GPU execution is not implemented.
+
+Installed-wheel checks: **110 passed, two CUDA skips**, with native CPU Inductor
+enabled. Frozen **142/93** comparisons pass. Five CPU states spanning four full
+1200-second intervals agree with the merged base across **240 tensors and 127
+scalar/metadata leaves**, bitwise. The 32-cell comparison uses 24/12 levels,
+hourly analytic radiation through the real fresh/cache/cache/fresh scheduler,
+ten mixing/eddy substeps and all configured processes. No CUDA hardware or real
+optical tables are available here. The new real-table CPU/CUDA comparison driver
+and eager/compiled CUDA tests must be run on a GPU before claiming GPU support
+qualified or reporting a speedup. See [GPU instructions](../workflows/coupled/GPU.md)
+and [evidence](../verification/atmosphere/pyam21/campaign/cuda/README.md).
+
 The second uploaded campaign failure at second 38400 exposed an ALE
 active-constraint stall. A stored candidate can violate entropy while the
 linearized prediction remains inside tolerance; the resulting sub-ulp step

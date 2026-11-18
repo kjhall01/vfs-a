@@ -27,6 +27,7 @@ def example(
     start=(2000, 1, 1, 0, 0, 0),
     mesh_options=None,
     namelist_overrides=None,
+    device="cpu",
 ):
     """Analytic moist profile with BOMEX physics options, not the BOMEX case.
 
@@ -90,6 +91,9 @@ def example(
         rad = build_radiation(
             nml, model, radiation_data, width_degrees=climatology_width_degrees
         )
+    # Construct geometry and input-data sampling on CPU, then move registered
+    # geometry BEFORE building maps, physics latitude/longitude or state.
+    model.to(device=device, dtype=torch.float64)
     adapter = AM2Adapter(
         model,
         nml,

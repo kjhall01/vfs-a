@@ -1,4 +1,4 @@
-# Initial spin-up experiment, CPU float64. Not an equilibrated climate control.
+# Initial spin-up experiment, float64 (CPU default; optional CUDA).
 # The short-edge momentum-map defect is fixed; see CAMPAIGN.md for measured
 # radiation-off qualification. Seasonal/year-long stability remains unverified.
 days: 365
@@ -41,5 +41,6 @@ ale_remap: true
 threads: 1
 # Regional Inductor kernels; --compile/--no-compile overrides this switch.
 compile: false
+device: cpu
 diagnostic_hours: 6
 restart_days: 5

@@ -5,14 +5,14 @@ import torch
 from vfs.atmosphere.moist_conservative import MoistState
 
 
-def copy_tree(value):
-    """Clone tensors without detaching gradients; copy plain restart containers."""
+def copy_tree(value, *, device=None):
+    """Clone tensors, optionally onto an explicit device; retain gradients."""
     if isinstance(value, torch.Tensor):
-        return value.clone()
+        return value.clone() if device is None else value.to(device=device, copy=True)
     if isinstance(value, dict):
-        return {k: copy_tree(v) for k, v in value.items()}
+        return {k: copy_tree(v, device=device) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
-        return type(value)(copy_tree(v) for v in value)
+        return type(value)(copy_tree(v, device=device) for v in value)
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     raise TypeError(f"unsupported workflow state type: {type(value)}")

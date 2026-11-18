@@ -1,5 +1,23 @@
 # Pass 4 — physical-field workflow
 
+## Coupled single-device CUDA preparation (2026-11-17)
+
+After PR #90 merged, the coupled workflow gained explicit CPU/CUDA float64
+placement, device/host-thread CLI switches, CPU-stored restart tensors restored
+onto the model device, deterministic CUDA replay policy, hardware/runtime
+provenance and synchronized comparison timing. Physical settings and packaged
+numerical kernels are unchanged. CUDA is a single-device path; no component
+parallelism is claimed. The upstream PyAM21 revision is unchanged.
+
+Installed-wheel focused validation: **110 passed, 2 CUDA skips** with native
+CPU Inductor enabled; frozen portable **142/93** comparisons pass. Against the
+merged CPU base, a four-interval 32-cell/default-level/default-timestep analytic
+radiation campaign agrees bitwise across **240 tensors and 127 scalar leaves**.
+CUDA tests and a full real-table CPU/CUDA comparison command are provided but
+cannot be executed on this CPU-only host. See
+[evidence](../verification/atmosphere/pyam21/campaign/cuda/README.md) and
+[GPU setup](../workflows/coupled/GPU.md).
+
 > Current numerical-fix evidence: [paired Gibbs revision](../verification/GIBBS_FIX_RESULTS.md).
 > Historical fixtures below remain unchanged; the proposed revision fails their moist gates.
 >

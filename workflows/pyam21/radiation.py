@@ -120,14 +120,14 @@ def climatology_boxes(mesh, width_degrees):
 
 
 def reference_pressures(column):
-    ps = torch.tensor([[101325.0], [81060.0]], dtype=torch.float64)
+    ps = column.A_interface.new_tensor([[101325.0], [81060.0]])
     ph = column.interface_pressure(ps)
     dp = ph.diff()
     if (ph <= 0).any() or (dp <= 0).any():
         raise ValueError("positive increasing reference pressures required")
     r = dp / ph[:, :-1]
     full = ph[:, 1:] * torch.exp(-1 + torch.log1p(r) / r)
-    return torch.cat((full, ps), -1).T.numpy()
+    return torch.cat((full, ps), -1).T.detach().cpu().numpy()
 
 
 def build_radiation(namelist, model, data_dir, *, width_degrees=1.0):
