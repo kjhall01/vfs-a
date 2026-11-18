@@ -1,5 +1,16 @@
 # Current package documentation
 
+The user reported successful real-table float64 runs on T4 (eager, two days,
+2103.09 s) and L4 (regional Inductor, two days, 1310.93 s). These are user logs,
+not locally executed GPU or full-field equivalence checks. The L4 continuation
+then rejected at the PyAM21 endpoint/tendency guard, with last committed time
+249600 s (day 2.888889). No failing checkpoint is available locally yet, and no
+numerical correction or tolerance change is justified from that log alone.
+`tools/diagnose_pyam21_endpoint.py` captures the rejected one-interval replay on
+the original runtime, retaining source/runtime fingerprint checks and all solver
+checks. It reports per-field errors/tolerances and saves a small column-physics
+replay bundle. It does not change any fingerprinted model source.
+
 The GPU draft now also exposes `--dtype float32|float64` and `--device mps`
 (explicit float32 required). CPU float64 defaults and the four-interval merged
 baseline are bitwise unchanged. CPU float32 eager/compiled integration, disk

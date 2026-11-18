@@ -1,5 +1,29 @@
 # Pass 4 — physical-field workflow
 
+## Endpoint/tendency failure diagnostic (2026-11-18)
+
+User logs report two-day real-table float64 completion on T4 eager and L4 with
+regional Inductor. The latter continued from its day-two restart and rejected
+the next interval after second 249600 at the explicit PyAM21 endpoint/tendency
+consistency check. This does not establish whether the cause is roundoff,
+upstream physics or device-specific behavior. The actual failed state has not
+been reproduced locally.
+
+The new standalone `tools/diagnose_pyam21_endpoint.py` preserves the complete
+configuration, restart identity and numerical checks, capturing per-field
+discrepancies and selected columns' moist-process inputs only on this failure.
+It leaves the original rejection active and its replay status failed. The tool,
+tests and Markdown documentation do not alter campaign-hashed Python source;
+existing checkpoints can be diagnosed on their original runtime. No numerical
+fix, tolerance relaxation or production restart migration is introduced.
+
+Validation outside the checkout against installed VFS: 41 endpoint/workflow
+tests pass, including unchanged successful physics and a deliberately inconsistent
+endpoint that remains rejected and produces a CPU-loadable moist replay bundle.
+Frozen portable comparisons pass for 142 corrected-Gibbs and 93 dry-helper
+tensors. All fingerprinted Python files match the user's `33e888c` source
+byte-for-byte. Actual L4 failure capture remains pending.
+
 ## Coupled dtype/MPS preparation (2026-11-17)
 
 The single-GPU draft now accepts CPU/CUDA/MPS and float32/float64, including

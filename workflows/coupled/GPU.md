@@ -203,3 +203,33 @@ Eager checks, iterative solves and scalar diagnostics still synchronize with
 the host. They remain in place for this correctness pass; GPU speedup is not
 guaranteed. Subsequent optimization should use the measured profile while
 retaining the same budgets, checks and active physical processes.
+
+## Diagnosing an endpoint/tendency rejection
+
+For `PyAM21 endpoint and tendencies disagree beyond roundoff`, keep the failed
+segment's `last_good_restart.pt`, `manifest.json` and `configuration.json`.
+The message alone does not distinguish a physics inconsistency from accumulated
+roundoff. Do not disable the check or change precision to continue this state.
+
+On the original GPU/runtime and unchanged model checkout, run:
+
+```bash
+python -u -I tools/diagnose_pyam21_endpoint.py \
+  --repo . --failed-run /path/to/failed-segment \
+  --source "$PYAM_SOURCE" --radiation-data "$RADIATION_DATA" \
+  --mesh "$MESH" --output /path/to/new-endpoint-diagnostic
+```
+
+This reuses the failed segment's complete configuration, compilation choice,
+real radiation and normal restart identity check. It advances one interval via
+the existing preflight. If the error recurs, `endpoint_failure.json` reports each
+field's discrepancy, unchanged tolerance and worst cell/level. The accompanying
+`endpoint_failure.pt` saves selected full columns and their actual PyAM21 moist
+inputs for independent investigation. The original exception is re-raised;
+`replay/status.json` remains failed. The tool exits successfully only to indicate
+a completed capture, or a completed preflight if the failure did not reproduce.
+
+The tool is under `tools/`, outside the campaign's hashed source directories.
+It can be fetched separately into an unchanged checkout: no model-source update
+or restart fingerprint bypass is needed. If the same-device run does not match
+the original source/runtime identity, the ordinary restart guards still reject.
