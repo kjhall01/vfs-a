@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "error": "FileNotFoundError: SeaEsfRad requires the extracted sea_esf directory; missing ['stdlvls', 'h2ocoeff_ckd_speccombwidebds_hi00', 'h2ockd2.1_data'] in /workspace/scratch/79205660e358/radiation-inputs/sea_esf. Obtain the GFDL SCM bundle from ftp://ftp.gfdl.noaa.gov/perm/GFDL_pubrelease/SCM/input_data.tar.gz; no fallback is used.",
+  "last_committed_seconds": null,
+  "wall_seconds": 0.3790704660004849
+}

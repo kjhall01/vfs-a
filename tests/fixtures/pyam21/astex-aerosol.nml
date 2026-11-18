@@ -1,0 +1,35 @@
+! Unmodified sections from evanwellmeyer/PyAM21
+! e1bdfcc3b23c05adea80b35af880702bb85718eb reference/input/gcss_astex/input.nml
+
+ &aerosolrad_package_nml
+	volcanic_dataset_entry = 1, 1, 1, 0, 0, 0,
+	using_volcanic_lw_files = .false.,
+	lw_ext_filename = "             "
+	lw_ext_root = "     "
+	lw_asy_filename = "             "
+	lw_asy_root = "     "
+	lw_ssa_filename = "             "
+	lw_ssa_root = "     "
+	using_volcanic_sw_files = .false.,
+	sw_ext_filename = "             "
+	sw_ext_root = "     "
+	sw_ssa_filename = "             "
+	sw_ssa_root = "     "
+	sw_asy_filename = "             "
+	sw_asy_root = "     "
+	do_lwaerosol = .true.,
+	do_swaerosol = .true.,
+	aerosol_data_set = 'shettle_fenn',
+	optical_filename = "aerosol.optical.dat",
+	aerosol_optical_names = "sulfate_30%", "sulfate_35%", "sulfate_40%", "sulfate_45%",
+                                "sulfate_50%", "sulfate_55%", "sulfate_60%", "sulfate_65%",
+				"sulfate_70%", "sulfate_75%", "sulfate_80%", "sulfate_82%",
+				"sulfate_84%", "sulfate_86%", "sulfate_88%", "sulfate_90%",
+				"sulfate_91%", "sulfate_92%", "sulfate_93%", "sulfate_94%",
+				"sulfate_95%", "sulfate_96%", "sulfate_97%", "sulfate_98%",
+				"sulfate_99%", "sulfate_100%","organic_carbon","soot",
+				"sea_salt",    "dust_0.1",    "dust_0.2",    "dust_0.4",
+				"dust_0.8",    "dust_1.0",    "dust_2.0",    "dust_4.0",
+				"dust_8.0"
+/
+

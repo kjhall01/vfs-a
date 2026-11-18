@@ -1,0 +1,72 @@
+! Unmodified sections from evanwellmeyer/PyAM21
+! e1bdfcc3b23c05adea80b35af880702bb85718eb reference/input/gcss_bomex/input.nml
+
+ &aerosol_nml
+    use_aerosol_timeseries = .false.
+    aerosol_dataset_entry =  1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+                             1990, 1, 1, 0, 0, 0,
+    family_names = "small_dust", "large_dust", "sulfate", "aerosol"
+    in_family1 = F,F,F,F,F,T,T,T,T,T,F,F,F,T,T,T,T,T,F,F,F,
+    in_family2 = F,F,F,F,F,F,F,F,F,F,T,T,T,F,F,F,F,F,T,T,T,
+    in_family3 = T,T,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,
+    in_family4 = T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,T,
+    data_names = "so4_anthro", "so4_natural", "organic_carbon", "black_carbon", "sea_salt",
+                 "anthro_dust_0.1", "anthro_dust_0.2", "anthro_dust_0.4", "anthro_dust_0.8",
+                 "anthro_dust_1.0", "anthro_dust_2.0", "anthro_dust_4.0", "anthro_dust_8.0",
+                 "natural_dust_0.1", "natural_dust_0.2", "natural_dust_0.4", "natural_dust_0.8",
+                 "natural_dust_1.0", "natural_dust_2.0", "natural_dust_4.0", "natural_dust_8.0",
+    filename = "aerosol.climatology.nc"
+/
+
+
+ &aerosolrad_package_nml
+	volcanic_dataset_entry = 1990, 1, 1, 0, 0, 0,
+	using_volcanic_lw_files = .false.,
+	using_volcanic_sw_files = .false.,
+	do_lwaerosol = .false.,
+	do_swaerosol = .false.,
+	aerosol_data_set = '   ',
+/
+
+
+ &sealw99_nml
+       do_thick = .false.,
+       do_nlte = .false.,
+       do_lwcldemiss = .true.,
+       continuum_form = 'ckd2.1',
+       linecatalog_form = 'hitran_2000',
+
+       calc_co2_tfs_on_first_step = .false.,
+       calc_co2_tfs_monthly = .true.,
+       co2_tf_time_displacement = 360.0,
+
+       calc_ch4_tfs_on_first_step = .false.,
+       calc_ch4_tfs_monthly = .true.,
+       ch4_tf_time_displacement = 360.0,
+
+       calc_n2o_tfs_on_first_step = .false.,
+       calc_n2o_tfs_monthly = .true.,
+       n2o_tf_time_displacement = 360.0,
+
+       verbose = 5
+/
+

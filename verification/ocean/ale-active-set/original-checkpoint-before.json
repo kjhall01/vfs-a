@@ -1,0 +1,27 @@
+{
+  "status": "pass",
+  "report": {
+    "gmredi_steps": 10.0,
+    "redi_limited_fluxes": 982650.0,
+    "eddy_decay_steps": 1.0,
+    "ale_steps": 1.0,
+    "ale_changed_columns": 16384.0,
+    "gm_exchange_J_m2": 0.16909359064194895,
+    "redi_exchange_J_m2": 0.022022746989966018,
+    "eddy_dissipation_J_m2": 46.74784492718982,
+    "ale_energy_change_J_m2": 0.0,
+    "gm_outflow_fraction": 0.0002408934305541051,
+    "redi_step_number": 0.012609249784558569,
+    "gmredi_local_residual_J_m2": 2.2874379372488402e-12,
+    "eddy_decay_local_residual_J_m2": 2.326117225703514e-07,
+    "ale_column_residual_J_m2": 1.421281525958356e-05,
+    "external": 77244.23507775035,
+    "upstream": 0.0002748945364927801,
+    "surface_residual": 8.423347026109695e-06,
+    "air_residual": 8.12578946352005e-08,
+    "radiation_residual": 1.0853303441156944e-12,
+    "radiation_energy_residual": -2.122953759006768e-12
+  },
+  "seconds": 39600,
+  "wall": 70.74894676800068
+}

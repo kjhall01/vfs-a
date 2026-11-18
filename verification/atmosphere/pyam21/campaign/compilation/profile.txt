@@ -1,0 +1,70 @@
+wall 6.6322809499997675
+         279278 function calls (279238 primitive calls) in 6.628 seconds
+
+   Ordered by: cumulative time
+   List reduced from 569 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        2    0.010    0.005    6.632    3.316 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py:422(advance)
+       10    0.020    0.002    4.082    0.408 /workspace/scratch/79205660e358/wheel-check/workflows/pyam21/dynamics.py:10(advance_dynamics)
+       30    0.024    0.001    4.029    0.134 /workspace/scratch/79205660e358/wheel-check/workflows/pyam21/dynamics.py:26(euler)
+       30    0.004    0.000    3.602    0.120 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_moist.py:191(euler_with_info)
+       30    0.095    0.003    3.562    0.119 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_moist.py:60(evaluate)
+        2    0.000    0.000    1.209    0.605 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/ice_temperature.py:166(step)
+        2    0.001    0.000    1.209    0.604 /workspace/scratch/79205660e358/wheel-check/validation/sea_ice/snow.py:312(step)
+       30    0.072    0.002    1.204    0.040 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_moist.py:281(_gibbs_corrections)
+       60    0.298    0.005    0.966    0.016 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:61(bounded_transfer)
+       30    0.001    0.000    0.840    0.028 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:478(tendency)
+       30    0.085    0.003    0.805    0.027 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:166(_assemble)
+       90    0.128    0.001    0.792    0.009 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:78(mixture_gradients)
+       30    0.040    0.001    0.737    0.025 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:190(limited_traces)
+       60    0.005    0.000    0.648    0.011 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:548(energy_gradients)
+        2    0.001    0.000    0.610    0.305 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/driver.py:8(exchange_step)
+     2519    0.581    0.000    0.581    0.000 {method 'index_add' of 'torch._C.TensorBase' objects}
+     9823    0.534    0.000    0.534    0.000 {method 'sum' of 'torch._C.TensorBase' objects}
+        2    0.000    0.000    0.487    0.244 /workspace/scratch/79205660e358/wheel-check/validation/ocean_column/lagged.py:268(apply)
+       30    0.060    0.002    0.486    0.016 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/gibbs_means.py:47(gibbs_face)
+       20    0.001    0.000    0.486    0.024 /workspace/scratch/79205660e358/wheel-check/validation/temperature_coordinate/physics.py:52(_apply)
+        2    0.003    0.001    0.464    0.232 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py:209(mesoscale_step)
+        6    0.000    0.000    0.464    0.077 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/ice_temperature.py:117(phase_step)
+       20    0.019    0.001    0.462    0.023 /workspace/scratch/79205660e358/wheel-check/validation/ocean_column/lagged.py:85(_apply)
+       20    0.040    0.002    0.453    0.023 /workspace/scratch/79205660e358/wheel-check/validation/temperature_coordinate/eddy.py:370(apply)
+        6    0.007    0.001    0.439    0.073 /workspace/scratch/79205660e358/wheel-check/validation/sea_ice/category_phase.py:226(apply)
+        2    0.000    0.000    0.409    0.205 /workspace/scratch/79205660e358/wheel-check/workflows/pyam21/adapter.py:186(column_call)
+      372    0.094    0.000    0.361    0.001 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:438(transport_state)
+      360    0.037    0.000    0.361    0.001 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:47(divergence)
+        2    0.000    0.000    0.360    0.180 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/pyam21/physics/am2.py:176(up)
+        2    0.002    0.001    0.358    0.179 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/pyam21/physics/moist.py:114(__call__)
+      268    0.007    0.000    0.332    0.001 /workspace/scratch/79205660e358/wheel-check/validation/temperature_coordinate/model.py:19(fields)
+       60    0.038    0.001    0.327    0.005 /workspace/scratch/79205660e358/wheel-check/validation/ocean_column/lagged.py:120(trial)
+        2    0.000    0.000    0.324    0.162 /workspace/scratch/79205660e358/wheel-check/validation/sea_ice/snow.py:302(dynamics_step)
+        6    0.001    0.000    0.317    0.053 /workspace/scratch/79205660e358/wheel-check/workflows/coupled/ice_temperature.py:129(tendency)
+        6    0.001    0.000    0.315    0.052 /workspace/scratch/79205660e358/wheel-check/validation/sea_ice/snow.py:264(tendency)
+
+
+         279278 function calls (279238 primitive calls) in 6.628 seconds
+
+   Ordered by: internal time
+   List reduced from 569 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     2519    0.581    0.000    0.581    0.000 {method 'index_add' of 'torch._C.TensorBase' objects}
+     9823    0.534    0.000    0.534    0.000 {method 'sum' of 'torch._C.TensorBase' objects}
+    24469    0.298    0.000    0.298    0.000 {built-in method torch.where}
+       60    0.298    0.005    0.966    0.016 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_transport.py:61(bounded_transfer)
+     8952    0.289    0.000    0.289    0.000 {built-in method torch.isfinite}
+      884    0.191    0.000    0.199    0.000 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/geometry/mesh/grid.py:1619(_cell_to_edge_values)
+     8562    0.185    0.000    0.185    0.000 {built-in method torch.cat}
+       90    0.128    0.001    0.792    0.009 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:78(mixture_gradients)
+       60    0.126    0.002    0.182    0.003 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/gibbs_means.py:25(partial_chemical)
+       90    0.118    0.001    0.202    0.002 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/gibbs_means.py:10(logmean)
+     1144    0.109    0.000    0.109    0.000 {built-in method torch.log}
+      110    0.097    0.001    0.301    0.003 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_cp.py:14(reconstruct_moist_cp)
+       30    0.095    0.003    3.562    0.119 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/bounded_moist.py:60(evaluate)
+      372    0.094    0.000    0.361    0.001 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:438(transport_state)
+     5020    0.094    0.000    0.094    0.000 {method 'clamp_min' of 'torch._C.TensorBase' objects}
+      360    0.090    0.000    0.285    0.001 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:125(adj)
+     9106    0.088    0.000    0.088    0.000 {method 'all' of 'torch._C.TensorBase' objects}
+       36    0.086    0.002    0.128    0.004 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/geometry/mesh/rotation.py:37(compatible_rotation)
+       30    0.085    0.003    0.805    0.027 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/atmosphere/moist_conservative.py:166(_assemble)
+      530    0.081    0.000    0.157    0.000 /workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/geometry/mesh/grid.py:1418(_div_values)

@@ -52,6 +52,7 @@ def main():
     ledger = dict(
         **dict.fromkeys(c.OCEAN_SUMS + c.OCEAN_PEAKS, 0.0),
         initial=c.inventories(adapter, air, receiver, sea), external=0.0, upstream=0.0,
+        radiation_energy_residual=0.0,
         surface_residual=0.0, air_residual=0.0, radiation_residual=0.0, steps=0,
     )
     start = time.perf_counter()
@@ -90,6 +91,7 @@ def main():
                     c.accumulate_ocean(ledger, report)
                     ledger["external"] += report["external"]
                     ledger["upstream"] += report["upstream"]
+                    ledger["radiation_energy_residual"] += report["radiation_energy_residual"]
                     for k in ("surface_residual", "air_residual", "radiation_residual"):
                         ledger[k] = max(ledger[k], report[k])
                 elif args.mode == "dynamics":

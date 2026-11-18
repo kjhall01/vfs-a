@@ -1327,3 +1327,124 @@ the nonfinite surface outputs explicitly; no gust floor is introduced. Restart
 schema 4 rejects old-map payloads. Real radiation, the user's mesh, full-year,
 GPU and full-coupling backward behavior remain unqualified. See
 [diagnosis, controls and reproduction](../verification/atmosphere/pyam21/campaign/momentum-map/README.md).
+
+## Seasonal radiation setup follow-up (2026-11-17)
+
+PR #89 merged after final CI passed. A requested actual-radiation preflight could
+not initialize: the GFDL input tables are absent and the official FTP download
+fails from this environment. No seasonal-radiation timestep was executed.
+
+An independent configuration check exposed that the inherited BOMEX aerosol
+flags are off, whereas the pinned SeaEsfRad supports both SW/LW aerosol effects
+on. Radiation-on setup now selects those supported flags before caller overrides;
+radiation-off behavior is unchanged. Two regressions call the upstream validator
+without loading tables. External installed-wheel shared/campaign tests: 47 passed,
+1 real-data skip. The 142/93 frozen portable comparisons also pass. See
+[recorded attempt, data inventory and reproduction](../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+
+The user's downloaded-data run subsequently reached `AerosolOptics` and rejected
+the inherited blank `aerosol_data_set`; BOMEX also omits `aerosol_optical_names`.
+Enabling only the two band flags was incomplete. Setup now reads all five optical
+settings from the pinned checkout's radiating ASTEX namelist before caller
+overrides, retaining BOMEX composition, climatology and other physics options.
+Regression tests parse unmodified upstream sections and exercise the actual
+aerosol constructor through its optical-file open; they reproduce the user's
+exception before the fix and verify model coverage and explicit overrides after
+it. A radiation-off test needs no ASTEX file. External installed-wheel focused
+checks: **50 passed, 1 real-data skip**; frozen portable comparisons: **142/93 pass**.
+This verifies setup, not real radiative fluxes or a run on the user's mesh.
+
+## Conservative radiation-to-host heating (2026-11-17)
+
+The user reported a completed six-hour real-data segment with peak radiation
+heating/flux residual 17.362 W/m² and accumulated upstream loss -43947.269 J/m².
+SeaEsfRad's native radiation layer masses differ from the VFS host layer masses;
+unchanged K/s rates therefore do not conserve their integrated heating.
+`HostRadiationDriver` now transfers the native extensive SW/LW heating by
+fractional-pressure overlap and divides by current host masses on every physics
+call. Native cache/fluxes remain unchanged, cache geometry is restart state, and
+the unresolved above-lid cap is explicitly included in the top host layer.
+No heat is inferred from flux divergence to conceal an upstream discrepancy.
+
+Installed-wheel focused tests outside the checkout: **105 passed, 1 real-data
+skip**. Coverage includes independent overlap integration, 12/24/40 levels,
+1200/3600 s physics/radiation cadence, fresh/cached calls, changing pressure,
+day/night, solar renormalization, a retained injected +3 W/m² package defect,
+bitwise atmosphere/coupled restart and failure rollback. Frozen **142/93**
+portable comparisons pass. The analytic comparison reduces the old 3.14–5.92
+W/m² residual to at most 1.71e-13 W/m² with zero flux change. The CSV now separates
+signed cumulative global radiation residual from remaining upstream residual.
+Actual optical tables are still unavailable here: no real-data reproduction or
+complete attribution of the user's -2.035 W/m² loss is claimed. See
+[evidence and reproduction](../verification/atmosphere/pyam21/campaign/radiation-grid/README.md).
+
+## Stored-temperature ALE acceptance (2026-11-17)
+
+The 16384-cell campaign reported an entropy rejection after second 67200.
+The research temperature remapper evaluated iteration entropy at temporary T
+but final entropy at reconstructed (h*T)/h. A deterministic 16-column cold
+case passes the loop at -0.999716608 entropy tolerances, then fails the final
+stored-state check at -1.000013766. Both evaluations now use the actual stored
+candidate; this case converges in four iterations with unchanged 256/512-epsilon
+energy/entropy tolerances. No clipping, timestep change or acceptance bypass.
+Unsuccessful projections now report the worst column, normalized residual and
+iteration count.
+
+External installed-wheel focused suite: **99 passed, 1 optional GSW skip**,
+including one/four-thread regression, conservative salt/tracer/TKE/EKE contents
+and continued rejection of a stalled solve. Frozen **142/93** comparisons pass.
+The user checkpoint and hash-matched mesh replay 67200→68400 s on Linux with
+both old and corrected code; pre-ALE candidate tensors agree bitwise. Original
+cached radiation is sufficient for that interval, with zero fresh optical
+calls. Corrected maximum ALE column residual is 1.31845624e-5 J/m². The exact
+Mac rejection, corrected fresh-table seasonal integration, GPU behavior and
+long-run stability remain unverified. See [evidence](../verification/ocean/ale-cold-columns/README.md).
+
+## Regional coupled compilation (2026-11-17)
+
+The full coupled campaign now has opt-in `--compile` / `--no-compile` and
+YAML `compile: false`. Nine full-graph Inductor regions cover shared
+atmosphere/ocean/ice mesh operators, atmospheric mixture-energy gradients and
+Roquet thermodynamics. State checks, limiting, nonlinear solver control,
+PyAM21 column/radiation control and I/O remain eager; physical configuration
+is unchanged. Per-instance setup avoids global monkey-patching. Compilation
+policy is logged and included in restart identity; no silent eager fallback.
+The campaign CLI consistently disables gradient tracking, while its Python
+build/advance APIs retain their existing behavior.
+
+Installed-wheel focused checks: **74 passed, 1 optional GSW skip**, followed by
+**one passing native Inductor test** covering analytic radiation fresh/cache/fresh,
+independent budgets and bitwise compiled restart. Native qualification is now
+required in installed-wheel CI. Frozen **142/93** comparisons pass. The new
+`validation/coupled_compile/run.py` measures complete intervals, separates setup
+and warmup, compares fields/budgets, and checks compiled replay.
+Radiation-off benchmarks complete with bitwise compiled replay: 256 cells
+(6000 s) and the user's hash-matched 16384 mesh (4800 s). At 16384, steady
+median interval time is 82.753 s eager / 65.454 s compiled (1.264× throughput;
+two intervals per mode after two warmups on this Linux host). Final numerical
+energy residual differs by 6.08e-10 J/m², with zero recorded water/salt drift.
+A separate 512-cell/default-Lloyd pilot rejects in eager ocean mixing during
+interval five; it is retained as a failed pilot, not a successful benchmark.
+Real-table radiation, Mac/GPU performance, long-run stability and full-coupling
+backward execution remain unqualified. See [compilation evidence](../verification/atmosphere/pyam21/campaign/compilation/README.md).
+
+## ALE stored-entropy active constraint (2026-11-17)
+
+The second uploaded campaign failure at second 38400 exposed an ALE
+active-constraint stall. A stored candidate can violate entropy while the
+linearized prediction remains inside tolerance; the resulting sub-ulp step
+changes no temperature and repeats for 24 iterations. Once stored entropy
+violates its bound, the solver now retains a zero entropy activation threshold
+for that column through the remaining solve. Final acceptance tolerances,
+iteration cap and physical configuration remain unchanged.
+
+A deterministic 16-column case changes from 24-iteration rejection to acceptance
+in four iterations. A nearby state of the actual column 16266 changes from a
+24-iteration rejection to acceptance in three, with maximum energy residual
+0.00685802 of tolerance. The unmodified uploaded checkpoint passes Linux under
+both solvers; the exact Mac rejection is not claimed reproduced. Corrected
+eager and native compiled diagnostic replays advance 38400→39600 using original
+cached radiation, without fresh optics. A reusable one-interval diagnostic now
+captures the pre-ALE state. Installed-wheel checks: **107 passed, 1 optional GSW
+skip**; frozen **142/93** comparisons pass. Mac/fresh-table seasonal rerun and
+long-run stability remain unverified. See [active-constraint evidence](../verification/ocean/ale-active-set/README.md).

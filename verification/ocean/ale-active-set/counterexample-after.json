@@ -1,0 +1,6 @@
+{
+  "status": "pass",
+  "iterations": 4,
+  "maximum_energy_residual_over_tolerance": 0.0050684323730299475,
+  "minimum_entropy_change_over_tolerance": -0.0005943152074247607
+}

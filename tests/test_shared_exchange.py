@@ -4,6 +4,7 @@ from dataclasses import replace
 import json
 import os
 from pathlib import Path
+import shutil
 from unittest.mock import patch
 import pytest
 import torch
@@ -208,6 +209,11 @@ def test_radiation_manifest_binds_actual_files_and_geometry(model, tmp_path):
     assert a.identity != b.identity and a.identity != c.identity
     assert len(constructor.call_args.args[2]) == model.mesh.nCells
     assert a.manifest["package"].endswith("SeaEsfRad")
+    from workflows.pyam21.radiation import HostRadiationDriver
+
+    assert isinstance(a.driver, HostRadiationDriver)
+    assert a.manifest["schema"] == 2
+    assert "above-lid" in a.manifest["radiation_lid_policy"]
 
 
 @pytest.mark.skipif(
@@ -240,6 +246,72 @@ def test_real_seaesf_opt_in():
     )
     third, u = adapter.apply(end, 60)
     assert u.column_result["radiation"]["do_rad"]
+    for report in (r, s, t, u):
+        torch.testing.assert_close(
+            report.energy_changes["radiation_flux_residual"] / 60,
+            torch.zeros_like(report.energy_changes["radiation_flux_residual"]),
+            rtol=0, atol=1e-8,
+        )
+
+
+@pytest.mark.parametrize(
+    "overrides, error, match",
+    [
+        ({}, FileNotFoundError, "aerosol.optical.dat"),
+        ({"do_swaerosol": False}, NotImplementedError, "both the SW and the LW"),
+        ({"aerosol_data_set": "   "}, NotImplementedError, "shettle_fenn"),
+        (
+            {"optical_filename": "custom.optical.dat"},
+            FileNotFoundError,
+            "custom.optical.dat",
+        ),
+    ],
+)
+def test_radiation_setup_selects_supported_aerosols_before_loading_tables(
+    tmp_path, overrides, error, match
+):
+    from workflows.pyam21.setup import example
+    from pyam21.radiation.aerosol import AerosolOptics, SULFATE_INDICES, _TARGET
+    from pyam21.radiation.sea_esf import _check_config
+
+    # Parse unchanged upstream namelist sections. The actual aerosol constructor
+    # must reach its missing optical file, beyond the package's shallower check.
+    fixtures = Path(__file__).parent / "fixtures/pyam21"
+    for case, name in (
+        ("gcss_bomex", "bomex-radiation.nml"),
+        ("gcss_astex", "astex-aerosol.nml"),
+    ):
+        target = tmp_path / "reference/input" / case / "input.nml"
+        target.parent.mkdir(parents=True)
+        shutil.copyfile(fixtures / name, target)
+
+    def inspect(nml, *args, **kwargs):
+        _check_config(nml)
+        assert nml["physics_driver_nml"]["do_radiation"]
+        species = nml["aerosol_nml"]["data_names"]
+        # No fabricated optical data: real file I/O intentionally stops here.
+        try:
+            AerosolOptics(nml, str(tmp_path), None, species)
+        except FileNotFoundError:
+            names = nml["aerosolrad_package_nml"]["aerosol_optical_names"]
+            required = {f"sulfate_{v}%" for v in SULFATE_INDICES}
+            required.update(
+                _TARGET.get(n, n) for n in species if not n.startswith("so4")
+            )
+            assert required <= set(names)
+            raise
+
+    with (
+        patch("workflows.pyam21.radiation.build_radiation", side_effect=inspect),
+        pytest.raises(error, match=match),
+    ):
+        example(
+            tmp_path,
+            cells=16,
+            levels=12,
+            radiation_data=tmp_path,
+            namelist_overrides={"aerosolrad_package_nml": overrides},
+        )
 
 
 def test_shared_exchange_retains_deliberate_upstream_heat_defect(model):

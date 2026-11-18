@@ -119,18 +119,31 @@ class TemperatureRemapper:
         node,qweight=base._quadrature(after.h)
         z=base.height(after)[...,None]+after.h[...,None]*(node-.5)
         theta=theta0;ever_active=torch.zeros_like(wet)
+        entropy_violated=torch.zeros_like(wet)
         for iteration in range(24):
             physical=after.with_tensors(after.u_e,after.h,after.h*theta,after.salt_h,after.tracer_h)
             terms,_=column_terms(energy,physical)
-            ref=reference.evaluate(physical.salinity(),theta)
+            # The prognostic variable is h*T. Multiplication/division can move
+            # T by an ulp, so test the stored candidate, exactly as the final
+            # acceptance check does. Testing the unrounded solver coordinate
+            # can falsely accept a column right at the entropy tolerance.
+            stored_theta=physical.temperature()
+            ref=reference.evaluate(physical.salinity(),stored_theta)
             residual=sum(terms[k]-old[k] for k in old)
             entropy_change=(mass*(after.h*ref['entropy']-entropy_content(energy,state))).sum(-1)
             if iteration>=2 and (residual.abs()<=energy_tolerance).all() and (entropy_change>=-entropy_tolerance).all():break
-            _,pt,_,_=base.parcel_potential(theta[...,None],physical.salinity()[...,None],z)
+            _,pt,_,_=base.parcel_potential(stored_theta[...,None],physical.salinity()[...,None],z)
             g=weights*(ref['h_theta']+(pt*qweight).sum(-1))
             s=weights*ref['entropy_theta']
+            # A rounded stored candidate can violate entropy even when the
+            # next linearized prediction lies just inside its tolerance.
+            # Once that happens, keep the entropy constraint engaged toward
+            # zero change instead of repeatedly taking the same ineffective
+            # unconstrained step. Final acceptance tolerances are unchanged.
+            entropy_violated=entropy_violated|(entropy_change < -entropy_tolerance)
+            activation_tolerance=torch.where(entropy_violated,torch.zeros_like(entropy_tolerance),entropy_tolerance)
             step,active=minimum_change_step(theta-theta0,g,s,residual/safe_mass,
-                entropy_change/safe_mass,weights,entropy_tolerance/safe_mass)
+                entropy_change/safe_mass,weights,activation_tolerance/safe_mass)
             ever_active=ever_active|(active&wet)
             step=torch.where(wet[:,None],step,torch.zeros_like(step))
             # Fraction-to-boundary damping changes the attempted step, never
@@ -145,8 +158,14 @@ class TemperatureRemapper:
         final=validate(model,end,energy);final_terms,_=column_terms(energy,final)
         residual=sum(final_terms[k]-old[k] for k in old)
         entropy_change=(mass*(entropy_content(energy,end)-entropy_content(energy,state))).sum(-1)
-        if (residual.abs()>energy_tolerance).any():raise FloatingPointError('adaptive thermal projection failed column energy residual check')
-        if (entropy_change < -entropy_tolerance).any():raise ValueError('adaptive thermal projection decreases column entropy')
+        if (residual.abs()>energy_tolerance).any():
+            ratio=residual.abs()/energy_tolerance;index=int(ratio.argmax())
+            raise FloatingPointError('adaptive thermal projection failed column energy residual check '
+                f'(column={index}, residual/tolerance={float(ratio[index]):.9g}, iterations={iteration+1})')
+        if (entropy_change < -entropy_tolerance).any():
+            ratio=entropy_change/entropy_tolerance;index=int(ratio.argmin())
+            raise ValueError('adaptive thermal projection decreases column entropy '
+                f'(column={index}, change/tolerance={float(ratio[index]):.9g}, iterations={iteration+1})')
         old_h0=reference.evaluate(before.salinity(),before.temperature())['h0']
         new_h0=reference.evaluate(final.salinity(),final.temperature())['h0']
         residuals=dict(report.content_residuals);residuals['entropy_h']=(entropy_content(energy,end)-entropy_content(energy,state)).sum(-1)

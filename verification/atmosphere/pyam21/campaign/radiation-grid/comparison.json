@@ -1,0 +1,160 @@
+{
+  "kind": "analytic native-grid radiation; no GFDL optical tables",
+  "vfs_source": "/workspace/scratch/79205660e358/env/lib/python3.12/site-packages/vfs/__init__.py",
+  "torch": "2.15.0+cpu",
+  "physics_dt": 1200,
+  "radiation_dt": 3600,
+  "host_lid_Pa": 1000,
+  "rows": [
+    {
+      "levels": 12,
+      "elapsed_seconds": 0,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 100000.0,
+      "old_max_residual_W_m2": 5.580744898522568,
+      "mapped_max_residual_W_m2": 8.526512829121202e-14,
+      "native_max_residual_W_m2": 9.947598300641403e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 12,
+      "elapsed_seconds": 1200,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 100990.0,
+      "old_max_residual_W_m2": 4.242112413190057,
+      "mapped_max_residual_W_m2": 8.526512829121202e-14,
+      "native_max_residual_W_m2": 6.394884621840902e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 12,
+      "elapsed_seconds": 2400,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 101980.0,
+      "old_max_residual_W_m2": 4.352601131466429,
+      "mapped_max_residual_W_m2": 1.1368683772161603e-13,
+      "native_max_residual_W_m2": 8.526512829121202e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 12,
+      "elapsed_seconds": 3600,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 102970.0,
+      "old_max_residual_W_m2": 5.921869770235958,
+      "mapped_max_residual_W_m2": 8.526512829121202e-14,
+      "native_max_residual_W_m2": 5.684341886080802e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 12,
+      "elapsed_seconds": 4800,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 103960.0,
+      "old_max_residual_W_m2": 4.279398515340262,
+      "mapped_max_residual_W_m2": 5.684341886080802e-14,
+      "native_max_residual_W_m2": 4.263256414560601e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 24,
+      "elapsed_seconds": 0,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 100000.0,
+      "old_max_residual_W_m2": 4.7013069878567535,
+      "mapped_max_residual_W_m2": 7.105427357601002e-14,
+      "native_max_residual_W_m2": 9.947598300641403e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 24,
+      "elapsed_seconds": 1200,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 100990.0,
+      "old_max_residual_W_m2": 3.3409569740732366,
+      "mapped_max_residual_W_m2": 1.0658141036401503e-13,
+      "native_max_residual_W_m2": 6.394884621840902e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 24,
+      "elapsed_seconds": 2400,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 101980.0,
+      "old_max_residual_W_m2": 3.7829328402374927,
+      "mapped_max_residual_W_m2": 1.7053025658242404e-13,
+      "native_max_residual_W_m2": 8.526512829121202e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 24,
+      "elapsed_seconds": 3600,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 102970.0,
+      "old_max_residual_W_m2": 5.010149779290288,
+      "mapped_max_residual_W_m2": 5.684341886080802e-14,
+      "native_max_residual_W_m2": 5.684341886080802e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 24,
+      "elapsed_seconds": 4800,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 103960.0,
+      "old_max_residual_W_m2": 3.3527772653651766,
+      "mapped_max_residual_W_m2": 3.552713678800501e-14,
+      "native_max_residual_W_m2": 2.842170943040401e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 40,
+      "elapsed_seconds": 0,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 100000.0,
+      "old_max_residual_W_m2": 4.5054138626996405,
+      "mapped_max_residual_W_m2": 1.2789769243681803e-13,
+      "native_max_residual_W_m2": 8.526512829121202e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 40,
+      "elapsed_seconds": 1200,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 100990.0,
+      "old_max_residual_W_m2": 3.1402536126362293,
+      "mapped_max_residual_W_m2": 5.684341886080802e-14,
+      "native_max_residual_W_m2": 5.684341886080802e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 40,
+      "elapsed_seconds": 2400,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 101980.0,
+      "old_max_residual_W_m2": 3.655348719527211,
+      "mapped_max_residual_W_m2": 1.1368683772161603e-13,
+      "native_max_residual_W_m2": 8.526512829121202e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 40,
+      "elapsed_seconds": 3600,
+      "fresh_radiation": true,
+      "surface_pressure_Pa": 102970.0,
+      "old_max_residual_W_m2": 4.807135990524671,
+      "mapped_max_residual_W_m2": 7.105427357601002e-14,
+      "native_max_residual_W_m2": 5.684341886080802e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    },
+    {
+      "levels": 40,
+      "elapsed_seconds": 4800,
+      "fresh_radiation": false,
+      "surface_pressure_Pa": 103960.0,
+      "old_max_residual_W_m2": 3.1464577395304048,
+      "mapped_max_residual_W_m2": 4.973799150320701e-14,
+      "native_max_residual_W_m2": 5.684341886080802e-14,
+      "max_boundary_flux_change_W_m2": 0.0
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "status": "pass",
+  "report": {
+    "gmredi_steps": 10.0,
+    "redi_limited_fluxes": 1171665.0,
+    "eddy_decay_steps": 1.0,
+    "ale_steps": 1.0,
+    "ale_changed_columns": 16384.0,
+    "gm_exchange_J_m2": 0.18148702699067365,
+    "redi_exchange_J_m2": 0.02337569145903679,
+    "eddy_dissipation_J_m2": 46.2334392949133,
+    "ale_energy_change_J_m2": 0.0,
+    "gm_outflow_fraction": 0.00021058870808719508,
+    "redi_step_number": 0.011784521079444985,
+    "gmredi_local_residual_J_m2": 2.2874379372488402e-12,
+    "eddy_decay_local_residual_J_m2": 2.326169048182114e-07,
+    "ale_column_residual_J_m2": 1.318456238538304e-05,
+    "external": 62176.14240745114,
+    "upstream": -2512.1984919558413,
+    "surface_residual": 8.319038897752762e-06,
+    "air_residual": 8.234746928792447e-08,
+    "radiation_residual": 17.738407004620434
+  },
+  "seconds": 68400,
+  "wall": 72.34769010700074,
+  "checkpoint_sha256": "71c46818e608dc922a8a74945db6c942cd1588f213e10b9bd148588aa78f7962",
+  "mesh_sha256": "3437509cb1520bb4e27aea7f3e9b989c64c19673d0f49523f0043ab81a9b0d0b",
+  "start_seconds": 67200,
+  "end_seconds": 68400,
+  "initial_radiation_alarms": [
+    1201,
+    1201
+  ],
+  "fresh_optics_calls": 0,
+  "baseline_also_passes": true,
+  "pre_ale_tensors_bitwise_equal": true,
+  "radiation_behavior": "original native-grid heating; cache-only replay",
+  "purpose": "diagnostic reconstruction on Linux, not production restart migration"
+}

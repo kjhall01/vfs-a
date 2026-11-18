@@ -1,0 +1,24 @@
+{
+  "base_commit": "2b557a49c5787e903a9fe85600db8806b607dd3b",
+  "base_ale_sha256": "de84d8bf1acd4dad8631acc5fa14ef27399074b7d3e28b2c8d5d54b9a16523b6",
+  "candidate_ale_sha256": "97135f2b65cc024936719e43722feb0a94a111574a7550eaced52d70a65462e6",
+  "checkpoint_sha256": "136fdd5d24edf2ee04d75aa47615847d2e1fd75194e164a2abdc4c516a72e336",
+  "configuration_sha256": "eb5499baba84e9a90f92e0a1dd53a024ee2ce482deaa0f427d9162208294570a",
+  "mesh_sha256": "3437509cb1520bb4e27aea7f3e9b989c64c19673d0f49523f0043ab81a9b0d0b",
+  "pre_ale_sha256": "14e066dda5a3067f64a69ab158be7a492302ec4d57f11b392aac93521ba0e05a",
+  "perturbed_pre_ale_sha256": "4bbcc19a262c7863d17c329de8e86c629c143d7066a2a975e3abb6dc273f6425",
+  "perturbation": {
+    "column": 16266,
+    "temperature_increment_K": "-8.9e-7 * torch.linspace(1, 0, 12)",
+    "operation": "temp_h + h * delta",
+    "all_other_columns_and_fields_unchanged": true
+  },
+  "synthetic": {
+    "seed": 26,
+    "salinity_scale": 4.257426495909136
+  },
+  "torch": "2.15.0+cpu",
+  "platform": "Linux x86-64",
+  "dtype": "float64",
+  "pyam21_commit": "e1bdfcc3b23c05adea80b35af880702bb85718eb"
+}

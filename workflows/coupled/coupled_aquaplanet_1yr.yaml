@@ -39,5 +39,7 @@ biharmonic_viscosity_m4_s: 10000000000000.0
 # Post-physics remap to stretched fractions of each column's current depth.
 ale_remap: true
 threads: 1
+# Regional Inductor kernels; --compile/--no-compile overrides this switch.
+compile: false
 diagnostic_hours: 6
 restart_days: 5

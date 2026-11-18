@@ -14,7 +14,7 @@ import torch
 from pyam21.radiation.driver import RadiationDriver
 from pyam21.radiation.sea_esf import SeaEsfRad
 
-DATA_URL = "ftp://ftp.gfdl.noaa.gov/perm/pjp/SCM/input_data.tar.gz"
+DATA_URL = "ftp://ftp.gfdl.noaa.gov/perm/GFDL_pubrelease/SCM/input_data.tar.gz"
 
 
 @dataclass(frozen=True)
@@ -22,6 +22,80 @@ class RadiationSetup:
     driver: RadiationDriver
     identity: str
     manifest: dict
+
+
+def remap_heating(heating, radiation_pflux, host_phalf):
+    """Conserve layer-integrated heating between two fractional-pressure grids.
+
+    heating is [column, radiation layer, band] in K/s. Both grids share surface
+    pressure on a fresh call; fractional pressure keeps the entire cached
+    column when host pressure subsequently changes. cp/g cancels in the map.
+
+    SeaEsfRad extends to p=0 while VFS has a positive lid. Explicitly include
+    absorption above that lid in the top host layer; divide by the actual host
+    layer mass. This lumped cap keeps true TOA and surface fluxes as boundaries.
+    It is not a resolved stratosphere above the lid.
+    """
+    if (
+        heating.ndim != 3
+        or radiation_pflux.shape != (heating.shape[0], heating.shape[1] + 1)
+        or host_phalf.ndim != 2
+        or host_phalf.shape[0] != heating.shape[0]
+        or host_phalf.shape[1] < 2
+    ):
+        raise ValueError("radiation/host heating grid shapes disagree")
+    dp_rad, dp_host = radiation_pflux.diff(), host_phalf.diff()
+    if (
+        not torch.isfinite(heating).all()
+        or not torch.isfinite(radiation_pflux).all()
+        or not torch.isfinite(host_phalf).all()
+        or (dp_rad <= 0).any()
+        or (dp_host <= 0).any()
+        or (radiation_pflux[:, 0] != 0).any()
+        or (host_phalf[:, 0] < 0).any()
+    ):
+        raise ValueError("finite increasing radiation/host pressures required; radiation top must be zero")
+    cumulative = torch.cat(
+        (torch.zeros_like(heating[:, :1]), (dp_rad[..., None] * heating).cumsum(1)),
+        dim=1,
+    )
+    source = (radiation_pflux / radiation_pflux[:, -1:]).contiguous()
+    target = (host_phalf[:, 1:-1] / host_phalf[:, -1:]).contiguous()
+    lower = torch.searchsorted(source, target, right=True) - 1
+    # Interior target interfaces are strictly inside (0,1); no extrapolation.
+    x0, x1 = source.gather(1, lower), source.gather(1, lower + 1)
+    fraction = (target - x0) / (x1 - x0)
+    ids = lower[..., None].expand(-1, -1, heating.shape[-1])
+    q0, q1 = cumulative.gather(1, ids), cumulative.gather(1, ids + 1)
+    interior = q0 + fraction[..., None] * (q1 - q0)
+    mapped = torch.cat((cumulative[:, :1], interior, cumulative[:, -1:]), dim=1)
+    return mapped.diff(dim=1) / dp_host[..., None]
+
+
+class HostRadiationDriver(RadiationDriver):
+    """Keep upstream optics/cache native; deliver conservative host-layer heat."""
+
+    def step(self, time, dt, lat, lon, pfull, phalf, t, q, t_surf, surface, extra=None):
+        result = super().step(
+            time, dt, lat, lon, pfull, phalf, t, q, t_surf, surface, extra
+        )
+        if result["do_rad"]:
+            # saved is already part of the adapter's transactional restart state.
+            self.saved["vfs_radiation_pflux"] = result["atmos"]["pflux"].clone()
+        pflux = self.saved["vfs_radiation_pflux"]
+        native = torch.stack((result["tdtsw"], result["tdtlw"]), dim=-1)
+        mapped = remap_heating(native, pflux, phalf)
+        # Return new tensors, never replace the upstream cached native heating.
+        # In particular renormalized SW must not be remapped twice on cache hits.
+        return {
+            **result,
+            "tdtsw": mapped[..., 0],
+            "tdtlw": mapped[..., 1],
+            "tdt_rad": mapped.sum(-1),
+            "native_tdtsw": native[..., 0],
+            "native_tdtlw": native[..., 1],
+            "radiation_pflux": pflux,
+        }
 
 
 def climatology_boxes(mesh, width_degrees):
@@ -77,11 +151,15 @@ def build_radiation(namelist, model, data_dir, *, width_degrees=1.0):
     boxes = climatology_boxes(model.mesh, width_degrees)
     pref = reference_pressures(model.column)
     manifest = dict(
-        schema=1,
+        schema=2,
         package="pyam21.radiation.sea_esf.SeaEsfRad",
         source=DATA_URL,
         files=files,
         climatology_mapping="local rectangular samples, not mesh-cell averages",
+        heating_mapping="conservative fractional-pressure overlap v1",
+        radiation_lid_policy="above-lid absorption included in top host layer",
+        radiation_flux_grid="native SeaEsfRad interfaces; TOA/surface unchanged",
+        radiation_cache="native heating and pressure interfaces; remap at each physics call",
         width_degrees=width_degrees,
         boxes=boxes,
         reference_pressures_Pa=pref.tolist(),
@@ -110,5 +188,5 @@ def build_radiation(namelist, model, data_dir, *, width_degrees=1.0):
             raise ValueError("choose fixed solar constant or spectral time series")
         package.sw.solar_constant = fixed_solar
     return RadiationSetup(
-        RadiationDriver.from_nml(namelist, package), identity, manifest
+        HostRadiationDriver.from_nml(namelist, package), identity, manifest
     )

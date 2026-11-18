@@ -61,7 +61,8 @@ in float64 with one thread. Physics/ocean steps are 1200 seconds, atmospheric
 substeps 240 seconds, radiation hourly. Mixing and GM–Redi each use ten
 substeps per ocean step (120 seconds). The earlier ocean sweep supports the
 chosen ocean step under its tested conditions; it does not validate the entire
-coupled configuration. There is no compiled/GPU qualification.
+coupled configuration. Optional regional CPU compilation is described below;
+GPU execution remains unqualified.
 
 All three components start with **zero velocity**, with analytic moist
 atmospheric stratification, a meridional SST gradient, stable ocean temperature
@@ -132,10 +133,68 @@ python -I workflows/coupled/campaign.py \
   --output aquaplanet-16384-365d --verbose
 ```
 
-This requests the configured 365 days. Append `--stop-after-days 1` for a one-day
-qualification attempt; the current 256-cell check fails as described above.
+This requests the configured 365 days. Append `--stop-after-days 2` for a two-day
+qualification attempt before committing to the year.
 Continue a successfully completed segment with its saved restart and a new output folder. The
-16,384-cell coupled timestep and runtime are not qualified by the smaller tests.
+smaller radiation-off checks do not establish seasonal stability on this mesh.
+
+## Optional compilation
+
+Append `--compile` to either the preflight or campaign command. The default is
+eager execution (`compile: false` in YAML); `--no-compile` explicitly overrides
+`compile: true`. Neither flag changes the timesteps, thread count or physics.
+
+```bash
+python -I workflows/coupled/campaign.py \
+  --config aquaplanet-local.yaml \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --source /path/to/PyAM21 \
+  --radiation-data /path/to/input_data/sea_esf \
+  --output aquaplanet-compiled-preflight --preflight --compile --verbose
+```
+
+After this passes, remove `--preflight`, select a new output directory, and add
+`--stop-after-days 2` for the initial segment. Retain `--compile` on its resume.
+Switching between eager and compiled modes requires a fresh run: the compilation
+policy/backend, effective configuration and source hashes are restart identity.
+Compiled replay is required to be bitwise within the same supported environment;
+eager/compiled trajectories can differ through floating-point reassociation.
+
+The switch uses Inductor for nine repeated tensor kernels: four shared mesh
+gradient/divergence/interpolation operations used by atmosphere, ocean and ice,
+the atmospheric mixture-energy gradients, and four Roquet ocean thermodynamic
+kernels. Each region requires full-graph capture. Public state checks,
+positivity limiting, nonlinear solvers, PyAM21 column control flow and radiation
+scheduling/optics retain their existing eager execution. GM–Redi, mixing,
+backscatter, ALE and ice remain enabled as configured and use the shared compiled
+operations where applicable. No package classes are patched globally.
+
+Inductor needs a working native compiler. Setup, initial diagnostics and first
+intervals can take minutes while kernels compile; a new shape may trigger another
+compilation later. `run.log` and `manifest.json` record the selected regions and
+backend. A compiler error fails visibly through the existing failure/restart
+path, without silently retrying eagerly. Time several intervals after warmup
+before assessing speed; output and fresh radiation calls still cost time.
+
+For an eager/compiled comparison on your actual mesh and optical tables:
+
+```bash
+python -I validation/coupled_compile/run.py \
+  --config aquaplanet-local.yaml \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --source /path/to/PyAM21 \
+  --radiation-data /path/to/input_data/sea_esf \
+  --steps 8 --warmup 2 --output compile-comparison
+```
+
+This records setup separately, alternates execution order, compares final state
+and whole-system budgets, and requires bitwise compiled restart replay. The
+reported median excludes the first two intervals; inspect individual timings
+because fresh radiation occurs only on its configured cadence. It times advance
+calls, excluding NetCDF output and diagnostic inventories. Omitting
+`--radiation-data` explicitly selects a radiation-off benchmark; the production
+campaign still requires tables unless its smoke flag is explicitly selected.
+See [CPU measurements and qualification limits](../../verification/atmosphere/pyam21/campaign/compilation/README.md).
 
 ## Logging and verbosity
 
@@ -153,6 +212,16 @@ Startup lists the enabled ocean processes, coefficients and substeps.
 changed ALE columns, limited Redi fluxes, reservoir transfers, explicit-step
 numbers, and local energy residuals. An enabled flag alone is not the evidence
 that the process ran.
+
+`radiation_residual` is the running maximum absolute column heating/flux
+discrepancy in W/m², not a global mean. The signed cumulative area-mean
+`radiation_energy_residual_J_m2` isolates its contribution to the upstream
+energy residual; `upstream_minus_radiation_residual_J_m2` is the remainder.
+Divide these accumulated quantities by elapsed model seconds for mean W/m².
+Neither is an additional energy loss to add to `upstream_residual_J_m2`.
+The [radiation-grid transfer](../pyam21/RADIATION.md#radiation-and-model-layer-masses)
+conserves native radiative heating on the current host layers, including cached
+calls. Real-data validation of this correction remains pending.
 
 ```bash
 tail -f aquaplanet-16384-365d/run.log
@@ -313,3 +382,35 @@ mechanics, no brine, no resolved ice/snow thermal profile, and uncalibrated
 mesoscale closures. Radiation climatologies retain the previous
 local rectangular sampling approximation. Full-year stability and physically
 credible climate statistics require the actual local experiment.
+
+## ALE entropy rejection diagnostics
+
+The thermal projection checks column energy and nondecreasing model entropy.
+It now evaluates both iteration and final acceptance using temperature
+reconstructed from the stored `h*T`. Earlier code could falsely converge at an
+entropy boundary and then reject that same candidate in the final check.
+The tolerances are unchanged; unsuccessful solves report the worst column,
+residual relative to tolerance, and iteration count. Retain `run.log`,
+`configuration.json`, the mesh and `last_good_restart.pt` for diagnosis.
+See the [cold-column regression and checkpoint replay](../../verification/ocean/ale-cold-columns/README.md).
+An additional near-tolerance stall was found in the user's later run. Once an
+actual stored candidate violates entropy, the projection now retains a zero
+entropy-change activation threshold for that column through the remaining
+iterations. This prevents an ineffective sub-ulp correction from repeating
+until the iteration cap. Final energy/entropy tolerances and the cap are unchanged.
+See the [active-constraint regression and replay](../../verification/ocean/ale-active-set/README.md).
+For a single-interval diagnostic using the checkpoint's original radiation cache:
+
+```bash
+python -I validation/coupled_debug/replay_ale.py \
+  --source /path/to/PyAM21 --config /path/to/configuration.json \
+  --mesh /path/to/mesh_16384_exact.npy \
+  --restart /path/to/last_good_restart.pt --output ale-diagnostic
+```
+
+This explicitly reconstructs state for diagnosis across source versions. It
+writes the pre-ALE ocean input and a result report, not a production restart.
+It fails if the interval needs a fresh optics call; cached fields are never
+extended past their scheduled refresh. `--compile` is available for comparison.
+Start in a new output directory after updating source; the normal restart
+fingerprint checks intentionally reject checkpoints from the previous code.

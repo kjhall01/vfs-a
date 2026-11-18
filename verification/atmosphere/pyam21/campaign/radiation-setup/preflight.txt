@@ -1,0 +1,16 @@
+2026-11-17T20:36:42Z INFO Starting preflight; target 365.000000 model days; radiation SeaEsfRad
+2026-11-17T20:36:42Z INFO Initializing 256 cells; mesh=generated; additional Lloyd iterations=10
+2026-11-17T20:36:43Z ERROR Run failed at last committed second None
+Traceback (most recent call last):
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 849, in main
+    adapter, air, receiver, sea = build(
+                                  ^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/coupled/campaign.py", line 355, in build
+    adapter, air = example(
+                   ^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/setup.py", line 78, in example
+    rad = build_radiation(
+          ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/79205660e358/wheel-check/workflows/pyam21/radiation.py", line 64, in build_radiation
+    raise FileNotFoundError(
+FileNotFoundError: SeaEsfRad requires the extracted sea_esf directory; missing ['stdlvls', 'h2ocoeff_ckd_speccombwidebds_hi00', 'h2ockd2.1_data'] in /workspace/scratch/79205660e358/radiation-inputs/sea_esf. Obtain the GFDL SCM bundle from ftp://ftp.gfdl.noaa.gov/perm/GFDL_pubrelease/SCM/input_data.tar.gz; no fallback is used.

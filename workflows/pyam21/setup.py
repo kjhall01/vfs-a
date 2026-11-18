@@ -39,6 +39,26 @@ def example(
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(1)
     nml = read_namelist(str(Path(source) / "reference/input/gcss_bomex/input.nml"))
+    if radiation_data is not None:
+        # BOMEX disables aerosols, leaves the dataset blank and omits optical
+        # model names. Take the complete optical configuration from upstream's
+        # radiating ASTEX case; retain BOMEX's composition/climatology and all
+        # other physics choices. Explicit caller overrides still apply below.
+        aerosol = read_namelist(
+            str(Path(source) / "reference/input/gcss_astex/input.nml")
+        )["aerosolrad_package_nml"]
+        nml.setdefault("aerosolrad_package_nml", {}).update(
+            {
+                key: aerosol[key]
+                for key in (
+                    "do_lwaerosol",
+                    "do_swaerosol",
+                    "aerosol_data_set",
+                    "optical_filename",
+                    "aerosol_optical_names",
+                )
+            }
+        )
     for group, values in (namelist_overrides or {}).items():
         nml.setdefault(group, {}).update(values)
     mesh = VoronoiMesh(

@@ -96,6 +96,14 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         working-directory: ${{ runner.temp }}/vfs-check
         run: python -I tools/check_baseline.py --reference-version corrected-gibbs-v1 --mode portable --report baseline-portable.json
+      - name: Native coupled Inductor qualification
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        working-directory: ${{ runner.temp }}/vfs-check
+        timeout-minutes: 5
+        env:
+          VFS_TEST_INDUCTOR: "1"
+          TORCHINDUCTOR_COMPILE_THREADS: "1"
+        run: python -I -m pytest tests/test_coupled_compilation.py::test_native_inductor_radiating_intervals_and_restart -q --junitxml=pytest-inductor.xml
       - name: Required dry helpers portable comparison
         id: portable_dry
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
