@@ -21,6 +21,7 @@ def example(
     *,
     cells=32,
     levels=24,
+    top_pressure_pa=1000.0,
     aquaplanet=False,
     energy_mode="conservative",
     radiation_data=None,
@@ -69,7 +70,9 @@ def example(
     mesh = VoronoiMesh(
         n_cells=cells, **({"lloyd_iters": 0, "verbose": False} | (mesh_options or {}))
     )
-    A, B = make_hybrid_coefficients(levels, p_top=1000.0)
+    if not 0.0 < top_pressure_pa < 100000.0:
+        raise ValueError("top_pressure_pa must lie between 0 and reference surface pressure")
+    A, B = make_hybrid_coefficients(levels, p_top=top_pressure_pa)
     column = CharneyPhillipsColumn(levels, A, B, phi_full_mode="direct_u_gl2_adjoint")
     model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)
     # Explicit workflow configuration BEFORE any prognostic state exists. The
