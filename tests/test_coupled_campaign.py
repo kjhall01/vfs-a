@@ -492,6 +492,7 @@ def test_full_depth_aquaplanet_preset():
     assert (cfg.ocean_levels, cfg.ocean_depth_m, cfg.top_layer_m) == (60, 5000.0, 10.0)
     assert cfg.gm_redi and cfg.eddy_dissipation and cfg.backscatter and cfg.ale_remap
     assert cfg.restart_days == 1
+    assert cfg.physics_dt == 1200 and cfg.ocean_dt == 300 and cfg.atmosphere_dt == 240
     assert torch.isclose(c.rest_thickness(cfg).sum(), torch.tensor(5000.0, dtype=torch.float64))
 
 
