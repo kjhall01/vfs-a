@@ -49,3 +49,23 @@ def test_reject_removed_files():
     del after["vfs/ocean/jmd95.py"]
     with pytest.raises(ValueError, match="source inventory changed"):
         module.verify_instrumentation_only_delta(before, after)
+
+def test_radiation_manifest_json_roundtrip_preserves_strict_identity():
+    import json
+    live = dict(
+        files={"optical.dat": {"bytes": 123, "sha256": "abcdef"}},
+        boxes=[((0.1, 0.2), (-0.4, -0.3))],
+        reference_pressures_Pa=[[100.0, 200.0]],
+        namelist={"radiation_driver_nml": {"solar_constant": 1361.0}},
+    )
+    persisted = json.loads(json.dumps(live))
+    assert live != persisted  # tuple/list mismatch formerly rejected valid resume
+    assert module.canonical_manifest_json(live) == module.canonical_manifest_json(persisted)
+    persisted["files"]["optical.dat"]["sha256"] = "different"
+    assert module.canonical_manifest_json(live) != module.canonical_manifest_json(persisted)
+
+
+def test_canonical_radiation_manifest_preserves_precision():
+    live = {"boxes": [((0.12345678901234567, 0.2), (0.3, 0.4))]}
+    changed = {"boxes": [[[0.12345678901234568, 0.2], [0.3, 0.4]]]}
+    assert module.canonical_manifest_json(live) != module.canonical_manifest_json(changed)
