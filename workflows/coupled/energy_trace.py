@@ -32,6 +32,7 @@ class EnergyTrace:
         self.stage_index = 0
         self.previous = None
         self.interval_start = None
+        self.interval_initial_energy = None
         self.external = 0.0
         self.upstream = 0.0
         self.residual = 0.0
@@ -52,6 +53,7 @@ class EnergyTrace:
         self.stage_index = 0
         self.interval_start = int(air.time_seconds)
         self.previous = self.measure(adapter, air, receiver, sea)
+        self.interval_initial_energy = float(self.previous["energy"])
         self.external = self.upstream = self.residual = 0.0
         self.active = True
         self._write(dict(
@@ -106,12 +108,18 @@ class EnergyTrace:
         self.previous = current
         return residual
 
-    def commit(self, ledger, *, seconds):
+    def commit(self, ledger, *, seconds, report=None):
         """Record an accepted interval and reconcile against campaign totals."""
         if not self.active:
             raise RuntimeError("cannot commit an inactive energy trace")
         total = (float(self.previous["energy"]) - float(ledger["initial"]["energy"])
                  - float(ledger["external"]) - float(ledger["upstream"]))
+        expected_external = self.external if report is None else float(report["external"])
+        expected_upstream = self.upstream if report is None else float(report["upstream"])
+        independently_computed = (
+            float(self.previous["energy"]) - self.interval_initial_energy
+            - expected_external - expected_upstream
+        )
         self._write(dict(
             event="commit", interval=self.interval,
             interval_start_seconds=self.interval_start,
@@ -120,6 +128,9 @@ class EnergyTrace:
             interval_external_J_m2=self.external,
             interval_upstream_J_m2=self.upstream,
             interval_numerical_residual_J_m2=self.residual,
+            report_external_minus_traced_J_m2=expected_external - self.external,
+            report_upstream_minus_traced_J_m2=expected_upstream - self.upstream,
+            closure_reconciliation_J_m2=self.residual - independently_computed,
             campaign_cumulative_numerical_residual_J_m2=total,
         ))
         self.active = False
