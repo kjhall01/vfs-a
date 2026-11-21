@@ -105,3 +105,54 @@ considering any timestep or scheme change as a fix.
 No complete local coupled integration was executed in this review: the
 user's PyAM21 optical tables and macOS environment are not available
 in the reviewing runtime.
+
+## Opt-in numerical-energy isolation (debug branch)
+
+For anomalous numerical-energy growth, use `--energy-trace` on a **fresh**
+integration, keeping the tested physical configuration and mesh unchanged.
+The trace evaluates the same global energy functional as `diagnostics.csv`
+at each separately committed sub-operator boundary:
+
+- each atmospheric dynamics substep;
+- the ocean/ice/snow dynamics step (including its explicitly reported
+  external energy);
+- GM–Redi and eddy dissipation, either combined or individually per substep;
+- atmosphere–surface/ice exchange (including TOA and upstream PyAM21 residual);
+- post-exchange ice phase equilibration;
+- ALE remapping (including its existing energy-change diagnostic).
+
+The JSONL trace includes stage `ΔH`, identified external and upstream energy,
+stage and interval unaccounted residual, component (atmosphere/ocean/ice-snow)
+energy increments, and maximum wind/ocean/ice speeds with ocean edge and layer
+indices. Records are flushed after every stage and an explicit `commit`
+is written only after a coupled interval passes the existing acceptance checks.
+An incomplete interval therefore retains its earlier trace events.
+
+Example on Mac CPU (using the 3,000-Lloyd generator file):
+
+```bash
+python -u -I workflows/coupled/campaign.py \
+  --config workflows/coupled/aquaplanet_full_depth_4096.yaml \
+  --source ../PyAM21 \
+  --radiation-data ../sea_esf \
+  --mesh ../mesh_4096_exact_3000.npy \
+  --device cpu --dtype float64 --threads 4 --compile \
+  --stop-after-days 2.1 --energy-trace \
+  --output energy-trace-4096 --verbose
+python -I validation/coupled_debug/summarize_energy_trace.py \
+  energy-trace-4096/energy_stages.jsonl
+```
+
+For finer GM–Redi isolation, add `--energy-trace-substeps`, which **requires**
+`--energy-trace` and samples each of its 10 substeps. This option is
+computationally expensive because it re-evaluates the full coupled Hamiltonian
+and state extrema at each stage. Use it only after a coarse trace implicates
+mesoscale operators. Normal runs (without flags) have no trace overhead.
+
+This branch modifies Python source hashes and thus the restart fingerprint.
+The uploaded pre-patch restart cannot be resumed with the new branch under the
+existing strict restart identity: use a fresh run. A trace cannot reproduce the
+previous trajectory merely by reading the checkpoint. The trace distinguishes
+stages but does not yet decompose the internal SSPRK RHS, and a stage energy
+change is not an analytic conservation proof. It also does not constitute a
+fully coupled climate validation.
