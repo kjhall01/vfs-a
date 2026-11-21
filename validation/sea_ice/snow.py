@@ -320,6 +320,7 @@ class SnowOceanIce:
         heat_flux=None,
         wind_velocity=None,
         freshwater=None,
+        stage_callback=None,
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
@@ -354,12 +355,20 @@ class SnowOceanIce:
             dm0 = report0.inputs["snowfall_on_ice"].sum()
             ep0 = report0.energy_inputs["snowfall_on_ice"].sum()
             boundary0 = report0.external_energy
+        if stage_callback is not None:
+            stage_callback("snow_input_half_0", state, boundary0)
         state, q0, melt0 = self.phase_step(state, 0.5 * dt, flux(state))
+        if stage_callback is not None:
+            stage_callback("phase_half_0", state, q0)
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
+        if stage_callback is not None:
+            stage_callback("implicit_drag_half_0", state, 0.0)
         state, work = self.dynamics_step(
             state, dt, wind_velocity=wind_velocity, drag=False
         )
+        if stage_callback is not None:
+            stage_callback("coupled_ssprk3", state, work)
         model = self.coupled.ocean
         if model.closure is not None:
             original = state.coupled.ocean
@@ -374,9 +383,15 @@ class SnowOceanIce:
                     state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
                 ),
             )
+            if stage_callback is not None:
+                stage_callback("vertical_tke_mixing", state, 0.0)
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
+        if stage_callback is not None:
+            stage_callback("implicit_drag_half_1", state, 0.0)
         state, q1, melt1 = self.phase_step(state, 0.5 * dt, flux(state))
+        if stage_callback is not None:
+            stage_callback("phase_half_1", state, q1)
         if freshwater is None:
             state, dm1, ep1 = self.accumulate(state, 0.5 * dt, snowfall)
             boundary1 = ep1
@@ -386,6 +401,8 @@ class SnowOceanIce:
             ep1 = report1.energy_inputs["snowfall_on_ice"].sum()
             boundary1 = report1.external_energy
             reports = (report0, report1)
+        if stage_callback is not None:
+            stage_callback("snow_input_half_1", state, boundary1)
         return state, SnowReport(
             work + q0 + q1 + boundary0 + boundary1,
             dm0 + dm1,
