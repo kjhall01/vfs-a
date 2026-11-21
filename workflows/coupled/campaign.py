@@ -886,7 +886,7 @@ def main(argv=None):
     parser.add_argument("--resume", type=Path)
     parser.add_argument(
         "--resume-compatible-manifest", type=Path,
-        help="Opt-in audited trace-only restart bridge; requires prior run's manifest.json, --resume, --energy-trace, and --energy-trace-ocean-stages",
+        help="Opt-in audited source-compatible restart bridge; requires prior run manifest.json and --resume",
     )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
@@ -926,12 +926,8 @@ def main(argv=None):
         parser.error("--energy-trace-substeps requires --energy-trace")
     if args.energy_trace_ocean_stages and not args.energy_trace:
         parser.error("--energy-trace-ocean-stages requires --energy-trace")
-    if args.resume_compatible_manifest and (
-        not args.resume or not args.energy_trace or not args.energy_trace_ocean_stages
-    ):
-        parser.error(
-            "--resume-compatible-manifest requires --resume, --energy-trace, and --energy-trace-ocean-stages"
-        )
+    if args.resume_compatible_manifest and not args.resume:
+        parser.error("--resume-compatible-manifest requires --resume")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
