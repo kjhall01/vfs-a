@@ -181,3 +181,52 @@ previous trajectory merely by reading the checkpoint. The trace distinguishes
 stages but does not yet decompose the internal SSPRK RHS, and a stage energy
 change is not an analytic conservation proof. It also does not constitute a
 fully coupled climate validation.
+
+## Audited day-1 restart -> day-1.5 energy diagnostic
+
+The day 1.5 NetCDF snapshot is not a complete restart. Use the day-1
+`restarts/restart_00086400.pt` from the original 2.25-day traced run.
+
+If the previous run used precisely the source hashes pinned in
+`workflows/coupled/restart_compat.py`, `--resume-compatible-manifest`
+explicitly permits *only* the known tracing modifications and the new
+verification module. The bridge independently reconstructs the prior
+fingerprint from the supplied manifest, checks it against the checkpoint,
+checks configuration/mesh/radiation/runtime/compilation, and refuses all
+other source changes. The new output uses the current source fingerprint.
+
+```bash
+# In vfs-a, on debug/coupled-energy-stage-trace.
+# Replace this with the actual folder containing the PRIOR run and its manifest.
+OLD_RUN=/path/to/previous-2.25-day-run
+
+# First advance only 0.5 day using the new code, without tracing overhead:
+python -u -I workflows/coupled/campaign.py \
+  --config workflows/coupled/aquaplanet_full_depth_4096.yaml \
+  --source ../PyAM21 --radiation-data ../sea_esf \
+  --mesh ../mesh_4096_exact_3000.npy \
+  --device cpu --dtype float64 --threads 4 --compile \
+  --resume "$OLD_RUN/restarts/restart_00086400.pt" \
+  --resume-compatible-manifest "$OLD_RUN/manifest.json" \
+  --stop-after-days 1.5 --output segment-day1-to-day1p5 --verbose
+
+# Second segment begins exactly at day 1.5, with the deep-stage energy trace:
+python -u -I workflows/coupled/campaign.py \
+  --config workflows/coupled/aquaplanet_full_depth_4096.yaml \
+  --source ../PyAM21 --radiation-data ../sea_esf \
+  --mesh ../mesh_4096_exact_3000.npy \
+  --device cpu --dtype float64 --threads 4 --compile \
+  --resume segment-day1-to-day1p5/restarts/restart_00129600.pt \
+  --stop-after-days 2.25 --energy-trace --energy-trace-ocean-stages \
+  --output segment-day1p5-to-day2p25 --verbose
+
+python -I validation/coupled_debug/summarize_energy_trace.py \
+  segment-day1p5-to-day2p25/energy_stages.jsonl
+```
+
+The first output includes `instrumentation_resume_audit.json`. The bridge
+cannot be used for arbitrary historical checkpoints, altered physics,
+different mesh/configuration, or any source changes outside the approved
+trace-only set. For a checkpoint produced by this new code, omit the
+compatibility flag entirely. You cannot obtain a true 1.5-day restart
+from an old 1.5-day NetCDF snapshot.
