@@ -23,6 +23,20 @@ APPROVED_PRE_TRACE_HASHES = {
 ALLOWED_NEW_FILES = {"workflows/coupled/restart_compat.py"}
 
 
+
+
+def canonical_manifest_json(value):
+    """Stable, strict JSON value equality across tuple/list round trips.
+
+    The radiation constructor builds each box as a tuple; JSON reloads the
+    same array as a list. Canonical serialization normalizes this harmless
+    representation difference while retaining numeric values and all table
+    SHA256s. Do not round floats, omit paths, or compare only selected fields.
+    """
+    import json
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      allow_nan=False)
+
 def verify_instrumentation_only_delta(old_hashes, current_hashes):
     """Return the audited diff, failing closed for unknown source differences."""
     if not isinstance(old_hashes, dict) or not isinstance(current_hashes, dict):
