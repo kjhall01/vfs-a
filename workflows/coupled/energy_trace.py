@@ -22,11 +22,12 @@ class EnergyTrace:
     the model or alter its state.
     """
 
-    def __init__(self, path, measure, summarize, *, substeps=False):
+    def __init__(self, path, measure, summarize, *, substeps=False, ocean_stages=False):
         self.file = open(path, "w", encoding="utf-8")
         self.measure = measure
         self.summarize = summarize
         self.substeps = bool(substeps)
+        self.ocean_stages = bool(ocean_stages)
         self.active = False
         self.interval = 0
         self.stage_index = 0
