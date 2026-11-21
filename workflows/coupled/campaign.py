@@ -462,10 +462,16 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     A = adapter.model.mesh.cell_area
     for elapsed in range(0, dt, config.ocean_dt):
         step_dt = min(config.ocean_dt, dt - elapsed)
-        water, r = receiver.snow.step(water, step_dt)
+        ocean_callback = None
+        if trace is not None and trace.ocean_stages:
+            def ocean_callback(stage, intermediate, external_energy):
+                trace.observe(stage, adapter, evolved, receiver, intermediate,
+                              external=float(external_energy / A.sum()),
+                              details={"substep_seconds": step_dt})
+        water, r = receiver.snow.step(water, step_dt, stage_callback=ocean_callback)
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
-        if trace is not None:
+        if trace is not None and not trace.ocean_stages:
             trace.observe("ocean_ice_snow_dynamics", adapter, evolved, receiver, water,
                           external=snow_external, details={"substep_seconds": step_dt})
         callback = None
@@ -903,6 +909,8 @@ def main(argv=None):
                         help="Opt-in per-operator energy ledger to energy_stages.jsonl (computationally expensive)")
     parser.add_argument("--energy-trace-substeps", action="store_true",
                         help="Trace each GM–Redi substep; requires --energy-trace")
+    parser.add_argument("--energy-trace-ocean-stages", action="store_true",
+                        help="Trace snow/phase/drag/SSPRK3/TKE mixing separately; requires --energy-trace")
     parser.add_argument(
         "--verbose",
         action="store_true",
@@ -911,6 +919,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.energy_trace_substeps and not args.energy_trace:
         parser.error("--energy-trace-substeps requires --energy-trace")
+    if args.energy_trace_ocean_stages and not args.energy_trace:
+        parser.error("--energy-trace-ocean-stages requires --energy-trace")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
@@ -1044,7 +1054,8 @@ def main(argv=None):
         if args.energy_trace:
             energy_trace = EnergyTrace(output / "energy_stages.jsonl",
                                        energy_trace_measure, energy_trace_extrema,
-                                       substeps=args.energy_trace_substeps)
+                                       substeps=args.energy_trace_substeps,
+                                       ocean_stages=args.energy_trace_ocean_stages)
             logger.info("Opt-in energy trace enabled, extra diagnostics may be slow")
         if args.preflight:
             logger.info(
