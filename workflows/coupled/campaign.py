@@ -1132,7 +1132,7 @@ def main(argv=None):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds
                 if energy_trace is not None:
-                    energy_trace.commit(ledger, seconds=seconds)
+                    energy_trace.commit(ledger, seconds=seconds, report=report)
                 if seconds in scheduled:
                     snapshot(
                         snapshot_dir / f"state_{seconds:08d}.nc",
