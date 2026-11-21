@@ -483,3 +483,23 @@ def test_published_config_enables_full_ocean_and_requested_timesteps():
     assert configured.physics_dt == configured.ocean_dt == 1200
     assert configured.atmosphere_dt == 240 and configured.radiation_dt == 3600
     assert configured.mixing_substeps == 10 and configured.eddy_substeps == 10
+
+
+def test_full_depth_aquaplanet_preset():
+    path = Path(c.__file__).with_name("aquaplanet_full_depth_4096.yaml")
+    cfg = c.CampaignConfig(**yaml.safe_load(path.read_text())).validate()
+    assert (cfg.cells, cfg.atmosphere_levels, cfg.atmosphere_top_pa) == (4096, 32, 100.0)
+    assert (cfg.ocean_levels, cfg.ocean_depth_m, cfg.top_layer_m) == (60, 5000.0, 10.0)
+    assert cfg.gm_redi and cfg.eddy_dissipation and cfg.backscatter and cfg.ale_remap
+    assert cfg.restart_days == 1
+    assert torch.isclose(c.rest_thickness(cfg).sum(), torch.tensor(5000.0, dtype=torch.float64))
+
+
+def test_atmospheric_top_is_configurable(source, config):
+    cfg = replace(config, atmosphere_top_pa=100.0)
+    adapter, *_ = c.build(cfg, source, None, smoke_no_radiation=True)
+    p = adapter.model.interface_pressure(100000.0)
+    assert float(p.min()) == pytest.approx(100.0, abs=1.e-8)
+    for bad in (-1.0, 0.0, 100000.0):
+        with pytest.raises(ValueError):
+            replace(config, atmosphere_top_pa=bad).validate()
