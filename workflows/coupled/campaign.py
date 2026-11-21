@@ -30,6 +30,7 @@ from workflows.coupled.ice_temperature import (
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
 from workflows.coupled.energy_trace import EnergyTrace
+from workflows.coupled.restart_compat import verify_instrumentation_only_delta
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
 from ocean_ice import OceanIce
@@ -883,6 +884,10 @@ def main(argv=None):
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", type=Path)
+    parser.add_argument(
+        "--resume-compatible-manifest", type=Path,
+        help="Opt-in audited trace-only restart bridge; requires prior run's manifest.json, --resume, --energy-trace, and --energy-trace-ocean-stages",
+    )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
     parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
@@ -921,6 +926,12 @@ def main(argv=None):
         parser.error("--energy-trace-substeps requires --energy-trace")
     if args.energy_trace_ocean_stages and not args.energy_trace:
         parser.error("--energy-trace-ocean-stages requires --energy-trace")
+    if args.resume_compatible_manifest and (
+        not args.resume or not args.energy_trace or not args.energy_trace_ocean_stages
+    ):
+        parser.error(
+            "--resume-compatible-manifest requires --resume, --energy-trace, and --energy-trace-ocean-stages"
+        )
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
@@ -1041,12 +1052,49 @@ def main(argv=None):
             steps=0,
         )
         if args.resume:
+            payload = torch.load(args.resume, map_location="cpu", weights_only=True)
+            expected_restart_identity = identity
+            if args.resume_compatible_manifest:
+                prior = json.loads(args.resume_compatible_manifest.read_text())
+                if prior.get("configuration") != asdict(config):
+                    raise ValueError("compatible restart: prior campaign configuration differs")
+                if prior.get("mesh", {}).get("sha256") != mesh_info.get("sha256"):
+                    raise ValueError("compatible restart: mesh SHA256 differs")
+                if prior.get("radiation") != adapter.radiation_manifest:
+                    raise ValueError("compatible restart: radiation tables/metadata differ")
+                if prior.get("compilation") != adapter.compilation_manifest:
+                    raise ValueError("compatible restart: compilation policy differs")
+                if prior.get("execution") != runtime:
+                    raise ValueError("compatible restart: execution runtime differs")
+                if prior.get("radiation_enabled") != (not args.smoke_no_radiation):
+                    raise ValueError("compatible restart: radiation mode differs")
+                source_delta = verify_instrumentation_only_delta(
+                    prior.get("source_sha256"), hashes
+                )
+                expected_restart_identity = fingerprint(
+                    config, adapter, prior["source_sha256"],
+                    args.smoke_no_radiation, mesh_info.get("sha256")
+                )
+                if (prior.get("fingerprint") != expected_restart_identity
+                        or payload.get("fingerprint") != expected_restart_identity):
+                    raise ValueError(
+                        "compatible restart: checkpoint and original manifest identity "
+                        "do not match the reconstructed fingerprint"
+                    )
+                atomic_json(output / "instrumentation_resume_audit.json", dict(
+                    prior_manifest=str(args.resume_compatible_manifest),
+                    prior_checkpoint=str(args.resume),
+                    prior_fingerprint=expected_restart_identity,
+                    new_fingerprint=identity,
+                    **source_delta,
+                ))
+                logger.info(
+                    "Audited trace-only restart bridge: prior %s -> current %s; allowed changes %s",
+                    expected_restart_identity, identity,
+                    json.dumps(source_delta),
+                )
             air, sea, ledger = unpack(
-                torch.load(args.resume, map_location="cpu", weights_only=True),
-                adapter,
-                receiver,
-                sea,
-                identity,
+                payload, adapter, receiver, sea, expected_restart_identity
             )
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
