@@ -12,7 +12,7 @@ top_layer_m: 10.0
 lloyd_iterations: 10
 physics_dt: 1200
 atmosphere_dt: 240
-ocean_dt: 1200
+ocean_dt: 300
 radiation_dt: 3600
 solar_constant: 1361.0
 obliquity_degrees: 23.44
