@@ -166,11 +166,11 @@ class ThermalSnowOceanIce(SnowOceanIce):
     def step(self, state, dt, **options):
         # Those standalone prescribed forcings have zero-layer semantics. The
         # thermal workflow receives all external forcing through shared Exchange.
-        if any(value is not None for value in options.values()):
+        if any(value is not None for name, value in options.items() if name != "stage_callback"):
             raise ValueError(
                 "thermal ice uses shared atmospheric exchange for external forcing"
             )
-        return super().step(state, dt)
+        return super().step(state, dt, **options)
 
     def surface_heat(self, initial, candidate, integrated_heat, dt):
         """Backward-Euler conduction plus the physical melting complementarity.
