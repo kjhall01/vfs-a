@@ -8,12 +8,12 @@ This preset is built on `feat/coupled-cuda` and changes **vertical geometry** wi
 | Atmosphere | 32 levels, lid at 100 Pa (1 hPa) |
 | Ocean | 60 levels, 5,000 m constant depth, uppermost 10 m |
 | Precision | CUDA float64 |
-| Timesteps | 240 s atmosphere, 1,200 s ocean / coupling, 3,600 s radiation |
+| Timesteps | 240 s atmosphere, 300 s ocean, 1,200 s coupling, 3,600 s radiation |
 | Ocean closures | All existing switches enabled (see YAML) |
 | Output | Six-hour snapshots through day 14, daily thereafter; six-hour diagnostics, **daily** restart |
 | Calendar | January 1, 2001 to January 1, 2002; prescribed seasonal and diurnal insolation |
 
-The ocean uses the existing analytic initial temperature field with an exponential 250 m thermocline e-folding scale, and constant 34 g/kg salinity. **This is not a spun-up, full-depth equilibrium state.** The 5,000 m bottom has not been validated for the existing mixing/bathymetry-free configuration. The atmosphere initialization uses the existing 205 K upper-temperature profile, extended to 1 hPa. No land, bottom topography or geographic basin boundaries exist.
+The ocean uses the existing analytic initial temperature field with an exponential 250 m thermocline e-folding scale, and constant 34 g/kg salinity. **This is not a spun-up, full-depth equilibrium state.** The 5,000 m bottom has not been validated for the existing mixing/bathymetry-free configuration. A local first attempt with ocean_dt=1200 s rejected at model second 2400 with 'actual carrier outflow exceeds Euler budget'; the configuration now uses 300-second ocean substeps as an unverified conservative trial. This error checks layerwise volume outflow, not gravity-wave CFL directly. Do not loosen the carrier limiter. The atmosphere initialization uses the existing 205 K upper-temperature profile, extended to 1 hPa. No land, bottom topography or geographic basin boundaries exist.
 
 ## Derecho GPU: preflight first
 
