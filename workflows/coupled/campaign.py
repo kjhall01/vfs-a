@@ -29,6 +29,7 @@ from workflows.coupled.ice_temperature import (
 )
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
+from workflows.coupled.energy_trace import EnergyTrace
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
 from ocean_ice import OceanIce
@@ -218,7 +219,7 @@ def rest_thickness(config):
     )
 
 
-def mesoscale_step(receiver, sea, dt, config):
+def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
     """Explicit GM/Redi then eddy decay; both exchange energy internally.
 
     Fixed-h tracer changes do not alter ice loading/KE or its cold content.
@@ -236,8 +237,10 @@ def mesoscale_step(receiver, sea, dt, config):
                 config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
             ),
         )
-        for _ in range(config.eddy_substeps):
+        for substep in range(config.eddy_substeps):
             ocean, r = eddy.apply(model, ocean, dt / config.eddy_substeps)
+            if on_event is not None:
+                on_event("gmredi", ocean, {"substep": substep + 1, "substeps": config.eddy_substeps})
             report["gmredi_steps"] += 1
             report["redi_limited_fluxes"] += r.redi_limited_fluxes
             report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
@@ -257,6 +260,8 @@ def mesoscale_step(receiver, sea, dt, config):
                 )
     if config.eddy_dissipation:
         ocean, r = EddyDissipation(config.eddy_decay_days * DAY).apply(model, ocean, dt)
+        if on_event is not None:
+            on_event("eddy_dissipation", ocean, {})
         report["eddy_decay_steps"] = 1
         report["eddy_dissipation_J_m2"] = float(r.dissipated_energy / area.sum())
         report["eddy_decay_local_residual_J_m2"] = float(
@@ -439,43 +444,73 @@ def build(
     return adapter, air, receiver, sea
 
 
-def advance(adapter, air, receiver, sea, dt, config):
+def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     """Atomic first-order composition; caller commits only after full success."""
+    if trace is not None:
+        trace.begin(adapter, air, receiver, sea)
     evolved = air
     for elapsed in range(0, dt, config.atmosphere_dt):
         evolved = advance_dynamics(
             adapter, evolved, min(config.atmosphere_dt, dt - elapsed)
         )
+        if trace is not None:
+            trace.observe("atmosphere_dynamics", adapter, evolved, receiver, sea,
+                          details={"substep_seconds": min(config.atmosphere_dt, dt - elapsed)})
     water = sea
     external = 0.0
     ocean_report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     A = adapter.model.mesh.cell_area
     for elapsed in range(0, dt, config.ocean_dt):
-        water, r = receiver.snow.step(water, min(config.ocean_dt, dt - elapsed))
-        external += float(r.external_energy / A.sum())
-        water, r = mesoscale_step(
-            receiver, water, min(config.ocean_dt, dt - elapsed), config
-        )
+        step_dt = min(config.ocean_dt, dt - elapsed)
+        water, r = receiver.snow.step(water, step_dt)
+        snow_external = float(r.external_energy / A.sum())
+        external += snow_external
+        if trace is not None:
+            trace.observe("ocean_ice_snow_dynamics", adapter, evolved, receiver, water,
+                          external=snow_external, details={"substep_seconds": step_dt})
+        callback = None
+        if trace is not None and trace.substeps:
+            def callback(stage, ocean, detail):
+                intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
+                trace.observe(stage, adapter, evolved, receiver, intermediate,
+                              details=detail)
+        water, r = mesoscale_step(receiver, water, step_dt, config, on_event=callback)
+        if trace is not None and not trace.substeps:
+            trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
+                          water, details={"substep_seconds": step_dt})
         accumulate_ocean(ocean_report, r)
     evolved, water, x, ar, sr = exchange_step(
         adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
     )
+    exchange_external = float((A * x.toa).sum() / A.sum())
+    exchange_upstream = float((A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum())
+    if trace is not None:
+        trace.observe("atmosphere_surface_exchange", adapter, evolved, receiver,
+                      water, external=exchange_external, upstream=exchange_upstream,
+                      details={"surface_residual_max_J": float(sr.energy_residual.abs().max()),
+                               "air_residual_max_J": float(ar.energy_transfer["layer_residual"].abs().max()),
+                               "radiation_residual_max_W": float(
+                                   ar.energy_changes["radiation_flux_residual"].abs().max() / dt)})
     # Immediately consume latent excess at the melting constraint, rather than
     # leaving an artificially warm ice-covered top ocean layer until next step.
     water, _, _ = receiver.snow.phase_step(
         water, dt, torch.zeros_like(water.snow_mass[:, :1])
     )
+    if trace is not None:
+        trace.observe("post_exchange_ice_phase", adapter, evolved, receiver, water)
     water, r = ale_step(receiver, water, config)
+    if trace is not None:
+        trace.observe("ale_remap", adapter, evolved, receiver, water,
+                      details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
+                               "ale_changed_columns": r["ale_changed_columns"]})
     accumulate_ocean(ocean_report, r)
     return (
         evolved,
         water,
         dict(
             **ocean_report,
-            external=external + float((A * x.toa).sum() / A.sum()),
-            upstream=float(
-                (A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum()
-            ),
+            external=external + exchange_external,
+            upstream=exchange_upstream,
             surface_residual=float(sr.energy_residual.abs().max()),
             air_residual=float(ar.energy_transfer["layer_residual"].abs().max()),
             radiation_residual=float(
@@ -551,6 +586,39 @@ def diagnostics(adapter, air, receiver, sea, ledger):
             for k in ("surface_residual", "air_residual", "radiation_residual")
         },
     )
+
+
+def energy_trace_measure(adapter, air, receiver, sea):
+    """Diagnostic-only decomposition of the campaign's energy inventory."""
+    inv = inventories(adapter, air, receiver, sea)
+    A = adapter.model.mesh.cell_area.sum()
+    atm = float(adapter.model.diagnostics(air.atmosphere)["energy"] / A)
+    ocean = float(receiver.H.model.total_energy(sea.coupled.ocean) / A)
+    sea_total = float(receiver.snow.total_energy(sea) / A)
+    return dict(inv, atmosphere_energy=atm, ocean_energy=ocean,
+                ice_snow_energy=sea_total - ocean)
+
+
+def energy_trace_extrema(adapter, air, receiver, sea):
+    """Global velocity extrema, indices and state-admissibility indicators."""
+    ocean = sea.coupled.ocean.ocean
+    def peak(x):
+        f = x.abs().reshape(-1)
+        k = int(f.argmax().item())
+        return float(f[k]), k
+    va, ia = peak(air.atmosphere.u_e)
+    vo, io = peak(ocean.u_e)
+    vi, ii = peak(sea.coupled.ice.velocity)
+    e = sea.coupled.ocean.specific_eddy_energy()
+    return dict(max_air_speed_m_s=va, max_air_edge=ia // air.atmosphere.u_e.shape[-1],
+                max_air_level=ia % air.atmosphere.u_e.shape[-1],
+                max_ocean_speed_m_s=vo, max_ocean_edge=io // ocean.u_e.shape[-1],
+                max_ocean_level=io % ocean.u_e.shape[-1],
+                max_ice_speed_m_s=vi, max_ice_flat_index=ii,
+                min_ocean_thickness_m=float(ocean.h.min()),
+                max_eddy_energy_J_kg=float(e.max()), min_eddy_energy_J_kg=float(e.min()),
+                sst_min_K=float(ocean.temperature()[:, 0].min() + 273.15),
+                sst_max_K=float(ocean.temperature()[:, 0].max() + 273.15))
 
 
 def source_hashes():
@@ -831,12 +899,20 @@ def main(argv=None):
         action="store_true",
         help="explicit radiation-OFF plumbing test, limited to one day",
     )
+    parser.add_argument("--energy-trace", action="store_true",
+                        help="Opt-in per-operator energy ledger to energy_stages.jsonl (computationally expensive)")
+    parser.add_argument("--energy-trace-substeps", action="store_true",
+                        help="Trace each GM–Redi substep; requires --energy-trace")
     parser.add_argument(
         "--verbose",
         action="store_true",
         help="Also print initialization/progress to the terminal; run.log is always written",
     )
     args = parser.parse_args(argv)
+    if args.energy_trace_substeps and not args.energy_trace:
+        parser.error("--energy-trace-substeps requires --energy-trace")
+    if args.preflight and args.energy_trace:
+        parser.error("--energy-trace does not support --preflight")
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
     for name in ("device", "dtype", "threads"):
         if getattr(args, name) is not None:
@@ -869,6 +945,7 @@ def main(argv=None):
     output.mkdir(parents=True, exist_ok=True)
     atomic_json(output / "configuration.json", asdict(config))
     air = sea = adapter = receiver = identity = ledger = None
+    energy_trace = None
     start = time.perf_counter()
     logger = run_logger(output, args.verbose)
     execution = ExitStack()
@@ -964,6 +1041,11 @@ def main(argv=None):
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
             raise ValueError("restart is already at or beyond requested end")
+        if args.energy_trace:
+            energy_trace = EnergyTrace(output / "energy_stages.jsonl",
+                                       energy_trace_measure, energy_trace_extrema,
+                                       substeps=args.energy_trace_substeps)
+            logger.info("Opt-in energy trace enabled, extra diagnostics may be slow")
         if args.preflight:
             logger.info(
                 "Advancing one complete coupled interval and replaying its restart"
@@ -1036,7 +1118,7 @@ def main(argv=None):
             while air.time_seconds < end:
                 dt = min(config.physics_dt, end - air.time_seconds)
                 candidate, water, report = advance(
-                    adapter, air, receiver, sea, dt, config
+                    adapter, air, receiver, sea, dt, config, trace=energy_trace
                 )
                 # An asynchronous CUDA failure must be observed before commit.
                 synchronize(device)
@@ -1049,6 +1131,8 @@ def main(argv=None):
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds
+                if energy_trace is not None:
+                    energy_trace.commit(ledger, seconds=seconds)
                 if seconds in scheduled:
                     snapshot(
                         snapshot_dir / f"state_{seconds:08d}.nc",
@@ -1135,6 +1219,8 @@ def main(argv=None):
         print(json.dumps(status, indent=2), file=sys.stderr, flush=True)
         return 1
     finally:
+        if energy_trace is not None:
+            energy_trace.close()
         execution.close()
         for handler in logger.handlers[:]:
             handler.close()
