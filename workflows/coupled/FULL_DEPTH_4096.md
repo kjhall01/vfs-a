@@ -71,3 +71,37 @@ Do not launch a 365-day job before a two-day run and a comparison of numerical b
 - Changing level counts, mesh, atmospheric lid, dtype or source invalidates ordinary restart identity; do not reuse the 16,384-cell checkpoints.
 - All physics remain enabled; `--no-compile` changes **only compilation**, not physical parameterizations. Once eager CUDA is validated, try `--compile` using a compatible host C++ compiler and fresh output directory.
 - No GPU runtime or long-term physical validation was performed in preparing this preset.
+
+## Carrier-CFL failure investigation (2026-11-21)
+
+A user-executed local CPU integration reached 2,400 simulated seconds, then
+rejected an ocean RK stage: `actual carrier outflow exceeds Euler budget`.
+It was using the initial 1,200 s ocean substep. The check is a strict
+layerwise carrier-volume bound, not a direct external gravity-wave CFL test.
+
+The experimental preset has been changed to `ocean_dt: 300`, with the same
+1,200 s physics/coupling interval and **all physics enabled**. This is an
+unverified timestep hypothesis, not a demonstrated numerical correction.
+The program now reports the worst cell/layer, layer thickness, actual integrated
+outflow, permitted outflow, outflow ratio, stage-local permissible dt and global
+peak edge speed upon rejection. A synthetic regression test checks this error
+report. These diagnostics do not alter accepted fluxes or the positivity guard.
+
+The unmodified 60-level thickness rule produces an uppermost layer of 10 m,
+then approximately 21.5, 22.4, 23.3, 24.2 m, followed by increasingly
+coarse layers reaching approximately 215 m near the bottom. The first
+eight layers occupy the upper ~180 m. This is not the uniform 10 m top
+mixed-layer spacing found in some climate model configurations.
+
+**Next evidence needed:** Re-run the exact failed setup with the new error
+diagnostic (or run the 300 s preset), retain the failure log if it recurs.
+A `local_dt_limit` much less than 300 s indicates the next numerical
+substep would also be unsafe *for the failing stage state*; it does not
+prove that using that smaller dt from the initial state would stabilize the
+whole integration. Check initial lateral pressure imbalance, rapid
+velocity growth, minimum layer thickness, and numerical energy, before
+considering any timestep or scheme change as a fix.
+
+No complete local coupled integration was executed in this review: the
+user's PyAM21 optical tables and macOS environment are not available
+in the reviewing runtime.
