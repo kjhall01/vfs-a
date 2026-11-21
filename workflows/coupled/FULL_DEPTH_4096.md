@@ -137,7 +137,7 @@ python -u -I workflows/coupled/campaign.py \
   --radiation-data ../sea_esf \
   --mesh ../mesh_4096_exact_3000.npy \
   --device cpu --dtype float64 --threads 4 --compile \
-  --stop-after-days 2.1 --energy-trace \
+  --stop-after-days 2.25 --energy-trace \
   --output energy-trace-4096 --verbose
 python -I validation/coupled_debug/summarize_energy_trace.py \
   energy-trace-4096/energy_stages.jsonl
