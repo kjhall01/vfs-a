@@ -30,7 +30,9 @@ from workflows.coupled.ice_temperature import (
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
 from workflows.coupled.energy_trace import EnergyTrace
-from workflows.coupled.restart_compat import verify_instrumentation_only_delta
+from workflows.coupled.restart_compat import (
+    verify_instrumentation_only_delta, canonical_manifest_json,
+)
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
 from ocean_ice import OceanIce
@@ -1056,7 +1058,7 @@ def main(argv=None):
                     raise ValueError("compatible restart: prior campaign configuration differs")
                 if prior.get("mesh", {}).get("sha256") != mesh_info.get("sha256"):
                     raise ValueError("compatible restart: mesh SHA256 differs")
-                if prior.get("radiation") != adapter.radiation_manifest:
+                if canonical_manifest_json(prior.get("radiation")) != canonical_manifest_json(adapter.radiation_manifest):
                     raise ValueError("compatible restart: radiation tables/metadata differ")
                 if prior.get("compilation") != adapter.compilation_manifest:
                     raise ValueError("compatible restart: compilation policy differs")
