@@ -148,8 +148,29 @@ class HorizontalTransport:
         G = float(dt)*flux
         outgoing = torch.zeros_like(volume).index_add(0,i,G.clamp_min(0)).index_add(0,j,(-G).clamp_min(0))
         floor = (self.mesh.cell_area[:,None]*torch.full_like(state.h,self.min_thickness)).flatten()
-        if (outgoing > self.cfl_safety*(volume-floor)).any().item():
-            raise FloatingPointError('actual carrier outflow exceeds Euler budget; reduce dt')
+        capacity = self.cfl_safety*(volume-floor)
+        exceeded = outgoing > capacity
+        if exceeded.any().item():
+            # Diagnostic only: preserve the strict transport rejection and
+            # numerical behavior. Report the worst layerwise carrier CFL.
+            ratio = outgoing / capacity.clamp_min(torch.finfo(volume.dtype).tiny)
+            worst = int(ratio.argmax().item())
+            levels = state.h.shape[-1]
+            cell, layer = divmod(worst, levels)
+            out_rate = outgoing[worst] / float(dt)
+            dt_limit = (capacity[worst] / out_rate).item() if out_rate > 0 else float("inf")
+            # This is an Euler-stage limit evaluated at this stage state.
+            raise FloatingPointError(
+                'actual carrier outflow exceeds Euler budget; reduce dt; '
+                f'cell={cell} layer={layer} dt={float(dt):.9g}s '
+                f'max_outflow_ratio={float(ratio[worst]):.9g} '
+                f'h={float(state.h[cell, layer]):.9g}m '
+                f'min_thickness={self.min_thickness:.9g}m '
+                f'outgoing_m3={float(outgoing[worst]):.9g} '
+                f'capacity_m3={float(capacity[worst]):.9g} '
+                f'local_dt_limit={float(dt_limit):.9g}s '
+                f'max_abs_edge_velocity={float(state.u_e.abs().max()):.9g}m/s'
+            )
         remaining = volume-outgoing
         incoming = torch.zeros_like(volume).index_add(0,j,G.clamp_min(0)).index_add(0,i,(-G).clamp_min(0))
         new_volume = remaining+incoming
