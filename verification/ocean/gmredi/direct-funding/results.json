@@ -1,0 +1,1006 @@
+{
+  "processor": "AMD EPYC 9V74 (virtualized Linux host)",
+  "ocean": {
+    "cases": {
+      "well_funded": [
+        {
+          "halving": {
+            "seconds": 1.5295024170000033,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.6152296037855765,
+            "model_seconds_per_wall_second": 156.91377622713458,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "direct": {
+            "seconds": 1.6467526839996935,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.4290229121015625,
+            "model_seconds_per_wall_second": 145.74137472609377,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "end_state_bitwise_equal": true
+        },
+        {
+          "direct": {
+            "seconds": 1.4523364409997157,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.754182768592242,
+            "model_seconds_per_wall_second": 165.2509661155345,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "halving": {
+            "seconds": 1.6664743290002662,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.4002769982059298,
+            "model_seconds_per_wall_second": 144.01661989235578,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "end_state_bitwise_equal": true
+        },
+        {
+          "halving": {
+            "seconds": 1.7496314630006964,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.286195741553379,
+            "model_seconds_per_wall_second": 137.17174449320274,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "direct": {
+            "seconds": 1.5775023859996509,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.535653850986242,
+            "model_seconds_per_wall_second": 152.13923105917453,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "end_state_bitwise_equal": true
+        },
+        {
+          "direct": {
+            "seconds": 1.6321618599995418,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.450737330672047,
+            "model_seconds_per_wall_second": 147.0442398403228,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "halving": {
+            "seconds": 1.6548787649999213,
+            "gm_steps": 4,
+            "gm_attempts": 4,
+            "limited_steps": 0,
+            "fallback_events": 0,
+            "gm_steps_per_second": 2.4170954903758104,
+            "model_seconds_per_wall_second": 145.0257294225486,
+            "min_eddy_J_kg": 8.413675181082817e-05,
+            "end_min_eddy_J_kg": 8.413675181082817e-05,
+            "max_energy_residual_J_m2": 3.871304446555508e-12,
+            "max_volume_divergence_m3_s": 1.5133991837501526e-09,
+            "cut_percent_all": 0.0,
+            "cut_percent_changed": null,
+            "horizontal_change_percent_all": 0.0,
+            "vertical_change_percent_all": 0.0
+          },
+          "end_state_bitwise_equal": true
+        }
+      ],
+      "first_failure": [
+        {
+          "halving": {
+            "seconds": 2.5000281859993265,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.599981961163808,
+            "model_seconds_per_wall_second": 95.99891766982849,
+            "min_eddy_J_kg": 3.0254762671025813e-06,
+            "end_min_eddy_J_kg": 3.0254762671025813e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.01200358642460605,
+            "cut_percent_changed": 50.0,
+            "horizontal_change_percent_all": 0.02069330293297285,
+            "vertical_change_percent_all": 0.03256166230704853
+          },
+          "direct": {
+            "seconds": 2.298118532999979,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.7405542588694822,
+            "model_seconds_per_wall_second": 104.43325553216893,
+            "min_eddy_J_kg": 1.3576735685756885e-06,
+            "end_min_eddy_J_kg": 1.3576735685756885e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.005713134547967232,
+            "cut_percent_changed": 23.79761492055377,
+            "horizontal_change_percent_all": 0.009849025092665076,
+            "vertical_change_percent_all": 0.015497798015125023
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 2.17368141299994,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.840196072928425,
+            "model_seconds_per_wall_second": 110.4117643757055,
+            "min_eddy_J_kg": 1.3576735685756885e-06,
+            "end_min_eddy_J_kg": 1.3576735685756885e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.005713134547967232,
+            "cut_percent_changed": 23.79761492055377,
+            "horizontal_change_percent_all": 0.009849025092665076,
+            "vertical_change_percent_all": 0.015497798015125023
+          },
+          "halving": {
+            "seconds": 2.17488914400019,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.8391741993079032,
+            "model_seconds_per_wall_second": 110.35045195847418,
+            "min_eddy_J_kg": 3.0254762671025813e-06,
+            "end_min_eddy_J_kg": 3.0254762671025813e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.01200358642460605,
+            "cut_percent_changed": 50.0,
+            "horizontal_change_percent_all": 0.02069330293297285,
+            "vertical_change_percent_all": 0.03256166230704853
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "halving": {
+            "seconds": 2.1596235079996404,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.8521746893304636,
+            "model_seconds_per_wall_second": 111.13048135982781,
+            "min_eddy_J_kg": 3.0254762671025813e-06,
+            "end_min_eddy_J_kg": 3.0254762671025813e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.01200358642460605,
+            "cut_percent_changed": 50.0,
+            "horizontal_change_percent_all": 0.02069330293297285,
+            "vertical_change_percent_all": 0.03256166230704853
+          },
+          "direct": {
+            "seconds": 2.184662942999239,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.8309460563781776,
+            "model_seconds_per_wall_second": 109.85676338269066,
+            "min_eddy_J_kg": 1.3576735685756885e-06,
+            "end_min_eddy_J_kg": 1.3576735685756885e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.005713134547967232,
+            "cut_percent_changed": 23.79761492055377,
+            "horizontal_change_percent_all": 0.009849025092665076,
+            "vertical_change_percent_all": 0.015497798015125023
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 2.2313234069997634,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.7926581092869898,
+            "model_seconds_per_wall_second": 107.55948655721939,
+            "min_eddy_J_kg": 1.3576735685756885e-06,
+            "end_min_eddy_J_kg": 1.3576735685756885e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.005713134547967232,
+            "cut_percent_changed": 23.79761492055377,
+            "horizontal_change_percent_all": 0.009849025092665076,
+            "vertical_change_percent_all": 0.015497798015125023
+          },
+          "halving": {
+            "seconds": 2.476199859999724,
+            "gm_steps": 4,
+            "gm_attempts": 8,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.6153784937216036,
+            "model_seconds_per_wall_second": 96.92270962329621,
+            "min_eddy_J_kg": 3.0254762671025813e-06,
+            "end_min_eddy_J_kg": 3.0254762671025813e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.2223608791828156e-09,
+            "cut_percent_all": 0.01200358642460605,
+            "cut_percent_changed": 50.0,
+            "horizontal_change_percent_all": 0.02069330293297285,
+            "vertical_change_percent_all": 0.03256166230704853
+          },
+          "end_state_bitwise_equal": false
+        }
+      ],
+      "window": [
+        {
+          "halving": {
+            "seconds": 23.554391723000663,
+            "gm_steps": 20,
+            "gm_attempts": 27,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.8490985560230014,
+            "model_seconds_per_wall_second": 50.945913361380086,
+            "min_eddy_J_kg": 1.7531754004011382e-06,
+            "end_min_eddy_J_kg": 1.7527696197293242e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.0033004519511908525,
+            "cut_percent_changed": 68.7497838029757,
+            "horizontal_change_percent_all": 0.005690003778494091,
+            "vertical_change_percent_all": 0.008953597047168997
+          },
+          "direct": {
+            "seconds": 22.115788701999918,
+            "gm_steps": 20,
+            "gm_attempts": 24,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.9043313023781698,
+            "model_seconds_per_wall_second": 54.25987814269019,
+            "min_eddy_J_kg": 1.2867373262214152e-06,
+            "end_min_eddy_J_kg": 1.2864395048302621e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.003182537779547026,
+            "cut_percent_changed": 66.29412131600343,
+            "horizontal_change_percent_all": 0.0054867062547892375,
+            "vertical_change_percent_all": 0.008633714803009345
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 21.9764907029994,
+            "gm_steps": 20,
+            "gm_attempts": 24,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.9100634068600569,
+            "model_seconds_per_wall_second": 54.60380441160341,
+            "min_eddy_J_kg": 1.2867373262214152e-06,
+            "end_min_eddy_J_kg": 1.2864395048302621e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.003182537779547026,
+            "cut_percent_changed": 66.29412131600343,
+            "horizontal_change_percent_all": 0.0054867062547892375,
+            "vertical_change_percent_all": 0.008633714803009345
+          },
+          "halving": {
+            "seconds": 22.458094376999725,
+            "gm_steps": 20,
+            "gm_attempts": 27,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.8905475088074631,
+            "model_seconds_per_wall_second": 53.43285052844779,
+            "min_eddy_J_kg": 1.7531754004011382e-06,
+            "end_min_eddy_J_kg": 1.7527696197293242e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.0033004519511908525,
+            "cut_percent_changed": 68.7497838029757,
+            "horizontal_change_percent_all": 0.005690003778494091,
+            "vertical_change_percent_all": 0.008953597047168997
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "halving": {
+            "seconds": 21.752006650000112,
+            "gm_steps": 20,
+            "gm_attempts": 27,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.9194554011411125,
+            "model_seconds_per_wall_second": 55.16732406846675,
+            "min_eddy_J_kg": 1.7531754004011382e-06,
+            "end_min_eddy_J_kg": 1.7527696197293242e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.0033004519511908525,
+            "cut_percent_changed": 68.7497838029757,
+            "horizontal_change_percent_all": 0.005690003778494091,
+            "vertical_change_percent_all": 0.008953597047168997
+          },
+          "direct": {
+            "seconds": 21.479044913999132,
+            "gm_steps": 20,
+            "gm_attempts": 24,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.9311400986439973,
+            "model_seconds_per_wall_second": 55.86840591863984,
+            "min_eddy_J_kg": 1.2867373262214152e-06,
+            "end_min_eddy_J_kg": 1.2864395048302621e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.003182537779547026,
+            "cut_percent_changed": 66.29412131600343,
+            "horizontal_change_percent_all": 0.0054867062547892375,
+            "vertical_change_percent_all": 0.008633714803009345
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 21.575047946999803,
+            "gm_steps": 20,
+            "gm_attempts": 24,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.9269967811488072,
+            "model_seconds_per_wall_second": 55.619806868928436,
+            "min_eddy_J_kg": 1.2867373262214152e-06,
+            "end_min_eddy_J_kg": 1.2864395048302621e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.003182537779547026,
+            "cut_percent_changed": 66.29412131600343,
+            "horizontal_change_percent_all": 0.0054867062547892375,
+            "vertical_change_percent_all": 0.008633714803009345
+          },
+          "halving": {
+            "seconds": 22.93012840099982,
+            "gm_steps": 20,
+            "gm_attempts": 27,
+            "limited_steps": 4,
+            "fallback_events": 0,
+            "gm_steps_per_second": 0.8722149152521946,
+            "model_seconds_per_wall_second": 52.33289491513168,
+            "min_eddy_J_kg": 1.7531754004011382e-06,
+            "end_min_eddy_J_kg": 1.7527696197293242e-06,
+            "max_energy_residual_J_m2": 3.981638102436601e-12,
+            "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+            "cut_percent_all": 0.0033004519511908525,
+            "cut_percent_changed": 68.7497838029757,
+            "horizontal_change_percent_all": 0.005690003778494091,
+            "vertical_change_percent_all": 0.008953597047168997
+          },
+          "end_state_bitwise_equal": false
+        }
+      ],
+      "sustained": [
+        {
+          "halving": {
+            "seconds": 23.689910357999906,
+            "gm_steps": 30,
+            "gm_attempts": 102,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.2663619045679175,
+            "model_seconds_per_wall_second": 75.98171427407506,
+            "min_eddy_J_kg": 1.3665381566112964e-06,
+            "end_min_eddy_J_kg": 1.963457011756223e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.019105737530810952,
+            "cut_percent_changed": 79.58296875918553,
+            "horizontal_change_percent_all": 0.032936369033567184,
+            "vertical_change_percent_all": 0.05183256519766647
+          },
+          "direct": {
+            "seconds": 17.895722233000015,
+            "gm_steps": 30,
+            "gm_attempts": 60,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.6763782768531963,
+            "model_seconds_per_wall_second": 100.58269661119178,
+            "min_eddy_J_kg": 1.2853658385078924e-06,
+            "end_min_eddy_J_kg": 1.2853658385078924e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.018939047193082037,
+            "cut_percent_changed": 78.88901026965662,
+            "horizontal_change_percent_all": 0.03264903239064518,
+            "vertical_change_percent_all": 0.05138034569902384
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 17.369654725000146,
+            "gm_steps": 30,
+            "gm_attempts": 60,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.7271500484589943,
+            "model_seconds_per_wall_second": 103.62900290753966,
+            "min_eddy_J_kg": 1.2853658385078924e-06,
+            "end_min_eddy_J_kg": 1.2853658385078924e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.018939047193082037,
+            "cut_percent_changed": 78.88901026965662,
+            "horizontal_change_percent_all": 0.03264903239064518,
+            "vertical_change_percent_all": 0.05138034569902384
+          },
+          "halving": {
+            "seconds": 21.099135095999372,
+            "gm_steps": 30,
+            "gm_attempts": 102,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.4218592308880154,
+            "model_seconds_per_wall_second": 85.31155385328093,
+            "min_eddy_J_kg": 1.3665381566112964e-06,
+            "end_min_eddy_J_kg": 1.963457011756223e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.019105737530810952,
+            "cut_percent_changed": 79.58296875918553,
+            "horizontal_change_percent_all": 0.032936369033567184,
+            "vertical_change_percent_all": 0.05183256519766647
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "halving": {
+            "seconds": 24.790766698999505,
+            "gm_steps": 30,
+            "gm_attempts": 102,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.2101279627310084,
+            "model_seconds_per_wall_second": 72.60767776386051,
+            "min_eddy_J_kg": 1.3665381566112964e-06,
+            "end_min_eddy_J_kg": 1.963457011756223e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.019105737530810952,
+            "cut_percent_changed": 79.58296875918553,
+            "horizontal_change_percent_all": 0.032936369033567184,
+            "vertical_change_percent_all": 0.05183256519766647
+          },
+          "direct": {
+            "seconds": 17.793821847999425,
+            "gm_steps": 30,
+            "gm_attempts": 60,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.6859784399478477,
+            "model_seconds_per_wall_second": 101.15870639687087,
+            "min_eddy_J_kg": 1.2853658385078924e-06,
+            "end_min_eddy_J_kg": 1.2853658385078924e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.018939047193082037,
+            "cut_percent_changed": 78.88901026965662,
+            "horizontal_change_percent_all": 0.03264903239064518,
+            "vertical_change_percent_all": 0.05138034569902384
+          },
+          "end_state_bitwise_equal": false
+        },
+        {
+          "direct": {
+            "seconds": 15.718695167000078,
+            "gm_steps": 30,
+            "gm_attempts": 60,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.9085553655230987,
+            "model_seconds_per_wall_second": 114.51332193138593,
+            "min_eddy_J_kg": 1.2853658385078924e-06,
+            "end_min_eddy_J_kg": 1.2853658385078924e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.018939047193082037,
+            "cut_percent_changed": 78.88901026965662,
+            "horizontal_change_percent_all": 0.03264903239064518,
+            "vertical_change_percent_all": 0.05138034569902384
+          },
+          "halving": {
+            "seconds": 22.534485433000555,
+            "gm_steps": 30,
+            "gm_attempts": 102,
+            "limited_steps": 30,
+            "fallback_events": 0,
+            "gm_steps_per_second": 1.3312928794933385,
+            "model_seconds_per_wall_second": 79.8775727696003,
+            "min_eddy_J_kg": 1.3665381566112964e-06,
+            "end_min_eddy_J_kg": 1.963457011756223e-06,
+            "max_energy_residual_J_m2": 4.013152135489909e-12,
+            "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+            "cut_percent_all": 0.019105737530810952,
+            "cut_percent_changed": 79.58296875918553,
+            "horizontal_change_percent_all": 0.032936369033567184,
+            "vertical_change_percent_all": 0.05183256519766647
+          },
+          "end_state_bitwise_equal": false
+        }
+      ]
+    },
+    "summary": {
+      "well_funded": {
+        "halving": {
+          "median_wall_s": 1.6606765470000937,
+          "median_GM_steps_s": 2.40868624429087
+        },
+        "direct": {
+          "median_wall_s": 1.6048321229995963,
+          "median_GM_steps_s": 2.4931955908291443
+        },
+        "paired_speedup_median": 1.0615166155107711,
+        "paired_speedup_range": [
+          0.9287991037519316,
+          1.1474437203084629
+        ]
+      },
+      "first_failure": {
+        "halving": {
+          "median_wall_s": 2.325544501999957,
+          "median_GM_steps_s": 1.7272763465147534
+        },
+        "direct": {
+          "median_wall_s": 2.207993174999501,
+          "median_GM_steps_s": 1.8118020828325836
+        },
+        "paired_speedup_median": 1.0442071460348359,
+        "paired_speedup_range": [
+          0.9885385363083868,
+          1.1097449398109536
+        ]
+      },
+      "window": {
+        "halving": {
+          "median_wall_s": 22.694111388999772,
+          "median_GM_steps_s": 0.8813812120298289
+        },
+        "direct": {
+          "median_wall_s": 21.7757693249996,
+          "median_GM_steps_s": 0.9185300940044321
+        },
+        "paired_speedup_median": 1.0423611274843183,
+        "paired_speedup_range": [
+          1.0127082808892995,
+          1.0650486871793388
+        ]
+      },
+      "sustained": {
+        "halving": {
+          "median_wall_s": 23.11219789550023,
+          "median_GM_steps_s": 1.2988273920306281
+        },
+        "direct": {
+          "median_wall_s": 17.581738286499785,
+          "median_GM_steps_s": 1.706564244203421
+        },
+        "paired_speedup_median": 1.3584991544840135,
+        "paired_speedup_range": [
+          1.2147124067832726,
+          1.433610436081844
+        ]
+      }
+    },
+    "strict_failure_step": 17,
+    "torch": "2.14.1+cpu",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "threads": 4,
+    "mode": "CPU float64 eager with identical per-step reductions and event/transport JSONL I/O",
+    "mesh_sha256": "3e1d92002aaa6beae0ba07d3eb52344d475178f5f082fcd15a3a85cf19bd1b9b",
+    "checkpoint_sha256": "90b2a03d2b22f801eb5a9011609eec04d671bfc39a35bc7cc21d5c45a5914930",
+    "sources": {
+      "benchmark_gm_funding.py": "df49f823dd7f93e6790a74c1866b4e0915f59a6ce55bb01d24e27172ebb8697f",
+      "gm_parcel_limiter.py": "b42ecb8f033637ab5f6914bbdae899de37dc02cdb259e54a35e8a732b4b89479",
+      "gm_direct_funding.py": "75c87ac6c33353e9489b1387f34e4db0efe3dfbd1a8f26fdea7b80c0a9b91b80"
+    },
+    "settings": {
+      "threads": null,
+      "repeats": 4,
+      "warmups": 1,
+      "fixed_steps": 4,
+      "stress_steps": 30,
+      "cases": [
+        "well_funded",
+        "first_failure",
+        "window",
+        "sustained"
+      ]
+    }
+  },
+  "coupled_radiation_off": {
+    "torch": "2.14.1+cpu",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "sources": {
+      "benchmark_coupled_gm_funding.py": "9864826521a47fc3ab8cc285568989daeae0af0adec8973e54d90dd0cd35d136",
+      "benchmark_gm_funding.py": "df49f823dd7f93e6790a74c1866b4e0915f59a6ce55bb01d24e27172ebb8697f",
+      "gm_direct_funding.py": "75c87ac6c33353e9489b1387f34e4db0efe3dfbd1a8f26fdea7b80c0a9b91b80",
+      "gm_parcel_limiter.py": "b42ecb8f033637ab5f6914bbdae899de37dc02cdb259e54a35e8a732b4b89479"
+    },
+    "checkpoint_sha256": "90b2a03d2b22f801eb5a9011609eec04d671bfc39a35bc7cc21d5c45a5914930",
+    "threads": 4,
+    "device": "cpu",
+    "dtype": "float64",
+    "mesh_sha256": "3e1d92002aaa6beae0ba07d3eb52344d475178f5f082fcd15a3a85cf19bd1b9b",
+    "checkpoint_seconds": 936000,
+    "compiled": false,
+    "radiation": "off",
+    "intervals": 1,
+    "interval_seconds": 1200,
+    "trials": [
+      {
+        "pair": 1,
+        "method": "direct",
+        "seconds": 29.96929923100015,
+        "events": 4,
+        "gm_attempts": 24,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 3.985101273284279e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 1,
+        "method": "halving",
+        "seconds": 29.367210783999326,
+        "events": 4,
+        "gm_attempts": 27,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 4.4516810945776836e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 2,
+        "method": "halving",
+        "seconds": 29.612295431000348,
+        "events": 4,
+        "gm_attempts": 27,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 4.4516810945776836e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 2,
+        "method": "direct",
+        "seconds": 29.70475470099973,
+        "events": 4,
+        "gm_attempts": 24,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 3.985101273284279e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 3,
+        "method": "direct",
+        "seconds": 28.874450196999533,
+        "events": 4,
+        "gm_attempts": 24,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 3.985101273284279e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 3,
+        "method": "halving",
+        "seconds": 28.905048162999265,
+        "events": 4,
+        "gm_attempts": 27,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 4.4516810945776836e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 4,
+        "method": "halving",
+        "seconds": 29.900524094000502,
+        "events": 4,
+        "gm_attempts": 27,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 4.4516810945776836e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      },
+      {
+        "pair": 4,
+        "method": "direct",
+        "seconds": 29.35309965400029,
+        "events": 4,
+        "gm_attempts": 24,
+        "fallbacks": 0,
+        "min_eddy_J_kg": 3.985101273284279e-06,
+        "max_gmredi_residual_J_m2": 3.981638102436601e-12
+      }
+    ],
+    "instrumentation": "Matched per-substep transport and budget audit; no campaign snapshot I/O",
+    "median_seconds": {
+      "halving": 29.489753107499837,
+      "direct": 29.52892717750001
+    },
+    "paired_speedup_median": 0.9989735407809734,
+    "paired_speedup_range": [
+      0.9799098256398994,
+      1.0186496297308625
+    ],
+    "simulated_years_per_wall_day": {
+      "halving": 0.11148520711218132,
+      "direct": 0.11133730707906656
+    }
+  },
+  "cache_ablation": {
+    "strict_failure_step": 17,
+    "threads": 4,
+    "mode": "CPU float64 eager",
+    "source_hashes": {
+      "benchmark_gm_funding.py": "df49f823dd7f93e6790a74c1866b4e0915f59a6ce55bb01d24e27172ebb8697f",
+      "gm_direct_funding.py": "75c87ac6c33353e9489b1387f34e4db0efe3dfbd1a8f26fdea7b80c0a9b91b80",
+      "gm_parcel_limiter.py": "b42ecb8f033637ab5f6914bbdae899de37dc02cdb259e54a35e8a732b4b89479"
+    },
+    "cache_ablation_source": "dba3d5cebc13acf31e85ea5f6bc3b2c6a1cf8a2863c8470347f93042b3e6d57c",
+    "stress_steps": 12,
+    "pairs": [
+      {
+        "cached_halving": {
+          "seconds": 8.958520863000558,
+          "gm_steps": 12,
+          "gm_attempts": 39,
+          "limited_steps": 12,
+          "fallback_events": 12,
+          "gm_steps_per_second": 1.3395068430951593,
+          "model_seconds_per_wall_second": 80.37041058570956,
+          "min_eddy_J_kg": 1.3665381566112964e-06,
+          "end_min_eddy_J_kg": 1.8502468571458503e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.01850530313560106,
+          "cut_percent_changed": 77.08297946696914,
+          "horizontal_change_percent_all": 0.031902270567853525,
+          "vertical_change_percent_all": 0.05019832781000288
+        },
+        "direct": {
+          "seconds": 7.004977475000487,
+          "gm_steps": 12,
+          "gm_attempts": 24,
+          "limited_steps": 12,
+          "fallback_events": 0,
+          "gm_steps_per_second": 1.7130676069731638,
+          "model_seconds_per_wall_second": 102.78405641838982,
+          "min_eddy_J_kg": 1.2863132617704637e-06,
+          "end_min_eddy_J_kg": 1.2863132617704637e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.018240210503656172,
+          "cut_percent_changed": 75.97911010264139,
+          "horizontal_change_percent_all": 0.03144525264900708,
+          "vertical_change_percent_all": 0.04947922548918016
+        }
+      },
+      {
+        "direct": {
+          "seconds": 6.756216667000444,
+          "gm_steps": 12,
+          "gm_attempts": 24,
+          "limited_steps": 12,
+          "fallback_events": 0,
+          "gm_steps_per_second": 1.7761419728606243,
+          "model_seconds_per_wall_second": 106.56851837163745,
+          "min_eddy_J_kg": 1.2863132617704637e-06,
+          "end_min_eddy_J_kg": 1.2863132617704637e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.018240210503656172,
+          "cut_percent_changed": 75.97911010264139,
+          "horizontal_change_percent_all": 0.03144525264900708,
+          "vertical_change_percent_all": 0.04947922548918016
+        },
+        "cached_halving": {
+          "seconds": 9.576365234999685,
+          "gm_steps": 12,
+          "gm_attempts": 39,
+          "limited_steps": 12,
+          "fallback_events": 12,
+          "gm_steps_per_second": 1.2530850385846206,
+          "model_seconds_per_wall_second": 75.18510231507724,
+          "min_eddy_J_kg": 1.3665381566112964e-06,
+          "end_min_eddy_J_kg": 1.8502468571458503e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.01850530313560106,
+          "cut_percent_changed": 77.08297946696914,
+          "horizontal_change_percent_all": 0.031902270567853525,
+          "vertical_change_percent_all": 0.05019832781000288
+        }
+      },
+      {
+        "cached_halving": {
+          "seconds": 9.356388367999898,
+          "gm_steps": 12,
+          "gm_attempts": 39,
+          "limited_steps": 12,
+          "fallback_events": 12,
+          "gm_steps_per_second": 1.2825461629020882,
+          "model_seconds_per_wall_second": 76.95276977412529,
+          "min_eddy_J_kg": 1.3665381566112964e-06,
+          "end_min_eddy_J_kg": 1.8502468571458503e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.01850530313560106,
+          "cut_percent_changed": 77.08297946696914,
+          "horizontal_change_percent_all": 0.031902270567853525,
+          "vertical_change_percent_all": 0.05019832781000288
+        },
+        "direct": {
+          "seconds": 6.940513477000422,
+          "gm_steps": 12,
+          "gm_attempts": 24,
+          "limited_steps": 12,
+          "fallback_events": 0,
+          "gm_steps_per_second": 1.7289787044958245,
+          "model_seconds_per_wall_second": 103.73872226974946,
+          "min_eddy_J_kg": 1.2863132617704637e-06,
+          "end_min_eddy_J_kg": 1.2863132617704637e-06,
+          "max_energy_residual_J_m2": 3.981638102436601e-12,
+          "max_volume_divergence_m3_s": 1.6298145055770874e-09,
+          "cut_percent_all": 0.018240210503656172,
+          "cut_percent_changed": 75.97911010264139,
+          "horizontal_change_percent_all": 0.03144525264900708,
+          "vertical_change_percent_all": 0.04947922548918016
+        }
+      }
+    ],
+    "window_comparison": {
+      "halving": {
+        "seconds": 23.648730421000437,
+        "gm_steps": 20,
+        "gm_attempts": 27,
+        "limited_steps": 4,
+        "fallback_events": 0,
+        "gm_steps_per_second": 0.8457113614115915,
+        "model_seconds_per_wall_second": 50.74268168469549,
+        "min_eddy_J_kg": 1.7531754004011382e-06,
+        "end_min_eddy_J_kg": 1.7527696197293242e-06,
+        "max_energy_residual_J_m2": 3.981638102436601e-12,
+        "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+        "cut_percent_all": 0.0033004519511908525,
+        "cut_percent_changed": 68.7497838029757,
+        "horizontal_change_percent_all": 0.005690003778494091,
+        "vertical_change_percent_all": 0.008953597047168997
+      },
+      "cached_halving": {
+        "seconds": 23.77142458199978,
+        "gm_steps": 20,
+        "gm_attempts": 27,
+        "limited_steps": 4,
+        "fallback_events": 4,
+        "gm_steps_per_second": 0.841346295044699,
+        "model_seconds_per_wall_second": 50.48077770268194,
+        "min_eddy_J_kg": 1.7531754004011382e-06,
+        "end_min_eddy_J_kg": 1.7527696197293242e-06,
+        "max_energy_residual_J_m2": 3.981638102436601e-12,
+        "max_volume_divergence_m3_s": 1.8044374883174896e-09,
+        "cut_percent_all": 0.0033004519511908525,
+        "cut_percent_changed": 68.7497838029757,
+        "horizontal_change_percent_all": 0.005690003778494091,
+        "vertical_change_percent_all": 0.008953597047168997
+      },
+      "end_ocean_bitwise_equal": true
+    },
+    "summary": {
+      "paired_speedup_median": 1.3480830199386886,
+      "paired_speedup_range": [
+        1.2788793247332941,
+        1.417415353443853
+      ]
+    }
+  },
+  "verification": {
+    "installed_wheel_tests": {
+      "direct_funding": 6,
+      "existing_gmredi_eddy_feedback_reservoir": 49
+    },
+    "portable_tensor_comparisons": {
+      "dry": 93,
+      "corrected_gibbs": 142
+    },
+    "funded_coupled_control": {
+      "cells": 32,
+      "atmosphere_levels": 16,
+      "ocean_levels": 4,
+      "seconds": 2400,
+      "gmredi_substeps": 40,
+      "bitwise_equal_tensors": 36,
+      "bitwise_equal_scalar_leaves": 68
+    },
+    "depleted_cold_front": {
+      "cells": 32,
+      "ocean_levels": 8,
+      "initial_eddy_J_kg": 1e-09,
+      "dt_seconds": 60,
+      "halving_accepted": 10,
+      "direct_accepted": 10,
+      "direct_fallbacks_in_accepted_steps": 10,
+      "both_failed_on_step": 11,
+      "last_min_eddy_J_kg_approx": 9.50698e-15
+    }
+  }
+}

@@ -1,5 +1,9 @@
 # Pass 4 — physical-field workflow
 
+## Direct GM funding prototype
+
+The read-only [paired benchmark](../verification/ocean/gmredi/direct-funding/README.md) compares direct local GM funding with halving on the day-10 restart. It covers a funded control, a failed substep, sustained GM/Redi limiting and coupled operators. The prototype is selected only by the benchmark drivers.
+
 ## Day-11 donor-parcel GM with local limiting
 
 On branch `experiment/gm-parcel-limiter-day11`, run this from the checkout in

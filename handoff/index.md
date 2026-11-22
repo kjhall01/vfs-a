@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [direct GM funding prototype and throughput measurements](../verification/ocean/gmredi/direct-funding/README.md) compare a checked patch solve with streamfunction halving on the donor-parcel checkpoint.
+
 The day-11 experiment resumes the failed donor-parcel run with a local GM
 streamfunction limiter. See the [launcher and replay results](../docs/PASS4_RESULTS.md#day-11-donor-parcel-gm-with-local-limiting).
 
