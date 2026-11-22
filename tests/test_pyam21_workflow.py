@@ -225,15 +225,15 @@ def test_actual_staged_call_matches_upstream_forward(model):
     adapter, state = initial(model)
     c, g = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
     z = torch.zeros_like(c["T"])
-    reference = adapter.physics(
-        60,
-        adapter.start,
-        c,
-        g,
-        dict(udt=z, vdt=z, tdt=z, rdt=torch.zeros_like(c["tracers"])),
-        copy_tree(state.surface),
-        copy_tree(state.memory),
-    )
+    from pyam21.physics.moist import MoistProcesses
+
+    moist = adapter.physics.moist
+    with patch.object(adapter.physics, "moist", MoistProcesses(moist.c, moist.ras, moist.strat)):
+        reference = adapter.physics(
+            60, adapter.start, c, g,
+            dict(udt=z, vdt=z, tdt=z, rdt=torch.zeros_like(c["tracers"])),
+            copy_tree(state.surface), copy_tree(state.memory),
+        )
     out, _, _, _ = adapter.column_call(state, 60, c, g)
     for k in ("tdt", "rdt", "udt", "vdt", "flux_t", "flux_q", "lprec", "fprec"):
         same_tree(out[k], reference[k])
@@ -697,3 +697,62 @@ def test_explicit_upstream_endpoint_avoids_reconstruction_roundoff_and_checks_co
     out["endpoint_tracers"][..., 0] += 0.001
     with pytest.raises(ValueError, match="beyond roundoff"):
         apply_output(adapter, state, out)
+
+
+def test_cloud_fraction_cancellation_requires_consistent_process_terms(model):
+    # Scalar operands from the 4096-cell checkpoint replay, with a 64-eps
+    # cloud perturbation at cell 2289. Stratiform physics returns exactly 1.
+    adapter, state = initial(model, cloudy=True)
+    dt = 1200
+    state = replace(state, cloud_fraction=torch.full_like(state.cloud_fraction, 0.1735546588214871))
+    col, _ = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out = empty(col)
+    out["endpoint_temperature"] = col["T"].clone()
+    endpoint = out["endpoint_tracers"] = col["tracers"].clone()
+    cloud = col["tracers"][..., 3]
+    stages = out["cloud_stages"] = {
+        "turbulent_rate": torch.zeros_like(cloud),
+        "ras_rate": torch.zeros_like(cloud),
+        "ras_end": cloud.clone(),
+        "strat_change": torch.zeros_like(cloud),
+    }
+    cell, level = 3, 2
+    stages["turbulent_rate"][cell, level] = -4.087763104273237e-05
+    stages["ras_rate"][cell, level] = 0.13367977960071867
+    stages["ras_end"][cell, level] = 160.54023702243262
+    stages["strat_change"][cell, level] = -159.54023702243262
+    out["rdt"][cell, level, 3] = 0.0006887044509820694
+    endpoint[cell, level, 3] = 1.0
+    reconstructed = cloud[cell, level] + dt * out["rdt"][cell, level, 3]
+    assert abs(reconstructed.item() - 1.0) > 128 * torch.finfo(cloud.dtype).eps
+    apply_output(adapter, state, out, dt)
+
+    message = "beyond roundoff; field=cloud_fraction cell=3 level=2"
+    endpoint[cell, level, 3] -= 1e-12
+    with pytest.raises(ValueError, match=message):
+        apply_output(adapter, state, out, dt)
+    endpoint[cell, level, 3] = 1.0
+    out["rdt"][cell, level, 3] += 1e-12 / dt
+    with pytest.raises(ValueError, match=message):
+        apply_output(adapter, state, out, dt)
+    out["rdt"][cell, level, 3] = 0.0006887044509820694
+    stages["ras_end"][cell, level] += 1
+    stages["strat_change"][cell, level] -= 1
+    with pytest.raises(ValueError, match=message):
+        apply_output(adapter, state, out, dt)
+
+    # A formally consistent pair can lose the entire initial cloud fraction
+    # when its intermediates are too large. The physical cutoff still rejects it.
+    stages["ras_rate"][cell, level] = 1e16 * (1.0 / dt)
+    stages["ras_end"][cell, level] = 1e16
+    stages["strat_change"][cell, level] = -1e16
+    endpoint[cell, level, 3] = 0
+    out["rdt"][cell, level, 3] = (
+        stages["turbulent_rate"][cell, level] + stages["ras_rate"][cell, level]
+    ) + stages["strat_change"][cell, level] * (1.0 / dt)
+    with pytest.raises(ValueError, match=message):
+        apply_output(adapter, state, out, dt)
+
+    out["rdt"][cell, level, 3] = torch.finfo(cloud.dtype).max
+    with pytest.raises(ValueError, match="invalid explicit PyAM21 endpoint or tendency reconstruction"):
+        apply_output(adapter, state, out, dt)
