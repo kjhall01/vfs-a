@@ -1,5 +1,36 @@
 # Pass 4 — physical-field workflow
 
+## Day-11 donor-parcel GM with local limiting
+
+On branch `experiment/gm-parcel-limiter-day11`, run this from the checkout in
+the original `vfs-joint` environment:
+
+```sh
+python -u -I tools/run_gm_day11.py
+```
+
+The launcher reads `~/Desktop/vfs-a/gm-parcel-day30/last_good_restart.pt` and
+the adjacent `manifest.json`, verifies step 780 at second 936000, and runs 12
+coupled intervals to second 950400. It uses the original configuration and saved
+mesh, `~/Desktop/PyAM21`, and `~/Desktop/sea_esf`. Use `--help` for path
+overrides. Results go to `~/Desktop/vfs-a/gm-parcel-limiter-day11`.
+
+GM attempts the donor-parcel flux at its original 60-second substep. If local
+eddy energy cannot fund the work, the limiter reduces the streamfunction on
+interfaces adjacent to the depleted cell-layer and recomputes the fluxes.
+`gm_transport_audit.jsonl` records each accepted substep, the location of any
+failed trials, and the proposed and accepted transport differences.
+`gm_limiter_events.jsonl` records limiter activations. The native campaign
+writes diagnostics, restarts and `compatible_resume_audit.json`. The
+experimental source is included in the new restart fingerprint.
+
+On Linux CPU float64, both ocean–ice legs from the original checkpoint
+reproduced the earlier replay byte for byte across all 20 substep audit rows,
+four limiter events and both leg reports. The strict operator failed at
+cell 3744, zero-based layer 58. A small coupled radiation-off preflight
+exercised the native restart bridge. The full day-11 run with Sea ESF
+radiation is the experiment to run on the original machine.
+
 ## Experimental day-9 GM replay
 
 Run `python -u -I tools/run_gm_day9.py` from the parcel-energy experiment

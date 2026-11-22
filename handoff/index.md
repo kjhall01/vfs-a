@@ -1,5 +1,8 @@
 # Current package documentation
 
+The day-11 experiment resumes the failed donor-parcel run with a local GM
+streamfunction limiter. See the [launcher and replay results](../docs/PASS4_RESULTS.md#day-11-donor-parcel-gm-with-local-limiting).
+
 The experimental day-9 parcel-energy replay runs from this checkout using
 [tools/run_gm_day9.py](../tools/run_gm_day9.py). The
 [replay notes](../docs/PASS4_RESULTS.md#experimental-day-9-gm-replay) describe
