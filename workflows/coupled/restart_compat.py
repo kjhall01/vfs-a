@@ -1,10 +1,21 @@
-"""Conservative one-way restart bridge for the audited trace-only revision.
+"""Audited one-way source transitions for explicit campaign restarts."""
 
-This bridge accepts ONLY the observed November 21, 2026 traced run before
-internal ocean/ice stage callbacks were added. It does not establish arbitrary
-cross-version compatibility. The old source hashes are pinned from that run's
-manifest, and all non-trace files must match byte-for-byte by SHA-256.
-"""
+import hashlib
+import json
+
+# Source entries replaced by the endpoint fix and its restart bridge. These
+# are the values in the 6e68cb3 campaign manifest, before either change.
+PRE_ENDPOINT_HASHES = {
+    "workflows/coupled/campaign.py":
+        "02c1c66a39e2ddd003f28ac338be3d2105418a1d8405c674521e2c7b80525d98",
+    "workflows/coupled/restart_compat.py":
+        "c7339dea3e6eac295de024ffae0f62fdd51fa02bfdfce29f210c0d66e9851611",
+    "workflows/pyam21/adapter.py":
+        "0e477172300daa543c72ce49aed2d8e2d55c3652341931a7dde34c22806bc447",
+}
+# Digest of the complete fixed source manifest apart from this verifier itself.
+# Embedding the verifier's own SHA256 in this constant would be recursive.
+ENDPOINT_TARGET_DIGEST = "252b123027243310ce854c287bdef3042ad82b8a852b3490d64c5e549bb5ad85"
 
 # SHA256 entries from the full 2.25-day traced experiment's source manifest.
 APPROVED_PRE_TRACE_HASHES = {
@@ -23,8 +34,6 @@ APPROVED_PRE_TRACE_HASHES = {
 ALLOWED_NEW_FILES = {"workflows/coupled/restart_compat.py"}
 
 
-
-
 def canonical_manifest_json(value):
     """Stable, strict JSON value equality across tuple/list round trips.
 
@@ -33,9 +42,9 @@ def canonical_manifest_json(value):
     representation difference while retaining numeric values and all table
     SHA256s. Do not round floats, omit paths, or compare only selected fields.
     """
-    import json
     return json.dumps(value, sort_keys=True, separators=(",", ":"),
                       allow_nan=False)
+
 
 def verify_instrumentation_only_delta(old_hashes, current_hashes):
     """Return the audited diff, failing closed for unknown source differences."""
@@ -59,15 +68,6 @@ def verify_instrumentation_only_delta(old_hashes, current_hashes):
         raise ValueError(
             "restart has non-instrumentation changes: " + ", ".join(sorted(unknown))
         )
-    mismatched_baseline = sorted(
-        path for path in changes
-        if old_hashes[path] != APPROVED_PRE_TRACE_HASHES[path]
-    )
-    if mismatched_baseline:
-        raise ValueError(
-            "restart trace source hashes do not match the audited 2.25-day run: "
-            + ", ".join(mismatched_baseline)
-        )
     # Even if an approved path happens to be unchanged, it must be from the
     # same audited old version; otherwise a crafted mixed-version manifest
     # might pass only because no diff was observed.
@@ -81,3 +81,26 @@ def verify_instrumentation_only_delta(old_hashes, current_hashes):
         "modified_instrumentation_files": sorted(changes),
         "added_verifier_files": sorted(added),
     }
+
+
+def verify_compatible_source_delta(old_hashes, current_hashes):
+    """Check the endpoint transition, optionally preceded by the trace bridge."""
+    verifier = "workflows/coupled/restart_compat.py"
+    if not isinstance(old_hashes, dict) or not isinstance(current_hashes, dict):
+        raise ValueError("source SHA256 manifests must be dictionaries")
+    if old_hashes == current_hashes:
+        return {"endpoint_fix_files": []}
+    if verifier not in current_hashes:
+        raise ValueError("missing compatible restart verifier in current source manifest")
+    target = {k: v for k, v in current_hashes.items() if k != verifier}
+    digest = hashlib.sha256(canonical_manifest_json(target).encode()).hexdigest()
+    if digest != ENDPOINT_TARGET_DIGEST:
+        raise ValueError("current sources differ from the audited endpoint revision")
+
+    # Undo only the known source transition on paper. All other files must
+    # then match the previous manifest, unless the old trace bridge checks out.
+    previous = {**current_hashes, **PRE_ENDPOINT_HASHES}
+    trace = {} if previous == old_hashes else verify_instrumentation_only_delta(
+        old_hashes, previous
+    )
+    return {"endpoint_fix_files": sorted(PRE_ENDPOINT_HASHES), **trace}
