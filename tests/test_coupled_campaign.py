@@ -232,6 +232,38 @@ def test_cli_resume_and_last_good_on_failure(source, config, tmp_path, capsys):
     assert "Saved last_good_restart.pt at second 60" in log
 
 
+@pytest.mark.parametrize("pre_trace", [False, True])
+def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, pre_trace):
+    from workflows.coupled.restart_compat import APPROVED_PRE_TRACE_HASHES, PRE_ENDPOINT_HASHES
+
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(config)))
+    args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
+    initial = tmp_path / "initial"
+    prior_hashes = {**c.source_hashes(), **PRE_ENDPOINT_HASHES}
+    if pre_trace:
+        prior_hashes.update(APPROVED_PRE_TRACE_HASHES)
+        del prior_hashes["workflows/coupled/restart_compat.py"]
+    with patch.object(c, "source_hashes", return_value=prior_hashes):
+        assert c.main(args + ["--output", str(initial), "--stop-after-days", str(60 / c.DAY)]) == 0
+    resumed = tmp_path / "resumed"
+    manifest = initial / "manifest.json"
+    assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
+                          "--resume", str(initial / "restarts/restart_00000060.pt"),
+                          "--resume-compatible-manifest", str(manifest)]) == 0
+    status = json.loads((resumed / "status.json").read_text())
+    audit = json.loads((resumed / "compatible_resume_audit.json").read_text())
+    assert status["latest"]["seconds"] == 120
+    assert audit["prior_fingerprint"] == json.loads(manifest.read_text())["fingerprint"]
+    assert audit["new_fingerprint"] != audit["prior_fingerprint"]
+    assert audit["endpoint_fix_files"] == sorted(PRE_ENDPOINT_HASHES)
+    legacy_audit = resumed / "instrumentation_resume_audit.json"
+    if pre_trace:
+        assert json.loads(legacy_audit.read_text()) == audit
+    else:
+        assert not legacy_audit.exists()
+
+
 def test_saved_mesh_loading_and_fingerprint(source, config, tmp_path):
     import numpy as np
     from vfs.geometry.mesh.grid import _fibonacci_xyz
