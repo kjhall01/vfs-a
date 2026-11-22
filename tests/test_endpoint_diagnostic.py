@@ -71,6 +71,7 @@ def test_capture_keeps_actual_guard_and_saves_replayable_moist_input(model, tmp_
     assert report["fields"]["vapor"]["level"] == 2
     assert report["fields"]["vapor"]["violations"] == 1
     bundle = torch.load(tmp_path / "endpoint_failure.pt", weights_only=True)
+    assert bundle["output"]["cloud_stages"]["strat_change"].shape == bundle["column"]["T"].shape
     for arg in bundle["moist_call"]["args"]:
         if isinstance(arg, torch.Tensor):
             assert arg.device.type == "cpu"
