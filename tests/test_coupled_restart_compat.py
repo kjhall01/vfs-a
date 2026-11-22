@@ -69,3 +69,43 @@ def test_canonical_radiation_manifest_preserves_precision():
     live = {"boxes": [((0.12345678901234567, 0.2), (0.3, 0.4))]}
     changed = {"boxes": [[[0.12345678901234568, 0.2], [0.3, 0.4]]]}
     assert module.canonical_manifest_json(live) != module.canonical_manifest_json(changed)
+
+
+def endpoint_sources():
+    # Test the actual campaign source inventory, including detection of new files.
+    import hashlib
+    import vfs
+
+    root = source.parents[2]
+    roots = {"workflows": root / "workflows", "validation": root / "validation",
+             "vfs": Path(vfs.__file__).parent}
+    current = {
+        f"{group}/{path.relative_to(directory).as_posix()}": hashlib.sha256(path.read_bytes()).hexdigest()
+        for group, directory in roots.items()
+        for path in directory.rglob("*.py")
+    }
+    return {**current, **module.PRE_ENDPOINT_HASHES}, current
+
+
+def test_audited_endpoint_restart_and_earlier_trace_restart():
+    previous, current = endpoint_sources()
+    assert module.verify_compatible_source_delta(previous, current) == {
+        "endpoint_fix_files": sorted(module.PRE_ENDPOINT_HASHES)
+    }
+    assert module.verify_compatible_source_delta(current, current) == {"endpoint_fix_files": []}
+    # A checkpoint from before the trace instrumentation also needs its
+    # original source changes accounted for.
+    old = {**previous, **module.APPROVED_PRE_TRACE_HASHES}
+    del old["workflows/coupled/restart_compat.py"]
+    report = module.verify_compatible_source_delta(old, current)
+    assert report["modified_instrumentation_files"] == sorted(module.APPROVED_PRE_TRACE_HASHES)
+    assert report["added_verifier_files"] == ["workflows/coupled/restart_compat.py"]
+
+
+@pytest.mark.parametrize("path", ["workflows/pyam21/adapter.py", "vfs/ocean/jmd95.py"])
+def test_unknown_source_fails_on_either_side_of_endpoint_restart(path):
+    previous, current = endpoint_sources()
+    with pytest.raises(ValueError, match="restart"):
+        module.verify_compatible_source_delta({**previous, path: "unknown"}, current)
+    with pytest.raises(ValueError, match="audited endpoint revision"):
+        module.verify_compatible_source_delta(previous, {**current, path: "unknown"})
