@@ -12,6 +12,7 @@ from pathlib import Path
 import torch
 import pyam21.constants as am2_constants
 from pyam21.physics.am2 import AM2Physics
+from pyam21.physics.moist import MoistProcesses
 from pyam21.time_manager import set_date, set_time
 from vfs.atmosphere.moist_conservative import MoistState
 from vfs.atmosphere.moist_cp import interface_pressure_mass
@@ -21,6 +22,52 @@ from .energy import exchanges, transfer_energy
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
 RAD_FIELDS = ("lw_alarm", "sw_alarm", "saved", "coszen")
+
+
+class _CloudStageMoistProcesses(MoistProcesses):
+    """Retain the cloud-area operands from the actual upstream calls."""
+
+    def __call__(self, *args, **kwargs):
+        stages = {}
+
+        def ras(*args, **kwargs):
+            result = self.ras(*args, **kwargs)
+            stages["ras_end"] = result["qa"]
+            stages["ras_rate"] = result["qatnd"]
+            return result
+
+        def strat(*args, **kwargs):
+            result = self.strat(*args, **kwargs)
+            stages["strat_change"] = result["SA"]
+            return result
+
+        # The public driver owns the ordering and all arithmetic. The two
+        # callbacks retain tensor references only for this call.
+        driver = MoistProcesses(self.c, ras, strat)
+        result = driver(*args, **kwargs)
+        result["cloud_stages"] = stages
+        return result
+
+
+def _consistent_cloud_stages(initial, rate, endpoint, dt, stages):
+    """Check each way PyAM21 accumulates cloud area, including a RAS round trip."""
+    ras_rate, ras_end = stages["ras_rate"], stages["ras_end"]
+    strat_change, turbulent_rate = stages["strat_change"], stages["turbulent_rate"]
+    start = initial + dt * turbulent_rate
+    ras_change = dt * ras_rate
+    # RAS forms start + change and change * (1/dt) separately. Rebuilding
+    # the former uses a reciprocal, two products and an addition. Bound
+    # roundoff by the local operands of those operations.
+    scale = torch.maximum(start.abs(), ras_change.abs())
+    ras_tol = (8 * torch.finfo(initial.dtype).eps) * scale
+    return (
+        torch.isfinite(ras_change) & torch.isfinite(start) & torch.isfinite(ras_end)
+        & ((ras_end - (start + ras_change)).abs() <= ras_tol)
+        # Both published results must reproduce their respective upstream
+        # expressions exactly, even where a large RAS term cancels in strat.
+        & (endpoint == ras_end + strat_change)
+        & (rate == (turbulent_rate + ras_rate) + strat_change * (1.0 / dt))
+    )
 
 
 class AM2Adapter:
@@ -65,6 +112,12 @@ class AM2Adapter:
             hprime=hprime,
             radiation=None if radiation is None else radiation.for_physics(),
         ).to(device=ref.device, dtype=ref.dtype)
+        moist = self.physics.moist
+        if (
+            energy_mode == "conservative" and moist.ras is not None
+            and moist.strat is not None and not moist.c.use_tau
+        ):
+            self.physics.moist = _CloudStageMoistProcesses(moist.c, moist.ras, moist.strat)
         # Pin the restart to actual installed source, configuration and geometry.
         root = Path(am2_constants.__file__).parent
         source = {
@@ -270,6 +323,10 @@ class AM2Adapter:
                     -1,
                 ),
             )
+            if "cloud_stages" in up["moist"]:
+                out["cloud_stages"] = dict(
+                    up["moist"]["cloud_stages"], turbulent_rate=up["up_rdt"][..., 3]
+                )
             bad_column = [
                 k for k, v in out.items()
                 if isinstance(v, torch.Tensor) and not torch.isfinite(v).all()
@@ -362,8 +419,9 @@ class AM2Adapter:
                     or actual.dtype != expected.dtype
                     or actual.device != expected.device
                     or not torch.isfinite(actual).all()
+                    or not torch.isfinite(expected).all()
                 ):
-                    raise ValueError("invalid explicit PyAM21 endpoint")
+                    raise ValueError("invalid explicit PyAM21 endpoint or tendency reconstruction")
             # The port exposes its actual endpoint as well as tendencies. Use
             # it to avoid reconstructing an exhausted store by cancellation.
             # Available water bounds intermediate liquid/vapor/ice transfers.
@@ -374,12 +432,35 @@ class AM2Adapter:
             tolerance = torch.cat((water_scale.expand(3), water_scale.new_ones(1))) * (
                 128 * eps
             )
-            if ((Tend - T1).abs() > 128 * eps * column["T"].abs().amax()).any() or (
-                (Rend - R1).abs() > tolerance
-            ).any():
-                raise ValueError(
-                    "PyAM21 endpoint and tendencies disagree beyond roundoff"
-                )
+            temp_error = (Tend - T1).abs()
+            temp_tol = 128 * eps * column["T"].abs().amax()
+            tracer_error = (Rend - R1).abs()
+            bad_temp = temp_error > temp_tol
+            bad_tracer = tracer_error > tolerance
+            if bad_temp.any() or bad_tracer.any():
+                if "cloud_stages" in out and isinstance(self.physics.moist, _CloudStageMoistProcesses):
+                    # StratCloud itself clears cloud fractions smaller than qmin.
+                    # Even genuine numerical cancellation must not erase a
+                    # physically resolved difference between the two results.
+                    below_cloud_cutoff = tracer_error[..., 3] <= self.physics.moist.strat.c.qmin
+                    consistent = _consistent_cloud_stages(
+                        column["tracers"][..., 3], out["rdt"][..., 3],
+                        Rend[..., 3], dt, out["cloud_stages"],
+                    )
+                    bad_tracer[..., 3] &= ~(below_cloud_cutoff & consistent)
+                if bad_temp.any() or bad_tracer.any():
+                    if bad_temp.any():
+                        cell, level = bad_temp.nonzero()[0].tolist()
+                        field, error, allowed = "temperature", temp_error[cell, level], temp_tol
+                    else:
+                        cell, level, tracer = bad_tracer.nonzero()[0].tolist()
+                        field = ("vapor", "liquid", "ice", "cloud_fraction")[tracer]
+                        error, allowed = tracer_error[cell, level, tracer], tolerance[tracer]
+                    raise ValueError(
+                        "PyAM21 endpoint and tendencies disagree beyond roundoff"
+                        f"; field={field} cell={cell} level={level} "
+                        f"absolute_error={float(error):.8g} tolerance={float(allowed):.8g}"
+                    )
             T1, R1 = Tend, Rend
         if not all(
             torch.isfinite(out[k]).all()
