@@ -409,10 +409,18 @@ class GMRedi:
         transfer = dt * carrier[:, None] * donor
         gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
         gm_transport = self._unpack(model, state, gm_values, initial)
-        mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(
-            initial
-        )
-        energy_flux = rho0 * (0.5 * (mu[i] + mu[j]) * transfer).sum(-1)
+        # Transport the donor parcel's full specific energy at the face, using
+        # the average of the Roquet potential evaluated in both layer geometries.
+        donor_ids = torch.where(carrier >= 0, i, j)
+        CT, SA = initial[donor_ids, 0], initial[donor_ids, 1]
+        a, b, c, d = [
+            0.5 * (p.flatten()[i] + p.flatten()[j])
+            for p in model.ocean.energy.base.coefficients(s)
+        ]
+        potential = ((a * CT + b) * CT + c * SA + d)
+        caloric = model.config.cp * (CT - model.config.CT0)
+        reservoir = initial[donor_ids, -2:].sum(-1)
+        energy_flux = rho0 * dt * carrier * (caloric + potential + reservoir)
         gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
         gm, gm_exchange, gm_residual = self._settle(
             model, state, gm_transport, gm_inflow, "GM"

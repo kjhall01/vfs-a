@@ -1,5 +1,33 @@
 # Pass 4 — physical-field workflow
 
+## Experimental day-9 GM replay
+
+Run `python -u -I tools/run_gm_day9.py` from the parcel-energy experiment
+checkout in the existing coupled environment. Use `--help` for the input and
+output overrides. The launcher starts from second 692400 and targets second
+777600. It loads the checked-in GM operator, verifies the exact parent and
+candidate GM file hashes, and lets the native campaign validate the mesh,
+radiation, configuration, runtime, source inventory and checkpoint identity.
+The experiment writes restarts with the candidate fingerprint.
+
+The previous standalone launcher compared a resolved Python module path to a
+temporary directory path that could contain a symlink. A macOS-style temporary
+directory alias reproduced the guard failure on Linux even when the correct
+file was imported. The repository launcher verifies the physical files and can
+retry into an empty output directory. It preserves directories containing
+earlier results. A completed limiter run supplies the reference metrics for
+`day9_comparison.json`. If its default location is absent, the candidate still
+writes normal campaign outputs.
+
+The donor flux passed the 20 GM/Redi substeps in the original failing ocean
+leg at 60 s on Linux CPU float64. The 49 targeted GM/Redi, feedback and
+reservoir cases passed outside the checkout using an installed wheel.
+The corrected-Gibbs and dry-helper portable fixture comparisons passed (142
+and 93 tensors). The dry helper also matched exactly. On this runtime the
+first exact atmospheric mismatch was an initial velocity difference of
+4.44e-15. Full coupled day-9 behavior with the production radiation tables
+remains to be tested on the original runtime.
+
 ## Cloud-fraction cancellation in the coupled campaign
 
 A 4,096-cell, 32-atmosphere-level, 60-ocean-level CPU float64 campaign stopped

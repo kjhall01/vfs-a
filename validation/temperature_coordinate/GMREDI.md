@@ -123,11 +123,12 @@ thermobaric terms. At unchanged h and u, H is quadratic in CT and linear in
 SA/TKE/e, so the midpoint discrete gradient gives exact finite work. Forward
 transport uses no autograd-generated tendencies.
 
-For each GM face, the energy carried with the scalar transfers is their dot
-product with the arithmetic mean of the two midpoint conjugates. GM transports
-CT/SA departures from the EOS's fixed reference: subtracting a constant on a
-closed circulation leaves the physical tendency unchanged and fixes the energy
-flux datum. For each Redi stencil row, use the midpoint conjugates averaged at
+On the experimental parcel-energy branch, each GM face carries the donor's
+caloric energy, Roquet potential, turbulent energy and mesoscale energy per unit
+mass. The potential uses the mean of the two adjacent layers' polynomial
+coefficients evaluated at the donor CT and SA. The same bolus volume flux
+determines the donor for tracer and energy transport. For each Redi stencil
+row, use the midpoint conjugates averaged at
 its two horizontal endpoints for every transfer in that row. Row transfers sum
 to zero, so this energy transport is conservative too.
 

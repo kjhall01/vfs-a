@@ -1,5 +1,10 @@
 # Current package documentation
 
+The experimental day-9 parcel-energy replay runs from this checkout using
+[tools/run_gm_day9.py](../tools/run_gm_day9.py). The
+[replay notes](../docs/PASS4_RESULTS.md#experimental-day-9-gm-replay) describe
+its source checks, inputs and test coverage.
+
 The 4,096-cell campaign can resume the 231,600 s checkpoint with the audited
 cloud-fraction endpoint check. See the [failure replay and verification](../docs/PASS4_RESULTS.md#cloud-fraction-cancellation-in-the-coupled-campaign)
 and the [campaign restart instructions](../workflows/coupled/FULL_DEPTH_4096.md).
