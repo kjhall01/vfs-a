@@ -1,5 +1,36 @@
 # Pass 4 — physical-field workflow
 
+## Cloud-fraction cancellation in the coupled campaign
+
+A 4,096-cell, 32-atmosphere-level, 60-ocean-level CPU float64 campaign stopped
+at second 231,600 in the atmospheric endpoint check. The saved checkpoint
+contains 193 committed intervals. The radiation driver requested new shortwave
+and longwave calculations for the next interval.
+
+A Linux replay used the saved atmosphere, ocean, ice, and snow with the
+previous interval’s cached optical calculation. At cell 2289, level 29
+(zero-based), the input cloud fraction was about 0.174. Vertical diffusion
+reduced it to about 0.125. RAS added about 160.416, and stratiform cloud physics
+brought the fraction back to 1. The RAS intermediate is an extreme cloud-area
+excursion. Its cloud-top detrainment term produces that increment before the
+stratiform update. The adapter continues to use the upstream physical endpoint.
+
+With the saved optical cache and an input cloud-fraction perturbation of
+64 float64 epsilons in one column, the published net tendency reconstructed
+0.9999999999999705. The explicit endpoint was 1. The original check rejected
+their absolute difference of 2.9532e-14 against a limit of 2.8422e-14.
+The fixed adapter verified the actual diffusion, RAS, and stratiform arithmetic.
+The exchange completed and the new state packed and restored at 232,800 s
+after post-exchange phase adjustment and ALE on all 4,096 columns. The
+unperturbed eager and compiled controls using the cached optics also completed
+the exchange. The original Mac interval with its freshly calculated SeaEsf
+radiation and the earlier L4 failure require separate on-device verification.
+
+The restart bridge compares the old checkpoint with the original manifest and
+records the source transition. Use the original mesh, configuration, radiation
+tables, and execution environment when continuing a real campaign.
+
+
 ## Endpoint/tendency failure diagnostic (2026-11-18)
 
 User logs report two-day real-table float64 completion on T4 eager and L4 with
