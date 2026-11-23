@@ -66,7 +66,10 @@ verification files or model dependencies are vendored into this workflow.
 `PhysicsState.atmosphere` is the unchanged VFS `MoistState`. Cloud fraction lives
 at CP interfaces in the workflow, alongside PyAM21's diffusivities, convection
 flag, gustiness, roughness and albedos. The physics clock uses whole seconds on
-PyAM21's Julian calendar. All prototype verification is CPU float64.
+PyAM21's Julian calendar. Original prototype verification is CPU float64.
+The coupled workflow now accepts explicit CPU/CUDA/MPS placement and float32 or
+float64; MPS requires float32. See the [device/precision guide](../coupled/GPU.md)
+for experimental precision limits and the actual validation scope.
 
 PyAM21 uses gravity 9.8 m/s², while the VFS default is 9.80665. The example
 explicitly sets `model.dynamics.kernel.gravity = pyam21.constants.GRAV` **before

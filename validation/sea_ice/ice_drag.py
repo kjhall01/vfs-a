@@ -45,10 +45,17 @@ def cg(action, b, tolerance, diagonal, max_iterations=500):
     raise FloatingPointError("drag CG did not converge")
 
 
-def midpoint_drag(coupled, state, dt, tolerance=1e-12):
+def midpoint_drag(coupled, state, dt, tolerance=None):
+    """Use the FP64 default or 32 ulps for the native-precision Newton residual.
+
+    A fixed 1e-12 relative residual cannot be resolved in FP32. Explicit caller
+    tolerances remain literal. Reciprocal impulses and TKE work are unchanged.
+    """
     coupled.check(state)
     H = coupled.hamiltonian
     s = state.ocean.ocean
+    if tolerance is None:
+        tolerance = max(1e-12, 32 * torch.finfo(s.h.dtype).eps)
     mesh = s.mesh
     Mi = H.metric(state)
     Mo = coupled.ocean.energy.base.mechanical.metric(s)[:, :1]

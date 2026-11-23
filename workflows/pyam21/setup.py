@@ -12,8 +12,10 @@ from vfs import (
     make_hybrid_coefficients,
 )
 from .adapter import AM2Adapter
+from workflows.coupled.device import initialization_dtype, resolve_device, validate_precision
 
 
+@initialization_dtype(torch.float64)
 def example(
     source,
     *,
@@ -27,6 +29,8 @@ def example(
     start=(2000, 1, 1, 0, 0, 0),
     mesh_options=None,
     namelist_overrides=None,
+    device="cpu",
+    dtype=torch.float64,
 ):
     """Analytic moist profile with BOMEX physics options, not the BOMEX case.
 
@@ -36,7 +40,8 @@ def example(
     Positive upper-air vapor and a positive pressure lid are explicit initial
     conditions required by VFS, not hidden modifications to a reference case.
     """
-    torch.set_default_dtype(torch.float64)
+    dtype = validate_precision(device, dtype)
+    device = resolve_device(device)
     torch.set_num_threads(1)
     nml = read_namelist(str(Path(source) / "reference/input/gcss_bomex/input.nml"))
     if radiation_data is not None:
@@ -90,6 +95,9 @@ def example(
         rad = build_radiation(
             nml, model, radiation_data, width_degrees=climatology_width_degrees
         )
+    # Construct geometry and input-data sampling on CPU, then move registered
+    # geometry BEFORE building maps, physics latitude/longitude or state.
+    model.to(device=device, dtype=dtype)
     adapter = AM2Adapter(
         model,
         nml,

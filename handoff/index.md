@@ -1,5 +1,45 @@
 # Current package documentation
 
+The user reported successful real-table float64 runs on T4 (eager, two days,
+2103.09 s) and L4 (regional Inductor, two days, 1310.93 s). These are user logs,
+not locally executed GPU or full-field equivalence checks. The L4 continuation
+then rejected at the PyAM21 endpoint/tendency guard, with last committed time
+249600 s (day 2.888889). No failing checkpoint is available locally yet, and no
+numerical correction or tolerance change is justified from that log alone.
+`tools/diagnose_pyam21_endpoint.py` captures the rejected one-interval replay on
+the original runtime, retaining source/runtime fingerprint checks and all solver
+checks. It reports per-field errors/tolerances and saves a small column-physics
+replay bundle. It does not change any fingerprinted model source.
+
+The GPU draft now also exposes `--dtype float32|float64` and `--device mps`
+(explicit float32 required). CPU float64 defaults and the four-interval merged
+baseline are bitwise unchanged. CPU float32 eager/compiled integration, disk
+restart and all configured processes are tested. Mixing and drag use documented
+dtype-aware roundoff thresholds with unchanged float64 values. Float32 remains
+experimental: the 32-cell/default-timestep comparison differs by up to
+0.0753 J/kg in specific eddy energy after 4800 s. CUDA/MPS and actual optical
+tables remain unexecuted here. See [precision evidence](../verification/atmosphere/pyam21/campaign/precision/README.md)
+and [generic GPU instructions](../workflows/coupled/GPU.md).
+
+PR #90 is merged at `969400ef0ae1f900fc148907d46a2541d0f149ff`, following the
+user's reported successful two-day seasonal 16384-cell Mac run. A subsequent
+single-device CUDA pass adds campaign `--device cpu|cuda|cuda:N`, host
+`--threads`, explicit geometry/state placement, CPU-stored checkpoints restored
+to the selected device, deterministic CUDA execution policy and synchronized
+timing. Full physical settings, float64, solver tolerances and upstream sources
+are retained; multi-GPU execution is not implemented.
+
+Installed-wheel checks: **110 passed, two CUDA skips**, with native CPU Inductor
+enabled. Frozen **142/93** comparisons pass. Five CPU states spanning four full
+1200-second intervals agree with the merged base across **240 tensors and 127
+scalar/metadata leaves**, bitwise. The 32-cell comparison uses 24/12 levels,
+hourly analytic radiation through the real fresh/cache/cache/fresh scheduler,
+ten mixing/eddy substeps and all configured processes. No CUDA hardware or real
+optical tables are available here. The new real-table CPU/CUDA comparison driver
+and eager/compiled CUDA tests must be run on a GPU before claiming GPU support
+qualified or reporting a speedup. See [GPU instructions](../workflows/coupled/GPU.md)
+and [evidence](../verification/atmosphere/pyam21/campaign/cuda/README.md).
+
 The second uploaded campaign failure at second 38400 exposed an ALE
 active-constraint stall. A stored candidate can violate entropy while the
 linearized prediction remains inside tolerance; the resulting sub-ulp step
