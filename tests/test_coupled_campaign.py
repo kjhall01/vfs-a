@@ -180,6 +180,20 @@ def test_multirate_throughput_paired_small_coupled_case(source, config, capsys):
     }), flush=True)
 
 
+def test_4096_40_multirate_pilot_yaml_is_complete_and_valid():
+    path = Path(__file__).resolve().parents[1] / (
+        "workflows/coupled/aquaplanet_multirate_4096_40.yaml"
+    )
+    cfg = c.CampaignConfig(**yaml.safe_load(path.read_text())).validate()
+    assert (cfg.cells, cfg.atmosphere_levels, cfg.ocean_levels) == (4096, 32, 40)
+    assert (cfg.physics_dt, cfg.atmosphere_dt, cfg.ocean_dt) == (2400, 600, 600)
+    assert (cfg.mixing_dt, cfg.mesoscale_dt, cfg.ale_dt, cfg.radiation_dt) == (
+        1200, 1200, 7200, 7200
+    )
+    assert cfg.gm_redi and cfg.backscatter and cfg.ale_remap
+    assert cfg.dtype == "float64"
+
+
 def test_noncommensurate_process_cadences_fail_closed(config):
     for changes in (
         dict(mixing_dt=59),
