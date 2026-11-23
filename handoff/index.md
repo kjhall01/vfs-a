@@ -1,5 +1,9 @@
 # Current package documentation
 
+The 4,096-cell campaign can resume the 231,600 s checkpoint with the audited
+cloud-fraction endpoint check. See the [failure replay and verification](../docs/PASS4_RESULTS.md#cloud-fraction-cancellation-in-the-coupled-campaign)
+and the [campaign restart instructions](../workflows/coupled/FULL_DEPTH_4096.md).
+
 The user reported successful real-table float64 runs on T4 (eager, two days,
 2103.09 s) and L4 (regional Inductor, two days, 1310.93 s). These are user logs,
 not locally executed GPU or full-field equivalence checks. The L4 continuation

@@ -31,7 +31,7 @@ from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
 from workflows.coupled.energy_trace import EnergyTrace
 from workflows.coupled.restart_compat import (
-    verify_instrumentation_only_delta, canonical_manifest_json,
+    verify_compatible_source_delta, canonical_manifest_json,
 )
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
@@ -1066,7 +1066,7 @@ def main(argv=None):
                     raise ValueError("compatible restart: execution runtime differs")
                 if prior.get("radiation_enabled") != (not args.smoke_no_radiation):
                     raise ValueError("compatible restart: radiation mode differs")
-                source_delta = verify_instrumentation_only_delta(
+                source_delta = verify_compatible_source_delta(
                     prior.get("source_sha256"), hashes
                 )
                 expected_restart_identity = fingerprint(
@@ -1079,15 +1079,18 @@ def main(argv=None):
                         "compatible restart: checkpoint and original manifest identity "
                         "do not match the reconstructed fingerprint"
                     )
-                atomic_json(output / "instrumentation_resume_audit.json", dict(
+                audit = dict(
                     prior_manifest=str(args.resume_compatible_manifest),
                     prior_checkpoint=str(args.resume),
                     prior_fingerprint=expected_restart_identity,
                     new_fingerprint=identity,
                     **source_delta,
-                ))
+                )
+                atomic_json(output / "compatible_resume_audit.json", audit)
+                if "modified_instrumentation_files" in source_delta:
+                    atomic_json(output / "instrumentation_resume_audit.json", audit)
                 logger.info(
-                    "Audited trace-only restart bridge: prior %s -> current %s; allowed changes %s",
+                    "Audited compatible restart: prior %s -> current %s; allowed changes %s",
                     expected_restart_identity, identity,
                     json.dumps(source_delta),
                 )

@@ -26,7 +26,11 @@ def number(value):
 
 
 def endpoint_report(column, out, dt):
-    """Evaluate the existing guard, in its original device/dtype arithmetic."""
+    """Measure direct reconstruction on the original device and dtype.
+
+    These counts precede the adapter's stage-by-stage cloud cancellation check.
+    The captured exception identifies the field actually rejected.
+    """
     T, R = column["T"], column["tracers"]
     Tend, Rend = out["endpoint_temperature"], out["endpoint_tracers"]
     eps = torch.finfo(T.dtype).eps
@@ -64,7 +68,8 @@ def endpoint_report(column, out, dt):
     # Keep all five worst locations and at most 32 other failing columns. The
     # column physics can then be replayed without a full global mesh or optics.
     selected.update(failing_columns.nonzero().flatten()[:32].cpu().tolist())
-    return dict(device=str(T.device), dtype=str(T.dtype), dt=dt,
+    return dict(comparison="direct_endpoint_vs_reconstructed",
+                device=str(T.device), dtype=str(T.dtype), dt=dt,
                 water_scale=number(water_scale), fields=fields,
                 failing_columns=int(failing_columns.sum()), selected_columns=sorted(selected))
 
@@ -111,6 +116,8 @@ def capture_failure(adapter_class, moist_class, output):
                                             "endpoint_temperature", "endpoint_tracers")},
                 moist_call=latest,
             )
+            if "cloud_stages" in out:
+                evidence["output"]["cloud_stages"] = out["cloud_stages"]
             torch.save(column_subset(evidence, indices, cells), output / "endpoint_failure.pt")
             (output / "endpoint_failure.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
             print("Endpoint mismatch details:\n" + json.dumps(report, indent=2), flush=True)

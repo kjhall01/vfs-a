@@ -189,8 +189,9 @@ The day 1.5 NetCDF snapshot is not a complete restart. Use the day-1
 
 If the previous run used precisely the source hashes pinned in
 `workflows/coupled/restart_compat.py`, `--resume-compatible-manifest`
-explicitly permits *only* the known tracing modifications and the new
-verification module. The bridge independently reconstructs the prior
+supports the traced version and the subsequent PyAM21 endpoint fix in
+sequence. A restart from the deep-trace version needs only the endpoint
+bridge. The bridge independently reconstructs the prior
 fingerprint from the supplied manifest, checks it against the checkpoint,
 checks configuration/mesh/radiation/runtime/compilation, and refuses all
 other source changes. The new output uses the current source fingerprint.
@@ -224,9 +225,29 @@ python -I validation/coupled_debug/summarize_energy_trace.py \
   segment-day1p5-to-day2p25/energy_stages.jsonl
 ```
 
-The first output includes `instrumentation_resume_audit.json`. The bridge
-cannot be used for arbitrary historical checkpoints, altered physics,
-different mesh/configuration, or any source changes outside the approved
-trace-only set. For a checkpoint produced by this new code, omit the
-compatibility flag entirely. You cannot obtain a true 1.5-day restart
+The first output includes `compatible_resume_audit.json`, which records
+the source transition and both fingerprints. For a pre-trace checkpoint, the
+same record is also available as `instrumentation_resume_audit.json`. The bridge requires the
+original mesh and configuration and an audited source transition. Checkpoints
+written after the fix can use the standard `--resume` option alone. You cannot obtain a true 1.5-day restart
 from an old 1.5-day NetCDF snapshot.
+
+## Resume the 600-second ocean run after the PyAM21 endpoint failure
+
+Use the failed segment's saved configuration to retain its component timesteps,
+vertical grids, compilation settings, and enabled physics. From the repository
+root on the endpoint-fix branch, run the following in the original environment.
+
+```bash
+OLD_RUN=run-4096-ocean600-3day
+python -u -I workflows/coupled/campaign.py \
+  --config "$OLD_RUN/configuration.json" \
+  --source ../PyAM21 --radiation-data ../sea_esf \
+  --mesh ../mesh_4096_exact_3000.npy \
+  --resume "$OLD_RUN/last_good_restart.pt" \
+  --resume-compatible-manifest "$OLD_RUN/manifest.json" \
+  --stop-after-days 3 --output run-4096-ocean600-3day-resumed --verbose
+```
+
+For the checkpoint at second 231,600 the log should report a resume at day
+2.680556. The next committed interval ends at second 232,800.

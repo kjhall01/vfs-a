@@ -1,0 +1,5 @@
+{
+  "workflows/coupled/campaign.py": "b642758dc38d26dc0c96c4a1d5cf3b75ce6c890d657e06ecb750c511e110d2df",
+  "workflows/coupled/restart_compat.py": "565bf7f473352e80ed2cbdb0e7a201e61c47d4a3b08f795edd3c6730f6e707c2",
+  "workflows/pyam21/adapter.py": "fbb4c928448adc343b6c6ca61cc80768915d02e8f78a06f8cd3ebc1f0d2d6cac"
+}
