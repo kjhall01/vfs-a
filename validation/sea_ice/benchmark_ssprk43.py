@@ -16,7 +16,7 @@ import time
 import torch
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT / "validation" / p) for p in (
+sys.path[:0] = [str(ROOT)] + [str(ROOT / "validation" / p) for p in (
     "sea_ice", "temperature_coordinate", "ocean_column"
 )]
 from ocean_ice import OceanIce
