@@ -83,6 +83,46 @@ def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
     assert torch.isfinite(final_sea.coupled.ocean.ocean.h).all()
 
 
+def test_explicit_legacy_cadences_reproduce_default_coupled_step(source, config):
+    # The scheduler MUST not change physics ordering or numerical trajectory
+    # when every closure is scheduled at its original frequency.
+    explicit = replace(
+        config, mixing_dt=config.ocean_dt, mesoscale_dt=config.ocean_dt,
+        ale_dt=config.physics_dt,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    with torch.no_grad():
+        a, sa, ra = c.advance(adapter, air, receiver, sea, config.physics_dt, config)
+        b, sb, rb = c.advance(adapter, air, receiver, sea, config.physics_dt, explicit)
+    same_tree(
+        c.pack(adapter, a, receiver, sa, "equivalence", {}),
+        c.pack(adapter, b, receiver, sb, "equivalence", {}),
+    )
+    assert ra == rb
+
+
+def test_40_minute_physics_multirate_smoke(source, config):
+    schedule = replace(
+        config,
+        physics_dt=2400, radiation_dt=7200,
+        atmosphere_dt=600, ocean_dt=600,
+        mixing_dt=1200, mesoscale_dt=1200, ale_dt=7200,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(schedule, source, Path("synthetic"))
+    with torch.no_grad():
+        air, sea, report = c.advance(
+            adapter, air, receiver, sea, schedule.physics_dt, schedule
+        )
+    assert air.time_seconds == 2400
+    assert report["gmredi_steps"] == schedule.eddy_substeps * 2
+    assert report["ale_steps"] == 0
+    receiver.snow.check(sea)
+    adapter.check(air)
+    assert torch.isfinite(torch.tensor(report["surface_residual"]))
+
+
 def test_noncommensurate_process_cadences_fail_closed(config):
     for changes in (
         dict(mixing_dt=59),
