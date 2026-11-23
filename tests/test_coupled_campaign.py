@@ -240,7 +240,11 @@ def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, p
     path.write_text(yaml.safe_dump(c.asdict(config)))
     args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
     initial = tmp_path / "initial"
-    prior_hashes = {**c.source_hashes(), **PRE_ENDPOINT_HASHES}
+    # Exercise the historical transition, even when current development has
+    # advanced beyond the exact target allowed by its verifier.
+    archive = Path(__file__).parent / "fixtures"
+    prior_hashes = json.loads((archive / "coupled_restart_sources-6e68cb3.json").read_text())
+    endpoint_hashes = {**prior_hashes, **json.loads((archive / "coupled_endpoint_sources-ed46ac5.json").read_text())}
     if pre_trace:
         prior_hashes.update(APPROVED_PRE_TRACE_HASHES)
         del prior_hashes["workflows/coupled/restart_compat.py"]
@@ -248,9 +252,10 @@ def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, p
         assert c.main(args + ["--output", str(initial), "--stop-after-days", str(60 / c.DAY)]) == 0
     resumed = tmp_path / "resumed"
     manifest = initial / "manifest.json"
-    assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
-                          "--resume", str(initial / "restarts/restart_00000060.pt"),
-                          "--resume-compatible-manifest", str(manifest)]) == 0
+    with patch.object(c, "source_hashes", return_value=endpoint_hashes):
+        assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
+                              "--resume", str(initial / "restarts/restart_00000060.pt"),
+                              "--resume-compatible-manifest", str(manifest)]) == 0
     status = json.loads((resumed / "status.json").read_text())
     audit = json.loads((resumed / "compatible_resume_audit.json").read_text())
     assert status["latest"]["seconds"] == 120
