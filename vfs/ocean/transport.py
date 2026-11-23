@@ -196,13 +196,17 @@ class HorizontalTransport:
         # Extrema are now cell-local; release the doubled edge gather before
         # allocating antidiffusive budgets. This changes no tensor expression.
         del values, neighbors, qi, qj, qmax, positive, negative
-        anti = high_flux-low_flux
         if self.scheme == 'donor':
-            # The outer energy-consistent transport constructs its own limiter.
-            # Its donor reference still needs bounds and full flux diagnostics,
-            # but not FCT budgets whose limiter would be discarded here.
-            beta = torch.zeros_like(anti)
+            # The energy-consistent outer stage constructs its own high-order
+            # correction. Here beta is identically zero, so materializing its
+            # antidiffusive flux and scattering zero into every cell is wasted
+            # work. Keep donor amounts, neighbor bounds and full diagnostics.
+            beta = torch.zeros_like(high_flux)
+            trace_change = donor-centered
+            amounts = low
+            integrated_flux = low_flux
         else:
+            anti = high_flux-low_flux
             plus = torch.zeros_like(low).index_add(0,j,anti.clamp_min(0)).index_add(0,i,(-anti).clamp_min(0))
             minus = torch.zeros_like(low).index_add(0,i,anti.clamp_min(0)).index_add(0,j,(-anti).clamp_min(0))
             def ratio(budget,demand):
@@ -212,10 +216,11 @@ class HorizontalTransport:
             beta = torch.where(anti >= 0,torch.minimum(rm[i],rp[j]),torch.minimum(rp[i],rm[j]))
             beta = torch.where(beta < 1,beta*(1-64*torch.finfo(q.dtype).eps),beta)
             del plus, minus, rp, rm
-        trace_change = (1-beta)*(donor-centered)
+            trace_change = (1-beta)*(donor-centered)
+            correction = beta*anti
+            amounts = low+divergence(i,j,correction,volume.numel())
+            integrated_flux = low_flux+correction
         del donor, centered
-        correction = beta*anti
-        amounts = low+divergence(i,j,correction,volume.numel())
         tolerance = 256*torch.finfo(q.dtype).eps*new_volume[:,None]*q.abs().amax(0)
         if not torch.isfinite(amounts).all().item() or ((amounts < lower-tolerance)|(amounts > upper+tolerance)).any().item():
             raise FloatingPointError('bounded ledger failed its stage bounds')
@@ -225,5 +230,5 @@ class HorizontalTransport:
             raise FloatingPointError('negative concentration in bounded ledger')
         return TransportLedger(new_volume.reshape_as(state.h),
             amounts.reshape(*state.h.shape,-1),low.reshape(*state.h.shape,-1),
-            low_flux+correction,high_flux,low_flux,beta,lower,upper,i,j,flux,
+            integrated_flux,high_flux,low_flux,beta,lower,upper,i,j,flux,
             trace_change,(outgoing/volume).reshape_as(state.h))
