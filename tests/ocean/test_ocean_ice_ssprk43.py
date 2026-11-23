@@ -8,7 +8,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "validation" / "sea_ice"))
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT / "validation" / p) for p in (
+    "sea_ice", "temperature_coordinate", "ocean_column"
+)]
 
 from explicit_rk import ssprk43_dynamics
 from snow import SnowOceanIce
