@@ -35,3 +35,6 @@ jobs:
         run: |
           python -I -m pytest tests/test_multirate_schedule.py -q
           python -I -m pytest tests/test_coupled_campaign.py::test_noncommensurate_process_cadences_fail_closed tests/test_coupled_campaign.py::test_multirate_closures_and_ale_through_actual_coupled_campaign tests/test_coupled_campaign.py::test_explicit_legacy_cadences_reproduce_default_coupled_step tests/test_coupled_campaign.py::test_40_minute_physics_multirate_smoke tests/test_coupled_campaign.py::test_coupled_restart_including_cached_radiation -q
+      - name: Equal-model-time small coupled benchmark
+        run: |
+          python -I -m pytest tests/test_coupled_campaign.py::test_multirate_throughput_paired_small_coupled_case -q -s
