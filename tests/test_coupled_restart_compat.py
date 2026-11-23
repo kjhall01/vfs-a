@@ -127,7 +127,7 @@ def day15_source():
         "workflows/coupled/restart_compat.py":
             module.DAY15_ORIGINAL_VERIFIER_SHA,
         "validation/sea_ice/category_phase.py":
-            "31270fef6cc80a3fa06d23d2304fc9e713b21eb181e98429e5e83cbc4f96516e",
+            "31270fef6cc80a3fa06d23d2304fc9e713b21eb181e98429b3799e8c6d3a56b6",
         "validation/sea_ice/ocean_ice.py":
             "48e078d70601e741a68e81a859f99059500d351ee172aa0a85c2eb3e9ac42963",
         "validation/temperature_coordinate/eddy.py":
