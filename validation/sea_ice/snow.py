@@ -316,6 +316,32 @@ class SnowOceanIce:
         self.check(end)
         return end, dt * (p0.wind_power / 6 + p1.wind_power / 6 + 2 * p2.wind_power / 3)
 
+    def mixing_step(self, state, dt, *, stage_callback=None):
+        """Apply the existing conservative column closure at its own cadence.
+
+        The source state already includes the preceding dynamics/ice operations;
+        this wrapper changes no mixing equations, TKE funding, or energy checks.
+        It preserves snow and thermal-ice storage on the returned state.
+        """
+        model = self.coupled.ocean
+        if model.closure is None:
+            return state
+        original = state.coupled.ocean
+        mixed, k, _ = model.closure.apply(
+            model.ocean, original.ocean, original.tke_h, dt
+        )
+        if not torch.equal(mixed.h, original.ocean.h):
+            raise ValueError("snow coupling requires fixed-geometry mixing")
+        state = replace(
+            state,
+            coupled=replace(
+                state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
+            ),
+        )
+        if stage_callback is not None:
+            stage_callback("vertical_tke_mixing", state, 0.0)
+        return state
+
     def step(
         self,
         state,
@@ -329,6 +355,7 @@ class SnowOceanIce:
         freshwater=None,
         stage_callback=None,
         dynamics_integrator="ssprk3",
+        apply_mixing=True,
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
@@ -378,22 +405,8 @@ class SnowOceanIce:
         )
         if stage_callback is not None:
             stage_callback("coupled_" + dynamics_integrator, state, work)
-        model = self.coupled.ocean
-        if model.closure is not None:
-            original = state.coupled.ocean
-            mixed, k, _ = model.closure.apply(
-                model.ocean, original.ocean, original.tke_h, dt
-            )
-            if not torch.equal(mixed.h, original.ocean.h):
-                raise ValueError("snow coupling requires fixed-geometry mixing")
-            state = replace(
-                state,
-                coupled=replace(
-                    state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
-                ),
-            )
-            if stage_callback is not None:
-                stage_callback("vertical_tke_mixing", state, 0.0)
+        if apply_mixing:
+            state = self.mixing_step(state, dt, stage_callback=stage_callback)
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         if stage_callback is not None:
