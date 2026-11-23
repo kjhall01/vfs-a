@@ -756,3 +756,34 @@ def test_cloud_fraction_cancellation_requires_consistent_process_terms(model):
     out["rdt"][cell, level, 3] = torch.finfo(cloud.dtype).max
     with pytest.raises(ValueError, match="invalid explicit PyAM21 endpoint or tendency reconstruction"):
         apply_output(adapter, state, out, dt)
+
+
+def test_inadmissible_column_detail_identifies_field_and_location_without_clipping():
+    from workflows.pyam21.adapter import _inadmissible_column_detail
+
+    eps = torch.finfo(torch.float64).eps
+    t = torch.full((3, 2), 275.0, dtype=torch.float64)
+    q = torch.zeros((3, 2, 4), dtype=torch.float64)
+    q[..., 0] = 0.005
+    q[..., 3] = 0.4
+    rates = {
+        "tdt": torch.zeros_like(t),
+        "rdt": torch.zeros_like(q),
+        "udt": torch.zeros_like(t),
+        "vdt": torch.zeros_like(t),
+    }
+    tol = torch.zeros(2, dtype=t.dtype)
+    qbad = q.clone()
+    qbad[1, 0, 0] = -1e-4
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
+    assert "field=vapor_mass_fraction cell=1 level=0" in detail
+    assert "value=-0.0001" in detail
+    qbad = q.clone()
+    qbad[2, 1, 3] = 1.01
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
+    assert "field=cloud_fraction cell=2 level=1" in detail
+    tb = t.clone()
+    tb[0, 1] = 0
+    detail = _inadmissible_column_detail(tb, q, rates, eps, tol)
+    assert "field=temperature_K cell=0 level=1" in detail
+    assert "no endpoint violation" in _inadmissible_column_detail(t, q, rates, eps, tol)
