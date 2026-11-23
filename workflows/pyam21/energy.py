@@ -76,6 +76,34 @@ def bottom_only(value, layers):
     return torch.cat((torch.zeros_like(layers[:, :-1]), value[:, None]), 1)
 
 
+
+
+def _check_shared_flux(actual, recorded, *, field, dt, tile_rates=None):
+    """Check the same integrated transfer with the upstream rate error budget.
+
+    Adapter.column_call checks sum(tile_rates) against the aggregate RATE to
+    256 eps * max(sum(abs(tile_rates)), 1). Multiplication by dt and summing
+    individually rounded tile amounts can magnify that permitted difference.
+    The integrated record must not be checked to an inconsistent, tighter
+    *absolute* tolerance when its net transfer nearly cancels between tiles.
+    Rain and snow retain the original integrated-amount tolerance.
+    """
+    scale = torch.maximum(actual.abs(), recorded.abs()).clamp_min(1)
+    if tile_rates is not None:
+        scale = torch.maximum(scale, dt * tile_rates.abs().sum(-1).clamp_min(1))
+    tolerance = 256 * torch.finfo(actual.dtype).eps * scale
+    difference = (actual - recorded).abs()
+    bad = difference > tolerance
+    if bad.any():
+        cell = int(bad.nonzero()[0, 0])
+        raise ValueError(
+            "shared record disagrees with actual atmospheric flux"
+            f"; field={field} cell={cell} actual={float(actual[cell]):.12g}"
+            f" recorded={float(recorded[cell]):.12g}"
+            f" absolute_error={float(difference[cell]):.12g}"
+            f" tolerance={float(tolerance[cell]):.12g}"
+        )
+
 def exchanges(adapter, state, dt, column, geometry, out, boundary=None):
     """Independent rates and fixed-carrier AM2 increments, all in J/m².
 
@@ -148,17 +176,12 @@ def exchanges(adapter, state, dt, column, geometry, out, boundary=None):
         shared.validate(adapter.model.mesh)
         # The energy/momentum record must describe the water actually supplied
         # to the air, not merely an independently plausible surface budget.
-        for actual, recorded in (
-            (E, shared.vapor.sum(-1)),
-            (rain, shared.rain),
-            (snow, shared.snow),
-            (sensible, shared.sensible.sum(-1)),
-        ):
-            scale = torch.maximum(actual.abs(), recorded.abs()).clamp_min(1)
-            if (
-                (actual - recorded).abs() > 256 * torch.finfo(actual.dtype).eps * scale
-            ).any():
-                raise ValueError("shared record disagrees with actual atmospheric flux")
+        _check_shared_flux(E, shared.vapor.sum(-1), field="vapor", dt=dt,
+                           tile_rates=out["tile_fluxes"]["flux_q"])
+        _check_shared_flux(rain, shared.rain, field="rain", dt=dt)
+        _check_shared_flux(snow, shared.snow, field="snow", dt=dt)
+        _check_shared_flux(sensible, shared.sensible.sum(-1), field="sensible", dt=dt,
+                           tile_rates=out["tile_fluxes"]["flux_t"])
         terms = shared.terms
         datum = (
             terms["vapor_enthalpy"]
