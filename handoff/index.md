@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [full sea-ice coverage fix and day-30 restart instructions](../docs/PASS4_RESULTS.md#full-sea-ice-coverage-in-the-day-11-campaign) cover the category phase rejection at second 1028400.
+
 The day-11 experiment resumes the failed donor-parcel run with a local GM
 streamfunction limiter. See the [launcher and replay results](../docs/PASS4_RESULTS.md#day-11-donor-parcel-gm-with-local-limiting).
 

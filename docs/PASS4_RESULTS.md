@@ -1,5 +1,17 @@
 # Pass 4 — physical-field workflow
 
+## Full sea-ice coverage in the day-11 campaign
+
+At second 1028400 (day 11, 21:40), the reported 4,096-cell run rejected the post-exchange ice phase update. When freezing fills the open water, multiplying both category footprints by the same scaling factor can round their sum up to 1.0000000000000002 in float64. The original error displayed that value as 1.
+
+The revised two-category geometry retains the smaller fraction and assigns the remaining footprint to the larger category if the ordinary calculation overshoots. The phase-energy root, its derivative and the accepted state all use this geometry. The strict coverage and store checks remain active. A future rejection prints the offending cell, its two areas and volumes, and the excess coverage at full precision.
+
+The original failed checkpoint was unavailable for this verification. On the earlier day-10 checkpoint, a controlled 0.150 K cooling of the top ocean at cell 22 reproduced the same zero-flux thermal phase failure. At the corrected endpoint, one of 8,192 category areas differed from the rejected endpoint by one binary64 rounding increment (1.11e−16). The cell coverage was exactly one. The tested ice volumes and velocities, ocean layer thicknesses, temperature and salt inventories, edge velocities, TKE and eddy stores matched bit for bit. The maximum liquid-plus-ice water residual was 9.09e−13 kg/m².
+
+The installed-wheel ice, snow, ridging and thermal workflow checks passed 82 tests on CPU, and the dry and corrected-Gibbs fixtures passed 93 and 142 portable tensor comparisons. The small native coupled restart test passed from the prior day-11 limiter source and again from the revised source. Three historical PyAM21 endpoint source-pin tests fail on both this experiment and its parent because they expect an older source inventory.
+
+From the `fix/day11-ice-phase-coverage` checkout in the original coupled environment, run `python -u -I tools/resume_gm_ice.py`. It searches for the unique matching failed run under the Desktop and VFS run folders, reads its original configuration and manifest, and targets model day 30 in a new sibling directory ending in `-ice-fix`. If the run is elsewhere, use `--resume /path/to/last_good_restart.pt`. Supply `--source` or `--radiation-data` if the original PyAM21 checkout or Sea ESF tables are elsewhere than `~/Desktop/PyAM21` or `~/Desktop/sea_esf`.
+
 ## Day-11 donor-parcel GM with local limiting
 
 On branch `experiment/gm-parcel-limiter-day11`, run this from the checkout in

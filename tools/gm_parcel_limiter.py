@@ -19,6 +19,18 @@ from run_gm_day9 import load_campaign
 # Digest of the 259 hashed sources in the donor-parcel day-10 manifest.
 DONOR_SOURCE_MAP_SHA256 = "d425abea9676be17ead4c54095a0dcf8a443085712bd438bbc7a964351f29ccd"
 EXPERIMENT_SOURCE = "tools/gm_parcel_limiter.py"
+DAY11_LIMITER_SHA256 = "b42ecb8f033637ab5f6914bbdae899de37dc02cdb259e54a35e8a732b4b89479"
+# Only these native modules changed between the day-11 experiment and its
+# bounded category-phase continuation. All other source entries stay pinned
+# by the original donor campaign digest.
+DAY11_ICE_SOURCES = {
+    "validation/sea_ice/category_phase.py": "44ad80734ac1450b97a20a3a8f1b6c9c67b7369e12fd9d3ec63a04bb693b8034",
+    "validation/sea_ice/ocean_ice.py": "9aa08e43fed7f3b0c77e041113f1630ea9def6d767d8923b07ba975faa54e051",
+}
+BOUNDED_ICE_SOURCES = {
+    "validation/sea_ice/category_phase.py": "31270fef6cc80a3fa06d23d2304fc9e713b21eb181e98429b3799e8c6d3a56b6",
+    "validation/sea_ice/ocean_ice.py": "48e078d70601e741a68e81a859f99059500d351ee172aa0a85c2eb3e9ac42963",
+}
 
 
 def incident_gm_interfaces(bad, i, j):
@@ -241,22 +253,28 @@ def make_audited_gm_class(GMRedi, divergence, output_dir):
 
 def experiment_sources(parent_sources):
     """Attach the limiter and audit code to the original native source map."""
-    serialized = json.dumps(parent_sources, sort_keys=True, separators=(",", ":"))
+    if any(parent_sources.get(k) != v for k, v in BOUNDED_ICE_SOURCES.items()):
+        raise ValueError("Expected the audited bounded sea-ice phase implementation.")
+    parent = {**parent_sources, **DAY11_ICE_SOURCES}
+    serialized = json.dumps(parent, sort_keys=True, separators=(",", ":"))
     if hashlib.sha256(serialized.encode()).hexdigest() != DONOR_SOURCE_MAP_SHA256:
         raise ValueError("Expected the donor-parcel campaign sources from the day-10 run.")
     return {**parent_sources, EXPERIMENT_SOURCE: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
 
 
 def verify_fork(prior, current):
-    """Admit the exact strict donor parent or this identical limited experiment."""
+    """Check the exact full manifests before a one-way ice-phase continuation."""
     native = {name: sha for name, sha in current.items() if name != EXPERIMENT_SOURCE}
-    if current != experiment_sources(native) or prior not in (native, current):
-        raise ValueError("Expected the matching donor-parcel parent or an identical limited experiment.")
+    parent = {**native, **DAY11_ICE_SOURCES}
+    day11 = {**parent, EXPERIMENT_SOURCE: DAY11_LIMITER_SHA256}
+    if current != experiment_sources(native) or prior not in (parent, day11, current):
+        raise ValueError("Expected the strict donor parent, day-11 limiter, or identical bounded-ice sources.")
     return {
-        "experiment": "donor-parcel GM with local streamfunction funding",
-        "added_sources": {EXPERIMENT_SOURCE: current[EXPERIMENT_SOURCE]} if prior == native else {},
+        "experiment": "donor-parcel GM with local streamfunction funding and bounded sea-ice phase",
+        "added_sources": {k: v for k, v in current.items() if k not in prior},
+        "modified_sources": {k: {"before": prior[k], "after": v}
+                             for k, v in current.items() if k in prior and prior[k] != v},
     }
-
 
 def run_campaign(argv):
     """Run native restart validation and campaign I/O with the experimental GM."""
