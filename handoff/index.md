@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [day-15 two-substep GM/Redi experiment](../docs/PASS4_RESULTS.md#two-gmredi-substeps-from-day-15) forks the ten-substep sea-ice-fix run into a separate segment through day 30.
+
 The [full sea-ice coverage fix and day-30 restart instructions](../docs/PASS4_RESULTS.md#full-sea-ice-coverage-in-the-day-11-campaign) cover the category phase rejection at second 1028400.
 
 The day-11 experiment resumes the failed donor-parcel run with a local GM

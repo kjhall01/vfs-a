@@ -5,6 +5,7 @@ Identities for this experiment carry this file alongside the native source
 inventory. Only the run_gm_day11 launcher installs the experimental operator.
 """
 import argparse
+from functools import partial
 import hashlib
 import json
 import math
@@ -20,6 +21,10 @@ from run_gm_day9 import load_campaign
 DONOR_SOURCE_MAP_SHA256 = "d425abea9676be17ead4c54095a0dcf8a443085712bd438bbc7a964351f29ccd"
 EXPERIMENT_SOURCE = "tools/gm_parcel_limiter.py"
 DAY11_LIMITER_SHA256 = "b42ecb8f033637ab5f6914bbdae899de37dc02cdb259e54a35e8a732b4b89479"
+ICE_FIX_LIMITER_SHA256 = "f0495c55767c87ed5ee49d53d3fda67a6d068b114847f38a90beeb08bfebe28c"
+CAMPAIGN_SOURCE = "workflows/coupled/campaign.py"
+ORIGINAL_CAMPAIGN_SHA256 = "b642758dc38d26dc0c96c4a1d5cf3b75ce6c890d657e06ecb750c511e110d2df"
+SUBSTEP_CAMPAIGN_SHA256 = "58ba93e42fa8d6eeb09f93dc2d38d28a7c4cfcb06f567a5023ccd0e812891b69"
 # Only these native modules changed between the day-11 experiment and its
 # bounded category-phase continuation. All other source entries stay pinned
 # by the original donor campaign digest.
@@ -253,22 +258,25 @@ def make_audited_gm_class(GMRedi, divergence, output_dir):
 
 def experiment_sources(parent_sources):
     """Attach the limiter and audit code to the original native source map."""
-    if any(parent_sources.get(k) != v for k, v in BOUNDED_ICE_SOURCES.items()):
-        raise ValueError("Expected the audited bounded sea-ice phase implementation.")
-    parent = {**parent_sources, **DAY11_ICE_SOURCES}
+    required = {**BOUNDED_ICE_SOURCES, CAMPAIGN_SOURCE: SUBSTEP_CAMPAIGN_SHA256}
+    if any(parent_sources.get(k) != v for k, v in required.items()):
+        raise ValueError("Expected the bounded ice and audited substep restart sources.")
+    parent = {**parent_sources, **DAY11_ICE_SOURCES, CAMPAIGN_SOURCE: ORIGINAL_CAMPAIGN_SHA256}
     serialized = json.dumps(parent, sort_keys=True, separators=(",", ":"))
     if hashlib.sha256(serialized.encode()).hexdigest() != DONOR_SOURCE_MAP_SHA256:
         raise ValueError("Expected the donor-parcel campaign sources from the day-10 run.")
     return {**parent_sources, EXPERIMENT_SOURCE: hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
 
 
-def verify_fork(prior, current):
-    """Check the exact full manifests before a one-way ice-phase continuation."""
+def verify_fork(prior, current, *, two_substeps=False):
+    """Check full source inventories for bounded-ice and substep continuations."""
     native = {name: sha for name, sha in current.items() if name != EXPERIMENT_SOURCE}
-    parent = {**native, **DAY11_ICE_SOURCES}
+    ice_fix = {**native, CAMPAIGN_SOURCE: ORIGINAL_CAMPAIGN_SHA256, EXPERIMENT_SOURCE: ICE_FIX_LIMITER_SHA256}
+    parent = {**native, **DAY11_ICE_SOURCES, CAMPAIGN_SOURCE: ORIGINAL_CAMPAIGN_SHA256}
     day11 = {**parent, EXPERIMENT_SOURCE: DAY11_LIMITER_SHA256}
-    if current != experiment_sources(native) or prior not in (parent, day11, current):
-        raise ValueError("Expected the strict donor parent, day-11 limiter, or identical bounded-ice sources.")
+    allowed = (ice_fix, current) if two_substeps else (parent, day11, ice_fix, current)
+    if current != experiment_sources(native) or prior not in allowed:
+        raise ValueError("Unrecognized source transition for this GM/Redi continuation.")
     return {
         "experiment": "donor-parcel GM with local streamfunction funding and bounded sea-ice phase",
         "added_sources": {k: v for k, v in current.items() if k not in prior},
@@ -280,7 +288,9 @@ def run_campaign(argv):
     """Run native restart validation and campaign I/O with the experimental GM."""
     args = argparse.ArgumentParser(add_help=False)
     args.add_argument("--output", type=Path, required=True)
-    output = args.parse_known_args(argv)[0].output
+    args.add_argument("--two-gm-redi-substeps", action="store_true")
+    options = args.parse_known_args(argv)[0]
+    output = options.output
     campaign = load_campaign()
     from vfs.ocean.transport import divergence
 
@@ -290,6 +300,7 @@ def run_campaign(argv):
     with (
         patch.object(campaign, "GMRedi", limited_gm),
         patch.object(campaign, "source_hashes", lambda: sources),
-        patch.object(campaign, "verify_compatible_source_delta", verify_fork),
+        patch.object(campaign, "verify_compatible_source_delta",
+                     partial(verify_fork, two_substeps=options.two_gm_redi_substeps)),
     ):
         return campaign.main(argv)

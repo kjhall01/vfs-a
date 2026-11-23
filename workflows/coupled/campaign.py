@@ -890,6 +890,8 @@ def main(argv=None):
         "--resume-compatible-manifest", type=Path,
         help="Opt-in audited source-compatible restart bridge; requires prior run manifest.json and --resume",
     )
+    parser.add_argument("--two-gm-redi-substeps", action="store_true",
+                        help="Allow only eddy_substeps 10 to 2 when resuming from a compatible manifest")
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
     parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
@@ -930,6 +932,8 @@ def main(argv=None):
         parser.error("--energy-trace-ocean-stages requires --energy-trace")
     if args.resume_compatible_manifest and not args.resume:
         parser.error("--resume-compatible-manifest requires --resume")
+    if args.two_gm_redi_substeps and not args.resume_compatible_manifest:
+        parser.error("--two-gm-redi-substeps requires --resume-compatible-manifest")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
     config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
@@ -1054,7 +1058,15 @@ def main(argv=None):
             expected_restart_identity = identity
             if args.resume_compatible_manifest:
                 prior = json.loads(args.resume_compatible_manifest.read_text())
-                if prior.get("configuration") != asdict(config):
+                parent_config = config
+                config_delta = {}
+                if args.two_gm_redi_substeps:
+                    if not config.gm_redi or config.eddy_substeps != 2:
+                        raise ValueError("The substep experiment requires GM/Redi enabled and eddy_substeps=2")
+                    if prior.get("configuration", {}).get("eddy_substeps") == 10:
+                        parent_config = replace(config, eddy_substeps=10)
+                        config_delta["eddy_substeps"] = {"before": 10, "after": 2}
+                if prior.get("configuration") != asdict(parent_config):
                     raise ValueError("compatible restart: prior campaign configuration differs")
                 if prior.get("mesh", {}).get("sha256") != mesh_info.get("sha256"):
                     raise ValueError("compatible restart: mesh SHA256 differs")
@@ -1070,7 +1082,7 @@ def main(argv=None):
                     prior.get("source_sha256"), hashes
                 )
                 expected_restart_identity = fingerprint(
-                    config, adapter, prior["source_sha256"],
+                    parent_config, adapter, prior["source_sha256"],
                     args.smoke_no_radiation, mesh_info.get("sha256")
                 )
                 if (prior.get("fingerprint") != expected_restart_identity
@@ -1086,6 +1098,9 @@ def main(argv=None):
                     new_fingerprint=identity,
                     **source_delta,
                 )
+                if args.two_gm_redi_substeps:
+                    audit.update(configuration_change=config_delta, checkpoint_seconds=payload["air"]["time_seconds"])
+                    logger.info("GM/Redi restart configuration change: %s", json.dumps(config_delta))
                 atomic_json(output / "compatible_resume_audit.json", audit)
                 if "modified_instrumentation_files" in source_delta:
                     atomic_json(output / "instrumentation_resume_audit.json", audit)

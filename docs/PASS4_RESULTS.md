@@ -1,5 +1,21 @@
 # Pass 4 — physical-field workflow
 
+## Two GM/Redi substeps from day 15
+
+This experiment forks the ten-substep, full-depth sea-ice-fix run at its periodic day-15 checkpoint (1,296,000 s) and targets day 30. It changes `eddy_substeps` from 10 to 2. For the 600-second ocean timestep, GM/Redi runs twice at 300 seconds per ocean step, four times per 1,200-second coupled interval. The parent configuration supplies the vertical mixing, GM funding limiter, radiation, compile policy, output cadence and all other settings.
+
+In the original coupled environment, from branch `experiment/day15-two-gm-redi`, run
+
+```sh
+python -u -I tools/resume_gm_ice.py --two-gm-redi-substeps
+```
+
+The launcher searches the Desktop and VFS run directories for a matching `restarts/restart_01296000.pt` and checks the checkpoint clock and fingerprint. If more than one candidate matches, append `--resume /absolute/path/to/restarts/restart_01296000.pt`. The launcher reads the previous segment’s manifest, targets day 30 and writes a new sibling directory ending in `-gm2`. `--source` and `--radiation-data` can override the default `~/Desktop/PyAM21` and `~/Desktop/sea_esf`. For a later two-substep restart, supply its checkpoint with `--resume` and a new `--output`.
+
+The native restart code authenticates the parent using its original configuration. The new manifest and the initial restart in the new segment carry the two-substep fingerprint. `compatible_resume_audit.json` records the configuration delta, source transition and branch time. The ocean and atmosphere states, their physics memory, clock and cumulative budget ledger are inherited at the fork. For a paired comparison, compare changes from the common day-15 state at matching model times.
+
+On an installed CPU wheel, 84 of 86 selected campaign and ocean tests passed. The two historical PyAM21 restart tests rejected the source inventory on both this branch and its ice-fix parent. The portable dry and corrected-Gibbs fixtures passed 93 and 142 tensor comparisons. Small, radiation-off coupled runs verified normal output, including a NetCDF snapshot, a 10→2 restart and a 2→2 restart. At the two transitions, the payloads matched bitwise across all fields and ledger entries apart from the intended identity change at 10→2. Each coupled interval wrote four GM/Redi audit records. Missing opt-in, an additional mixing change, a mismatched fingerprint and disabled GM were rejected. The original Mac day-15 checkpoint and Sea ESF tables were unavailable for a full-resolution continuation here.
+
 ## Full sea-ice coverage in the day-11 campaign
 
 At second 1028400 (day 11, 21:40), the reported 4,096-cell run rejected the post-exchange ice phase update. When freezing fills the open water, multiplying both category footprints by the same scaling factor can round their sum up to 1.0000000000000002 in float64. The original error displayed that value as 1.
