@@ -169,7 +169,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
         if any(
             value is not None
             for name, value in options.items()
-            if name not in ("stage_callback", "dynamics_integrator")
+            if name not in ("stage_callback", "dynamics_integrator", "apply_mixing")
         ):
             raise ValueError(
                 "thermal ice uses shared atmospheric exchange for external forcing"
