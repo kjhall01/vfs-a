@@ -65,11 +65,16 @@ class _RediGradient:
         self.relative = relative
 
     def vertical(self, values):
+        # This stencil has exactly three entries. Unpack them rather than
+        # launching a Python loop; keep the original left-to-right sum.
         flat = values.reshape(-1, values.shape[-1])
-        result = torch.zeros_like(values)
-        for k in range(3):
-            result = result + self.weights[..., k, None] * flat[self.ids[..., k]]
-        return result
+        i0, i1, i2 = self.ids.unbind(-1)
+        w0, w1, w2 = self.weights.unbind(-1)
+        return (
+            w0[..., None] * flat[i0]
+            + w1[..., None] * flat[i1]
+            + w2[..., None] * flat[i2]
+        )
 
     def apply(self, values):
         dz = self.vertical(values)
@@ -130,27 +135,26 @@ class _RediGradient:
         ratio = torch.where(
             ratio < 1, ratio * (1 - 64 * torch.finfo(ratio.dtype).eps), ratio
         )
-        # The horizontal terms contribute directly at their two endpoints.
-        # Preserve independent row funding and the exact sign tests.
-        one = torch.ones_like(transfer)
-        scale = torch.minimum(
-            torch.where((-1 / self.dc)[..., None] * transfer < 0, ratio[self.i], one),
-            torch.where((1 / self.dc)[..., None] * transfer < 0, ratio[self.j], one),
-        )
+        scale = torch.ones_like(transfer)
 
-        # Batch the three vertical-stencil entries for each endpoint rather
-        # than evaluating six Python-level gather/minimum operations. Only
-        # temporary edge x level x 3 x field tensors are materialized, never
-        # a dense horizontal operator.
+        def fund(weight, allowance):
+            nonlocal scale
+            scale = torch.minimum(
+                scale,
+                torch.where(
+                    weight[..., None] * transfer < 0, allowance, torch.ones_like(scale)
+                ),
+            )
+
+        fund(-1 / self.dc, ratio[self.i])
+        fund(1 / self.dc, ratio[self.j])
         flat = ratio.reshape(-1, ratio.shape[-1])
         for cells in (self.i, self.j):
-            weights = 0.5 * self.relative[..., None] * self.weights[cells]
-            allowances = flat[self.ids[cells]]
-            active = weights[..., None] * transfer[..., None, :] < 0
-            vertical_scale = torch.where(
-                active, allowances, torch.ones_like(allowances)
-            ).amin(dim=-2)
-            scale = torch.minimum(scale, vertical_scale)
+            for k in range(3):
+                fund(
+                    0.5 * self.relative * self.weights[cells, :, k],
+                    flat[self.ids[cells, :, k]],
+                )
         return scale
 
 
