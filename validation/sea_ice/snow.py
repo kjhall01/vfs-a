@@ -299,7 +299,14 @@ class SnowOceanIce:
             (1 - weight) * first.snow_mass + weight * second.snow_mass,
         )
 
-    def dynamics_step(self, state, dt, **options):
+    def dynamics_step(self, state, dt, *, integrator="ssprk3", **options):
+        """Choose the explicit ocean–ice tableau without changing stage physics."""
+        if integrator == "ssprk43":
+            from explicit_rk import ssprk43_dynamics
+            return ssprk43_dynamics(self, state, dt, **options)
+        if integrator != "ssprk3":
+            raise ValueError("ocean–ice integrator must be ssprk3 or ssprk43")
+        # Preserve the historical three-stage path, including all arithmetic.
         r0, p0 = self.tendency(state, dt, **options)
         first = self.add(state, r0, dt)
         r1, p1 = self.tendency(first, dt, **options)
@@ -321,6 +328,7 @@ class SnowOceanIce:
         wind_velocity=None,
         freshwater=None,
         stage_callback=None,
+        dynamics_integrator="ssprk3",
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
@@ -365,10 +373,11 @@ class SnowOceanIce:
         if stage_callback is not None:
             stage_callback("implicit_drag_half_0", state, 0.0)
         state, work = self.dynamics_step(
-            state, dt, wind_velocity=wind_velocity, drag=False
+            state, dt, wind_velocity=wind_velocity, drag=False,
+            integrator=dynamics_integrator,
         )
         if stage_callback is not None:
-            stage_callback("coupled_ssprk3", state, work)
+            stage_callback("coupled_" + dynamics_integrator, state, work)
         model = self.coupled.ocean
         if model.closure is not None:
             original = state.coupled.ocean
