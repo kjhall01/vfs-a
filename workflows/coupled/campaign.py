@@ -81,6 +81,7 @@ class CampaignConfig:
     physics_dt: int = 1200
     atmosphere_dt: int = 240
     ocean_dt: int = 1200
+    ocean_dynamics_integrator: str = "ssprk3"
     radiation_dt: int = 3600
     solar_constant: float = 1361.0
     obliquity_degrees: float = 23.44
@@ -178,6 +179,8 @@ class CampaignConfig:
                 raise ValueError(f"{key} must be finite and nonnegative")
         if self.gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
             raise ValueError("unknown gm_energy_scheme")
+        if self.ocean_dynamics_integrator not in ("ssprk3", "ssprk43"):
+            raise ValueError("ocean_dynamics_integrator must be ssprk3 or ssprk43")
         if self.gm_kinetic_fraction > 1 or self.backscatter_fraction > 1:
             raise ValueError("eddy kinetic and backscatter fractions must be <= 1")
         if (
@@ -479,7 +482,10 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
                 trace.observe(stage, adapter, evolved, receiver, intermediate,
                               external=float(external_energy / A.sum()),
                               details={"substep_seconds": step_dt})
-        water, r = receiver.snow.step(water, step_dt, stage_callback=ocean_callback)
+        water, r = receiver.snow.step(
+            water, step_dt, stage_callback=ocean_callback,
+            dynamics_integrator=config.ocean_dynamics_integrator,
+        )
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
         if trace is not None and not trace.ocean_stages:
@@ -1026,6 +1032,10 @@ def main(argv=None):
             config.backscatter_viscosity_m2_s,
             config.biharmonic_viscosity_m4_s,
             config.ale_remap,
+        )
+        logger.info(
+            "Ocean–ice explicit dynamics integrator=%s",
+            config.ocean_dynamics_integrator,
         )
         logger.info(
             "GM energy scheme=%s; Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",
