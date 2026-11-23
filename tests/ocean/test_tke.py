@@ -345,3 +345,33 @@ def test_limiter_diagnostics_do_not_change_pair_solution(mesh):
 def test_invalid_backtracking_safety(safety):
     with pytest.raises(ValueError,match='mixing_backtrack_safety'):
         TKEClosure(2.,mixing_backtrack_safety=safety)
+
+
+def test_batched_passive_tracer_mixing_matches_independent_fields(mesh):
+    """Multiple tracers share one column solve without coupling their fluxes."""
+    m, s = case(mesh, closure=TKEClosure(2., c_epsilon=0.))
+    h = s.ocean.h
+    concentrations = h.new_tensor([
+        [1., 1., 1., 1.],
+        [0., 1., 2., 3.],
+        [2., 1., .5, 0.],
+    ]).T
+    tracer = h[..., None] * concentrations
+    multi = replace(s, ocean=replace(s.ocean, tracer_h=tracer))
+    mixed, report = m.mix_with_report(multi, 10.)
+    assert mixed.ocean.tracer_h.shape[-1] == 3
+    assert (mixed.tke_h >= 0).all()
+    for index in range(tracer.shape[-1]):
+        single = replace(s, ocean=replace(s.ocean, tracer_h=tracer[..., index:index+1]))
+        expected, _ = m.mix_with_report(single, 10.)
+        torch.testing.assert_close(
+            mixed.ocean.tracer_h[..., index],
+            expected.ocean.tracer_h[..., 0],
+            rtol=0, atol=0,
+        )
+        torch.testing.assert_close(
+            mixed.ocean.tracer_h[..., index].sum(-1),
+            tracer[..., index].sum(-1),
+            rtol=2e-14, atol=1e-12,
+        )
+    assert float(report.column_energy_residual.abs().sum()/mean_mass(m,multi)) < 1e-8
