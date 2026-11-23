@@ -123,6 +123,63 @@ def test_40_minute_physics_multirate_smoke(source, config):
     assert torch.isfinite(torch.tensor(report["surface_residual"]))
 
 
+def test_multirate_throughput_paired_small_coupled_case(source, config, capsys):
+    """Exploratory full-physics CPU timing; no fragile speed threshold.
+
+    Each method advances 2400 seconds from the SAME initial state. AM2 column
+    physics, radiative cache, surface/ice exchange, vertical mixing, GM–Redi,
+    phase and ALE are included. No optical SeaEsf tables are available in CI:
+    the PyAM21 radiation interface uses its tested analytic fixture.
+    """
+    import statistics
+    import time
+
+    reference = replace(
+        config, cells=64, ocean_levels=8, physics_dt=1200,
+        atmosphere_dt=600, ocean_dt=600, radiation_dt=7200,
+        ale_dt=None, mixing_dt=None, mesoscale_dt=None,
+    ).validate()
+    faster = replace(
+        reference, physics_dt=2400, mixing_dt=1200, mesoscale_dt=1200,
+        ale_dt=7200,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(reference, source, Path("synthetic"))
+
+    def measure(cfg):
+        with torch.no_grad():
+            result, water = air, sea
+            totals = {}
+            for _ in range(2400 // cfg.physics_dt):
+                result, water, report = c.advance(
+                    adapter, result, receiver, water, cfg.physics_dt, cfg
+                )
+                totals = report
+        assert result.time_seconds == 2400
+        receiver.snow.check(water)
+        return totals
+
+    # Warm up kernels, avoiding first-time initialization effects.
+    measure(reference)
+    measure(faster)
+    timings = {}
+    for name, cfg in (("reference", reference), ("multirate", faster)):
+        samples = []
+        for _ in range(3):
+            start = time.perf_counter()
+            measure(cfg)
+            samples.append(time.perf_counter() - start)
+        timings[name] = dict(samples_s=samples, median_s=statistics.median(samples))
+    ratio = timings["reference"]["median_s"] / timings["multirate"]["median_s"]
+    print("COUPLED_MULTIRATE_TIMING " + json.dumps({
+        "cells": 64, "atmosphere_levels": reference.atmosphere_levels,
+        "ocean_levels": reference.ocean_levels,
+        "equal_model_seconds": 2400, "threads": reference.threads,
+        **timings, "observed_speedup": ratio,
+        "radiation": "synthetic PyAM21 driver, no SeaEsf tables",
+    }), flush=True)
+
+
 def test_noncommensurate_process_cadences_fail_closed(config):
     for changes in (
         dict(mixing_dt=59),
