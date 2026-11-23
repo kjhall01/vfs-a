@@ -165,6 +165,62 @@ def test_category_phase_actual_budget_and_momentum(ridge_mesh, coast, flux):
         assert torch.count_nonzero(end.ice.velocity) == 0
 
 
+def test_ice_guard_reports_an_overfull_cell_at_full_precision(ridge_mesh):
+    coupled, state = setup(ridge_mesh)
+    area = state.ice.area.clone()
+    area[3, 0] = 1.0
+    area[3, 1] = torch.finfo(area.dtype).eps
+    with pytest.raises(ValueError, match=r"cell=3, .*coverage=1\.0000000000000002,"):
+        coupled.check(replace(state, ice=replace(state.ice, area=area)))
+
+
+def test_category_freezing_closes_both_footprints_at_full_cover(ridge_mesh):
+    coupled, initial = setup(ridge_mesh)
+    phase = CategoryThermodynamics(coupled)
+    # With either category dominant, multiplying both areas by 1/0.999
+    # independently gives 1 + 1 ulp of total coverage in binary64.
+    areas = torch.tensor([[0.001, 0.998], [0.998, 0.001]]).repeat(ridge_mesh.nCells // 2, 1)
+    volumes = areas * torch.tensor([0.2, 1.0])
+    initial = replace(initial, ice=replace(initial.ice, area=areas, volume=volumes))
+    H = coupled.hamiltonian
+    dt = 1200.0
+    flux = torch.full_like(areas[:, :1], -1000.0)
+    end, report = phase.apply(initial, dt, heat_flux=flux)
+    assert torch.equal(end.ice.area.sum(-1), torch.ones_like(areas[:, 0]))
+    scale = H.mass(end) / H.mass(initial)
+    assert (scale > 1 / areas.sum(-1, keepdim=True)).all()
+    torch.testing.assert_close(end.ice.volume, volumes * scale, rtol=3e-15, atol=0)
+    torch.testing.assert_close(end.ice.area, areas / areas.sum(-1, keepdim=True), rtol=3e-15, atol=0)
+    eps = torch.finfo(areas.dtype).eps
+    s = initial.ocean.ocean
+    water_scale = ridge_mesh.cell_area * s.column.rho0 * s.h.sum(-1)
+    assert (report.water_residual.abs() < 16 * eps * water_scale).all()
+    net = H.total_energy(end) - H.total_energy(initial) - report.external_heat.sum()
+    assert net.abs() < 128 * eps * sum(x.abs().sum() for x in H.terms(initial).values())
+
+
+def test_full_cover_retains_trace_categories_and_geometry_derivative(ridge_mesh):
+    coupled, initial = setup(ridge_mesh)
+    phase = CategoryThermodynamics(coupled)
+    areas = torch.tensor([[0.001, 0.998], [0.998, 0.001],
+                          [1e-19, 0.999], [0.999, 1e-19]]).repeat(ridge_mesh.nCells // 4, 1)
+    volumes = areas * torch.tensor([0.2, 1.0])
+    initial = replace(initial, ice=replace(initial.ice, area=areas, volume=volumes))
+    original_mass = coupled.hamiltonian.mass(initial)
+    m = (original_mass * 1.01).requires_grad_()
+    state = phase.phase_state(initial, m)
+    coupled.check(state)
+    assert (state.ice.area > 0).all()
+    assert torch.equal(state.ice.area.sum(-1), torch.ones_like(areas[:, 0]))
+    exact_derivative, = torch.autograd.grad(phase.thermal_energy(state).sum(), m)
+    torch.testing.assert_close(phase.derivative(initial, state, m), exact_derivative,
+                               rtol=2e-14, atol=1e-8)
+    # An admissible unsaturated update retains the original elementwise result.
+    m_below = original_mass * 0.9
+    ice, *_ = phase.geometry(initial, m_below)
+    assert torch.equal(ice.area, areas * (m_below / original_mass))
+
+
 def test_phase_derivative_and_backward(ridge_mesh):
     coupled, initial = setup(ridge_mesh)
     phase = CategoryThermodynamics(coupled)

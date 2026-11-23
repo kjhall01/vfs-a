@@ -1,5 +1,13 @@
 # Pass 4 — physical-field workflow
 
+## Two-substep coupled aquaplanet from day zero
+
+The full-depth GM2 preset uses the ordinary campaign entry point. It selects native funded donor-parcel GM, positive-inventory Redi and two 300-second GM/Redi substeps per 600-second ocean dynamics step. It retains ten vertical-mixing substeps and the phase geometry correction for sea ice reaching full coverage. The historical presets retain their original midpoint GM energy transport.
+
+On the saved day-10, 4,096-cell, 60-layer checkpoint, the native operator matched the separately tested donor-parcel limiter bit for bit for each existing report field and ocean state tensor over one 20-minute ocean/ice interval at both ten and two substeps. At two substeps, one GM update required two local halvings. The maximum absolute local GM/Redi energy residual was 7.95e−12 J/m². At ten substeps, four updates required seven halvings in total.
+
+A fresh Linux CPU float64 integration on the saved 4,096-cell mesh advanced two coupled intervals with radiation off, writing the initial NetCDF snapshot and the final restart. The eager run recorded eight GM/Redi updates, zero limiting passes and a maximum absolute local GM/Redi energy residual of 4.65e−12 J/m². The exact Sea ESF tables used on the Mac were unavailable for a fresh 30-day qualification. The [run instructions](../workflows/coupled/FULL_DEPTH_4096.md#fresh-30-day-run-with-two-gmredi-substeps) specify the required optical tables.
+
 ## Cloud-fraction cancellation in the coupled campaign
 
 A 4,096-cell, 32-atmosphere-level, 60-ocean-level CPU float64 campaign stopped

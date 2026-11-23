@@ -123,8 +123,8 @@ thermobaric terms. At unchanged h and u, H is quadratic in CT and linear in
 SA/TKE/e, so the midpoint discrete gradient gives exact finite work. Forward
 transport uses no autograd-generated tendencies.
 
-For each GM face, the energy carried with the scalar transfers is their dot
-product with the arithmetic mean of the two midpoint conjugates. GM transports
+With the default `gm_energy_scheme="midpoint"`, the energy carried with the
+scalar transfers on each GM face is their dot product with the arithmetic mean of the two midpoint conjugates. GM transports
 CT/SA departures from the EOS's fixed reference: subtracting a constant on a
 closed circulation leaves the physical tendency unchanged and fixes the energy
 flux datum. For each Redi stencil row, use the midpoint conjugates averaged at
@@ -150,6 +150,16 @@ costly flux: its coefficient/initial condition needs a physical energy source.
 
 This scheme does not yet parameterize reservoir dissipation, backscatter,
 eddy stresses, an EKE/EAPE partition or energy-dependent diffusivities.
+
+The optional `donor_parcel` scheme transports the energy of the same upwind
+CT, SA, TKE and eddy-energy parcel as the tracers. The two neighboring layer
+geometries provide the mean coefficients for the parcel potential.
+`funded_donor_parcel` uses the same update. If the local GM energy debit
+would exhaust a reservoir, it halves the streamfunction on the incident
+interfaces and reconstructs the divergence-free carrier fluxes. Each attempt
+uses the original substep input and passes the native GM CFL, inventory and
+finite-work checks. After 20 unsuccessful halvings the step fails. Redi uses
+its own explicit bound, positive-inventory option and local energy settlement.
 
 ## Diagnostics and verification
 

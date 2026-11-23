@@ -1,6 +1,23 @@
 # 4,096-cell full-depth coupled aquaplanet (experimental)
 
-This preset is built on `feat/coupled-cuda` and changes **vertical geometry** without turning off any of the existing coupled components: moist atmosphere and PyAM21 clouds/convection/radiation, prognostic ocean dynamics, TKE mixing, GM–Redi, eddy dissipation, funded backscatter and biharmonic sink, adaptive ALE, moving sea ice, snow and prognostic ice temperature.
+## Fresh 30-day run with two GM/Redi substeps
+
+Run the following from the repository root in the coupled environment, with PyAM21 installed. The example uses the saved 4,096-cell mesh, the PyAM21 source checkout and the Sea ESF tables on the Desktop.
+
+```sh
+python -u -I workflows/coupled/campaign.py \
+  --config workflows/coupled/aquaplanet_full_depth_4096_gm2.yaml \
+  --mesh "$HOME/Desktop/mesh_4096_exact_3000.npy" \
+  --source "$HOME/Desktop/PyAM21" \
+  --radiation-data "$HOME/Desktop/sea_esf" \
+  --output "$HOME/Desktop/vfs-4096-gm2-fresh" --verbose
+```
+
+The campaign initializes at day zero. The preset uses 32 atmospheric levels up to 1 hPa, 60 ocean layers to 5,000 m, seasonal Sea ESF radiation, and all ocean and ice processes. Atmosphere and ocean dynamics run every 600 s. The coupling and radiation period is 1,200 s. Within each ocean step, GM/Redi runs twice at 300 s and vertical mixing retains ten substeps. The preset selects the locally funded donor-parcel GM scheme, CPU float64, four threads and regional compilation. The `gm_limiting_passes` and `gm_limited_interfaces` diagnostic columns accumulate the number of retry passes and the number of interfaces limited in accepted updates. An interface limited on successive substeps counts once per substep.
+
+## Original full-depth preset
+
+The original `aquaplanet_full_depth_4096.yaml` preset changes the vertical geometry while retaining moist atmosphere and PyAM21 clouds/convection/radiation, prognostic ocean dynamics, TKE mixing, GM–Redi, eddy dissipation, funded backscatter and biharmonic sink, adaptive ALE, moving sea ice, snow and prognostic ice temperature.
 
 | Item | Setting |
 | --- | --- |

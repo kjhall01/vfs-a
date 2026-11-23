@@ -91,10 +91,15 @@ class OceanIce:
             self.ridge.check(state)
         except ValueError as error:
             if "nonnegative stores" in str(error):
+                area, volume = state.ice.area, state.ice.volume
+                coverage = area.sum(-1)
+                invalid = (area < 0).any(-1) | (volume < 0).any(-1) | (coverage > 1)
+                cell = invalid.nonzero()[0, 0].item()
                 raise ValueError(
-                    f"inadmissible coupled stage: min area={state.ice.area.min().item():.3g}, "
-                    f"min volume={state.ice.volume.min().item():.3g}, max coverage={state.ice.area.sum(-1).max().item():.3g}, "
-                    f"max ice speed={state.ice.velocity.abs().max().item():.3g}; reduce dt"
+                    f"inadmissible coupled stage: cell={cell}, "
+                    f"category areas={area[cell].tolist()}, volumes={volume[cell].tolist()}, "
+                    f"coverage={coverage[cell].item():.17g}, "
+                    f"coverage minus one={coverage[cell].item() - 1:.17g}"
                 ) from error
             raise
 

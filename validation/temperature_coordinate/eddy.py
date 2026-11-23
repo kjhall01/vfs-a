@@ -39,6 +39,16 @@ class EddyReport:
     redi_local_energy_residual: torch.Tensor
     gm_diffusivity: torch.Tensor | None = None  # active edge × layer, feedback only
     redi_limited_fluxes: int = 0  # row/positive-field fluxes reduced, opt-in only
+    gm_limiting_passes: int = 0
+    gm_limited_interfaces: int = 0
+
+
+class LocalEddyEnergyError(FloatingPointError):
+    """Negative eddy inventory after settling the finite work in a cell-layer."""
+
+    def __init__(self, name, bad, detail="reduce dt or supply a physical reservoir initial condition"):
+        super().__init__(f"{name} requires unavailable local eddy energy; {detail}")
+        self.bad = bad
 
 
 class _RediGradient:
@@ -151,7 +161,10 @@ class GMRedi:
     funds local row fluxes from SA/passive/TKE/eddy inventories; the same limited
     flux supplies the energy ledger. This preserves positivity and variance
     dissipation, not a full maximum principle. Coefficients are not calibrated.
-    Every call rebuilds geometry/slopes from its input; no hidden state/cache.
+    The midpoint GM energy flux is the historical default. donor_parcel
+    carries the upwind parcel's energy. funded_donor_parcel uses this flux
+    and halves incident interface streamfunctions if local GM work exceeds
+    the eddy reservoir. The Redi step follows only an accepted GM update.
     """
 
     def __init__(
@@ -164,6 +177,7 @@ class GMRedi:
         cfl=0.8,
         energy_closure=None,
         positive_redi=False,
+        gm_energy_scheme="midpoint",
     ):
         values = (kappa_gm, kappa_redi, max_slope, min_n2, cfl)
         if not all(math.isfinite(x) for x in values):
@@ -184,6 +198,9 @@ class GMRedi:
         if type(positive_redi) is not bool:
             raise ValueError("positive_redi must be boolean")
         self.positive_redi = positive_redi
+        if gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
+            raise ValueError("Unknown GM energy scheme: " + str(gm_energy_scheme))
+        self.gm_energy_scheme = gm_energy_scheme
         self.kappa_gm, self.kappa_redi = kappa_gm, kappa_redi
         self.max_slope, self.min_n2, self.cfl = max_slope, min_n2, cfl
 
@@ -266,7 +283,6 @@ class GMRedi:
             measure = self.kappa_redi * ell * dc * 0.5 * (h[i] + h[j]) * stable
         if part == "redi":
             return slope, None, None, None, None, None, None, operator, measure
-        hi, hj = ids[i].flatten(), ids[j].flatten()
         # Psi at interfaces; exact zero at closed upper/lower boundaries.
         zero = torch.zeros_like(slope[:, :1])
         if self.energy_closure is None:
@@ -281,6 +297,13 @@ class GMRedi:
             transport = kappa * slope
             interior = 0.5 * (transport[:, :-1] + transport[:, 1:])
         psi = torch.cat((zero, interior, zero), 1)
+        return slope, psi, *self._carriers(psi, metrics, h), operator, measure
+
+    @staticmethod
+    def _carriers(psi, metrics, h):
+        """Pair horizontal and vertical bolus fluxes from a shared streamfunction."""
+        i, j, ell, ids = metrics[3], metrics[4], metrics[6], metrics[7]
+        hi, hj = ids[i].flatten(), ids[j].flatten()
         horizontal = ell * psi.diff(dim=1)
         hdiv = divergence(hi, hj, horizontal.flatten(), h.numel()).reshape_as(h)
         vertical = torch.cat(
@@ -295,7 +318,7 @@ class GMRedi:
         ii = torch.cat((hi, vi))
         jj = torch.cat((hj, vj))
         carrier = torch.cat((horizontal.flatten(), vertical[:, 1:-1].flatten()))
-        return slope, psi, horizontal, vertical, ii, jj, carrier, operator, measure
+        return horizontal, vertical, ii, jj, carrier
 
     @staticmethod
     def _energy_change(model, before, after):
@@ -348,24 +371,65 @@ class GMRedi:
 
         The flux has zero global divergence. Exchange the remaining LOCAL work
         with h*e; do not repair a global scalar budget or borrow distant energy.
-        The specified midpoint energy flux defines the spatial work allocation.
+        The selected energy flux defines the spatial work allocation.
         """
         H = model.hamiltonian
         work = H.finite_change(before, transported) - energy_inflow
         mass = H.mass_area(before.ocean)
         safe_mass = torch.where(mass > 0, mass, torch.ones_like(mass))
         eddy_h = transported.eddy_h - work / safe_mass
-        if (eddy_h < 0).any():
-            raise FloatingPointError(
-                name
-                + " requires unavailable local eddy energy; reduce dt or supply a physical reservoir initial condition"
-            )
+        bad = eddy_h < 0
+        if bad.any():
+            raise LocalEddyEnergyError(name, bad)
         end = EddyState(transported.ocean, transported.tke_h, eddy_h)
         # Transported CT/SA/TKE were already checked; exchange changes only e.
         model._check_eddy(end)
         exchange = (mass * (end.eddy_h - transported.eddy_h)).sum()
         residual = H.finite_change(before, end) - energy_inflow
         return end, exchange, residual
+
+    def _gm_step(self, model, state, dt, initial, volume, i, j, carrier):
+        h = state.ocean.h
+        rho0 = state.ocean.column.rho0
+        outgoing = (
+            torch.zeros_like(volume)
+            .index_add(0, i, carrier.clamp_min(0))
+            .index_add(0, j, (-carrier).clamp_min(0))
+        )
+        fraction = dt * outgoing / volume
+        if (fraction > self.cfl).any():
+            raise FloatingPointError("GM outflow exceeds CFL; reduce dt")
+        # The circulation has zero divergence, so subtracting the EOS reference
+        # CT/SA changes no tendency. It fixes the energy-flux datum and avoids
+        # transporting a large arbitrary thermal/salt background in the ledger.
+        reference = initial.new_zeros(initial.shape[-1])
+        reference[0], reference[1] = model.config.CT0, model.config.SA0
+        anomaly = initial - reference
+        donor = torch.where((carrier >= 0)[:, None], anomaly[i], anomaly[j])
+        transfer = dt * carrier[:, None] * donor
+        gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
+        gm_transport = self._unpack(model, state, gm_values, initial)
+        if self.gm_energy_scheme == "midpoint":
+            mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(initial)
+            energy_flux = rho0 * (0.5 * (mu[i] + mu[j]) * transfer).sum(-1)
+        else:
+            # Transport upwind CT, SA and reservoirs. For its Roquet potential,
+            # evaluate this same parcel in the two adjacent layer geometries.
+            donor_ids = torch.where(carrier >= 0, i, j)
+            CT, SA = initial[donor_ids, 0], initial[donor_ids, 1]
+            a, b, c, d = [
+                0.5 * (p.flatten()[i] + p.flatten()[j])
+                for p in model.ocean.energy.base.coefficients(state.ocean)
+            ]
+            potential = (a * CT + b) * CT + c * SA + d
+            caloric = model.config.cp * (CT - model.config.CT0)
+            reservoir = initial[donor_ids, -2:].sum(-1)
+            energy_flux = rho0 * dt * carrier * (caloric + potential + reservoir)
+        gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
+        gm, gm_exchange, gm_residual = self._settle(
+            model, state, gm_transport, gm_inflow, "GM"
+        )
+        return gm, gm_exchange, gm_residual, gm_inflow, fraction
 
     def apply(self, model, state, dt):
         from roquet import RoquetOcean
@@ -391,32 +455,33 @@ class GMRedi:
         )
         slope, psi, horizontal, vertical, i, j, carrier, _, _ = geom
         initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
-        outgoing = (
-            torch.zeros_like(volume)
-            .index_add(0, i, carrier.clamp_min(0))
-            .index_add(0, j, (-carrier).clamp_min(0))
-        )
-        fraction = dt * outgoing / volume
-        if (fraction > self.cfl).any():
-            raise FloatingPointError("GM outflow exceeds CFL; reduce dt")
-        # The circulation has zero divergence, so subtracting the EOS reference
-        # CT/SA changes no tendency. It fixes the energy-flux datum and avoids
-        # transporting a large arbitrary thermal/salt background in the ledger.
-        reference = initial.new_zeros(initial.shape[-1])
-        reference[0], reference[1] = model.config.CT0, model.config.SA0
-        anomaly = initial - reference
-        donor = torch.where((carrier >= 0)[:, None], anomaly[i], anomaly[j])
-        transfer = dt * carrier[:, None] * donor
-        gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
-        gm_transport = self._unpack(model, state, gm_values, initial)
-        mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(
-            initial
-        )
-        energy_flux = rho0 * (0.5 * (mu[i] + mu[j]) * transfer).sum(-1)
-        gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
-        gm, gm_exchange, gm_residual = self._settle(
-            model, state, gm_transport, gm_inflow, "GM"
-        )
+        # Retry from the same state. Halving an entire closed circulation
+        # preserves zero divergence, including its two vertical return paths.
+        # Only an unfunded GM settlement enters this loop's retry branch.
+        proposed = psi
+        factors = None
+        for passes in range(21):
+            try:
+                gm, gm_exchange, gm_residual, gm_inflow, fraction = self._gm_step(
+                    model, state, dt, initial, volume, i, j, carrier
+                )
+                break
+            except LocalEddyEnergyError as exc:
+                if self.gm_energy_scheme != "funded_donor_parcel":
+                    raise
+                if passes == 20:
+                    raise LocalEddyEnergyError(
+                        "GM", exc.bad, "exhausted 20 local streamfunction halvings"
+                    ) from exc
+                bad_layers = exc.bad[metrics[3]] | exc.bad[metrics[4]]
+                incident = bad_layers[:, :-1] | bad_layers[:, 1:]
+                if not incident.any():
+                    raise
+                if factors is None:
+                    factors = torch.ones_like(psi[:, 1:-1])
+                factors = torch.where(incident, 0.5 * factors, factors)
+            psi = torch.cat((proposed[:, :1], proposed[:, 1:-1] * factors, proposed[:, -1:]), 1)
+            horizontal, vertical, i, j, carrier = self._carriers(psi, metrics, h)
 
         # Redi follows the UPDATED density surfaces, not the pre-GM slopes.
         redi_geometry = self._geometry(model, gm, part="redi", metrics=metrics)
@@ -488,5 +553,7 @@ class GMRedi:
             redi_residual,
             gm_diffusivity,
             limited_fluxes,
+            passes,
+            0 if factors is None else int((factors < 1).sum()),
         )
         return end, report

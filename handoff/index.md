@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [fresh two-substep coupled campaign](../workflows/coupled/FULL_DEPTH_4096.md#fresh-30-day-run-with-two-gmredi-substeps) runs the 4,096-cell, full-depth seasonal aquaplanet from day zero.
+
 The 4,096-cell campaign can resume the 231,600 s checkpoint with the audited
 cloud-fraction endpoint check. See the [failure replay and verification](../docs/PASS4_RESULTS.md#cloud-fraction-cancellation-in-the-coupled-campaign)
 and the [campaign restart instructions](../workflows/coupled/FULL_DEPTH_4096.md).

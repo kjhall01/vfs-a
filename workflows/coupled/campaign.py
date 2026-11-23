@@ -47,6 +47,8 @@ from vfs.ocean import OceanColumn
 DAY = 86400
 OCEAN_SUMS = (
     "gmredi_steps",
+    "gm_limiting_passes",
+    "gm_limited_interfaces",
     "redi_limited_fluxes",
     "eddy_decay_steps",
     "ale_steps",
@@ -87,6 +89,7 @@ class CampaignConfig:
     mixing_length_m: float = 2.0
     mixing_substeps: int = 10
     gm_redi: bool = True
+    gm_energy_scheme: str = "midpoint"
     gm_length_m: float = 10000.0
     gm_efficiency: float = 0.1
     gm_kinetic_fraction: float = 0.5
@@ -173,6 +176,8 @@ class CampaignConfig:
             value = getattr(self, key)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"{key} must be finite and nonnegative")
+        if self.gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
+            raise ValueError("unknown gm_energy_scheme")
         if self.gm_kinetic_fraction > 1 or self.backscatter_fraction > 1:
             raise ValueError("eddy kinetic and backscatter fractions must be <= 1")
         if (
@@ -236,6 +241,7 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
         eddy = GMRedi(
             kappa_redi=config.redi_diffusivity_m2_s,
             positive_redi=config.redi_positive_transport,
+            gm_energy_scheme=config.gm_energy_scheme,
             energy_closure=EddyMixingLength(
                 config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
             ),
@@ -245,6 +251,8 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
             if on_event is not None:
                 on_event("gmredi", ocean, {"substep": substep + 1, "substeps": config.eddy_substeps})
             report["gmredi_steps"] += 1
+            report["gm_limiting_passes"] += r.gm_limiting_passes
+            report["gm_limited_interfaces"] += r.gm_limited_interfaces
             report["redi_limited_fluxes"] += r.redi_limited_fluxes
             report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
             report["redi_exchange_J_m2"] += float(
@@ -1020,7 +1028,8 @@ def main(argv=None):
             config.ale_remap,
         )
         logger.info(
-            "Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",
+            "GM energy scheme=%s; Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",
+            config.gm_energy_scheme,
             config.redi_positive_transport,
             config.eddy_initial_energy_J_kg,
         )
