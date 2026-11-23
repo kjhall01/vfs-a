@@ -1,6 +1,9 @@
 """Discrete event-scheduler tests; independent of PyAM21 and ocean physics."""
 import pytest
+from pathlib import Path
+import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from workflows.coupled.schedule import event_due, ocean_events
 
 
