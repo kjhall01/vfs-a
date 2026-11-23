@@ -172,3 +172,27 @@ def test_geometry_mismatch_rejected_without_cast(probe):
     changed = state.to(dtype=torch.float32)
     with pytest.raises(ValueError, match='geometry must match'):
         HorizontalTransport(state.mesh).advance(changed, .001)
+
+
+@pytest.mark.parametrize("coast", [False, True])
+def test_donor_ledger_skips_zero_correction_without_changing_flux_or_gradient(probe, coast):
+    """The donor branch must return the same authoritative low-order ledger.
+
+    Its high-order candidate and neighbor bounds remain available to the
+    subsequent active-energy limiter; only the identically-zero scatter is gone.
+    """
+    model, state = probe.active_case(coast, zero_salt=True)
+    transport = probe.transport_for(model, "donor")
+    dt = .5 * float(transport.timestep_limit(state))
+    salinity = state.salt_h.clone().requires_grad_()
+    state = state.with_tensors(
+        state.u_e, state.h, state.temp_h, salinity, state.tracer_h
+    )
+    ledger = transport.advance(state, dt)
+    assert torch.equal(ledger.amounts, ledger.low_amounts)
+    assert torch.equal(ledger.integrated_flux, ledger.donor_integrated_flux)
+    assert torch.count_nonzero(ledger.beta) == 0
+    assert ledger.high_integrated_flux.shape == ledger.donor_integrated_flux.shape
+    # The compact branch retains the same differentiable donor amount.
+    gradient, = torch.autograd.grad(ledger.amounts[..., 1].square().sum(), salinity)
+    assert torch.isfinite(gradient).all()
