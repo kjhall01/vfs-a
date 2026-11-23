@@ -67,14 +67,14 @@ for a 1,200-second dynamics step.
 | `physics_dt` | 1200 s | **2400 s** | **3600 s** |
 | `atmosphere_dt` | 600 s SSPRK3 | 600 s SSPRK3 | 600 s SSPRK3 |
 | `ocean_dt` | 600 s SSPRK3 | 600 s SSPRK3 | 1200 s SSPRK43 |
-| `mixing_dt` | 600 s | 1200 s | 1800 s *not valid* |
+| `mixing_dt` | 600 s | 1200 s | 3600 s |
 | `mesoscale_dt` | 600 s | 1200 s | 1200 s |
 | `ale_dt` | 1200 s | 7200 s | 7200 s |
 | `radiation_dt` | 1200 s | 7200 s | 7200 s |
 
-The 3600-s pilot must choose mixing 1200, 2400 **invalid** (not a divisor),
-or 3600; 1800 is not a multiple of a 1200-s ocean step. For an explicitly
-valid 3600-s pilot use `mixing_dt: 3600` instead.
+For the 3600-s pilot with a 1200-s ocean step, `mixing_dt` must
+be 1200 or 3600 seconds; 1800 is not an integer multiple of the ocean step
+and 2400 does not divide the physics interval.
 
 The table is a **test plan**, not evidence that the larger timesteps are
 stable or accurate. In particular, fewer mixing calls with unchanged
