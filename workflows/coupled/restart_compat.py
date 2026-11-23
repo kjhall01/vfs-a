@@ -6,6 +6,9 @@ cross-version compatibility. The old source hashes are pinned from that run's
 manifest, and all non-trace files must match byte-for-byte by SHA-256.
 """
 
+import hashlib
+import json
+
 # SHA256 entries from the full 2.25-day traced experiment's source manifest.
 APPROVED_PRE_TRACE_HASHES = {
     "workflows/coupled/campaign.py":
@@ -18,11 +21,10 @@ APPROVED_PRE_TRACE_HASHES = {
         "2bbe85c0d70c266d019b653a11866dcb4ed397c89a9125414562fed648c4c045",
 }
 
-# This module itself was added after the old run. Its contents are a verifier,
-# not an operator used by the integrator.
-ALLOWED_NEW_FILES = {"workflows/coupled/restart_compat.py"}
-
-
+# Complete 6e68cb3 numerical source inventory. Exclude this verifier's own
+# bytes to avoid a self-referential digest.
+VERIFIER = "workflows/coupled/restart_compat.py"
+TRACE_TARGET_DIGEST = "45db058e852bcce15dce1f5f562f1848817b71422a78acd54a1651da27453b46"
 
 
 def canonical_manifest_json(value):
@@ -33,9 +35,9 @@ def canonical_manifest_json(value):
     representation difference while retaining numeric values and all table
     SHA256s. Do not round floats, omit paths, or compare only selected fields.
     """
-    import json
     return json.dumps(value, sort_keys=True, separators=(",", ":"),
                       allow_nan=False)
+
 
 def verify_instrumentation_only_delta(old_hashes, current_hashes):
     """Return the audited diff, failing closed for unknown source differences."""
@@ -43,40 +45,19 @@ def verify_instrumentation_only_delta(old_hashes, current_hashes):
         raise ValueError("source SHA256 manifests must be dictionaries")
     old_keys, new_keys = set(old_hashes), set(current_hashes)
     added = new_keys - old_keys
-    removed = old_keys - new_keys
-    if removed or added - ALLOWED_NEW_FILES:
-        raise ValueError(
-            "restart source inventory changed outside approved trace bridge: "
-            f"added={sorted(added)} removed={sorted(removed)}"
-        )
-    changes = {
-        path: (old_hashes[path], current_hashes[path])
-        for path in old_keys & new_keys
-        if old_hashes[path] != current_hashes[path]
-    }
-    unknown = set(changes) - set(APPROVED_PRE_TRACE_HASHES)
+    if old_keys - new_keys or added != {VERIFIER}:
+        raise ValueError("restart source inventory changed outside approved trace bridge")
+    changes = {path for path in old_keys if old_hashes[path] != current_hashes[path]}
+    unknown = changes - set(APPROVED_PRE_TRACE_HASHES)
     if unknown:
-        raise ValueError(
-            "restart has non-instrumentation changes: " + ", ".join(sorted(unknown))
-        )
-    mismatched_baseline = sorted(
-        path for path in changes
-        if old_hashes[path] != APPROVED_PRE_TRACE_HASHES[path]
-    )
-    if mismatched_baseline:
-        raise ValueError(
-            "restart trace source hashes do not match the audited 2.25-day run: "
-            + ", ".join(mismatched_baseline)
-        )
-    # Even if an approved path happens to be unchanged, it must be from the
-    # same audited old version; otherwise a crafted mixed-version manifest
-    # might pass only because no diff was observed.
-    bad_known = sorted(
-        path for path, expected in APPROVED_PRE_TRACE_HASHES.items()
-        if old_hashes.get(path) != expected
-    )
-    if bad_known:
-        raise ValueError("restart uses unknown pre-trace sources: " + ", ".join(bad_known))
+        raise ValueError("restart has non-instrumentation changes: " + ", ".join(sorted(unknown)))
+    bad_old = [path for path, digest in APPROVED_PRE_TRACE_HASHES.items()
+               if old_hashes.get(path) != digest]
+    if bad_old:
+        raise ValueError("restart uses unknown pre-trace sources: " + ", ".join(sorted(bad_old)))
+    target = {path: digest for path, digest in current_hashes.items() if path != VERIFIER}
+    if hashlib.sha256(canonical_manifest_json(target).encode()).hexdigest() != TRACE_TARGET_DIGEST:
+        raise ValueError("restart target differs from the audited trace revision")
     return {
         "modified_instrumentation_files": sorted(changes),
         "added_verifier_files": sorted(added),

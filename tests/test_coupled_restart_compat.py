@@ -1,5 +1,6 @@
 """Audited restart bridge checks, including strict rejection of unknown source drift."""
 import importlib.util
+import json
 from pathlib import Path
 import pytest
 
@@ -9,24 +10,21 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
-def old_source():
-    return dict(module.APPROVED_PRE_TRACE_HASHES, **{"vfs/ocean/jmd95.py": "original"})
-
-
 def new_source():
-    return dict(module.APPROVED_PRE_TRACE_HASHES,
-                **{"vfs/ocean/jmd95.py": "original",
-                   "workflows/coupled/restart_compat.py": "added"})
+    fixture = Path(__file__).parent / "fixtures/coupled_restart_sources-6e68cb3.json"
+    return json.loads(fixture.read_text())
+
+
+def old_source():
+    old = {**new_source(), **module.APPROVED_PRE_TRACE_HASHES}
+    del old[module.VERIFIER]
+    return old
 
 
 def test_approved_instrumentation_only_transition():
     before, after = old_source(), new_source()
-    after["validation/sea_ice/snow.py"] = "updated tracing callback"
-    after["workflows/coupled/campaign.py"] = "new trace CLI"
     result = module.verify_instrumentation_only_delta(before, after)
-    assert set(result["modified_instrumentation_files"]) == {
-        "validation/sea_ice/snow.py", "workflows/coupled/campaign.py"
-    }
+    assert result["modified_instrumentation_files"] == sorted(module.APPROVED_PRE_TRACE_HASHES)
     assert result["added_verifier_files"] == ["workflows/coupled/restart_compat.py"]
 
 
@@ -41,6 +39,16 @@ def test_reject_unknown_old_trace_version():
     before, after = old_source(), new_source()
     before["workflows/coupled/energy_trace.py"] = "unknown old baseline"
     with pytest.raises(ValueError, match="unknown pre-trace sources"):
+        module.verify_instrumentation_only_delta(before, after)
+
+
+def test_reject_unknown_new_trace_and_identically_modified_physics():
+    before, after = old_source(), new_source()
+    with pytest.raises(ValueError, match="audited trace revision"):
+        module.verify_instrumentation_only_delta(before, {**after, "validation/sea_ice/snow.py": "changed physics"})
+    for manifest in (before, after):
+        manifest["vfs/ocean/jmd95.py"] = "same unaudited change"
+    with pytest.raises(ValueError, match="audited trace revision"):
         module.verify_instrumentation_only_delta(before, after)
 
 
