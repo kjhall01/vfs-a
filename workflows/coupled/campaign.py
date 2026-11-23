@@ -217,6 +217,8 @@ class CampaignConfig:
         mesoscale_dt = self.ocean_dt if self.mesoscale_dt is None else self.mesoscale_dt
         # Fail closed for unsupported, non-commensurate closure schedules.
         # Every closure interval completes before the next coupled checkpoint.
+        if self.physics_dt % mixing_dt or self.physics_dt % mesoscale_dt:
+            raise ValueError("mixing_dt and mesoscale_dt must divide physics_dt")
         tuple(ocean_events(self.physics_dt, self.ocean_dt, mixing_dt, mesoscale_dt))
         ale_dt = self.physics_dt if self.ale_dt is None else self.ale_dt
         if (type(ale_dt) is not int or ale_dt < self.physics_dt
