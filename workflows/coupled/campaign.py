@@ -553,7 +553,10 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     if trace is not None:
         trace.observe("post_exchange_ice_phase", adapter, evolved, receiver, water)
     ale_dt = config.physics_dt if config.ale_dt is None else config.ale_dt
-    if event_due(evolved.time_seconds, ale_dt):
+    # Preserve historical behavior on a truncated final interval when ALE
+    # remains at its default every-exchange cadence.
+    if (event_due(evolved.time_seconds, ale_dt)
+            or (config.ale_dt is None and dt != config.physics_dt)):
         water, r = ale_step(receiver, water, config)
         if trace is not None:
             trace.observe("ale_remap", adapter, evolved, receiver, water,
