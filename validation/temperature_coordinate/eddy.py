@@ -130,26 +130,27 @@ class _RediGradient:
         ratio = torch.where(
             ratio < 1, ratio * (1 - 64 * torch.finfo(ratio.dtype).eps), ratio
         )
-        scale = torch.ones_like(transfer)
+        # The horizontal terms contribute directly at their two endpoints.
+        # Preserve independent row funding and the exact sign tests.
+        one = torch.ones_like(transfer)
+        scale = torch.minimum(
+            torch.where((-1 / self.dc)[..., None] * transfer < 0, ratio[self.i], one),
+            torch.where((1 / self.dc)[..., None] * transfer < 0, ratio[self.j], one),
+        )
 
-        def fund(weight, allowance):
-            nonlocal scale
-            scale = torch.minimum(
-                scale,
-                torch.where(
-                    weight[..., None] * transfer < 0, allowance, torch.ones_like(scale)
-                ),
-            )
-
-        fund(-1 / self.dc, ratio[self.i])
-        fund(1 / self.dc, ratio[self.j])
+        # Batch the three vertical-stencil entries for each endpoint rather
+        # than evaluating six Python-level gather/minimum operations. Only
+        # temporary edge x level x 3 x field tensors are materialized, never
+        # a dense horizontal operator.
         flat = ratio.reshape(-1, ratio.shape[-1])
         for cells in (self.i, self.j):
-            for k in range(3):
-                fund(
-                    0.5 * self.relative * self.weights[cells, :, k],
-                    flat[self.ids[cells, :, k]],
-                )
+            weights = 0.5 * self.relative[..., None] * self.weights[cells]
+            allowances = flat[self.ids[cells]]
+            active = weights[..., None] * transfer[..., None, :] < 0
+            vertical_scale = torch.where(
+                active, allowances, torch.ones_like(allowances)
+            ).amin(dim=-2)
+            scale = torch.minimum(scale, vertical_scale)
         return scale
 
 
