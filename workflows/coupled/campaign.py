@@ -22,6 +22,7 @@ if str(ROOT) not in sys.path:
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
 from workflows.coupled.driver import exchange_step
+from workflows.coupled.schedule import ocean_events, event_due
 from workflows.coupled.ice_temperature import (
     ThermalIceReceiver,
     ThermalSnowOceanIce,
@@ -82,6 +83,9 @@ class CampaignConfig:
     atmosphere_dt: int = 240
     ocean_dt: int = 1200
     ocean_dynamics_integrator: str = "ssprk3"
+    mixing_dt: int | None = None  # None = every ocean dynamics step
+    mesoscale_dt: int | None = None  # None = every ocean dynamics step
+    ale_dt: int | None = None  # None = every physics exchange
     radiation_dt: int = 3600
     solar_constant: float = 1361.0
     obliquity_degrees: float = 23.44
@@ -209,6 +213,15 @@ class CampaignConfig:
             raise ValueError("physics_dt must divide radiation and output cadences")
         if self.physics_dt % self.atmosphere_dt or self.physics_dt % self.ocean_dt:
             raise ValueError("component timesteps must divide physics_dt")
+        mixing_dt = self.ocean_dt if self.mixing_dt is None else self.mixing_dt
+        mesoscale_dt = self.ocean_dt if self.mesoscale_dt is None else self.mesoscale_dt
+        # Fail closed for unsupported, non-commensurate closure schedules.
+        # Every closure interval completes before the next coupled checkpoint.
+        tuple(ocean_events(self.physics_dt, self.ocean_dt, mixing_dt, mesoscale_dt))
+        ale_dt = self.physics_dt if self.ale_dt is None else self.ale_dt
+        if (type(ale_dt) is not int or ale_dt < self.physics_dt
+                or ale_dt % self.physics_dt):
+            raise ValueError("ale_dt must be a positive multiple of physics_dt")
         return self
 
 
@@ -474,34 +487,50 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     external = 0.0
     ocean_report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     A = adapter.model.mesh.cell_area
-    for elapsed in range(0, dt, config.ocean_dt):
-        step_dt = min(config.ocean_dt, dt - elapsed)
+    mix_dt = config.ocean_dt if config.mixing_dt is None else config.mixing_dt
+    meso_dt = config.ocean_dt if config.mesoscale_dt is None else config.mesoscale_dt
+    for event in ocean_events(dt, config.ocean_dt, mix_dt, meso_dt):
+        step_dt = event.dynamics_dt
         ocean_callback = None
         if trace is not None and trace.ocean_stages:
             def ocean_callback(stage, intermediate, external_energy):
                 trace.observe(stage, adapter, evolved, receiver, intermediate,
                               external=float(external_energy / A.sum()),
                               details={"substep_seconds": step_dt})
+        # Preserve the historical within-step mixing placement when the
+        # mixing cadence equals ocean_dt. A slower mixing cadence deliberately
+        # uses operator splitting after the completed ocean/ice update.
+        inline_mixing = mix_dt == config.ocean_dt
         water, r = receiver.snow.step(
             water, step_dt, stage_callback=ocean_callback,
             dynamics_integrator=config.ocean_dynamics_integrator,
+            apply_mixing=inline_mixing,
         )
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
+        if event.mixing_dt is not None and not inline_mixing:
+            water = receiver.snow.mixing_step(
+                water, event.mixing_dt, stage_callback=ocean_callback
+            )
         if trace is not None and not trace.ocean_stages:
             trace.observe("ocean_ice_snow_dynamics", adapter, evolved, receiver, water,
-                          external=snow_external, details={"substep_seconds": step_dt})
-        callback = None
-        if trace is not None and trace.substeps:
-            def callback(stage, ocean, detail):
-                intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
-                trace.observe(stage, adapter, evolved, receiver, intermediate,
-                              details=detail)
-        water, r = mesoscale_step(receiver, water, step_dt, config, on_event=callback)
-        if trace is not None and not trace.substeps:
-            trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
-                          water, details={"substep_seconds": step_dt})
-        accumulate_ocean(ocean_report, r)
+                          external=snow_external,
+                          details={"substep_seconds": step_dt,
+                                   "mixing_elapsed_seconds": event.mixing_dt})
+        if event.mesoscale_dt is not None:
+            callback = None
+            if trace is not None and trace.substeps:
+                def callback(stage, ocean, detail):
+                    intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
+                    trace.observe(stage, adapter, evolved, receiver, intermediate,
+                                  details=detail)
+            water, r = mesoscale_step(
+                receiver, water, event.mesoscale_dt, config, on_event=callback
+            )
+            if trace is not None and not trace.substeps:
+                trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
+                              water, details={"substep_seconds": event.mesoscale_dt})
+            accumulate_ocean(ocean_report, r)
     evolved, water, x, ar, sr = exchange_step(
         adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
     )
@@ -521,12 +550,14 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     )
     if trace is not None:
         trace.observe("post_exchange_ice_phase", adapter, evolved, receiver, water)
-    water, r = ale_step(receiver, water, config)
-    if trace is not None:
-        trace.observe("ale_remap", adapter, evolved, receiver, water,
-                      details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
-                               "ale_changed_columns": r["ale_changed_columns"]})
-    accumulate_ocean(ocean_report, r)
+    ale_dt = config.physics_dt if config.ale_dt is None else config.ale_dt
+    if event_due(evolved.time_seconds, ale_dt):
+        water, r = ale_step(receiver, water, config)
+        if trace is not None:
+            trace.observe("ale_remap", adapter, evolved, receiver, water,
+                          details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
+                                   "ale_changed_columns": r["ale_changed_columns"]})
+        accumulate_ocean(ocean_report, r)
     return (
         evolved,
         water,
