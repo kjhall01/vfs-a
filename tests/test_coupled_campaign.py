@@ -65,6 +65,24 @@ def test_radiation_off_needs_only_bomex_namelist(source, config):
     assert adapter.radiation is None
 
 
+def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
+    # Full campaign path: ThermalSnowOceanIce must forward the selected
+    # integrator to the moving snow/ocean/ice dynamics, without rejecting it
+    # as an independent surface forcing option.
+    candidate = replace(config, ocean_dynamics_integrator="ssprk43")
+    assert candidate.validate() == candidate
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(candidate, source, Path("synthetic"))
+    with torch.no_grad():
+        final_air, final_sea, report = c.advance(
+            adapter, air, receiver, sea, candidate.physics_dt, candidate
+        )
+    assert final_air.time_seconds == candidate.physics_dt
+    receiver.snow.check(final_sea)
+    assert report["ale_steps"] == 1
+    assert torch.isfinite(final_sea.coupled.ocean.ocean.h).all()
+
+
 def test_output_schedule_and_nonleap_year():
     times = c.snapshot_times()
     assert len(times) == 408 and len(set(times)) == 408
