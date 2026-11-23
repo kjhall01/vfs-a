@@ -13,6 +13,10 @@ PRE_ENDPOINT_HASHES = {
     "workflows/pyam21/adapter.py":
         "0e477172300daa543c72ce49aed2d8e2d55c3652341931a7dde34c22806bc447",
 }
+# Replacing the historical trace verifier with its target-pinned version
+# changed only this verifier on #93. Both prior versions are identifiable.
+PINNED_TRACE_VERIFIER = "48547e17f1b7044153a8d971387d1951dd443c32b5afb69c576f9353b3b34241"
+
 # Digest of the complete fixed source manifest apart from this verifier itself.
 # Embedding the verifier's own SHA256 in this constant would be recursive.
 ENDPOINT_TARGET_DIGEST = "252b123027243310ce854c287bdef3042ad82b8a852b3490d64c5e549bb5ad85"
@@ -29,9 +33,10 @@ APPROVED_PRE_TRACE_HASHES = {
         "2bbe85c0d70c266d019b653a11866dcb4ed397c89a9125414562fed648c4c045",
 }
 
-# This module itself was added after the old run. Its contents are a verifier,
-# not an operator used by the integrator.
-ALLOWED_NEW_FILES = {"workflows/coupled/restart_compat.py"}
+# Complete 6e68cb3 numerical source inventory. Exclude this verifier's own
+# bytes to avoid a self-referential digest.
+VERIFIER = "workflows/coupled/restart_compat.py"
+TRACE_TARGET_DIGEST = "45db058e852bcce15dce1f5f562f1848817b71422a78acd54a1651da27453b46"
 
 
 def canonical_manifest_json(value):
@@ -52,31 +57,19 @@ def verify_instrumentation_only_delta(old_hashes, current_hashes):
         raise ValueError("source SHA256 manifests must be dictionaries")
     old_keys, new_keys = set(old_hashes), set(current_hashes)
     added = new_keys - old_keys
-    removed = old_keys - new_keys
-    if removed or added - ALLOWED_NEW_FILES:
-        raise ValueError(
-            "restart source inventory changed outside approved trace bridge: "
-            f"added={sorted(added)} removed={sorted(removed)}"
-        )
-    changes = {
-        path: (old_hashes[path], current_hashes[path])
-        for path in old_keys & new_keys
-        if old_hashes[path] != current_hashes[path]
-    }
-    unknown = set(changes) - set(APPROVED_PRE_TRACE_HASHES)
+    if old_keys - new_keys or added != {VERIFIER}:
+        raise ValueError("restart source inventory changed outside approved trace bridge")
+    changes = {path for path in old_keys if old_hashes[path] != current_hashes[path]}
+    unknown = changes - set(APPROVED_PRE_TRACE_HASHES)
     if unknown:
-        raise ValueError(
-            "restart has non-instrumentation changes: " + ", ".join(sorted(unknown))
-        )
-    # Even if an approved path happens to be unchanged, it must be from the
-    # same audited old version; otherwise a crafted mixed-version manifest
-    # might pass only because no diff was observed.
-    bad_known = sorted(
-        path for path, expected in APPROVED_PRE_TRACE_HASHES.items()
-        if old_hashes.get(path) != expected
-    )
-    if bad_known:
-        raise ValueError("restart uses unknown pre-trace sources: " + ", ".join(bad_known))
+        raise ValueError("restart has non-instrumentation changes: " + ", ".join(sorted(unknown)))
+    bad_old = [path for path, digest in APPROVED_PRE_TRACE_HASHES.items()
+               if old_hashes.get(path) != digest]
+    if bad_old:
+        raise ValueError("restart uses unknown pre-trace sources: " + ", ".join(sorted(bad_old)))
+    target = {path: digest for path, digest in current_hashes.items() if path != VERIFIER}
+    if hashlib.sha256(canonical_manifest_json(target).encode()).hexdigest() != TRACE_TARGET_DIGEST:
+        raise ValueError("restart target differs from the audited trace revision")
     return {
         "modified_instrumentation_files": sorted(changes),
         "added_verifier_files": sorted(added),
@@ -85,7 +78,7 @@ def verify_instrumentation_only_delta(old_hashes, current_hashes):
 
 def verify_compatible_source_delta(old_hashes, current_hashes):
     """Check the endpoint transition, optionally preceded by the trace bridge."""
-    verifier = "workflows/coupled/restart_compat.py"
+    verifier = VERIFIER
     if not isinstance(old_hashes, dict) or not isinstance(current_hashes, dict):
         raise ValueError("source SHA256 manifests must be dictionaries")
     if old_hashes == current_hashes:
@@ -100,6 +93,8 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     # Undo only the known source transition on paper. All other files must
     # then match the previous manifest, unless the old trace bridge checks out.
     previous = {**current_hashes, **PRE_ENDPOINT_HASHES}
+    if old_hashes.get(verifier) == PINNED_TRACE_VERIFIER:
+        previous[verifier] = PINNED_TRACE_VERIFIER
     trace = {} if previous == old_hashes else verify_instrumentation_only_delta(
         old_hashes, previous
     )
