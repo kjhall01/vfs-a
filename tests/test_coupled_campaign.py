@@ -83,6 +83,56 @@ def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
     assert torch.isfinite(final_sea.coupled.ocean.ocean.h).all()
 
 
+def test_noncommensurate_process_cadences_fail_closed(config):
+    for changes in (
+        dict(mixing_dt=59),
+        dict(mixing_dt=180),
+        dict(mesoscale_dt=61),
+        dict(mesoscale_dt=180),
+        dict(ale_dt=61),
+        dict(ale_dt=90),
+    ):
+        with pytest.raises(ValueError):
+            replace(config, **changes).validate()
+
+
+def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config):
+    # Both closures run half as often while retaining their full elapsed dt.
+    # Radiation and atmosphere--ocean transfer remain one atomic physics call.
+    scheduled = replace(
+        config,
+        physics_dt=120,
+        radiation_dt=120,
+        ocean_dt=60,
+        atmosphere_dt=15,
+        mixing_dt=120,
+        mesoscale_dt=120,
+        ale_dt=240,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(scheduled, source, Path("synthetic"))
+    with torch.no_grad():
+        air1, sea1, r1 = c.advance(
+            adapter, air, receiver, sea, scheduled.physics_dt, scheduled
+        )
+        air2, sea2, r2 = c.advance(
+            adapter, air1, receiver, sea1, scheduled.physics_dt, scheduled
+        )
+    receiver.snow.check(sea1)
+    receiver.snow.check(sea2)
+    assert air1.time_seconds == 120 and air2.time_seconds == 240
+    assert r1["gmredi_steps"] == r2["gmredi_steps"] == scheduled.eddy_substeps
+    assert r1["eddy_decay_steps"] == r2["eddy_decay_steps"] == 1
+    assert r1["ale_steps"] == 0
+    assert r2["ale_steps"] == 1
+    for report in (r1, r2):
+        assert all(
+            torch.isfinite(torch.tensor(report[key]))
+            for key in ("external", "upstream", "surface_residual", "air_residual")
+        )
+    assert (sea2.coupled.ocean.ocean.salt_h >= 0).all()
+
+
 def test_output_schedule_and_nonleap_year():
     times = c.snapshot_times()
     assert len(times) == 408 and len(set(times)) == 408
