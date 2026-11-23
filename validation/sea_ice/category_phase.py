@@ -108,8 +108,19 @@ class CategoryThermodynamics:
         rho = self.H.slab.parameters.density
         total = ice.area.sum(-1, keepdim=True)
         ratio = m / safe(old)
-        factor = torch.minimum(ratio, 1 / safe(total))
+        full_cover_factor = 1 / safe(total)
+        factor = torch.minimum(ratio, full_cover_factor)
         a_existing = ice.area * factor
+        # At full cover the two products can round to a sum above one.
+        # Represent that boundary by retaining the smaller footprint and
+        # assigning the remaining area to the larger, even for a trace category.
+        overfull = a_existing.sum(-1, keepdim=True) > 1
+        first, second = ice.area.split(1, dim=-1)
+        smaller = torch.minimum(first, second) * full_cover_factor
+        larger = 1 - smaller
+        full_areas = torch.cat((torch.where(first <= second, smaller, larger),
+                                torch.where(first <= second, larger, smaller)), -1)
+        a_existing = torch.where(overfull, full_areas, a_existing)
         v_existing = ice.volume * ratio
         new_fraction = torch.minimum(
             m / (rho * self.nucleation_thickness), torch.ones_like(m)
@@ -119,7 +130,9 @@ class CategoryThermodynamics:
         a = torch.where(old > 0, a_existing, a_new)
         v = torch.where(old > 0, v_existing, v_new)
         # Directional geometry derivatives along the declared phase path.
-        da_existing = torch.where(ratio < 1 / safe(total), ice.area / safe(old), 0.0)
+        da_existing = torch.where(
+            (ratio < full_cover_factor) & ~overfull, ice.area / safe(old), 0.0
+        )
         da_new = torch.cat(
             (
                 torch.where(

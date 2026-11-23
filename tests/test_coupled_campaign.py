@@ -541,3 +541,16 @@ def test_atmospheric_top_is_configurable(source, config):
     for bad in (-1.0, 0.0, 100000.0):
         with pytest.raises(ValueError):
             replace(config, atmosphere_top_pa=bad).validate()
+
+
+def test_fresh_full_depth_two_substep_preset():
+    path = Path(c.__file__).with_name("aquaplanet_full_depth_4096_gm2.yaml")
+    cfg = c.CampaignConfig(**yaml.safe_load(path.read_text())).validate()
+    assert (cfg.days, cfg.cells, cfg.atmosphere_levels, cfg.ocean_levels) == (30, 4096, 32, 60)
+    assert (cfg.atmosphere_top_pa, cfg.ocean_depth_m, cfg.top_layer_m) == (100.0, 5000.0, 10.0)
+    assert (cfg.physics_dt, cfg.atmosphere_dt, cfg.ocean_dt, cfg.radiation_dt) == (1200, 600, 600, 1200)
+    assert cfg.gm_energy_scheme == "funded_donor_parcel" and cfg.eddy_substeps == 2
+    assert cfg.mixing_substeps == 10 and cfg.gm_redi and cfg.redi_positive_transport
+    assert cfg.eddy_dissipation and cfg.backscatter and cfg.ale_remap
+    with pytest.raises(ValueError, match="gm_energy_scheme"):
+        replace(cfg, gm_energy_scheme="unknown").validate()

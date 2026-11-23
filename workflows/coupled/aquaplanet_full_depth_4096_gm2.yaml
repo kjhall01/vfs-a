@@ -1,0 +1,48 @@
+# Fresh 30-day full-depth seasonal aquaplanet. Use the saved 4,096-cell mesh.
+# Times are in seconds. The ocean runs two 300-second GM/Redi updates per 600-second ocean step.
+days: 30
+start_year: 2001
+cells: 4096
+atmosphere_levels: 32
+atmosphere_top_pa: 100.0  # 1 hPa; previous campaign default is 1000 Pa (10 hPa)
+ocean_levels: 60
+ocean_depth_m: 5000.0
+top_layer_m: 10.0
+lloyd_iterations: 10
+physics_dt: 1200
+atmosphere_dt: 600
+ocean_dt: 600
+radiation_dt: 1200
+solar_constant: 1361.0
+obliquity_degrees: 23.44
+eccentricity: 0.01671
+ice_temperature_K: 265.0
+mixing_length_m: 2.0
+mixing_substeps: 10
+# Existing research eddy closure; coefficients are explicit, not calibrated.
+gm_redi: true
+gm_length_m: 10000.0
+gm_efficiency: 0.1
+gm_kinetic_fraction: 0.5
+redi_diffusivity_m2_s: 100.0
+redi_positive_transport: true
+# Initial unresolved mesoscale energy, independent of resolved rest and TKE.
+eddy_initial_energy_J_kg: 0.1
+gm_energy_scheme: funded_donor_parcel
+eddy_substeps: 2
+eddy_dissipation: true
+eddy_decay_days: 30.0
+backscatter: true
+backscatter_viscosity_m2_s: 10000.0
+backscatter_days: 1.0
+backscatter_fraction: 0.25
+biharmonic_viscosity_m4_s: 10000000000000.0
+# Post-physics remap to stretched fractions of each column's current depth.
+ale_remap: true
+threads: 4
+# Regional Inductor kernels; --compile/--no-compile overrides this switch.
+compile: true
+device: cpu
+dtype: float64  # float32 is required for --device mps; CPU/CUDA also support it
+diagnostic_hours: 6
+restart_days: 1
