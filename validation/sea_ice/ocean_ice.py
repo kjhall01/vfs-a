@@ -433,8 +433,14 @@ class OceanIce:
         )
         return RidgingState(ocean, ice)
 
-    def dynamics_step(self, state, dt, **options):
-        """SSPRK3; fail on inadmissible stages, never silently clip or retry."""
+    def dynamics_step(self, state, dt, *, integrator="ssprk3", **options):
+        """Choose the explicit ocean–ice tableau without changing stage physics."""
+        if integrator == "ssprk43":
+            from explicit_rk import ssprk43_dynamics
+            return ssprk43_dynamics(self, state, dt, **options)
+        if integrator != "ssprk3":
+            raise ValueError("ocean–ice integrator must be ssprk3 or ssprk43")
+        # Preserve the historical three-stage path, including all arithmetic.
         r0, p0 = self.tendency(state, dt, **options)
         first = self.add(state, r0, dt)
         r1, p1 = self.tendency(first, dt, **options)
@@ -453,9 +459,10 @@ class OceanIce:
         return midpoint_drag(self, state, dt)
 
     def step(
-        self, state, dt, *, heat_flux=None, wind_velocity=None, air_temperature=None
+        self, state, dt, *, heat_flux=None, wind_velocity=None, air_temperature=None,
+        dynamics_integrator="ssprk3",
     ):
-        """Phase/drag half steps around SSPRK3 dynamics; external energy [J]."""
+        """Phase/drag half steps around selected SSP dynamics; external energy [J]."""
         from category_phase import CategoryThermodynamics
 
         if heat_flux is not None and air_temperature is not None:
@@ -473,7 +480,8 @@ class OceanIce:
         state, _ = phase.apply(state, 0.5 * dt, heat_flux=q0)
         state, _ = self.drag_step(state, 0.5 * dt)
         state, work = self.dynamics_step(
-            state, dt, wind_velocity=wind_velocity, drag=False
+            state, dt, wind_velocity=wind_velocity, drag=False,
+            integrator=dynamics_integrator,
         )
         if self.ocean.closure is not None:
             previous = state.ocean.ocean
