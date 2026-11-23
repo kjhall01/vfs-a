@@ -378,3 +378,36 @@ def test_mismatched_shared_water_record_rejected(model):
     out["exchange"] = replace(x, rain=x.rain + 0.1)
     with pytest.raises(ValueError, match="disagrees"):
         adapter.apply_result(air, 60, c, g, out, surf, mem, rad)
+
+
+def test_shared_integrated_flux_accepts_upstream_tile_roundoff():
+    """A valid rate comparison must survive integration and tile summation."""
+    from workflows.pyam21.energy import _check_shared_flux
+
+    dtype = torch.float64
+    eps = torch.finfo(dtype).eps
+    dt = 1200
+    # Opposite-sign tile rates almost cancel. The aggregate rate can differ
+    # from the tile sum within the 256-eps envelope allowed by column_call.
+    rate = torch.tensor([[2.0, -2.0, 0.0]], dtype=dtype)
+    recorded = (dt * rate).sum(-1)
+    aggregate = rate.sum(-1) + 64 * eps
+    actual = dt * aggregate
+    _check_shared_flux(actual, recorded, field="vapor", dt=dt, tile_rates=rate)
+
+    # The same checker must still reject a real disagreement in the flux.
+    with pytest.raises(ValueError, match=r"field=vapor cell=0.*absolute_error"):
+        _check_shared_flux(
+            actual + 1.0e-5, recorded, field="vapor", dt=dt, tile_rates=rate
+        )
+
+
+def test_shared_precipitation_record_keeps_strict_tolerance():
+    from workflows.pyam21.energy import _check_shared_flux
+
+    rain = torch.tensor([0.2, 0.0], dtype=torch.float64)
+    _check_shared_flux(rain, rain, field="rain", dt=1200)
+    with pytest.raises(ValueError, match=r"field=rain cell=0"):
+        _check_shared_flux(
+            rain + torch.tensor([1e-7, 0.0]), rain, field="rain", dt=1200
+        )
