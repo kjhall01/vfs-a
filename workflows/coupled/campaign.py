@@ -67,6 +67,7 @@ class CampaignConfig:
     start_year: int = 2001  # non-leap year on upstream Julian calendar
     cells: int = 256
     atmosphere_levels: int = 24
+    atmosphere_top_pa: float = 1000.0
     ocean_levels: int = 12
     ocean_depth_m: float = 1000.0
     top_layer_m: float = 20.0
@@ -143,6 +144,7 @@ class CampaignConfig:
         if type(self.lloyd_iterations) is not int or self.lloyd_iterations < 0:
             raise ValueError("lloyd_iterations must be a nonnegative integer")
         for key in (
+            "atmosphere_top_pa",
             "ocean_depth_m",
             "top_layer_m",
             "solar_constant",
@@ -175,7 +177,8 @@ class CampaignConfig:
         ):
             raise ValueError("backscatter requires ocean_dt*fraction <= timescale")
         if (
-            self.ocean_depth_m <= self.top_layer_m
+            not 0.0 < self.atmosphere_top_pa < 100000.0
+            or self.ocean_depth_m <= self.top_layer_m
             or not 0 < self.ice_temperature_K <= 273.15
         ):
             raise ValueError("invalid depth or ice temperature")
@@ -367,6 +370,7 @@ def build(
         source,
         cells=config.cells,
         levels=config.atmosphere_levels,
+        top_pressure_pa=config.atmosphere_top_pa,
         aquaplanet=True,
         radiation_data=radiation_data,
         radiation_step=config.radiation_dt,
