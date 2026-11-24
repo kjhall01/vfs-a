@@ -128,7 +128,7 @@ def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeyp
     the local correction; parent Gibbs still constructs its original traces.
     """
     from dataclasses import fields, is_dataclass
-    f=probe.front
+    from vfs.ocean.stratified import transport as f
     m, x, e=probe.q.p.case(kind,coast)
 
     def exact(a,b):
@@ -181,7 +181,7 @@ def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeyp
 
 
 def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
-    f=probe.front
+    from vfs.ocean.stratified import transport as f
     m,x,e=probe.q.p.case('front',False)
     calls=[]
     old=f.parent.bounded_transport
