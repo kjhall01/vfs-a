@@ -25,6 +25,50 @@ class CategoryPhaseReport:
     kinetic_to_tke: torch.Tensor  # J/cell, nonnegative
 
 
+class CategoryFootprint:
+    """Fixed category geometry for trial masses on one set of columns."""
+
+    def __init__(self, area, volume, mass, density, nucleation_thickness):
+        self.area = area
+        self.volume = volume
+        self.mass = mass
+        self.safe_mass = safe(mass)
+        self.density = density
+        self.nucleation_thickness = nucleation_thickness
+        self.cover_limit = 1 / safe(area.sum(-1, keepdim=True))
+        # At full cover use the complementary footprint for the larger category.
+        first, second = area.split(1, dim=-1)
+        smaller = torch.minimum(first, second) * self.cover_limit
+        larger = 1 - smaller
+        self.full_areas = torch.cat((torch.where(first <= second, smaller, larger),
+                                     torch.where(first <= second, larger, smaller)), -1)
+
+    def at_mass(self, m):
+        ratio = m / self.safe_mass
+        existing = self.area * torch.minimum(ratio, self.cover_limit)
+        overfull = existing.sum(-1, keepdim=True) > 1
+        existing = torch.where(overfull, self.full_areas, existing)
+        new_fraction = torch.minimum(
+            m / (self.density * self.nucleation_thickness), torch.ones_like(m)
+        )
+        zero = torch.zeros_like(m)
+        area = torch.where(self.mass > 0, existing, torch.cat((new_fraction, zero), -1))
+        volume = torch.where(self.mass > 0, self.volume * ratio,
+                             torch.cat((m / self.density, zero), -1))
+        return area, volume, ratio, overfull, new_fraction
+
+
+def bisect_phase_mass(upper, target, energy_at_mass):
+    """Bracket the frozen mass with the established 56 midpoint decisions."""
+    lower = torch.zeros_like(upper)
+    for _ in range(56):
+        mid = 0.5 * (lower + upper)
+        warm = energy_at_mass(mid) > target
+        lower = torch.where(warm, mid, lower)
+        upper = torch.where(warm, upper, mid)
+    return 0.5 * (lower + upper)
+
+
 class CategoryThermodynamics:
     """Fresh zero-layer ice, empirical CT liquidus, two-category geometry.
 
@@ -54,27 +98,36 @@ class CategoryThermodynamics:
         """
         H = self.H
         s = initial.ocean.ocean
+        quadrature = H.model.energy.base._quadrature(top)
+        value = self._column_energy(s.column, H.coefficient(initial), quadrature,
+                                    top, ct, salinity, eta, ice.volume, ice.thickness())
+        return torch.where(H.model.energy.mass_area(s) > 0, value, 0.0)
+
+    def _column_energy(self, column, coefficient, quadrature, top, ct, salinity,
+                       eta, volume, thickness):
+        """Thermal and potential energy per area for the supplied columns."""
+        H = self.H
         p = H.slab.parameters
-        node, weight = H.model.energy.base._quadrature(top)
+        node, weight = quadrature
         z = eta - 0.5 * top
         psi, *_ = H.model.energy.base.parcel_potential(
             ct[..., None],
             salinity[..., None],
             z[..., None] + top[..., None] * (node - 0.5),
         )
-        rho = s.column.rho0
-        g = s.column.gravity
-        V = ice.volume.sum(-1, keepdim=True)
+        rho = column.rho0
+        g = column.gravity
+        V = volume.sum(-1, keepdim=True)
         m = p.density * V
         value = (
             rho * top * (H.model.config.cp * ct + (psi * weight).sum(-1))
             + 0.5 * rho * g * eta.square()
         )
         value = value - p.latent_heat * m + g * (m * eta + m.square() / (2 * p.density))
-        value = value + H.coefficient(initial) * (
-            (ice.volume * ice.thickness()).sum(-1, keepdim=True) - V.square()
+        value = value + coefficient * (
+            (volume * thickness).sum(-1, keepdim=True) - V.square()
         )
-        return torch.where(H.model.energy.mass_area(s) > 0, value, 0.0)
+        return value
 
     def thermal_energy(self, state):
         s = state.ocean.ocean
@@ -106,32 +159,11 @@ class CategoryThermodynamics:
         old = self.H.mass(initial)
         ice = initial.ice
         rho = self.H.slab.parameters.density
-        total = ice.area.sum(-1, keepdim=True)
-        ratio = m / safe(old)
-        full_cover_factor = 1 / safe(total)
-        factor = torch.minimum(ratio, full_cover_factor)
-        a_existing = ice.area * factor
-        # At full cover the two products can round to a sum above one.
-        # Represent that boundary by retaining the smaller footprint and
-        # assigning the remaining area to the larger, even for a trace category.
-        overfull = a_existing.sum(-1, keepdim=True) > 1
-        first, second = ice.area.split(1, dim=-1)
-        smaller = torch.minimum(first, second) * full_cover_factor
-        larger = 1 - smaller
-        full_areas = torch.cat((torch.where(first <= second, smaller, larger),
-                                torch.where(first <= second, larger, smaller)), -1)
-        a_existing = torch.where(overfull, full_areas, a_existing)
-        v_existing = ice.volume * ratio
-        new_fraction = torch.minimum(
-            m / (rho * self.nucleation_thickness), torch.ones_like(m)
-        )
-        a_new = torch.cat((new_fraction, torch.zeros_like(m)), -1)
-        v_new = torch.cat((m / rho, torch.zeros_like(m)), -1)
-        a = torch.where(old > 0, a_existing, a_new)
-        v = torch.where(old > 0, v_existing, v_new)
+        footprint = CategoryFootprint(ice.area, ice.volume, old, rho, self.nucleation_thickness)
+        a, v, ratio, overfull, new_fraction = footprint.at_mass(m)
         # Directional geometry derivatives along the declared phase path.
         da_existing = torch.where(
-            (ratio < full_cover_factor) & ~overfull, ice.area / safe(old), 0.0
+            (ratio < footprint.cover_limit) & ~overfull, ice.area / safe(old), 0.0
         )
         da_new = torch.cat(
             (
@@ -236,6 +268,10 @@ class CategoryThermodynamics:
         residual = Mi1 * new_ui + Mo1 * new_uo - Mi0 * ui - Mo0 * uo
         return out, cells[:, 0], residual
 
+    def _bisect_mass(self, initial, frozen, upper, target):
+        mass = bisect_phase_mass(upper, target, lambda m: self.root_energy(initial, m))
+        return torch.where(frozen, mass, torch.zeros_like(mass))
+
     def apply(self, initial, dt, *, heat_flux):
         self.coupled.check(initial)
         if not math.isfinite(dt) or dt <= 0:
@@ -271,14 +307,8 @@ class CategoryThermodynamics:
         )
         if (frozen & (target < self.root_energy(initial, upper))).any():
             raise ValueError("cooling exhausts liquid/EOS bracket")
-        lower = zero
         with torch.no_grad():
-            for _ in range(56):
-                mid = 0.5 * (lower + upper)
-                warm = self.root_energy(initial, mid) > target
-                lower = torch.where(warm, mid, lower)
-                upper = torch.where(warm, upper, mid)
-        m = torch.where(frozen, 0.5 * (lower + upper), zero).detach()
+            m = self._bisect_mass(initial, frozen, upper, target)
         for _ in range(3):
             state = self.phase_state(initial, m)
             derivative = self.derivative(initial, state, m)

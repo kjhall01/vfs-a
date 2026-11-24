@@ -131,6 +131,34 @@ def test_phase_root_includes_cold_content(model, heat):
         assert (end.coupled.ice.volume == 0).all() and (end.cold_content == 0).all()
 
 
+@pytest.mark.parametrize("active", ["none", "mixed", "all"])
+def test_packed_bisection_matches_full_column_brackets(model, active):
+    receiver, sea = thermal_case(model)
+    rows = torch.arange(model.mesh.nCells)[:, None]
+    # Alternate open water and existing ice. The mixed case includes both
+    # new ice and snow-covered ice, with unevenly spaced active columns.
+    old = sea.coupled.ice
+    covered = rows % 2 == 0
+    ice = replace(old, area=old.area * covered, volume=old.volume * covered)
+    rho = receiver.snow.hamiltonian.slab.parameters.density
+    sea = replace(sea, coupled=replace(sea.coupled, ice=ice),
+                  cold_content=sea.cold_content * covered, snow_mass=0.1 * rho * ice.volume)
+    phase = ThermalPhase(receiver.snow, sea)
+    initial = sea.coupled
+    old_mass = phase.H.mass(initial)
+    desired = torch.where(rows % 4 == 0, old_mass * 0.95, old_mass + 25.0)
+    upper = torch.full_like(desired, 2000.0)
+    target = phase.root_energy(initial, desired)
+    melt_energy = phase.thermal_energy(phase.phase_state(initial, torch.zeros_like(desired)))
+    frozen = {"none": rows < 0, "mixed": rows % 3 != 0, "all": rows >= 0}[active]
+    target = torch.where(frozen, target, melt_energy + 1.0)
+    assert torch.equal(target < melt_energy, frozen)
+    with torch.no_grad():
+        packed = phase._bisect_mass(initial, frozen, upper, target)
+        full = super(ThermalPhase, phase)._bisect_mass(initial, frozen, upper, target)
+    assert torch.equal(packed, full)
+
+
 def test_phase_analytic_derivative(model):
     receiver, sea = thermal_case(model)
     phase = ThermalPhase(receiver.snow, sea)
