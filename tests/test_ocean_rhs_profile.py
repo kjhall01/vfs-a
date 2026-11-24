@@ -115,7 +115,7 @@ def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatc
     ridge = coupled.ridge
     core = coupled.ocean.dynamics
     original_fields = core.fields
-    original_snow = snow._check_snow_stores
+    original_snow_tendency = snow.tendency
     original_ridge = ridge.tendency
     calls = []
 
@@ -141,9 +141,9 @@ def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatc
         else:
             assert a == b
 
-    def legacy_snow(state):
-        coupled.check(state.coupled)
-        return original_snow(state)
+    def legacy_snow_tendency(state, dt, **options):
+        snow.check(state)
+        return original_snow_tendency(state, dt, **options)
 
     def legacy_ridge(state, *, _validated=False):
         return original_ridge(state, _validated=False)
@@ -151,7 +151,7 @@ def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatc
     with torch.no_grad():
         with monkeypatch.context() as p:
             p.setattr(core, "fields", counted)
-            p.setattr(snow, "_check_snow_stores", legacy_snow)
+            p.setattr(snow, "tendency", legacy_snow_tendency)
             p.setattr(ridge, "tendency", legacy_ridge)
             old_air, old_sea, old_report = c.advance(
                 adapter, air, receiver, sea, config.physics_dt, config
