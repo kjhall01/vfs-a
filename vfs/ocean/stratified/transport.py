@@ -129,6 +129,8 @@ def evaluate(model, state, dt, energy, *, physical=None):
     del baseline  # original owns it until its final fields have been consumed
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
     g = stage.gradient
+    # Parent already computed the exact antidiffusive flux for this stage.
+    anti = stage.transport_scratch["anti"]
     # The shared stage has served the parent and local target. Its unused
     # dynamic gradients and face thermodynamics need not survive this stage.
     del stage, eta, salt, face
@@ -149,7 +151,6 @@ def evaluate(model, state, dt, energy, *, physical=None):
     change = torch.cat([active_change, target_change[:, 2:]], -1)
     beta_salt = original.transport.beta[:, 1]+fraction*(target_beta[:, 1]-original.transport.beta[:, 1])
     beta = torch.cat([target_beta[:, :1], beta_salt[:, None], target_beta[:, 2:]], -1)
-    anti = original.transport.high_integrated_flux-low.donor_integrated_flux
     original_force = original.force_correction
     original_face_work = original.face_work
     gibbs_identity = original.gibbs_identity
