@@ -1,5 +1,13 @@
 # Current package documentation
 
+The conservative PyAM21 adapter now funds exact-zero vapor from local cloud
+water, with a nominal `1e-12 kg/kg` target and the original native energy target.
+The [correction and checked restart instructions](../workflows/coupled/VAPOR_CORRECTION.md)
+cover the source transition from main dcda5cd. Installed-wheel focused checks:
+116 passed; unchanged portable frozen comparisons: 142/93. Correction counts
+and transferred mass are explicit campaign diagnostics. Private checkpoint
+data and diagnostics are excluded from the repository.
+
 The [coupled performance baseline and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) covers the integrated ocean and atmospheric optimizations, optional timesteps, profiler and measured CPU timings.
 
 

@@ -19,6 +19,7 @@ from workflows.pyam21.energy import (
     transfer_energy,
 )
 from workflows.pyam21.mapping import average, species_increment, species_endpoint
+from workflows.pyam21.vapor import VAPOR_EPSILON, restore_positive_vapor
 from vfs import (
     MoistAtmosphere,
     VoronoiMesh,
@@ -122,6 +123,103 @@ def same_tree(a, b):
             same_tree(a[k], b[k])
     else:
         assert a == b
+
+
+@pytest.mark.parametrize("dtype", [torch.float64, torch.float32])
+@pytest.mark.parametrize("liquid,ice", [(1e-4, 0), (0, 1e-4), (3e-5, 7e-5)])
+def test_zero_vapor_is_funded_by_local_condensate(dtype, liquid, ice):
+    from pyam21.constants import HLV, HLF
+    T = torch.tensor([[180., 280.]], dtype=dtype)
+    q = torch.tensor([[[0., liquid, ice, .5], [1e-30, 0., 0., 0.]]], dtype=dtype)
+    out = dict(tdt=torch.zeros_like(T), rdt=torch.zeros_like(q))
+    before = copy_tree(dict(T=T, q=q, out=out))
+    new_T, new_q, corrected, ledger = restore_positive_vapor(T, q, out, 1200)
+    same_tree(dict(T=T, q=q, out=out), before)
+    assert new_q[0, 0, 0] > 0
+    assert torch.equal(new_q[0, 1], q[0, 1])  # even tiny positive vapor is untouched
+    assert torch.equal(new_T[:, 1], T[:, 1])
+    assert (new_q[..., 1:3] >= 0).all()
+    transferred = q[0, 0, 1:3] - new_q[0, 0, 1:3]
+    assert new_q[0, 0, 0] == transferred.sum()
+    eps = torch.finfo(dtype).eps
+    torch.testing.assert_close(new_q[..., :3].sum(-1), q[..., :3].sum(-1),
+                               rtol=4 * eps, atol=0)
+    # Independent AM2 latent-energy check using the ACTUAL stored fields.
+    d = new_q - q
+    residual = CP_AIR * (new_T - T) + HLV * d[..., 0] - HLF * d[..., 2]
+    assert (residual.abs() <= 2 * eps * CP_AIR * T).all()
+    torch.testing.assert_close(ledger["am2_energy_residual"], residual[:, 0], rtol=0, atol=0)
+    torch.testing.assert_close(T + 1200 * corrected["tdt"], new_T, rtol=2 * eps, atol=0)
+    torch.testing.assert_close(q + 1200 * corrected["rdt"], new_q, rtol=4 * eps, atol=0)
+    assert corrected["endpoint_temperature"] is new_T
+    assert corrected["endpoint_tracers"] is new_q
+
+
+def test_positive_vapor_is_an_exact_noop_and_unfunded_zero_rejects():
+    T = torch.full((1, 2), 250., dtype=torch.float64)
+    q = torch.zeros(1, 2, 4, dtype=T.dtype)
+    q[..., 0] = 1e-30
+    out = dict(tdt=torch.zeros_like(T), rdt=torch.zeros_like(q))
+    new_T, new_q, corrected, report = restore_positive_vapor(T, q, out, 60)
+    assert new_T is T and new_q is q and corrected is out and report is None
+    q[0, 0, 0] = 0
+    with pytest.raises(ValueError, match="lacks local condensate; cell=0 level=0"):
+        restore_positive_vapor(T, q, out, 60)
+
+
+@pytest.mark.parametrize("undeclared_heat", [0., 2.])
+def test_zero_vapor_correction_preserves_original_native_energy_target(model, undeclared_heat):
+    from pyam21.constants import HLS
+    adapter, state = initial(model)
+    c, geom = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out, dt = empty(c), 1200
+    T, q = c["T"].clone(), c["tracers"].clone()
+    # Closed vapor -> ice deposition exhausts exactly one top layer.
+    removed = q[0, 0, 0].clone()
+    q[0, 0, 0] = 0
+    q[0, 0, 2] += removed
+    T[0, 0] += HLS * removed / CP_AIR + undeclared_heat
+    out.update(endpoint_temperature=T, endpoint_tracers=q,
+               tdt=(T - c["T"]) / dt, rdt=(q - c["tracers"]) / dt)
+    original = copy_tree(out)
+    budget = exchanges(adapter, state, dt, c, geom, out)
+    with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
+        end, report = apply_output(adapter, state, out, dt)
+    same_tree(out, original)
+    correction = report.vapor_correction
+    assert correction["indices"].tolist() == [[0, 0]]
+    assert abs(float(correction["vapor_added"][0]) / VAPOR_EPSILON - 1) < 1e-8
+    assert correction["liquid_removed"][0] == 0
+    assert correction["ice_removed"][0] == correction["vapor_added"][0]
+    assert correction["temperature_change"][0] < 0
+    assert (model.physical_fields(end.atmosphere)["vapor"] > 0).all()
+    assert report.water_flux_residual.abs().max() < 1e-12
+    assert report.dry_air_residual.abs().max() < 1e-10
+    assert report.water_mapping_residual.abs().max() < 1e-12
+    torch.testing.assert_close(report.energy_transfer["target_layer_increment"], budget["target"],
+                               rtol=0, atol=0)
+    torch.testing.assert_close(report.energy_changes["am2_energy_residual"], budget["am2_residual"],
+                               rtol=0, atol=0)
+    energy_close(adapter, state, end, report)
+    if undeclared_heat:
+        assert report.energy_changes["am2_energy_residual"][0] > 100
+    corrected = report.column_result
+    eps = torch.finfo(T.dtype).eps
+    torch.testing.assert_close(c["T"] + dt * corrected["tdt"], corrected["endpoint_temperature"],
+                               rtol=128 * eps, atol=0)
+    torch.testing.assert_close(c["tracers"] + dt * corrected["rdt"], corrected["endpoint_tracers"],
+                               rtol=0, atol=128 * eps * q[..., :3].abs().max())
+    # New corrections remain ordinary explicit state across pack/unpack.
+    replay = adapter.unpack(adapter.pack(end))
+    same_tree(adapter.pack(end), adapter.pack(replay))
+    # An actual negative endpoint or a mismatched report still rejects first.
+    out["endpoint_tracers"][0, 0, 0] = -1e-8
+    out["rdt"][0, 0, 0] = (-1e-8 - c["tracers"][0, 0, 0]) / dt
+    with pytest.raises(ValueError, match="inadmissible finite column update"):
+        apply_output(adapter, state, out, dt)
+    out["rdt"][0, 0, 0] = 0
+    with pytest.raises(ValueError, match="endpoint and tendencies disagree"):
+        apply_output(adapter, state, out, dt)
 
 
 def test_readout_preserves_water_and_full_enthalpy(model):
@@ -841,6 +939,10 @@ def test_inadmissible_column_detail_identifies_field_and_location_without_clippi
     detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
     assert "field=vapor_mass_fraction cell=1 level=0" in detail
     assert "value=-0.0001" in detail
+    qbad[1, 0, 0] = 0
+    qbad[1, 0, 2] = -1e-4
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol, allow_zero_vapor=True)
+    assert "field=ice_mass_fraction cell=1 level=0" in detail
     qbad = q.clone()
     qbad[2, 1, 3] = 1.01
     detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)

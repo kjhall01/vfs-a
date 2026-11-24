@@ -23,5 +23,8 @@ Read `handoff/index.md` and `docs/PASS4_RESULTS.md` (and pass-1 history) first.
 - Do not publish a repository/package or choose a license without user direction.
 
 - The new MoistAtmosphere facade requires positive vapor, matching the frozen
-  moist kernel. Do not imply exact-zero-water dry equivalence or add a floor.
+  moist kernel. Do not imply exact-zero-water dry equivalence or add a core floor.
+  The PyAM21 workflow separately funds exact-zero vapor from local condensate
+  with an explicit ledger and the original native energy target; see
+  workflows/coupled/VAPOR_CORRECTION.md. Keep that correction at the adapter boundary.
 - Preserve the documented interface/edge staggering and tensor-only boundary.

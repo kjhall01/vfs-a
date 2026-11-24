@@ -39,5 +39,6 @@ class PhysicsReport:
     edge_impulse: torch.Tensor  # [edge,level], kg m/s, work-adjoint physics impulse
     carrier_impulse: torch.Tensor  # explicit surface-water impulse; legacy: co-moving
     momentum_residual: torch.Tensor
-    column_result: dict  # exact outputs of the staged PyAM21 call
+    column_result: dict  # checked outputs, including any recorded vapor correction
     energy_transfer: dict | None = None  # layer constraints and nonlinear solve report
+    vapor_correction: dict | None = None  # sparse phase-transfer ledger and raw operands

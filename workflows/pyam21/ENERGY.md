@@ -96,6 +96,37 @@ the declared hybrid-column convention, not a resolved vertical mass-source remap
 
 ## Solve the native enthalpy constraints
 
+### Exact-zero vapor at the physics boundary
+
+Conservative mode first checks the unmodified PyAM21 endpoint against its
+tendencies and validates the temperature, condensates and cloud fraction.
+Exactly zero vapor is then regularized using the same layer's positive cloud
+liquid and ice. Negative vapor remains an error. Every positive vapor value,
+including values below the nominal epsilon, remains unchanged.
+
+The requested transfer is `max(1e-12, 8*finfo(dtype).eps*available_condensate)`
+in kg/kg. The second term makes the withdrawal representable in float32.
+Insufficient local condensate rejects the interval. Liquid and ice are reduced
+in proportion to their available stores; the vapor addition equals their actual
+stored decreases. Initial cooling uses AM2's convention,
+`CP_AIR*dT = -HLV*dqv - HLF*ice_removed`. Both the explicit endpoint and reported
+tendencies are updated, without changing the caller's tensors.
+
+The native layer energy target is still computed from the **original** PyAM21
+outputs. Thus the existing CP entropy solve pays for the changed composition
+using VFS's mixture enthalpy while preserving every upstream energy residual.
+The epsilon operation adds no boundary water, energy or momentum. Its small
+constant-cp cooling roundoff is recorded, rather than added to the native target.
+`PhysicsReport.vapor_correction` stores affected indices, the phase transfers,
+temperature changes, water/AM2 energy residuals, and the original endpoint and
+tendency rows. `column_result` contains the corrected, mutually consistent
+outputs. Legacy mode retains its previous rejection of zero vapor.
+
+This correction establishes endpoint admissibility. It does not establish
+microphysics timestep convergence or support genuinely water-free moist states.
+
+### Native solve
+
 VFS's hydrostatic full Hamiltonian, including its fixed-pressure lid, has layer
 ownership `H_k = dp_k/g * (mean_Gauss(h) + KE_native,k + phi_s)`.
 After water, pressure and momentum have been updated, their contributions are

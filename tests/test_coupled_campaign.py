@@ -448,6 +448,33 @@ def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, p
         assert not legacy_audit.exists()
 
 
+def test_cli_resumes_audited_zero_vapor_transition(source, config, tmp_path):
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(config)))
+    args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
+    initial, resumed = tmp_path / "initial", tmp_path / "resumed"
+    prior_hashes = json.loads((Path(__file__).parent /
+        "fixtures/coupled_vapor_sources-dcda5cd.json").read_text())
+    with patch.object(c, "source_hashes", return_value=prior_hashes):
+        assert c.main(args + ["--output", str(initial), "--stop-after-days", str(60 / c.DAY)]) == 0
+    restart = initial / "restarts/restart_00000060.pt"
+    old = torch.load(restart, weights_only=True)
+    for key in c.VAPOR_SUMS + c.VAPOR_PEAKS:
+        old["ledger"].pop(key)  # historical checkpoints lack these counters
+    torch.save(old, restart)
+    manifest = initial / "manifest.json"
+    assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
+                         "--resume", str(restart), "--resume-compatible-manifest", str(manifest)]) == 0
+    audit = json.loads((resumed / "compatible_resume_audit.json").read_text())
+    status = json.loads((resumed / "status.json").read_text())
+    assert audit["numerical_change"] == "funded_zero_vapor_v1"
+    assert audit["prior_fingerprint"] == old["fingerprint"]
+    assert audit["new_fingerprint"] != audit["prior_fingerprint"]
+    assert status["latest"]["seconds"] == 120
+    for key in c.VAPOR_SUMS + c.VAPOR_PEAKS:
+        assert status["latest"][key] == 0
+
+
 def test_saved_mesh_loading_and_fingerprint(source, config, tmp_path):
     import numpy as np
     from vfs.geometry.mesh.grid import _fibonacci_xyz
