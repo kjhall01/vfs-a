@@ -168,9 +168,18 @@ class TKEClosure:
                 # diffusion response at a uniform state).
                 tracer = state.tracer_h
                 if tracer is not None and tracer.shape[-1] > 0:
-                    tracer = torch.stack([tracer[..., j]+divergence(coefficient*
-                        ((tracer[..., j]/h)[:, 1:]-(tracer[..., j]/h)[:, :-1]))
-                        for j in range(tracer.shape[-1])], -1)
+                    # Advance all passive tracers together. The three-point
+                    # layer divergence is identical for every trailing field;
+                    # avoid a Python loop and one tensor allocation per tracer.
+                    concentration = tracer / h[..., None]
+                    tracer_flux = coefficient[..., None] * (
+                        concentration[:, 1:, :] - concentration[:, :-1, :]
+                    )
+                    tracer_zero = torch.zeros_like(tracer_flux[:, :1, :])
+                    tracer = tracer + (
+                        torch.cat((tracer_flux, tracer_zero), dim=1)
+                        - torch.cat((tracer_zero, tracer_flux), dim=1)
+                    )
                 updated = replace(state, salt_h=salt_h,
                     entropy_h=torch.where(nodes, state.entropy_h+h*(eta-eta0), state.entropy_h), tracer_h=tracer)
                 after = ocean.check_state(updated)

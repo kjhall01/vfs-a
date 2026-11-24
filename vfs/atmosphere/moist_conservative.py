@@ -178,13 +178,10 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         transport = (
             self._transport_primitives(state) if primitives is None else primitives
         )
-        mesh = state.mesh
-        # Both entropy access paths divide by CP mass. Keep their
-        # existing evaluations: do not replace one with the other or cache them.
-        u, specific_entropy = state.u_e, state.specific_scalar()
-        dp, dp_edge = transport["dp"], transport["dp_e"]
-        mu, omega = transport["mu"], transport["omega"]
-        # mu (C,I) and its interface-to-layer average omega (C,L): Pa/s.
+        gradients = self.mixture_gradients(state, water)
+        momentum = self._momentum_terms(state, water, transport, gradients, combine=combine)
+        specific_entropy = state.specific_scalar()
+        omega = transport["omega"]
         horizontal_entropy = self.centered_scalar_transport(
             state,
             state.u_e,
@@ -193,13 +190,55 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
             dp_e=transport["dp_e"],
             mass_flux=transport["mass_flux"],
         )
-        entropy_gradient, pressure_gradient, water_gradient = self.mixture_gradients(
-            state, water
+        water_tendencies = []
+        dm = interface_mass(transport["dp"])
+        for a in range(3):
+            q = water[..., a] / dm
+            horizontal_species = self.centered_scalar_transport(
+                state,
+                state.u_e,
+                q,
+                transport["dp"],
+                dp_e=transport["dp_e"],
+                mass_flux=transport["mass_flux"],
+            )
+            flux = omega * 0.5 * (q[:, :-1] + q[:, 1:])
+            water_tendencies.append(
+                horizontal_species
+                + torch.cat(
+                    [-flux[:, :1], flux[:, :-1] - flux[:, 1:], flux[:, -1:]], -1
+                )
+            )
+
+        # 7. Finish entropy divergence (closed top/bottom fluxes), then continuity.
+        # The transported scalar is entropy throughout this assembly.
+        flux = omega * 0.5 * (specific_entropy[:, :-1] + specific_entropy[:, 1:])
+        vertical_scalar = torch.cat(
+            [-flux[:, :1], flux[:, :-1] - flux[:, 1:], flux[:, -1:]], dim=-1
         )
+        entropy_terms = {
+            "horizontal": horizontal_entropy,
+            "vertical": vertical_scalar,
+            "coord_work": torch.zeros_like(specific_entropy),
+            "advective": horizontal_entropy + vertical_scalar,
+            "total": horizontal_entropy + vertical_scalar,
+        }
+        return {
+            "u_e": momentum,
+            "entropy_content": entropy_terms,
+            "water_content": {"total": torch.stack(water_tendencies, -1)},
+            "ps": self.ps_tendency_terms(state, primitives=transport),
+        }
+
+    def _momentum_terms(self, state, water, transport, gradients, *, combine):
+        """Centered momentum assembly shared by diagnostic RHS and bounded stages."""
+        mesh = state.mesh
+        u, specific_entropy = state.u_e, state.specific_scalar()
+        dp, dp_edge, mu = transport["dp"], transport["dp_e"], transport["mu"]
+        entropy_gradient, pressure_gradient, water_gradient = gradients
         edge_area = mesh.dc_edge[:, None] * mesh.dv_edge[:, None]
 
         def divergence_transpose(covector):
-            # Euclidean transpose; cell areas belong inside the gradient.
             return -edge_area * mesh.grad(covector / mesh.cell_area[:, None])
 
         # 2. Transpose centered horizontal entropy transport against dE/dS.
@@ -236,9 +275,8 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
         )
 
         # 3. Each water fraction q (C,I), kg/kg, uses the same CP transport.
-        # Its transpose adds to pressure force; its divergence gives Pa/s.
+        # Its transpose adds to the pressure force.
         # Dry air is implicit, so the chemical derivative replaces dry by water.
-        water_tendencies = []
         dm = interface_mass(dp)
         for a in range(3):
             q = water[..., a] / dm
@@ -270,22 +308,6 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
             pressure_covector -= dp_edge * (
                 species_horizontal_adjoint + divergence_transpose(species_grad_div)
             )
-            horizontal_species = self.centered_scalar_transport(
-                state,
-                state.u_e,
-                q,
-                transport["dp"],
-                dp_e=transport["dp_e"],
-                mass_flux=transport["mass_flux"],
-            )
-            flux = omega * 0.5 * (q[:, :-1] + q[:, 1:])
-            water_tendencies.append(
-                horizontal_species
-                + torch.cat(
-                    [-flux[:, :1], flux[:, :-1] - flux[:, 1:], flux[:, -1:]], -1
-                )
-            )
-
         if mesh.rotation_scheme == "compatible":
             metric_diagonal = edge_area * dp_edge / self.gravity
             rotation_covector = metric_diagonal * mesh.compatible_rotation(
@@ -364,26 +386,7 @@ class _MoistKernel(DryHydrostaticConservativeDynamics):
             momentum["total"] = sum(
                 momentum[name] for name in ["pgf", "rotation", "vertical", "bernoulli"]
             )
-
-        # 7. Finish entropy divergence (closed top/bottom fluxes), then continuity.
-        # The transported scalar is entropy throughout this assembly.
-        flux = omega * 0.5 * (specific_entropy[:, :-1] + specific_entropy[:, 1:])
-        vertical_scalar = torch.cat(
-            [-flux[:, :1], flux[:, :-1] - flux[:, 1:], flux[:, -1:]], dim=-1
-        )
-        entropy_terms = {
-            "horizontal": horizontal_entropy,
-            "vertical": vertical_scalar,
-            "coord_work": torch.zeros_like(specific_entropy),
-            "advective": horizontal_entropy + vertical_scalar,
-            "total": horizontal_entropy + vertical_scalar,
-        }
-        return {
-            "u_e": momentum,
-            "entropy_content": entropy_terms,
-            "water_content": {"total": torch.stack(water_tendencies, -1)},
-            "ps": self.ps_tendency_terms(state, primitives=transport),
-        }
+        return momentum
 
 
 class MoistConservativeDynamics(torch.nn.Module):

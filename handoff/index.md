@@ -1,5 +1,8 @@
 # Current package documentation
 
+The [coupled performance baseline and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) covers the integrated ocean and atmospheric optimizations, optional timesteps, profiler and measured CPU timings.
+
+
 The [fresh two-substep coupled campaign](../workflows/coupled/FULL_DEPTH_4096.md#fresh-30-day-run-with-two-gmredi-substeps) runs the 4,096-cell, full-depth seasonal aquaplanet from day zero.
 
 The 4,096-cell campaign can resume the 231,600 s checkpoint with the audited

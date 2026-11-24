@@ -201,6 +201,8 @@ class Instrument:
         if a.model.transport is not None:
             self._method(a.model.transport, "euler_with_info", "atmosphere_bounded_euler")
         self._method(a.model.dynamics, "tendency", "atmosphere_unlimited_rhs")
+        self._method(a.model.dynamics.kernel, "_momentum_terms", "atmosphere_centered_momentum")
+        self._method(a.model.dynamics.kernel, "mixture_gradients", "atmosphere_mixture_gradients")
 
         # Ocean–ice mechanics, optional cold-content and snow, plus column mixing.
         for name, label in (
