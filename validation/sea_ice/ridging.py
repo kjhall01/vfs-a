@@ -186,8 +186,11 @@ class CompressionRidging:
         if (ice.velocity[~self.active_edges(state)] != 0).any():
             raise ValueError("zero ice velocity required on massless or closed edges")
 
-    def tendency(self, state):
-        self.check(state)
+    def tendency(self, state, *, _validated=False):
+        # The coupled RHS has already checked this exact, unmodified state.
+        # Public standalone calls always retain the complete check.
+        if not _validated:
+            self.check(state)
         H = self.hamiltonian
         s, ice = state.ocean.ocean, state.ice
         mesh = s.mesh
