@@ -98,3 +98,98 @@ def test_deeper_profiler_observes_donor_and_parent_limiting(
     assert calls["rhs_temperature_ocean_check"] > 0
     assert calls["rhs_ridge_validation"] > 0
     assert calls["rhs_caloric_reference_evaluate"] > 0
+
+
+def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatch):
+    """The same coupled SSP stage has one owner of full ocean validation.
+
+    Reference path reinstates both redundant checks, including every caloric
+    reference evaluation. Compare all prognostic tensors, physical source
+    reports and the number of temperature/entropy field evaluations.
+    """
+    from dataclasses import fields, is_dataclass
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    snow = receiver.snow
+    coupled = snow.coupled
+    ridge = coupled.ridge
+    core = coupled.ocean.dynamics
+    original_fields = core.fields
+    original_snow = snow._check_snow_stores
+    original_ridge = ridge.tendency
+    calls = []
+
+    def counted(state):
+        calls.append(1)
+        return original_fields(state)
+
+    def exact(a, b):
+        if isinstance(a, torch.Tensor):
+            assert torch.equal(a, b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ("mesh", "column"):
+                    exact(getattr(a, field.name), getattr(b, field.name))
+        elif isinstance(a, (tuple, list)):
+            assert len(a) == len(b)
+            for x, y in zip(a, b):
+                exact(x, y)
+        elif isinstance(a, dict):
+            assert a.keys() == b.keys()
+            for key in a:
+                exact(a[key], b[key])
+        else:
+            assert a == b
+
+    def legacy_snow(state):
+        coupled.check(state.coupled)
+        return original_snow(state)
+
+    def legacy_ridge(state, *, _validated=False):
+        return original_ridge(state, _validated=False)
+
+    with torch.no_grad():
+        with monkeypatch.context() as p:
+            p.setattr(core, "fields", counted)
+            p.setattr(snow, "_check_snow_stores", legacy_snow)
+            p.setattr(ridge, "tendency", legacy_ridge)
+            old_air, old_sea, old_report = c.advance(
+                adapter, air, receiver, sea, config.physics_dt, config
+            )
+            old_count = len(calls)
+
+        calls.clear()
+        with monkeypatch.context() as p:
+            p.setattr(core, "fields", counted)
+            new_air, new_sea, new_report = c.advance(
+                adapter, air, receiver, sea, config.physics_dt, config
+            )
+            new_count = len(calls)
+
+    exact(old_air.atmosphere, new_air.atmosphere)
+    exact(old_sea, new_sea)
+    exact(old_report, new_report)
+    assert new_count < old_count, (old_count, new_count)
+    # Each ocean–ice RHS stage removes exactly one full check from snow and
+    # one from ridging, without changing any RK stage or endpoint validation.
+    assert old_count - new_count == 2 * (config.physics_dt // config.ocean_dt) * (
+        4 if config.ocean_dynamics_integrator == "ssprk43" else 3
+    )
+
+
+def test_public_ridging_still_validates_state(source, config, monkeypatch):
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    ridge = receiver.snow.coupled.ridge
+    called = []
+    original = ridge.check
+
+    def checked(state):
+        called.append(True)
+        return original(state)
+
+    with monkeypatch.context() as p:
+        p.setattr(ridge, "check", checked)
+        with torch.no_grad():
+            ridge.tendency(sea.coupled)
+    assert called == [True]
