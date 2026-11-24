@@ -116,7 +116,12 @@ class SnowOceanIce:
         self.phase = CategoryThermodynamics(coupled)
 
     def check(self, state):
+        """Validate ocean, sea ice, and snow at an externally supplied state."""
         self.coupled.check(state.coupled)
+        self._check_snow_stores(state)
+
+    def _check_snow_stores(self, state):
+        """Validate snow only when the same coupled stage is checked below."""
         m = state.snow_mass
         total = self.hamiltonian.slab.parameters.density * state.coupled.ice.volume
         if (
@@ -262,7 +267,10 @@ class SnowOceanIce:
         return result, report.external_heat.sum(), (area * melt).sum()
 
     def tendency(self, state, dt, **options):
-        self.check(state)
+        # Coupled.tendency performs the complete ocean/ice stage check on the
+        # identical unmodified state. Check the snow store here; do not repeat
+        # the expensive ocean temperature/caloric validation beforehand.
+        self._check_snow_stores(state)
         rhs, report = self.coupled.tendency(state.coupled, dt, **options)
         ice = state.coupled.ice
         mesh = state.coupled.ocean.ocean.mesh
