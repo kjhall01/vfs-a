@@ -267,3 +267,62 @@ def test_batched_incidence_matches_four_pass_reference(probe, kind, coast, monke
 
     for a, b in zip(gradients(True), gradients(False)):
         torch.testing.assert_close(a, b, rtol=1e-12, atol=1e-10)
+
+
+@pytest.mark.parametrize('kind', ['front', 'tilted', 'near_fresh', 'upper_salt'])
+@pytest.mark.parametrize('coast', [False, True])
+def test_composed_parent_skips_only_unused_work(probe, kind, coast, monkeypatch):
+    """Exact final RHS and every work-ledger field vs full parent assembly."""
+    from dataclasses import fields, is_dataclass
+    from vfs.ocean.stratified import transport as active, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    model, frozen, energy = probe.q.p.case(kind, coast)
+    state = EntropyState(frozen.u_e, frozen.h, frozen.entropy_h,
+                         frozen.salt_h, frozen.tracer_h,
+                         frozen.mesh, frozen.column)
+    e = EntropyEnergy(model.dynamics.energy, energy.reference)
+    real_parent = active.parent.evaluate
+
+    def run(x, use_full):
+        if not use_full:
+            return active.evaluate(model, x, 10., e)
+        def full(*args, **kwargs):
+            assert kwargs.get('_composed') is True
+            return real_parent(*args, **{**kwargs, '_composed': False})
+        with monkeypatch.context() as patch:
+            patch.setattr(active.parent, 'evaluate', full)
+            return active.evaluate(model, x, 10., e)
+
+    def exact(a, b):
+        if isinstance(a, torch.Tensor):
+            assert torch.equal(a, b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh', 'column'):
+                    exact(getattr(a, field.name), getattr(b, field.name))
+        elif isinstance(a, (tuple, list)):
+            assert len(a) == len(b)
+            for aa, bb in zip(a, b):
+                exact(aa, bb)
+        else:
+            assert a == b
+
+    with torch.no_grad():
+        reduced, ledger = run(state, use_full=False)
+        old, old_ledger = run(state, use_full=True)
+        exact(reduced, old)
+        exact(ledger, old_ledger)
+
+    def gradients(use_full):
+        keys = ('u_e', 'h', 'entropy_h', 'salt_h')
+        leaves = [getattr(state, k).clone().detach().requires_grad_(True)
+                  for k in keys]
+        x = replace(state, **dict(zip(keys, leaves)))
+        rhs, report = run(x, use_full)
+        objective = (rhs.u_e.square().sum() + rhs.h.square().sum()
+                     + rhs.entropy_h.square().sum() + rhs.salt_h.square().sum()
+                     + 1e-8 * report.face_work.square().sum())
+        return torch.autograd.grad(objective, leaves)
+
+    for a, b in zip(gradients(False), gradients(True)):
+        torch.testing.assert_close(a, b, rtol=1e-12, atol=1e-10)
