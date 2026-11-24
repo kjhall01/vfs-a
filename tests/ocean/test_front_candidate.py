@@ -227,12 +227,14 @@ def test_batched_incidence_matches_four_pass_reference(probe, kind, coast, monke
     original = active._local_target_fields
 
     def evaluate(x, *, batched):
-        if batched:
+        if not batched:
             return active.evaluate(model, x, 10., e)
-        def old(*args, **kwargs):
-            return original(*args, **{**kwargs, 'batch_incidence': False})
+        # Opt into the experimental grouped reduction only for this
+        # independent parity test, never for production calls.
+        def grouped(*args, **kwargs):
+            return original(*args, **{**kwargs, 'batch_incidence': True})
         with monkeypatch.context() as p:
-            p.setattr(active, '_local_target_fields', old)
+            p.setattr(active, '_local_target_fields', grouped)
             return active.evaluate(model, x, 10., e)
 
     def exact(a, b):
