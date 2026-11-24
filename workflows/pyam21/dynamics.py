@@ -24,7 +24,9 @@ def advance_dynamics(adapter, state, dt):
         return area * interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
 
     def euler(s, cloud_amount):
-        end, info = model.transport.euler_with_info(s, dt)
+        end, info = model.transport.euler_with_info(
+            s, dt, include_carrier_graph=True
+        )
         # Reuse the authoritative bounded-moist carrier graph from this exact
         # Euler evaluation. Rebuilding it duplicates the transport primitives
         # and graph index materialization three times per SSPRK3 step.
