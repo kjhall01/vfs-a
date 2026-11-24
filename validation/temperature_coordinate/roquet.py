@@ -123,6 +123,9 @@ class RoquetWorkspace:
     def conjugates(self,t,s):return (2*self.a*t+self.b)/self.reference.cp_theta,self.c
 
     def path_work(self,closure,physical,H0,fh,fs,mid,*,after=None):
+        return self.flux_work(physical,fh,fs)
+
+    def flux_work(self,physical,fh,fs):
         # Exact discrete gradient of a quadratic: evaluate at the midpoint of
         # the TOTAL increment. This includes cross terms from both interfaces.
         h=physical.h;zero=torch.zeros_like(h[:,:1])

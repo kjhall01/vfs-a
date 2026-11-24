@@ -16,24 +16,39 @@ from vfs.ocean.stratified.heating import thermal_parts,apply_heat
 
 class Factor:
     """Batched tridiagonal factors, reused for arbitrary trailing RHS fields."""
-    def __init__(self,diagonal,off):
-        self.off=off;self.pivots=[];self.upper=[]
-        for j in range(diagonal.shape[-1]):
-            d=diagonal[:,j] if j==0 else diagonal[:,j]-off[:,j-1]*self.upper[-1]
-            if (d<=0).any() or not torch.isfinite(d).all():raise FloatingPointError('invalid pivot')
-            self.pivots.append(d)
-            if j<off.shape[-1]:self.upper.append(off[:,j]/d)
-    def solve(self,rhs):
-        scalar=rhs.ndim==2
-        if scalar:rhs=rhs[...,None]
-        y=[]
-        for j,d in enumerate(self.pivots):
-            q=rhs[:,j] if j==0 else rhs[:,j]-self.off[:,j-1,None]*y[-1]
-            y.append(q/d[:,None])
-        x=[y[-1]]
-        for j in range(len(y)-2,-1,-1):x.append(y[j]-self.upper[j][:,None]*x[-1])
-        out=torch.stack(x[::-1],1)
-        return out[...,0] if scalar else out
+    def __init__(self, diagonal, off):
+        if diagonal.ndim != 2 or diagonal.shape[1] < 1 or off.shape != diagonal[:, :-1].shape:
+            raise ValueError("expected a nonempty layer axis and one off-diagonal per interface")
+        self.shape = diagonal.shape
+        diagonals = diagonal.unbind(1)
+        self.links = off.unbind(1)
+        self.pivots = [diagonals[0]]
+        self.upper = []
+        for link, diagonal_j in zip(self.links, diagonals[1:]):
+            upper = link / self.pivots[-1]
+            self.upper.append(upper)
+            self.pivots.append(diagonal_j - link * upper)
+        # Check every pivot before returning a factor. One device reduction
+        # avoids two host synchronizations per vertical level on CUDA.
+        pivots = torch.stack(self.pivots)
+        if not (torch.isfinite(pivots) & (pivots > 0)).all():
+            raise FloatingPointError('invalid pivot')
+
+    def solve(self, rhs):
+        if rhs.ndim not in (2, 3) or rhs.shape[:2] != self.shape:
+            raise ValueError("RHS columns and layers must match the tridiagonal factor")
+        scalar = rhs.ndim == 2
+        rows = rhs.unbind(1)
+        pivots = self.pivots if scalar else [d[:, None] for d in self.pivots]
+        links = self.links if scalar else [e[:, None] for e in self.links]
+        upper = self.upper if scalar else [u[:, None] for u in self.upper]
+        y = [rows[0] / pivots[0]]
+        for row, link, pivot in zip(rows[1:], links, pivots[1:]):
+            y.append((row - link * y[-1]) / pivot)
+        x = [y[-1]]
+        for row, u in zip(reversed(y[:-1]), reversed(upper)):
+            x.append(row - u * x[-1])
+        return torch.stack(x[::-1], 1)
 
 def diffuse_many(values,mass,g,dt):
     zero=torch.zeros_like(mass[:,:1]);off=-dt*g
@@ -79,7 +94,7 @@ class LaggedClosure(PathWorkClosure):
         after=workbuf.physical(mixed,theta) if workbuf else ocean.check_state(mixed)
         return mixed,after
 
-    def _entropy_content(self,ocean,state):
+    def _entropy_content(self,ocean,state,reference):
         return state.entropy_h
 
     def _apply(self,ocean,state,tke_h,dt,physical=None):
@@ -90,7 +105,7 @@ class LaggedClosure(PathWorkClosure):
         if not torch.isfinite(tke_h).all() or (tke_h<0).any():raise ValueError('TKE must be finite and nonnegative')
         area=energy.mass_area(state);mass=area*h
         if (area<=0).any():raise ValueError('coupled research solver supports fully wet columns only')
-        k0=tke_h/h;guess=k0
+        k0=tke_h/h
         zero=h.new_zeros(h.shape[0],1)
         div=lambda f:torch.cat((f,zero),-1)-torch.cat((zero,f),-1)
         add=lambda f:torch.cat((f,zero),-1)+torch.cat((zero,f),-1)
@@ -101,11 +116,11 @@ class LaggedClosure(PathWorkClosure):
         parts=workbuf.parts if workbuf else lambda p:thermal_parts(ocean,p)
         psi0,ref0=parts(physical)
         s0=physical.salinity();theta0=physical.temperature();H0=ref0['h0']
-        node,weight=energy.base._quadrature(h)
-        z=energy.base.height(physical)[...,None]+h[...,None]*(node-.5)
+        if workbuf is None:
+            node,weight=energy.base._quadrature(h)
+            z=energy.base.height(physical)[...,None]+h[...,None]*(node-.5)
         alpha=h[:,:-1]/(h[:,:-1]+h[:,1:])
-        if workbuf:
-            from fast_thermo import Caloric
+        flux_work = getattr(workbuf, "flux_work", None)
         eta_round=self._baseline_entropy(energy,workbuf,s0,theta0,H0)
 
         def resistance(diffusivity, thickness):
@@ -115,33 +130,44 @@ class LaggedClosure(PathWorkClosure):
             # handled without evaluating a singular reciprocal or adding a floor.
             return 2*upper*lower/torch.where(denominator>0,denominator,torch.ones_like(denominator))
 
-        momentum_cache=[]
-        trial_evaluations=0
-        def trial(k, scalar_scale):
-            nonlocal trial_evaluations
-            trial_evaluations+=1
-            km=self.c_mu*self.mixing_length*positive_sqrt(k)
-            g=.5*(km[:,:-1]+km[:,1:])/(.5*(h[:,:-1]+h[:,1:]))
-            if self.interface_scheme=="resistance":g=resistance(km,h)
+        values=[s0,H0]
+        if state.tracer_h is not None:
+            values.extend((state.tracer_h/h[...,None]).unbind(-1))
+        values=torch.stack(values,-1)
+        layer_spacing=.5*(h[:,:-1]+h[:,1:])
+        edge_measure=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]
+
+        def coefficients(k):
+            # These solves depend on the TKE predictor. Scalar funding retries
+            # change only the scalar interface conductance.
+            root=positive_sqrt(k)
+            km=self.c_mu*self.mixing_length*root
             ek=mesh.cell_to_edge(km)
-            eg=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]*.5*(ek[:,:-1]+ek[:,1:])/(.5*(he[:,:-1]+he[:,1:]))
             if self.interface_scheme=="resistance":
-                eg=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]*resistance(ek,he)
+                g=resistance(km,h)
+                eg=edge_measure*resistance(ek,he)
+            else:
+                g=.5*(km[:,:-1]+km[:,1:])/layer_spacing
+                eg=edge_measure*.5*(ek[:,:-1]+ek[:,1:])/(.5*(he[:,:-1]+he[:,1:]))
             if ocean.domain is not None:eg=eg*ocean.domain.active_edge[:,None]
-            if not momentum_cache:
-                u=diffuse(state.u_e,metric,eg,dt)
-                es=dt*eg*(u[:,1:]-u[:,:-1]).square();ez=torch.zeros_like(u[:,:1])
-                shear=allocate(.5*(torch.cat((es,ez),-1)+torch.cat((ez,es),-1)))
-                production=shear+allocate(.5*metric*(u-state.u_e).square())
-                momentum_cache.append((u,production))
-            u,production=momentum_cache[0]
-            gh=g/self.prandtl*scalar_scale if self.mix_scalars else torch.zeros_like(g)
-            values=[s0,H0]
-            if state.tracer_h is not None:
-                values.extend((state.tracer_h/h[...,None]).unbind(-1))
-            solutions=diffuse_many(torch.stack(values,-1),h,gh,dt)
-            salt,enthalpy=solutions[...,0],solutions[...,1]
-            fs=dt*gh*(salt[:,1:]-salt[:,:-1]);fh=dt*gh*(enthalpy[:,1:]-enthalpy[:,:-1])
+            u=diffuse(state.u_e,metric,eg,dt)
+            es=dt*eg*(u[:,1:]-u[:,:-1]).square();ez=torch.zeros_like(u[:,:1])
+            shear=allocate(.5*(torch.cat((es,ez),-1)+torch.cat((ez,es),-1)))
+            production=shear+allocate(.5*metric*(u-state.u_e).square())
+            if self.interface_scheme=="resistance":
+                # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
+                # The divided difference stays finite when either side is zero.
+                den=root[:,:-1]+root[:,1:]
+                mean=(2/3)*(k[:,:-1]+root[:,:-1]*root[:,1:]+k[:,1:])/torch.where(den>0,den,torch.ones_like(den))
+                gk=self.c_mu*self.mixing_length*mean/layer_spacing
+            else:gk=g
+            conductance=area*gk/self.sigma_k
+            diss=dt*mass*self.c_epsilon*root/self.mixing_length
+            diag=mass+add(dt*conductance)+diss
+            return u,production,g,conductance,diss,diag,-dt*conductance
+
+        def finish_transport(u, transport, work):
+            gh,solutions,fs,fh=transport
             salt_h=state.salt_h+div(fs);salt=salt_h/h
             enthalpy=H0+div(fh)/h
             theta=self._enthalpy_temperature(energy,workbuf,salt,enthalpy,theta0)
@@ -167,39 +193,41 @@ class LaggedClosure(PathWorkClosure):
             # The h0 transfer is conservative by construction. Cancel it
             # algebraically, rather than making TKE pay inverse-roundtrip noise.
             # Full-H acceptance below independently checks that noise.
-            if workbuf:work=workbuf.path_work(self,physical,H0,fh,fs,(a,b),after=after)
-            else:
+            if work is None and workbuf:
+                work=workbuf.path_work(self,physical,H0,fh,fs,(a,b),after=after)
+            elif work is None:
                 work=mass*(psi1-psi0)-div(area*(face(a)*fh+face(b)*fs))
                 work=self._buoyancy_work(ocean,physical,after,fh,fs,work)
             reconstruction=change-div(flux)-work
-            if self.interface_scheme=="resistance":
-                # For TKE itself, sqrt(k) grad(k) = (2/3) grad(k**1.5).
-                # The divided difference stays finite when either side is zero.
-                root=positive_sqrt(k);den=root[:,:-1]+root[:,1:]
-                mean=(2/3)*(k[:,:-1]+root[:,:-1]*root[:,1:]+k[:,1:])/torch.where(den>0,den,torch.ones_like(den))
-                gk=self.c_mu*self.mixing_length*mean/(.5*(h[:,:-1]+h[:,1:]))
-            else:gk=g
-            conductance=area*gk/self.sigma_k
-            diss=dt*mass*self.c_epsilon*positive_sqrt(k)/self.mixing_length
-            diag=mass+add(dt*conductance)+diss
-            return mixed,production,work,flux,conductance,diss,diag,-dt*conductance,reconstruction,after
+            return mixed,after,work,flux,reconstruction
+
+        def scalar_trial(u, g, scalar_scale):
+            gh=g/self.prandtl*scalar_scale if self.mix_scalars else torch.zeros_like(g)
+            solutions=diffuse_many(values,h,gh,dt)
+            salt,enthalpy=solutions[...,0],solutions[...,1]
+            fs=dt*gh*(salt[:,1:]-salt[:,:-1]);fh=dt*gh*(enthalpy[:,1:]-enthalpy[:,:-1])
+            transport=(gh,solutions,fs,fh)
+            if flux_work is not None:
+                # On the Roquet path these two fluxes completely determine the
+                # exact finite buoyancy work, including adjacent-interface terms.
+                return flux_work(physical,fh,fs),transport,None
+            endpoint=finish_transport(u,transport,None)
+            return endpoint[2],transport,endpoint
 
         scalar_scale=torch.ones_like(h[:,:-1]);limited=torch.zeros_like(scalar_scale,dtype=torch.bool)
         deferred=torch.zeros_like(h[:,:1],dtype=torch.bool)
         fixed_k=k0
         for _ in range(self.predictor_steps):
-            momentum_cache.clear()
-            _,p,b,_,_,_,a,off,_,_=trial(fixed_k,scalar_scale)
+            u,p,scalar_g,_,_,a,off=coefficients(fixed_k)
+            b,_,_=scalar_trial(u,scalar_g,scalar_scale)
             denom=torch.where(fixed_k>0,fixed_k,torch.ones_like(fixed_k))
             fixed_k=Factor(a+b.clamp_min(0)/denom,off).solve(mass*k0+p+(-b).clamp_min(0))
             if not torch.isfinite(fixed_k).all() or (fixed_k<0).any():raise FloatingPointError('invalid coefficient predictor')
-        momentum_cache.clear()
-        factor=None
+        u,production,scalar_g,g,diss,diagonal,off=coefficients(fixed_k)
+        factor=Factor(mass+add(dt*g) if self.funding=='split' else diagonal,off)
+        transported=factor.solve(mass*k0+production)
         for attempt in range(self.max_reductions+2):
-            mixed,production,work,flux,g,diss,diagonal,off,reconstruction,after=trial(fixed_k,scalar_scale)
-            if factor is None:
-                factor=Factor(mass+add(dt*g) if self.funding=='split' else diagonal,off)
-                transported=factor.solve(mass*k0+production)
+            work,transport,endpoint=scalar_trial(u,scalar_g,scalar_scale)
             if self.funding=='split':
                 # Ordered split: transport produced TKE first, then pay the
                 # actual local buoyancy work and dissipate the remainder.
@@ -230,6 +258,10 @@ class LaggedClosure(PathWorkClosure):
                 deferred=bad.any(-1,keepdim=True)
                 scalar_scale=torch.where(deferred,torch.zeros_like(scalar_scale),scalar_scale)
             else:raise FloatingPointError('lagged TKE remains unfunded with scalar mixing deferred')
+        if endpoint is None:
+            endpoint=finish_transport(u,transport,work)
+        mixed,after,work,flux,reconstruction=endpoint
+        trial_evaluations=self.predictor_steps+attempt+1
         transport_k=transported if self.funding=='split' else final
         tflux=dt*g*(transport_k[:,1:]-transport_k[:,:-1])
         actual_residual=mass*(final-k0)-production+work+diss*final-div(tflux)
@@ -245,14 +277,13 @@ class LaggedClosure(PathWorkClosure):
         local_ke=allocate(.5*metric*(end.u_e-state.u_e)*(end.u_e+state.u_e))
         exchange=local_ke+production
         column=(mass*((psi2-psi0)+(ref2['h0']-H0))+local_ke+mass*(final-k0)).sum(-1)-exchange.sum(-1)
-        entropy=(area*(self._entropy_content(ocean,end)-self._entropy_content(ocean,state))).sum(-1)
+        initial_entropy=self._entropy_content(ocean,state,ref0)
+        entropy=(area*(self._entropy_content(ocean,end,ref2)-initial_entropy)).sum(-1)
         tol=1024*torch.finfo(h.dtype).eps*(mass*(psi0.abs()+H0.abs())+area*tke_h+local_ke.abs()).sum(-1).clamp_min(1)
         if (column.abs()>tol).any():raise FloatingPointError('coupled full-H closure failed')
-        stol=512*torch.finfo(h.dtype).eps*(area*self._entropy_content(ocean,state).abs()).sum(-1).clamp_min(1)
+        stol=512*torch.finfo(h.dtype).eps*(area*initial_entropy.abs()).sum(-1).clamp_min(1)
         if (entropy < -stol).any():raise ValueError('coupled update decreases column entropy')
-        tkeflux=dt*g*(transport_k[:,1:]-transport_k[:,:-1])
-        residual=mass*(final-k0)-production+work+heat-div(tkeflux)
-        report=CoupledReport(trial_evaluations,h.new_zeros(()),budget_error,column.sum(),column,exchange.sum(-1),work,flux,tkeflux,heat,entropy,residual,reconstruction,
+        report=CoupledReport(trial_evaluations,h.new_zeros(()),budget_error,column.sum(),column,exchange.sum(-1),work,flux,tflux,heat,entropy,actual_residual,reconstruction,
             {'limited_pairs':limited.sum().to(h.dtype),'semi_trials':h.new_tensor(trial_evaluations),
              'limited_interfaces':limited.sum().to(h.dtype),'deferred_columns':deferred.sum().to(h.dtype),
              'minimum_fraction':scalar_scale.min() if scalar_scale.numel() else h.new_ones(())})

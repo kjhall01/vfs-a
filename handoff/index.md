@@ -2234,3 +2234,9 @@ remain absent, the existing column phase API is unchanged, and only the thin
 category can be redistributed. Full shear/VP/EVP and calibration remain open.
 Installed-wheel portable suite: 1255 passed, 2 skipped; both frozen comparisons
 pass. CPU float64 only; no GPU or long coupled ocean–ice validation.
+
+## Ocean vertical mixing
+
+[Paired fresh and day-21 replays](../docs/PASS4_RESULTS.md#roquet-vertical-mixing-from-interface-fluxes)
+show 1.31–1.37× faster Roquet mixing on four CPU threads. The flux-based
+funding check returns identical accepted states and budgets in these cases.

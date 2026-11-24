@@ -141,3 +141,33 @@ the shallow throughput example, and distinguish completion from temporal accurac
 and caloric kernels with Inductor. Guards and timestep/physics control stay eager.
 Compilation is lazy and per-model; rebuild to change compiler backend. Small CPU
 forward comparisons are tested; no new global speedup or accelerator claim.
+
+## Funding vertical mixing from interface fluxes
+
+The coupled Roquet closure predicts turbulent kinetic energy (TKE), solves
+implicit scalar diffusion, then uses local TKE to pay the finite buoyancy
+work. The work for a trial is determined by its salt and potential-enthalpy
+fluxes. At fixed thickness, the change in Conservative Temperature in a layer
+equals the net incoming enthalpy flux divided by its thickness and heat
+capacity. The Roquet potential is quadratic in temperature and affine in
+salinity. Evaluating its conjugates at the midpoint of that total increment
+includes the contributions from **both** adjacent interfaces.
+
+The predictor and funding retries now evaluate this expression directly.
+Once a trial is affordable the closure constructs the stored tracer state,
+checks it, computes its physical energy flux and reconstruction residual,
+applies dissipation as heat, and checks local TKE, column energy and entropy.
+The implicit solve, local work allocation, funding ratios, and deferral rule
+are the same. The change is automatic in the Roquet configuration.
+
+Each fixed TKE predictor supplies a single set of momentum and TKE transport
+coefficients for its scalar trials. The tridiagonal factorization checks all
+pivots in one tensor reduction before allowing a solve. These changes keep
+the original order of the Thomas elimination and substitution.
+
+See the [paired CPU results](../../docs/PASS4_RESULTS.md#roquet-vertical-mixing-from-interface-fluxes).
+To compare on Derecho, use the same `tools/profile_coupled.py` arguments on
+the parent and patched checkouts with separate output directories. Compare
+both complete coupled throughput and the exclusive
+`ocean_mixing_internal_substep` row, using identical stage synchronization,
+mesh, precision, compilation setting, and timesteps.
