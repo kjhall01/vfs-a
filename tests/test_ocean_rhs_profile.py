@@ -47,3 +47,51 @@ def test_ocean_rhs_instrument_preserves_coupled_state_and_covers_real_rhs(
         assert counts.get(region, 0) > 0, (region, counts)
     assert counts["rhs_coupled_ocean_ice"] == counts["ocean_ice_rhs"]
     assert counts["rhs_ocean_temperature_tendency"] == counts["ocean_ice_rhs"]
+
+
+def test_optional_transport_source_line_trace_observes_real_coupled_update(
+    source, config, tmp_path
+):
+    """Measure line-level transport work in a separate, uncommitted interval."""
+    from tools.profile_ocean_rhs import _profile_line_pass
+
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    with torch.no_grad():
+        expected_air, expected_sea, _ = c.advance(
+            adapter, air, receiver, sea, config.physics_dt, config
+        )
+    trace = _profile_line_pass(
+        dict(adapter=adapter, air=air, receiver=receiver, sea=sea,
+             config=config, output=tmp_path), 1
+    )
+    assert trace["measured_intervals"] == 1
+    assert trace["model_start_seconds"] == air.time_seconds
+    assert trace["model_end_seconds"] == expected_air.time_seconds
+    assert (tmp_path / "ocean_transport_lines.json").exists()
+    assert (tmp_path / "ocean_transport_lines.txt").exists()
+    regions = {x["region"] for x in trace["source_lines"]}
+    assert {"local.evaluate", "parent.evaluate", "parent.bounded_transport",
+            "local._local_target_fields"} <= regions
+    assert all(row["elapsed_s"] >= 0 and row["calls"] > 0
+               for row in trace["source_lines"])
+    assert all(row["source"] for row in trace["source_lines"])
+
+
+def test_deeper_profiler_observes_donor_and_parent_limiting(
+    source, config
+):
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    with torch.no_grad():
+        timer = SectionClock(adapter.model.mesh.cell_area.device)
+        with RHSInstrument(timer, adapter, receiver):
+            c.advance(adapter, air, receiver, sea,
+                      config.physics_dt, config)
+    calls = {key: d["inclusive"]["calls"]
+             for key, d in timer.results().items()}
+    assert calls["rhs_parent_admissibility_limiter"] > 0
+    assert calls["rhs_parent_flux_divergence"] > 0
+    assert calls["rhs_local_flux_divergence"] > 0
+    assert calls["rhs_Gibbs_face_traces"] > 0
+    assert calls["rhs_entropy_domain_validation"] > 0
