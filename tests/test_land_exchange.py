@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import replace
 from unittest.mock import patch
 
@@ -12,14 +13,20 @@ from workflows.coupled.land import LandSlabReceiver
 
 
 @pytest.mark.parametrize("radiation", [False, True])
-def test_mixed_column_exchange(model, radiation):
+@pytest.mark.parametrize("raised", [False, True])
+def test_mixed_column_exchange(model, radiation, raised):
+    mesh = model.mesh
+    mask = mesh.cell_xyz[:, 0] > 0.1
+    if raised:
+        # A nonzero wet reference catches double counting at the outlet.
+        phi = 500. + 9806. * mask + 100. * mesh.cell_xyz[:, 2]
+        model = deepcopy(model)
+        model.column.phi_s = phi
     driver = RadiationDriver(RadiationDriverConfig(rad_time_step=120), PrescribedRadiationPackage()) if radiation else None
     adapter, air = initial(model, radiation=driver, cloudy=True)
     wind = torch.full_like(air.atmosphere.u_e, 2.)
     air = replace(air, atmosphere=replace(air.atmosphere, u_e=wind))
-    mesh = model.mesh
     area = mesh.cell_area
-    mask = mesh.cell_xyz[:, 0] > 0.1
     receiver = LandSlabReceiver(adapter, mask)
     surface = receiver.initialize(air.surface["t_surf"], soil_water=150.)
     w0, e0 = receiver.inventories(surface)
@@ -33,6 +40,11 @@ def test_mixed_column_exchange(model, radiation):
         assert sr.energy_residual.abs().max() < 2e-6
         assert (sr.runoff[~mask] == 0).all() and (sr.runoff_received[mask] == 0).all()
         torch.testing.assert_close((sr.runoff * area).sum(), (sr.runoff_received * area).sum())
+        phi = model.column.phi_s.expand_as(area)
+        expected = ((sr.runoff - sr.runoff_received) * phi * area).sum()
+        torch.testing.assert_close((sr.runoff_gravity_heat * area).sum(), expected)
+        if raised:
+            assert sr.runoff_gravity_heat.max() > 0
         assert x.stress[mask].abs().max() > 0
         torch.testing.assert_close(sr.support_impulse, -x.water_impulse - x.stress.sum(1))
         external += x.toa + ar.energy_changes["am2_energy_residual"]

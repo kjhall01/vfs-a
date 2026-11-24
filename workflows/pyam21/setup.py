@@ -29,6 +29,7 @@ def example(
     climatology_width_degrees=1.0,
     start=(2000, 1, 1, 0, 0, 0),
     mesh_options=None,
+    surface_height_m=None,
     namelist_overrides=None,
     device="cpu",
     dtype=torch.float64,
@@ -73,7 +74,8 @@ def example(
     if not 0.0 < top_pressure_pa < 100000.0:
         raise ValueError("top_pressure_pa must lie between 0 and reference surface pressure")
     A, B = make_hybrid_coefficients(levels, p_top=top_pressure_pa)
-    column = CharneyPhillipsColumn(levels, A, B, phi_full_mode="direct_u_gl2_adjoint")
+    phi_s = 0.0 if surface_height_m is None else GRAV * torch.as_tensor(surface_height_m, dtype=torch.float64)
+    column = CharneyPhillipsColumn(levels, A, B, phi_s=phi_s, phi_full_mode="direct_u_gl2_adjoint")
     model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)
     # Explicit workflow configuration BEFORE any prognostic state exists. The
     # native dynamics and every mass/energy diagnostic use this same parameter.

@@ -20,6 +20,9 @@ The default 32-cell mesh has a meridional sector of grassland. Supply
 `--mesh input-data/mesh_4096_exact_3000.npy` and optionally
 `--land-mask land_mask.npy` to use your geometry. The mask is a 1-D Boolean
 array in mesh generator order with both land and water present.
+Use `--surface-height height_m.npy` for terrain. Supply one elevation in metres
+per mesh cell, including the wet outlets. The default elevation is zero.
+The experiment uses its existing idealized initial pressure and temperature profile.
 `--radiation-data input-data/sea_esf --radiation-step 7200` enables SeaEsfRad.
 Without tables, radiation is off. Omit `--atmosphere-dt` for a column-physics
 experiment. Both modes use the real PyAM21 column solver. The example uses
@@ -50,12 +53,19 @@ then book the same signed water amount. Canopy, snow and rooted soil fund
 evaporation in that order. Dew enters liquid storage; frost enters snow.
 
 Land uses the common VFS atmospheric enthalpy datum. Its energy inventory is
-the sensible heat of skin and soil minus the fusion energy of the stored snow.
+the sensible heat of skin and soil, minus the fusion energy of stored snow,
+plus `surface_geopotential * (soil_water.sum(-1) + canopy + snow)`.
+All stores share the atmospheric surface elevation. Precipitation and dew carry
+this potential energy into storage, and evaporation carries it back to air.
+Infiltration and redistribution within the column occur at one elevation.
 The skin receives the shared exchange energy after accounting for the actual
 soil heat increment over all diffusion substeps, snow phase change and outgoing
 runoff enthalpy. Runoff is assigned liquid enthalpy at the exporting skin
-temperature. Mass and enthalpy move to the nearest wet cell, with source and
-recipient cell areas explicitly included. There is no external runoff sink.
+temperature and carries its source geopotential. Mass and total exported energy
+move to the nearest wet cell, weighted by donor and recipient area. The slab
+retains the water at its outlet elevation and receives the potential drop
+`runoff_mass * (phi_land - phi_outlet)` as heat. The driver reports this heat
+per unit global area. A nearest outlet above its donor is rejected at setup. There is no external runoff sink.
 Both surfaces are stationary, so the reported support impulse has zero work.
 The atmospheric upstream energy residual stays visible.
 

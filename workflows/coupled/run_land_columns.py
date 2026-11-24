@@ -20,6 +20,7 @@ def main(argv=None):
     p.add_argument("--source", required=True, type=Path, help="pinned PyAM21 checkout")
     p.add_argument("--mesh", type=Path, help="saved Voronoi generators [cell,3]")
     p.add_argument("--land-mask", type=Path, help="boolean .npy in mesh-cell order")
+    p.add_argument("--surface-height", type=Path, help="surface elevation in metres, .npy in mesh-cell order")
     p.add_argument("--cells", type=int, default=32)
     p.add_argument("--levels", type=int, default=12)
     p.add_argument("--dt", type=int, default=600)
@@ -46,10 +47,15 @@ def main(argv=None):
             p.error("--mesh requires distinct finite unit vectors")
         cells = len(xyz)
         geometry = dict(generator_xyz=xyz, lloyd_iters=0, verbose=False)
+    height = None
+    if args.surface_height:
+        height = np.load(args.surface_height, allow_pickle=False)
+        if height.shape != (cells,) or height.dtype.kind not in "fiu" or not np.isfinite(height).all():
+            p.error("--surface-height requires one finite elevation per mesh cell")
     device = resolve_device(args.device)
     with execution_context(device), torch.no_grad():
         adapter, air = example(args.source, cells=cells, levels=args.levels, aquaplanet=True,
-                               mesh_options=geometry, device=device, radiation_data=args.radiation_data,
+                               mesh_options=geometry, surface_height_m=height, device=device, radiation_data=args.radiation_data,
                                namelist_overrides={"surface_flux_nml": {"gust_min": 0.1}},
                                radiation_step=args.radiation_step)
         mesh = adapter.model.mesh
@@ -70,7 +76,7 @@ def main(argv=None):
             return (air_diag["species"].sum() + (water * area).sum(),
                     air_diag["energy"] + (energy * area).sum())
         w0, e0 = inventories()
-        upstream = toa = routed = rain_snow = vapor = dynamics_energy = 0.
+        upstream = toa = routed = gravity_heat = rain_snow = vapor = dynamics_energy = 0.
         max_heat = max_water = 0.
         for _ in range(args.steps):
             omega = None
@@ -86,11 +92,13 @@ def main(argv=None):
             rain_snow += float((land_area * (exchange.rain + exchange.snow)[mask]).sum() / land_area.sum())
             vapor += float((land_area * exchange.vapor[mask, 0]).sum() / land_area.sum())
             routed += float((area * sr.runoff_received).sum() / area.sum())
+            gravity_heat += float((area * sr.runoff_gravity_heat).sum() / area.sum())
             max_heat = max(max_heat, float(sr.energy_residual.abs().max()))
             max_water = max(max_water, float(sr.water_residual.abs().max()))
         w1, e1 = inventories()
         result = dict(cells=cells, land_cells=int(mask.sum()), seconds=air.time_seconds,
                       radiation=bool(args.radiation_data), runoff_delivered_kg_m2_global=routed,
+                      runoff_gravity_heat_J_m2_global=gravity_heat,
                       precipitation_kg_m2_land=rain_snow, vapor_to_air_kg_m2_land=vapor,
                       storage_change_kg_m2_land=float((land_area * (surface.land.water()-land_water0)).sum() / land_area.sum()),
                       runoff_kg_m2_land=routed * float(area.sum() / land_area.sum()),

@@ -20,6 +20,7 @@ class ColumnSurfaceReport:
     water_residual: torch.Tensor    # kg/m²
     runoff: torch.Tensor            # kg/m², positive at donating land cells
     runoff_received: torch.Tensor   # kg/m², positive at receiving wet cells
+    runoff_gravity_heat: torch.Tensor  # J/m² dissipated at receiving wet cells
     support_impulse: torch.Tensor   # N s/m² taken by the fixed surface
 
 
@@ -33,13 +34,19 @@ class LandSlabReceiver:
             raise ValueError("a boolean land mask with both land and wet cells is required")
         self.land = land_mask.clone()
         self.wet = ~self.land
-        self.column = LandColumn(adapter.model.dynamics.thermodynamics)
         # Nearest wet center by great-circle distance (same ordering as chord).
         # The tree is built once. All interval updates use native tensors.
         xyz = self.mesh.cell_xyz.detach().cpu().numpy()
         mask = self.land.cpu().numpy()
         _, outlet = cKDTree(xyz[~mask]).query(xyz[mask])
         self.outlet = torch.as_tensor(outlet, device=ref.device, dtype=torch.long)
+
+        phi = adapter.model.column.phi_s.expand_as(ref)
+        self.wet_phi = phi[self.wet]
+        self.column = LandColumn(adapter.model.dynamics.thermodynamics, surface_geopotential=phi[self.land])
+        self.runoff_drop = phi[self.land] - self.wet_phi[self.outlet]
+        if (self.runoff_drop < 0).any():
+            raise ValueError("nearest wet outlet lies uphill from a land cell")
 
     def check_geometry(self, adapter, atmosphere, state):
         if adapter.model.mesh is not self.mesh:
@@ -83,7 +90,7 @@ class LandSlabReceiver:
 
     def inventories(self, state):
         return (self._cells(state.land.water(), state.slab_mass),
-                self._cells(self.column.energy(state.land), state.slab_heat))
+                self._cells(self.column.energy(state.land), state.slab_heat + state.slab_mass * self.wet_phi))
 
     def prepare(self, initial, exchange, tiles):
         # Both surfaces are stationary. The support takes the reaction impulse
@@ -98,14 +105,18 @@ class LandSlabReceiver:
 
     def finish(self, initial, candidate, exchange, support_impulse):
         land, wet = self.land, self.wet
-        new_land, runoff, runoff_heat = self.column.advance(
+        new_land, runoff, runoff_energy = self.column.advance(
             initial.land, exchange.dt, rain=exchange.rain[land], snow=exchange.snow[land],
             vapor=exchange.vapor[land, 0], energy=exchange.surface_energy[land],
         )
         received = self._route(runoff)
-        received_heat = self._route(runoff_heat)
+        received_energy = self._route(runoff_energy)
+        gravity_heat = self._route(runoff * self.runoff_drop)
         mass = initial.slab_mass - exchange.water[wet] + received
-        heat = initial.slab_heat + exchange.surface_energy[wet] + received_heat
+        net_water = received - exchange.water[wet]
+        # The outlet stores water at its own geopotential. The remaining
+        # delivered energy includes liquid enthalpy and the downhill loss.
+        heat = initial.slab_heat + exchange.surface_energy[wet] + received_energy - net_water * self.wet_phi
         if (not torch.isfinite(mass).all() or (mass <= 0).any() or not torch.isfinite(heat).all()
                 or (heat <= -mass * self.column.thermo.cp_l * self.column.thermo.T_ref).any()):
             raise ValueError("exchange exhausts the receiving slab mass or heat")
@@ -113,7 +124,7 @@ class LandSlabReceiver:
         w0, e0 = self.inventories(initial)
         w1, e1 = self.inventories(end)
         water = w1 - w0 + exchange.water - self._cells(-runoff, received)
-        energy = e1 - e0 - exchange.surface_energy - self._cells(-runoff_heat, received_heat)
+        energy = e1 - e0 - exchange.surface_energy - self._cells(-runoff_energy, received_energy)
         # Land heat is diagnosed from absolute temperatures, while the slab
         # stores heat relative to the liquid datum. Budget roundoff must use
         # the magnitude of the stored quantities used by each calculation.
@@ -121,10 +132,10 @@ class LandSlabReceiver:
         capacity = self.column.skin_heat_capacity + self.column.soil_heat_capacity * sum(self.column.thickness)
         datum_scale = self._cells(capacity * self.column.thermo.T_ref, 0.)
         water_scale = w0 + w1 + exchange.water.abs() + self._cells(runoff, received)
-        energy_scale = e0.abs() + e1.abs() + datum_scale + exchange.surface_energy.abs() + self._cells(runoff_heat.abs(), received_heat.abs())
+        energy_scale = e0.abs() + e1.abs() + datum_scale + exchange.surface_energy.abs() + self._cells(runoff_energy.abs(), received_energy.abs())
         if (not torch.isfinite(energy).all() or not torch.isfinite(water).all()
                 or (water.abs() > 64 * eps * water_scale.clamp_min(1.)).any()
                 or (energy.abs() > 64 * eps * energy_scale.clamp_min(1.)).any()):
             raise FloatingPointError("land/slab surface exchange failed its local budget")
         return end, ColumnSurfaceReport(energy, water, self._cells(runoff, 0.),
-                                        self._cells(0., received), support_impulse)
+                                        self._cells(0., received), self._cells(0., gravity_heat), support_impulse)

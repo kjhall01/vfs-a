@@ -31,14 +31,18 @@ class LandColumn:
     conductivity = 1.5         # W/m/K
     canopy_capacity = 0.25     # kg/m2, archived grassland class
 
-    def __init__(self, thermodynamics=None):
+    def __init__(self, thermodynamics=None, *, surface_geopotential=0.):
         self.thermo = thermodynamics or MixtureThermodynamics()
+        self.surface_geopotential = surface_geopotential  # J/kg, shared by all water stores
 
     def initialize(self, temperature, *, soil_water=50.):
         if temperature.ndim != 1 or not temperature.is_floating_point():
             raise ValueError("land temperature must be a floating cell vector")
         if not 0 <= soil_water <= 150:
             raise ValueError("initial column soil water must lie in [0, 150] kg/m2")
+        phi = torch.as_tensor(self.surface_geopotential, device=temperature.device)
+        if phi.shape not in (torch.Size([]), temperature.shape) or not torch.isfinite(phi).all():
+            raise ValueError("surface geopotential must be finite and scalar or per land cell")
         dz = temperature.new_tensor(self.thickness)
         state = LandState(
             (soil_water * dz / dz.sum()).expand(len(temperature), -1).clone(),
@@ -82,7 +86,8 @@ class LandColumn:
         t0 = self.thermo.T_ref
         return (self.skin_heat_capacity * (state.skin - t0)
                 + ((state.soil_temperature - t0) * dz * self.soil_heat_capacity).sum(-1)
-                - self.thermo.L_f_ref * state.snow)
+                - self.thermo.L_f_ref * state.snow
+                + self.surface_geopotential * state.water())
 
     def _soil_heat(self, state, dt):
         # Archive's explicit finite-volume diffusion. Accumulate the heat taken
@@ -110,7 +115,7 @@ class LandColumn:
         return retained, incoming
 
     def advance(self, state, dt, *, rain, snow, vapor, energy):
-        """Receive PyAM21's signed vapor and net energy. Return state, runoff kg/m2 and J/m2."""
+        """Receive PyAM21's signed vapor and net energy. Return state, runoff mass and its total exported energy."""
         self.check(state)
         if not math.isfinite(dt) or dt <= 0:
             raise ValueError("positive finite land timestep required")
@@ -146,7 +151,8 @@ class LandColumn:
         canopy = canopy + captured
         temperature, ground = self._soil_heat(state, dt)
         lf = self.thermo.L_f_ref
-        sensible = energy - ground + lf * (frozen - state.snow)
+        water_potential = self.surface_geopotential * (rain + snow - vapor)
+        sensible = energy - water_potential - ground + lf * (frozen - state.snow)
         warm = (state.skin - self.thermo.T_ref).clamp_min(0.)
         melt = torch.minimum(frozen, 2.e-5 * warm * dt)
         melt = torch.minimum(melt, (self.skin_heat_capacity * warm + sensible).clamp_min(0.) / lf)
@@ -174,4 +180,4 @@ class LandColumn:
         skin = state.skin + (sensible - lf * melt - runoff_heat) / self.skin_heat_capacity
         result = LandState(torch.stack(layers, -1), temperature, canopy, frozen, skin)
         self.check(result)
-        return result, runoff, runoff_heat
+        return result, runoff, runoff_heat + runoff * self.surface_geopotential

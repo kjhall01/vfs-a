@@ -6,15 +6,24 @@ import torch
 from vfs.land import LandColumn
 
 
-def test_land_column_balances_dew_frost_runoff_and_melt():
-    column = LandColumn()
+@pytest.mark.parametrize("height", [0., 1000.])
+def test_land_column_balances_dew_frost_runoff_and_melt(height):
+    phi = 9.806 * height
+    column = LandColumn(surface_geopotential=phi)
     s = column.initialize(torch.tensor([270., 280., 290.], dtype=torch.float64), soil_water=145.)
     s = replace(s, snow=s.skin.new_tensor([0., 8., 0.]),
                 soil_temperature=s.soil_temperature - 2)
     zero = torch.zeros_like(s.skin)
     rain, snow = s.skin.new_tensor([0., 0., 200.]), s.skin.new_tensor([2., 0., 0.])
     vapor, energy = s.skin.new_tensor([-0.3, 0.1, -0.3]), s.skin.new_tensor([50., 1.e6, -2.e4])
+    flat = LandColumn()
+    flat_end, flat_runoff, flat_heat = flat.advance(s, 7200, rain=rain, snow=snow, vapor=vapor, energy=energy)
+    energy = energy + (rain + snow - vapor) * phi
     end, runoff, heat = column.advance(s, 7200, rain=rain, snow=snow, vapor=vapor, energy=energy)
+    torch.testing.assert_close(end.skin, flat_end.skin)
+    torch.testing.assert_close(runoff, flat_runoff)
+    torch.testing.assert_close(heat, flat_heat + runoff * phi)
+    torch.testing.assert_close(column.energy(end) - flat.energy(end), phi * end.water())
     assert end.snow[0] == pytest.approx(2.3)
     assert end.snow[1] < s.snow[1] - vapor[1]
     assert runoff[2] > 100 and end.canopy[2] > 0
