@@ -37,6 +37,11 @@ class RHSInstrument(base.Instrument):
         # thermal and bounded salt+tracer transport.
         self._method(core, "tendency_with_report", "rhs_ocean_temperature_tendency")
         self._method(core, "fields", "rhs_temperature_entropy_fields")
+        # Distinguish Gibbs/temperature reconstruction from repeated checks.
+        # All three wrappers are observational and retain every validation.
+        self._method(ocean, "check", "rhs_temperature_ocean_check")
+        self._method(coupled.ridge, "check", "rhs_ridge_validation")
+        self._method(ocean.ocean.reference, "evaluate", "rhs_caloric_reference_evaluate")
         from vfs.ocean.stratified import transport
         self._method(transport, "evaluate", "rhs_conservative_transport_total")
         # The Roquet path calls the shared entropy/Gibbs parent evaluator.
@@ -113,6 +118,8 @@ def _profile_line_pass(kwargs, intervals):
             ("local", transport._local_target_fields),
             ("parent", equations.evaluate),
             ("parent", equations.bounded_transport),
+            ("temperature", __import__("model").TemperatureOcean.fields),
+            ("temperature", __import__("system").TemperatureSystem.check),
         )
     }
     counts = defaultdict(int)
