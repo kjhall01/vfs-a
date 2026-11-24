@@ -41,7 +41,7 @@ def test_ocean_rhs_instrument_preserves_coupled_state_and_covers_real_rhs(
     for region in (
         "ocean_ice_rhs", "rhs_coupled_ocean_ice",
         "rhs_ocean_temperature_tendency", "rhs_temperature_entropy_fields",
-        "rhs_conservative_transport_total", "rhs_bounded_transport",
+        "rhs_conservative_transport_total", "rhs_parent_gibbs_transport",
         "rhs_ice_transport", "rhs_ice_ridging",
     ):
         assert counts.get(region, 0) > 0, (region, counts)
