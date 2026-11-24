@@ -210,3 +210,60 @@ def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
     assert isinstance(calls[-1],dict)
     assert calls[-1] is not calls[-2]
     assert all(k in calls[-1] for k in ('q','high','donor','anti'))
+
+
+@pytest.mark.parametrize('kind', ['front', 'tilted', 'near_fresh', 'upper_salt'])
+@pytest.mark.parametrize('coast', [False, True])
+def test_batched_incidence_matches_four_pass_reference(probe, kind, coast, monkeypatch):
+    """Compare full active ocean RHS, ledger, and AD—not just flux sums."""
+    from dataclasses import fields, is_dataclass
+    from vfs.ocean.stratified import transport as active, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    model, frozen, energy = probe.q.p.case(kind, coast)
+    state = EntropyState(frozen.u_e, frozen.h, frozen.entropy_h,
+                         frozen.salt_h, frozen.tracer_h,
+                         frozen.mesh, frozen.column)
+    e = EntropyEnergy(model.dynamics.energy, energy.reference)
+    original = active._local_target_fields
+
+    def evaluate(x, *, batched):
+        if batched:
+            return active.evaluate(model, x, 10., e)
+        def old(*args, **kwargs):
+            return original(*args, **{**kwargs, 'batch_incidence': False})
+        with monkeypatch.context() as p:
+            p.setattr(active, '_local_target_fields', old)
+            return active.evaluate(model, x, 10., e)
+
+    def exact(a, b):
+        if isinstance(a, torch.Tensor):
+            assert torch.equal(a, b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh', 'column'):
+                    exact(getattr(a, field.name), getattr(b, field.name))
+        elif isinstance(a, (tuple, list)):
+            for aa, bb in zip(a, b):
+                exact(aa, bb)
+        else:
+            assert a == b
+
+    with torch.no_grad():
+        a, la = evaluate(state, batched=True)
+        b, lb = evaluate(state, batched=False)
+        exact(a, b)
+        exact(la, lb)
+
+    def gradients(batched):
+        keys = ('u_e', 'h', 'entropy_h', 'salt_h')
+        leaves = [getattr(state, k).clone().detach().requires_grad_(True)
+                  for k in keys]
+        x = replace(state, **dict(zip(keys, leaves)))
+        rhs, report = evaluate(x, batched=batched)
+        loss = (rhs.u_e.square().sum() + rhs.h.square().sum()
+                + rhs.entropy_h.square().sum() + rhs.salt_h.square().sum()
+                + 1e-8 * report.face_work.square().sum())
+        return torch.autograd.grad(loss, leaves)
+
+    for a, b in zip(gradients(True), gradients(False)):
+        torch.testing.assert_close(a, b, rtol=1e-12, atol=1e-10)
