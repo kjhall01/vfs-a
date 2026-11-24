@@ -176,7 +176,7 @@ def _profile_line_pass(kwargs, intervals):
         source_lines=lines,
     )
     (out / "ocean_transport_lines.json").write_text(
-        json.dumps(result, indent=2, allow_nan=False) + "\\n"
+        json.dumps(result, indent=2, allow_nan=False) + "\n"
     )
     head = [
         "Ocean transport statement costs (line-inclusive, heavily instrumented)",
@@ -192,8 +192,8 @@ def _profile_line_pass(kwargs, intervals):
             f"{row['elapsed_s']:10.3f} {row['calls']:7d} "
             f"{row['region'][:32]:32} {row['line']:5d} {row['source']}"
         )
-    (out / "ocean_transport_lines.txt").write_text("\\n".join(head)+"\\n")
-    print("\\n".join(head[:35]), flush=True)
+    (out / "ocean_transport_lines.txt").write_text("\n".join(head)+"\n")
+    print("\n".join(head[:35]), flush=True)
     return result
 
 
@@ -226,7 +226,7 @@ if __name__ == "__main__":
                 end_seconds=tracing["model_end_seconds"],
             )
             (Path(kw["output"]) / "profile.json").write_text(
-                __import__("json").dumps(result, indent=2, allow_nan=False)+"\\n"
+                __import__("json").dumps(result, indent=2, allow_nan=False)+"\n"
             )
             return result, a, s
 
