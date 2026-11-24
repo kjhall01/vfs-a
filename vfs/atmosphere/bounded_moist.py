@@ -173,6 +173,10 @@ class BoundedGibbs:
             limiter_force=limiter_force,
             limiter_work=work,
             carrier=F,
+            # Immutable per-stage carrier inputs shared with passive cloud
+            # transport. These are the exact tensors used by limited_traces;
+            # do not recompute the pressure/continuity graph in the caller.
+            carrier_graph=(mass, i, j, F),
             heat=heat,
             entropy_source=entropy_source.reshape_as(specific_entropy),
             face_entropy=face_entropy,
