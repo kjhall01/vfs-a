@@ -248,6 +248,19 @@ class WorkLedger:
     gibbs_identity: torch.Tensor
 
 
+@dataclass(frozen=True)
+class ParentWorkSummary:
+    """Only parent quantities consumed by a subsequent local-work correction.
+
+    Parent Euler updates retain the complete WorkLedger. A composed front
+    substitutes its own authoritative entropy source and scalar flux rates.
+    """
+    transport: AdmissibleLedger
+    face_work: torch.Tensor
+    force_correction: torch.Tensor
+    gibbs_identity: torch.Tensor
+
+
 class _StageEvaluation:
     """Work shared only within one RHS evaluation of one unchanged state.
 
@@ -268,7 +281,7 @@ class _StageEvaluation:
         self.transport_scratch = None  # only opt-in composed Roquet stages
 
 
-def evaluate(model, state, dt, energy, *, _stage=None):
+def evaluate(model, state, dt, energy, *, _stage=None, _composed=False):
     stage = _StageEvaluation(model, state, dt, energy) if _stage is None else _stage
     physical, eta, salt, face = stage.physical, stage.eta, stage.salt, stage.face
     velocity = momentum(model, state, energy, physical, eta, salt,
@@ -281,19 +294,29 @@ def evaluate(model, state, dt, energy, *, _stage=None):
     covector = torch.stack([g[k]/area for k in ('entropy_h', 'salt_h')], -1).reshape(-1, 2)
     per_carrier = ((covector[ledger.j]-covector[ledger.i])*ledger.trace_change[:, :2]).sum(-1)
     work = ledger.carrier*per_carrier
-    heat = (-work).clamp_min(0)
     mechanical = torch.where(work > 0, per_carrier, torch.zeros_like(per_carrier))
     coefficient = g['entropy_h'].flatten()
     wet = (energy.mass_area(state) > 0).expand_as(state.h).flatten()
     if not torch.isfinite(coefficient).all() or (coefficient[wet] <= 0).any():
         raise FloatingPointError('nonpositive entropy energy derivative')
-    source = torch.zeros_like(coefficient).index_add(0, ledger.i, .5*heat/coefficient[ledger.i])
-    source = source.index_add(0, ledger.j, .5*heat/coefficient[ledger.j]).reshape_as(state.h)
     active = slice(None) if model.domain is None else model.domain.active_edge
     correction = torch.zeros_like(state.u_e)
     correction[active] = -mechanical.reshape_as(correction[active])/(model.dynamics.rho0*model.mesh.dc_edge[active, None])
-    rates = divergence(ledger.i, ledger.j, ledger.integrated_flux/dt, nodes).reshape(*state.h.shape, -1)/area[..., None]
     h_rate = divergence(ledger.i, ledger.j, ledger.carrier, nodes).reshape_as(state.h)/area
+    if _composed:
+        # The local-work evaluator replaces all three scalar tendencies and
+        # deposits its OWN energy-consistent heating; computing the parent's
+        # provisional scalar divergences/entropy heating is redundant.
+        # Keep the parent's physical checks, face work, pressure force, and
+        # authoritative ledger unchanged.
+        rhs = replace(state, u_e=velocity+correction, h=h_rate)
+        return rhs, ParentWorkSummary(
+            ledger, work, correction, face['identity'][active]
+        )
+    heat = (-work).clamp_min(0)
+    source = torch.zeros_like(coefficient).index_add(0, ledger.i, .5*heat/coefficient[ledger.i])
+    source = source.index_add(0, ledger.j, .5*heat/coefficient[ledger.j]).reshape_as(state.h)
+    rates = divergence(ledger.i, ledger.j, ledger.integrated_flux/dt, nodes).reshape(*state.h.shape, -1)/area[..., None]
     rhs = replace(state, u_e=velocity+correction, h=h_rate, entropy_h=rates[..., 0]+source,
                   salt_h=rates[..., 1], tracer_h=None if state.tracer_h is None else rates[..., 2:])
     return rhs, WorkLedger(ledger, work, heat, source, correction, face['identity'][active])
