@@ -180,9 +180,11 @@ def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeyp
               rhs.entropy_h.square().sum()+rhs.salt_h.square().sum()+
               report.face_work.square().sum()*1e-8)
         return [v.detach() for v in torch.autograd.grad(loss,inputs)]
-    # This is more stringent than approximate forward endpoint agreement.
+    # Tensor sharing can change the association order of reverse-mode
+    # accumulation even when the complete forward RHS/ledgers are bitwise.
+    # Require tight FP64 gradient agreement without claiming bitwise AD.
     for a,b in zip(grad(True),grad(False)):
-        assert torch.equal(a,b)
+        torch.testing.assert_close(a,b,rtol=1e-12,atol=1e-10)
 
 
 def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
