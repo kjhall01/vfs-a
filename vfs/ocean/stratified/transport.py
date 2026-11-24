@@ -119,7 +119,9 @@ class FrontWorkLedger(parent.WorkLedger):
 def evaluate(model, state, dt, energy, *, physical=None):
     stage = parent._StageEvaluation(model, state, dt, energy, physical=physical)
     stage.transport_scratch = {}
-    original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
+    original_rhs, original = parent.evaluate(
+        model, state, dt, energy, _stage=stage, _composed=True
+    )
     eta, salt, face = stage.eta, stage.salt, stage.face
     baseline, low, high, target_beta, target_change = _local_target_fields(model, state, dt, eta, salt,
                                      face['composition_entropy'], baseline=original.transport,
