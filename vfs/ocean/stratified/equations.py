@@ -162,7 +162,7 @@ class AdmissibleLedger:
     outflow_fraction: torch.Tensor
 
 
-def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy, *, low=None):
+def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy, *, low=None, scratch=None):
     """Gibbs high flux, donor reference, all-face salt/passive amount budgets.
 
     Entropy change is attached to the ACTUAL salt trace change using the
@@ -183,6 +183,11 @@ def bounded_transport(model, state, dt, eta_high, salt_high, composition_entropy
     donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
     high_flux = (dt*low.carrier)[:, None]*high
     anti = high_flux-low.donor_integrated_flux
+    # This exact stage's Roquet local-work correction uses the same donor and
+    # Gibbs high traces. Only an explicit stage-local scratch receives them.
+    # The ordinary parent interface, reports and arithmetic are unchanged.
+    if scratch is not None:
+        scratch.update(q=q, high=high, donor=donor, anti=anti)
     baseline = low.low_amounts.reshape_as(q)
     salt_upper = 42*low.volume.flatten()
     def ratio(budget, demand):
@@ -260,6 +265,7 @@ class _StageEvaluation:
             dynamic_only=True)
         self.gradient = energy._gradients(state, self.physical, ref, old)
         self.low = transport_for(model).advance(state.transport_view(), dt)
+        self.transport_scratch = None  # only opt-in composed Roquet stages
 
 
 def evaluate(model, state, dt, energy, *, _stage=None):
@@ -268,7 +274,8 @@ def evaluate(model, state, dt, energy, *, _stage=None):
     velocity = momentum(model, state, energy, physical, eta, salt,
                         gradient=stage.dynamic_gradient)
     ledger = bounded_transport(model, state, dt, eta, salt,
-                               face['composition_entropy'], low=stage.low)
+                               face['composition_entropy'], low=stage.low,
+                               scratch=stage.transport_scratch)
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
     g = stage.gradient
     covector = torch.stack([g[k]/area for k in ('entropy_h', 'salt_h')], -1).reshape(-1, 2)
