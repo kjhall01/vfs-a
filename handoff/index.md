@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
+
 The [coupled performance baseline and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) covers the integrated ocean and atmospheric optimizations, optional timesteps, profiler and measured CPU timings.
 
 

@@ -10,6 +10,7 @@ from dataclasses import dataclass, replace
 import math
 import torch
 from .ocean_ice import OceanIceReceiver
+from .ice_phase_energy import ReducedPhaseEnergy
 from snow import SnowState, SnowOceanIce, SnowPhase
 from category_phase import CategoryFootprint, bisect_phase_mass
 from ocean_ice import safe
@@ -78,6 +79,31 @@ class ThermalPhase(SnowPhase):
 
         result[rows] = bisect_phase_mass(upper[rows], target[rows], energy_at_mass)
         return result
+
+    def _solve_mass(self, initial, wet, frozen, upper, target, melt_energy):
+        if torch.is_grad_enabled() or target.dtype != torch.float64:
+            return super()._solve_mass(initial, wet, frozen, upper, target, melt_energy)
+        rows = frozen[:, 0].nonzero(as_tuple=True)[0]
+        mass = torch.zeros_like(target)
+        # Warm wet columns stay at zero mass. Their reference monotonicity
+        # check is the same on all three Newton iterations.
+        warm = (wet & ~frozen)[:, 0].nonzero(as_tuple=True)[0]
+        if warm.numel():
+            warm_curve = ReducedPhaseEnergy(self, initial, warm)
+            warm_curve.decreasing_slope(mass[warm])
+        if rows.numel():
+            curve = ReducedPhaseEnergy(self, initial, rows)
+            available = target[rows] - melt_energy[rows]
+            bound = upper[rows]
+            m = bisect_phase_mass(bound, available, curve.value)
+            for _ in range(2):
+                m = curve.refine(m, curve.value(m) - available, bound)
+            mass[rows] = m
+            # The last Newton residual uses the original Hamiltonian on the
+            # reconstructed state, including its floating-point roundoff.
+            stored_energy = self.thermal_energy(self.phase_state(initial, mass))
+            mass[rows] = curve.refine(m, stored_energy[rows] - target[rows], bound)
+        return mass
 
     def energy_values(self, initial, top, ct, salinity, eta, ice):
         return super().energy_values(initial, top, ct, salinity, eta, ice) + self.cold(

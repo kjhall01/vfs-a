@@ -1,5 +1,7 @@
 # Pass 4 — physical-field workflow
 
+The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
+
 ## Bounded atmospheric stage reuse
 
 The four-thread, 4,096-cell Linux atmosphere-plus-cloud benchmark measured
