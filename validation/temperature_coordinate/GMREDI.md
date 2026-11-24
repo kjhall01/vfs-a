@@ -224,3 +224,57 @@ is now available as `EddyBackscatter(viscosity=..., timescale=..., fraction=...)
 Configure `RoquetOcean(..., backscatter=...)` to pair its momentum and reservoir
 tendencies within each resolved RK stage. GM/Redi and decay remain separately
 composed; their paths and defaults are unchanged.
+
+## Quadratic funding for donor GM transport
+
+Set `gm_energy_scheme: quadratic_funded_donor_parcel` in a campaign configuration
+or add `--set gm_energy_scheme=quadratic_funded_donor_parcel` to a fresh
+`tools/profile_coupled.py` run. This is an opt-in alternative to repeated
+local halving in `funded_donor_parcel`.
+
+Let `E0` be the starting layer inventory $he$, and `E1` its value after
+transport and energy settlement on a trial that overspends. If every circulation
+incident on that layer is scaled by the same positive fraction $f$, donor
+identities stay fixed and the tracer increments and energy inflow scale with
+$f$. The only nonlinear term in the fixed-geometry Roquet Hamiltonian
+is the quadratic temperature potential. Writing $a$ for the layer coefficient
+of conservative temperature squared, the remaining inventory is
+
+$$
+E(f)=(1-f)E_0+f E_1+
+  a\frac{[\Delta(h\,\mathrm{CT})]^2}{h}f(1-f).
+$$
+
+For each unfunded cell-layer, evaluate the twenty original halving fractions
+together and request the largest affordable one. Each shared interface takes
+the smallest of the four requests from its two columns and two adjacent layers.
+If no candidate is affordable along that direction, request a single halving.
+All other interfaces retain their original transport.
+
+Different local requests can change the direction of a shared flux. The
+operator rebuilds horizontal and vertical carriers, chooses their actual
+donors, and settles the full local Hamiltonian on the stored endpoint. If the
+rebuilt state is still underfunded, a second prediction uses its actual
+transport. A rejected second proposal or other invalid trial returns to the
+original local halving sequence, with its full twenty attempts available.
+The `gm_limiting_passes` report counts the actual retries, including rejected
+predictions. The scheme can choose a different funded streamfunction when
+constraints interact. Redi still evaluates its slopes on the accepted GM state
+and enforces its own energy budget.
+
+To time the mature-ocean case on Derecho, run from the repository on an
+allocated GPU. Supply the original campaign manifest, checkpoint, exact
+mesh, and PyAM21 source tree.
+
+```bash
+python -I tools/benchmark_gm_funding.py \
+  --manifest "$RUN/manifest.json" --checkpoint "$RUN/last_good_restart.pt" \
+  --mesh "$MESH" --source "$PYAM21" --device cuda:0 --threads 4 --steps 8
+```
+
+The diagnostic checks checkpoint and mesh identity against the manifest, builds
+the campaign geometry, then reads only the ocean fields for the experiment.
+It alternates solver order, synchronizes the device at the timing boundaries,
+and compares complete ocean states and reports after every pair. Later pairs
+start from the reference solver's next ocean state. The diagnostic does not
+advance the atmosphere, sea ice, radiation, or the production checkpoint.

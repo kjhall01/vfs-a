@@ -2,6 +2,49 @@
 
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
 
+## Local GM funding on the mature 4,096-cell ocean
+
+The optional [quadratic donor funding scheme](../validation/temperature_coordinate/GMREDI.md#quadratic-funding-for-donor-gm-transport)
+predicts a local streamfunction reduction from the Roquet Hamiltonian and
+verifies it with the original donor transport and energy settlement. It can
+return to the original halving sequence when constraints interact.
+
+CPU float64, eager PyTorch 2.14.1, four threads, 4,096 cells, 40 ocean layers,
+600 s per substep. Wall times cover complete GM/Redi calls with positivity
+limiting and all report fields. Four warmup calls were excluded per case.
+
+| Ocean input | Paired calls | Local halving, total s | Quadratic, total s | Speedup |
+|---|---:|---:|---:|---:|
+| Fresh initial condition | 12 | 3.737 | 3.720 | 1.00× |
+| Day 21.375 checkpoint and seven successive GM/Redi states | 16 | 17.956 | 6.338 | 2.83× |
+
+Each mature input was timed twice in opposite solver orders. The original
+retry counts over the eight states were 7, 10, 10, 10, 9, 10, 10, 10.
+The quadratic counts were 1, 1, 1, 1, 1, 2, 1, 1. Both schemes returned
+bitwise-equal prognostic fields, streamfunctions, and reports apart from
+the retry counter. The largest mature GM local energy residual divided by
+layer mass was 2.06e-16 J/kg. The fresh ocean needed zero retries.
+
+The campaign ocean/ice/snow dynamics branch on the same restart also ran
+with each policy. Four timing pairs replayed the same 1,200 s interval, with
+two excluded warmups and alternating solver order. Mean wall time fell from
+6.049 to 5.012 s (1.21×). Total GM retries fell from thirteen to three across
+the two substeps. After ocean dynamics and mixing, the second GM substep
+chose different funded streamfunctions at two of 503,562 stored entries.
+At the end of the water branch, maximum temperature and specific eddy-energy
+differences were 6.48e-9 K and 5.75e-8 J/kg. Salinity, passive tracer, layer
+thickness and velocities matched bitwise. Both updated reservoirs stayed
+nonnegative. Maximum local residuals per layer mass on the quadratic path
+were 2.07e-16 J/kg for GM and 1.56e-15 J/kg for Redi. This branch ends before
+the atmosphere/surface exchange and ALE.
+
+Installed-wheel checks (115 passed) cover an unlimited donor update, an isolated shortfall,
+overlapping shortfalls in adjacent layers, finite-amplitude quadratic work,
+recovery from deliberately rejected predictions, explicit CFL and Redi
+rejection, and two coupled intervals on a small grid. The historical corrected
+and dry portable fixtures pass (142 and 93 quantities). Accelerator timing,
+coupled throughput at day 21 and long-run equivalence remain unmeasured.
+
 ## Bounded atmospheric stage reuse
 
 The four-thread, 4,096-cell Linux atmosphere-plus-cloud benchmark measured

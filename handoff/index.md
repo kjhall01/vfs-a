@@ -2,6 +2,12 @@
 
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
 
+[Quadratic GM funding](../docs/PASS4_RESULTS.md#local-gm-funding-on-the-mature-4096-cell-ocean)
+reduced complete GM/Redi time by 2.83× in a four-thread CPU replay of the
+day-21 ocean. The [operator notes and A100 benchmark command](../validation/temperature_coordinate/GMREDI.md#quadratic-funding-for-donor-gm-transport)
+cover the opt-in scheme, local energy checks, and fallback.
+
+
 The [coupled performance baseline and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) covers the integrated ocean and atmospheric optimizations, optional timesteps, profiler and measured CPU timings.
 
 

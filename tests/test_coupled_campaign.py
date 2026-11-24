@@ -207,11 +207,13 @@ def test_noncommensurate_process_cadences_fail_closed(config):
             replace(config, **changes).validate()
 
 
-def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config):
+@pytest.mark.parametrize("scheme", ["midpoint", "quadratic_funded_donor_parcel"])
+def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config, scheme):
     # Both closures run half as often while retaining their full elapsed dt.
     # Radiation and atmosphere--ocean transfer remain one atomic physics call.
     scheduled = replace(
         config,
+        gm_energy_scheme=scheme,
         physics_dt=120,
         radiation_dt=120,
         ocean_dt=60,
