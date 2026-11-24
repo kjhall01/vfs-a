@@ -65,6 +65,185 @@ def test_radiation_off_needs_only_bomex_namelist(source, config):
     assert adapter.radiation is None
 
 
+def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
+    # Full campaign path: ThermalSnowOceanIce must forward the selected
+    # integrator to the moving snow/ocean/ice dynamics, without rejecting it
+    # as an independent surface forcing option.
+    candidate = replace(config, ocean_dynamics_integrator="ssprk43")
+    assert candidate.validate() == candidate
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(candidate, source, Path("synthetic"))
+    with torch.no_grad():
+        final_air, final_sea, report = c.advance(
+            adapter, air, receiver, sea, candidate.physics_dt, candidate
+        )
+    assert final_air.time_seconds == candidate.physics_dt
+    receiver.snow.check(final_sea)
+    assert report["ale_steps"] == 1
+    assert torch.isfinite(final_sea.coupled.ocean.ocean.h).all()
+
+
+def test_explicit_legacy_cadences_reproduce_default_coupled_step(source, config):
+    # The scheduler MUST not change physics ordering or numerical trajectory
+    # when every closure is scheduled at its original frequency.
+    explicit = replace(
+        config, mixing_dt=config.ocean_dt, mesoscale_dt=config.ocean_dt,
+        ale_dt=config.physics_dt,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    with torch.no_grad():
+        a, sa, ra = c.advance(adapter, air, receiver, sea, config.physics_dt, config)
+        b, sb, rb = c.advance(adapter, air, receiver, sea, config.physics_dt, explicit)
+    same_tree(
+        c.pack(adapter, a, receiver, sa, "equivalence", {}),
+        c.pack(adapter, b, receiver, sb, "equivalence", {}),
+    )
+    assert ra == rb
+
+
+def test_40_minute_physics_multirate_smoke(source, config):
+    schedule = replace(
+        config,
+        physics_dt=2400, radiation_dt=7200,
+        atmosphere_dt=600, ocean_dt=600,
+        mixing_dt=1200, mesoscale_dt=1200, ale_dt=7200,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(schedule, source, Path("synthetic"))
+    with torch.no_grad():
+        air, sea, report = c.advance(
+            adapter, air, receiver, sea, schedule.physics_dt, schedule
+        )
+    assert air.time_seconds == 2400
+    assert report["gmredi_steps"] == schedule.eddy_substeps * 2
+    assert report["ale_steps"] == 0
+    receiver.snow.check(sea)
+    adapter.check(air)
+    assert torch.isfinite(torch.tensor(report["surface_residual"]))
+
+
+def test_multirate_throughput_paired_small_coupled_case(source, config, capsys):
+    """Exploratory full-physics CPU timing; no fragile speed threshold.
+
+    Each method advances 2400 seconds from the SAME initial state. AM2 column
+    physics, radiative cache, surface/ice exchange, vertical mixing, GM–Redi,
+    phase and ALE are included. No optical SeaEsf tables are available in CI:
+    the PyAM21 radiation interface uses its tested analytic fixture.
+    """
+    import statistics
+    import time
+
+    reference = replace(
+        config, cells=64, ocean_levels=8, physics_dt=1200,
+        atmosphere_dt=600, ocean_dt=600, radiation_dt=7200,
+        ale_dt=None, mixing_dt=None, mesoscale_dt=None,
+    ).validate()
+    faster = replace(
+        reference, physics_dt=2400, mixing_dt=1200, mesoscale_dt=1200,
+        ale_dt=7200,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(reference, source, Path("synthetic"))
+
+    def measure(cfg):
+        with torch.no_grad():
+            result, water = air, sea
+            totals = {}
+            for _ in range(2400 // cfg.physics_dt):
+                result, water, report = c.advance(
+                    adapter, result, receiver, water, cfg.physics_dt, cfg
+                )
+                totals = report
+        assert result.time_seconds == 2400
+        receiver.snow.check(water)
+        return totals
+
+    # Warm up kernels, avoiding first-time initialization effects.
+    measure(reference)
+    measure(faster)
+    timings = {}
+    for name, cfg in (("reference", reference), ("multirate", faster)):
+        samples = []
+        for _ in range(3):
+            start = time.perf_counter()
+            measure(cfg)
+            samples.append(time.perf_counter() - start)
+        timings[name] = dict(samples_s=samples, median_s=statistics.median(samples))
+    ratio = timings["reference"]["median_s"] / timings["multirate"]["median_s"]
+    print("COUPLED_MULTIRATE_TIMING " + json.dumps({
+        "cells": 64, "atmosphere_levels": reference.atmosphere_levels,
+        "ocean_levels": reference.ocean_levels,
+        "equal_model_seconds": 2400, "threads": reference.threads,
+        **timings, "observed_speedup": ratio,
+        "radiation": "synthetic PyAM21 driver, no SeaEsf tables",
+    }), flush=True)
+
+
+def test_4096_40_multirate_pilot_yaml_is_complete_and_valid():
+    path = Path(__file__).resolve().parents[1] / (
+        "workflows/coupled/aquaplanet_multirate_4096_40.yaml"
+    )
+    cfg = c.CampaignConfig(**yaml.safe_load(path.read_text())).validate()
+    assert (cfg.cells, cfg.atmosphere_levels, cfg.ocean_levels) == (4096, 32, 40)
+    assert (cfg.physics_dt, cfg.atmosphere_dt, cfg.ocean_dt) == (2400, 600, 600)
+    assert (cfg.mixing_dt, cfg.mesoscale_dt, cfg.ale_dt, cfg.radiation_dt) == (
+        1200, 1200, 7200, 7200
+    )
+    assert cfg.gm_redi and cfg.backscatter and cfg.ale_remap
+    assert cfg.dtype == "float64"
+
+
+def test_noncommensurate_process_cadences_fail_closed(config):
+    for changes in (
+        dict(mixing_dt=59),
+        dict(mixing_dt=180),
+        dict(mesoscale_dt=61),
+        dict(mesoscale_dt=180),
+        dict(ale_dt=61),
+        dict(ale_dt=90),
+    ):
+        with pytest.raises(ValueError):
+            replace(config, **changes).validate()
+
+
+def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config):
+    # Both closures run half as often while retaining their full elapsed dt.
+    # Radiation and atmosphere--ocean transfer remain one atomic physics call.
+    scheduled = replace(
+        config,
+        physics_dt=120,
+        radiation_dt=120,
+        ocean_dt=60,
+        atmosphere_dt=15,
+        mixing_dt=120,
+        mesoscale_dt=120,
+        ale_dt=240,
+    ).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(scheduled, source, Path("synthetic"))
+    with torch.no_grad():
+        air1, sea1, r1 = c.advance(
+            adapter, air, receiver, sea, scheduled.physics_dt, scheduled
+        )
+        air2, sea2, r2 = c.advance(
+            adapter, air1, receiver, sea1, scheduled.physics_dt, scheduled
+        )
+    receiver.snow.check(sea1)
+    receiver.snow.check(sea2)
+    assert air1.time_seconds == 120 and air2.time_seconds == 240
+    assert r1["gmredi_steps"] == r2["gmredi_steps"] == scheduled.eddy_substeps
+    assert r1["eddy_decay_steps"] == r2["eddy_decay_steps"] == 1
+    assert r1["ale_steps"] == 0
+    assert r2["ale_steps"] == 1
+    for report in (r1, r2):
+        assert all(
+            torch.isfinite(torch.tensor(report[key]))
+            for key in ("external", "upstream", "surface_residual", "air_residual")
+        )
+    assert (sea2.coupled.ocean.ocean.salt_h >= 0).all()
+
+
 def test_output_schedule_and_nonleap_year():
     times = c.snapshot_times()
     assert len(times) == 408 and len(set(times)) == 408

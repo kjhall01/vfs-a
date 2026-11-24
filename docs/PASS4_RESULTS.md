@@ -1,5 +1,12 @@
 # Pass 4 — physical-field workflow
 
+## Bounded atmospheric stage reuse
+
+The four-thread, 4,096-cell Linux atmosphere-plus-cloud benchmark measured
+1.73× higher throughput. All five endpoint tensors matched bitwise after
+seven advances. The [benchmark and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) records its scope and the earlier Mac coupled results.
+
+
 ## Two-substep coupled aquaplanet from day zero
 
 The full-depth GM2 preset uses the ordinary campaign entry point. It selects native funded donor-parcel GM, positive-inventory Redi and two 300-second GM/Redi substeps per 600-second ocean dynamics step. It retains ten vertical-mixing substeps and the phase geometry correction for sea ice reaching full coverage. The historical presets retain their original midpoint GM energy transport.

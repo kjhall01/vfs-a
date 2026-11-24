@@ -111,3 +111,58 @@ def test_unknown_source_fails_on_either_side_of_endpoint_restart(path):
         module.verify_compatible_source_delta({**previous, path: "unknown"}, current)
     with pytest.raises(ValueError, match="audited endpoint revision"):
         module.verify_compatible_source_delta(previous, {**current, path: "unknown"})
+
+
+def day15_source():
+    """Reconstruct pinned day-15 manifest from archived source fixtures.
+
+    Changes since the 6e68cb3 fixture are themselves pinned by the day-15
+    checkpoint manifest. Unknown changes must never qualify for a restart.
+    """
+    source, endpoint = endpoint_sources()
+    updated = dict(endpoint)
+    updated.update({
+        "workflows/coupled/campaign.py":
+            "08553df13411dc7fe416711c3fecc2cbcf41b00f1540d01d11f0aba509da0754",
+        "workflows/coupled/restart_compat.py":
+            module.DAY15_ORIGINAL_VERIFIER_SHA,
+        "validation/sea_ice/category_phase.py":
+            "31270fef6cc80a3fa06d23d2304fc9e713b21eb181e98429b3799e8c6d3a56b6",
+        "validation/sea_ice/ocean_ice.py":
+            "48e078d70601e741a68e81a859f99059500d351ee172aa0a85c2eb3e9ac42963",
+        "validation/temperature_coordinate/eddy.py":
+            "b9ab1403e93ef90ad49d755f8cdce9bbad004d0b76fa243fa348d599c60473b2",
+    })
+    return updated
+
+
+def test_day15_restarts_only_into_pinned_flux_fix():
+    original = day15_source()
+    fixed = dict(original)
+    fixed[module.DAY15_ENERGY_PATH] = module.DAY15_FIXED_ENERGY_SHA
+    fixed[module.VERIFIER] = "current verifier source SHA256"  # excluded from digest
+    assert module._without_verifier_digest(original) == module.DAY15_ORIGINAL_SOURCES_DIGEST
+    assert module._without_verifier_digest(fixed) == module.DAY15_FIXED_SOURCES_DIGEST
+    assert module.verify_compatible_source_delta(original, fixed) == {
+        "endpoint_fix_files": [],
+        "shared_flux_fix_files": ["workflows/pyam21/energy.py"],
+    }
+
+
+def test_day15_restart_rejects_source_drift_and_wrong_origin():
+    original = day15_source()
+    fixed = dict(original)
+    fixed[module.DAY15_ENERGY_PATH] = module.DAY15_FIXED_ENERGY_SHA
+    fixed[module.VERIFIER] = "current verifier source SHA256"
+    with pytest.raises(ValueError, match="audited pair"):
+        module.verify_compatible_source_delta(
+            original, {**fixed, "vfs/ocean/transport.py": "unreviewed"}
+        )
+    with pytest.raises(ValueError, match="audited pair"):
+        module.verify_compatible_source_delta(
+            {**original, "vfs/ocean/transport.py": "unreviewed"}, fixed
+        )
+    with pytest.raises(ValueError, match="pinned fixed"):
+        module.verify_compatible_source_delta(
+            original, {**fixed, module.DAY15_ENERGY_PATH: "unreviewed"}
+        )

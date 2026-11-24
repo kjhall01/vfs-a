@@ -385,6 +385,69 @@ def test_cloud_dynamics_retains_core_bitwise_and_conserves_passive_amount(model)
     assert end.time_seconds == 0
 
 
+def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
+    """Same state, same RK arithmetic, no extra graph or transport primitive."""
+    from unittest.mock import patch
+    import workflows.pyam21.dynamics as dynamics_module
+    from vfs.atmosphere.bounded_transport import graph as original_graph
+    adapter, state = initial(model)
+    # Existing moist Euler calls graph internally; the cloud ledger must not
+    # independently call dynamics_module.graph after the authoritative stage.
+    with patch.object(dynamics_module, "graph",
+                      side_effect=AssertionError("cloud recomputed graph")):
+        optimized = dynamics_module.advance_dynamics(adapter, state, 1)
+
+    def baseline_cloud_step(current):
+        area = model.mesh.cell_area[:, None]
+        mass = lambda s: area * interface_pressure_mass(
+            s.column.interface_pressure(s.ps).diff()
+        )
+        start = current.atmosphere
+        initial_cloud_amount = mass(start) * current.cloud_fraction
+        def old_euler(s, amount):
+            end, _ = model.transport.euler_with_info(s, 1)
+            m, i, j, F = original_graph(model.dynamics, s)
+            q = (amount / m).flatten()
+            fractions = torch.stack((1 - q, q), -1)
+            face = 0.5 * (fractions[i] + fractions[j])
+            from vfs.atmosphere.bounded_transport import bounded_transfer
+            amounts, _, _ = bounded_transfer(
+                m.flatten(), m.flatten()[:, None] * fractions,
+                i, j, F, F[:, None] * face,
+                target_mass=mass(end).flatten(),
+            )
+            return end, amounts[:, 1].reshape_as(m)
+        s1, c1 = old_euler(start, initial_cloud_amount)
+        s1e, c1e = old_euler(s1, c1)
+        s2 = start.combine(s1e, a=0.75, b=0.25)
+        c2 = 0.75 * initial_cloud_amount + 0.25 * c1e
+        s2e, c2e = old_euler(s2, c2)
+        end = start.combine(s2e, a=1 / 3, b=2 / 3)
+        cloud = ((1 / 3) * initial_cloud_amount + (2 / 3) * c2e) / mass(end)
+        return end, cloud
+
+    old_air, old_cloud = baseline_cloud_step(state)
+    for name in ("u_e", "ps", "water_content", "entropy_content"):
+        assert torch.equal(getattr(optimized.atmosphere, name), getattr(old_air, name))
+    assert torch.equal(optimized.cloud_fraction, old_cloud)
+
+
+def test_bounded_euler_reports_authoritative_carrier_graph(model):
+    adapter, state = initial(model)
+    rhs, info = model.transport.evaluate(
+        state.atmosphere, 1, include_carrier_graph=True
+    )
+    mass, i, j, flux = info["carrier_graph"]
+    # Ordinary public report consumers retain the original schema.
+    _, default_info = model.transport.evaluate(state.atmosphere, 1)
+    assert "carrier_graph" not in default_info
+    assert flux is info["carrier"]
+    assert mass.shape == state.atmosphere.entropy_content.shape
+    assert i.ndim == j.ndim == flux.ndim == 1
+    assert i.shape == j.shape == flux.shape
+    assert torch.all(torch.isfinite(flux))
+
+
 def test_split_step_calls_physics_once_and_rest_omega_is_zero(model):
     adapter, state = initial(model)
     assert pressure_velocity(adapter, state).abs().max() == 0
@@ -756,3 +819,34 @@ def test_cloud_fraction_cancellation_requires_consistent_process_terms(model):
     out["rdt"][cell, level, 3] = torch.finfo(cloud.dtype).max
     with pytest.raises(ValueError, match="invalid explicit PyAM21 endpoint or tendency reconstruction"):
         apply_output(adapter, state, out, dt)
+
+
+def test_inadmissible_column_detail_identifies_field_and_location_without_clipping():
+    from workflows.pyam21.adapter import _inadmissible_column_detail
+
+    eps = torch.finfo(torch.float64).eps
+    t = torch.full((3, 2), 275.0, dtype=torch.float64)
+    q = torch.zeros((3, 2, 4), dtype=torch.float64)
+    q[..., 0] = 0.005
+    q[..., 3] = 0.4
+    rates = {
+        "tdt": torch.zeros_like(t),
+        "rdt": torch.zeros_like(q),
+        "udt": torch.zeros_like(t),
+        "vdt": torch.zeros_like(t),
+    }
+    tol = torch.zeros(2, dtype=t.dtype)
+    qbad = q.clone()
+    qbad[1, 0, 0] = -1e-4
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
+    assert "field=vapor_mass_fraction cell=1 level=0" in detail
+    assert "value=-0.0001" in detail
+    qbad = q.clone()
+    qbad[2, 1, 3] = 1.01
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
+    assert "field=cloud_fraction cell=2 level=1" in detail
+    tb = t.clone()
+    tb[0, 1] = 0
+    detail = _inadmissible_column_detail(tb, q, rates, eps, tol)
+    assert "field=temperature_K cell=0 level=1" in detail
+    assert "no endpoint violation" in _inadmissible_column_detail(t, q, rates, eps, tol)

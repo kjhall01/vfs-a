@@ -116,7 +116,12 @@ class SnowOceanIce:
         self.phase = CategoryThermodynamics(coupled)
 
     def check(self, state):
+        """Validate ocean, sea ice, and snow at an externally supplied state."""
         self.coupled.check(state.coupled)
+        self._check_snow_stores(state)
+
+    def _check_snow_stores(self, state):
+        """Validate snow only when the same coupled stage is checked below."""
         m = state.snow_mass
         total = self.hamiltonian.slab.parameters.density * state.coupled.ice.volume
         if (
@@ -262,7 +267,10 @@ class SnowOceanIce:
         return result, report.external_heat.sum(), (area * melt).sum()
 
     def tendency(self, state, dt, **options):
-        self.check(state)
+        # Coupled.tendency performs the complete ocean/ice stage check on the
+        # identical unmodified state. Check the snow store here; do not repeat
+        # the expensive ocean temperature/caloric validation beforehand.
+        self._check_snow_stores(state)
         rhs, report = self.coupled.tendency(state.coupled, dt, **options)
         ice = state.coupled.ice
         mesh = state.coupled.ocean.ocean.mesh
@@ -299,7 +307,14 @@ class SnowOceanIce:
             (1 - weight) * first.snow_mass + weight * second.snow_mass,
         )
 
-    def dynamics_step(self, state, dt, **options):
+    def dynamics_step(self, state, dt, *, integrator="ssprk3", **options):
+        """Choose the explicit ocean–ice tableau without changing stage physics."""
+        if integrator == "ssprk43":
+            from explicit_rk import ssprk43_dynamics
+            return ssprk43_dynamics(self, state, dt, **options)
+        if integrator != "ssprk3":
+            raise ValueError("ocean–ice integrator must be ssprk3 or ssprk43")
+        # Preserve the historical three-stage path, including all arithmetic.
         r0, p0 = self.tendency(state, dt, **options)
         first = self.add(state, r0, dt)
         r1, p1 = self.tendency(first, dt, **options)
@@ -308,6 +323,32 @@ class SnowOceanIce:
         end = self.blend(state, self.add(middle, r2, dt), 2 / 3)
         self.check(end)
         return end, dt * (p0.wind_power / 6 + p1.wind_power / 6 + 2 * p2.wind_power / 3)
+
+    def mixing_step(self, state, dt, *, stage_callback=None):
+        """Apply the existing conservative column closure at its own cadence.
+
+        The source state already includes the preceding dynamics/ice operations;
+        this wrapper changes no mixing equations, TKE funding, or energy checks.
+        It preserves snow and thermal-ice storage on the returned state.
+        """
+        model = self.coupled.ocean
+        if model.closure is None:
+            return state
+        original = state.coupled.ocean
+        mixed, k, _ = model.closure.apply(
+            model.ocean, original.ocean, original.tke_h, dt
+        )
+        if not torch.equal(mixed.h, original.ocean.h):
+            raise ValueError("snow coupling requires fixed-geometry mixing")
+        state = replace(
+            state,
+            coupled=replace(
+                state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
+            ),
+        )
+        if stage_callback is not None:
+            stage_callback("vertical_tke_mixing", state, 0.0)
+        return state
 
     def step(
         self,
@@ -321,6 +362,8 @@ class SnowOceanIce:
         wind_velocity=None,
         freshwater=None,
         stage_callback=None,
+        dynamics_integrator="ssprk3",
+        apply_mixing=True,
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
@@ -365,26 +408,13 @@ class SnowOceanIce:
         if stage_callback is not None:
             stage_callback("implicit_drag_half_0", state, 0.0)
         state, work = self.dynamics_step(
-            state, dt, wind_velocity=wind_velocity, drag=False
+            state, dt, wind_velocity=wind_velocity, drag=False,
+            integrator=dynamics_integrator,
         )
         if stage_callback is not None:
-            stage_callback("coupled_ssprk3", state, work)
-        model = self.coupled.ocean
-        if model.closure is not None:
-            original = state.coupled.ocean
-            mixed, k, _ = model.closure.apply(
-                model.ocean, original.ocean, original.tke_h, dt
-            )
-            if not torch.equal(mixed.h, original.ocean.h):
-                raise ValueError("snow coupling requires fixed-geometry mixing")
-            state = replace(
-                state,
-                coupled=replace(
-                    state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
-                ),
-            )
-            if stage_callback is not None:
-                stage_callback("vertical_tke_mixing", state, 0.0)
+            stage_callback("coupled_" + dynamics_integrator, state, work)
+        if apply_mixing:
+            state = self.mixing_step(state, dt, stage_callback=stage_callback)
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         if stage_callback is not None:

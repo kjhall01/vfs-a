@@ -65,11 +65,16 @@ class _RediGradient:
         self.relative = relative
 
     def vertical(self, values):
+        # This stencil has exactly three entries. Unpack them rather than
+        # launching a Python loop; keep the original left-to-right sum.
         flat = values.reshape(-1, values.shape[-1])
-        result = torch.zeros_like(values)
-        for k in range(3):
-            result = result + self.weights[..., k, None] * flat[self.ids[..., k]]
-        return result
+        i0, i1, i2 = self.ids.unbind(-1)
+        w0, w1, w2 = self.weights.unbind(-1)
+        return (
+            w0[..., None] * flat[i0]
+            + w1[..., None] * flat[i1]
+            + w2[..., None] * flat[i2]
+        )
 
     def apply(self, values):
         dz = self.vertical(values)

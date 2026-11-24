@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from dataclasses import asdict, dataclass, replace
 import hashlib
@@ -22,6 +23,7 @@ if str(ROOT) not in sys.path:
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
 from workflows.coupled.driver import exchange_step
+from workflows.coupled.schedule import ocean_events, event_due
 from workflows.coupled.ice_temperature import (
     ThermalIceReceiver,
     ThermalSnowOceanIce,
@@ -81,6 +83,10 @@ class CampaignConfig:
     physics_dt: int = 1200
     atmosphere_dt: int = 240
     ocean_dt: int = 1200
+    ocean_dynamics_integrator: str = "ssprk3"
+    mixing_dt: int | None = None  # None = every ocean dynamics step
+    mesoscale_dt: int | None = None  # None = every ocean dynamics step
+    ale_dt: int | None = None  # None = every physics exchange
     radiation_dt: int = 3600
     solar_constant: float = 1361.0
     obliquity_degrees: float = 23.44
@@ -111,6 +117,7 @@ class CampaignConfig:
     dtype: str = "float64"
     diagnostic_hours: int = 6
     restart_days: int = 5
+    overlap_dynamics: bool = False
 
     def validate(self):
         validate_precision(self.device, self.dtype)
@@ -139,9 +146,12 @@ class CampaignConfig:
             "backscatter",
             "ale_remap",
             "compile",
+            "overlap_dynamics",
         ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
+        if self.overlap_dynamics and torch.device(self.device).type != "cpu":
+            raise ValueError("overlap_dynamics requires CPU components")
         if self.start_year % 4 == 0 or self.days > 365:
             raise ValueError(
                 "campaign requires a non-leap start year and at most 365 days"
@@ -178,6 +188,8 @@ class CampaignConfig:
                 raise ValueError(f"{key} must be finite and nonnegative")
         if self.gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
             raise ValueError("unknown gm_energy_scheme")
+        if self.ocean_dynamics_integrator not in ("ssprk3", "ssprk43"):
+            raise ValueError("ocean_dynamics_integrator must be ssprk3 or ssprk43")
         if self.gm_kinetic_fraction > 1 or self.backscatter_fraction > 1:
             raise ValueError("eddy kinetic and backscatter fractions must be <= 1")
         if (
@@ -206,6 +218,17 @@ class CampaignConfig:
             raise ValueError("physics_dt must divide radiation and output cadences")
         if self.physics_dt % self.atmosphere_dt or self.physics_dt % self.ocean_dt:
             raise ValueError("component timesteps must divide physics_dt")
+        mixing_dt = self.ocean_dt if self.mixing_dt is None else self.mixing_dt
+        mesoscale_dt = self.ocean_dt if self.mesoscale_dt is None else self.mesoscale_dt
+        # Fail closed for unsupported, non-commensurate closure schedules.
+        # Every closure interval completes before the next coupled checkpoint.
+        if self.physics_dt % mixing_dt or self.physics_dt % mesoscale_dt:
+            raise ValueError("mixing_dt and mesoscale_dt must divide physics_dt")
+        tuple(ocean_events(self.physics_dt, self.ocean_dt, mixing_dt, mesoscale_dt))
+        ale_dt = self.physics_dt if self.ale_dt is None else self.ale_dt
+        if (type(ale_dt) is not int or ale_dt < self.physics_dt
+                or ale_dt % self.physics_dt):
+            raise ValueError("ale_dt must be a positive multiple of physics_dt")
         return self
 
 
@@ -455,10 +478,7 @@ def build(
     return adapter, air, receiver, sea
 
 
-def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
-    """Atomic first-order composition; caller commits only after full success."""
-    if trace is not None:
-        trace.begin(adapter, air, receiver, sea)
+def _advance_air(adapter, air, receiver, sea, dt, config, trace):
     evolved = air
     for elapsed in range(0, dt, config.atmosphere_dt):
         evolved = advance_dynamics(
@@ -467,35 +487,84 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         if trace is not None:
             trace.observe("atmosphere_dynamics", adapter, evolved, receiver, sea,
                           details={"substep_seconds": min(config.atmosphere_dt, dt - elapsed)})
+    return evolved
+
+
+def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
     water = sea
     external = 0.0
     ocean_report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     A = adapter.model.mesh.cell_area
-    for elapsed in range(0, dt, config.ocean_dt):
-        step_dt = min(config.ocean_dt, dt - elapsed)
+    mix_dt = config.ocean_dt if config.mixing_dt is None else config.mixing_dt
+    meso_dt = config.ocean_dt if config.mesoscale_dt is None else config.mesoscale_dt
+    for event in ocean_events(dt, config.ocean_dt, mix_dt, meso_dt):
+        step_dt = event.dynamics_dt
         ocean_callback = None
         if trace is not None and trace.ocean_stages:
             def ocean_callback(stage, intermediate, external_energy):
                 trace.observe(stage, adapter, evolved, receiver, intermediate,
                               external=float(external_energy / A.sum()),
                               details={"substep_seconds": step_dt})
-        water, r = receiver.snow.step(water, step_dt, stage_callback=ocean_callback)
+        # Preserve the historical within-step mixing placement when the
+        # mixing cadence equals ocean_dt. A slower mixing cadence deliberately
+        # uses operator splitting after the completed ocean/ice update.
+        inline_mixing = mix_dt == config.ocean_dt
+        water, r = receiver.snow.step(
+            water, step_dt, stage_callback=ocean_callback,
+            dynamics_integrator=config.ocean_dynamics_integrator,
+            apply_mixing=inline_mixing,
+        )
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
+        if event.mixing_dt is not None and not inline_mixing:
+            water = receiver.snow.mixing_step(
+                water, event.mixing_dt, stage_callback=ocean_callback
+            )
         if trace is not None and not trace.ocean_stages:
             trace.observe("ocean_ice_snow_dynamics", adapter, evolved, receiver, water,
-                          external=snow_external, details={"substep_seconds": step_dt})
-        callback = None
-        if trace is not None and trace.substeps:
-            def callback(stage, ocean, detail):
-                intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
-                trace.observe(stage, adapter, evolved, receiver, intermediate,
-                              details=detail)
-        water, r = mesoscale_step(receiver, water, step_dt, config, on_event=callback)
-        if trace is not None and not trace.substeps:
-            trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
-                          water, details={"substep_seconds": step_dt})
-        accumulate_ocean(ocean_report, r)
+                          external=snow_external,
+                          details={"substep_seconds": step_dt,
+                                   "mixing_elapsed_seconds": event.mixing_dt})
+        if event.mesoscale_dt is not None:
+            callback = None
+            if trace is not None and trace.substeps:
+                def callback(stage, ocean, detail):
+                    intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
+                    trace.observe(stage, adapter, evolved, receiver, intermediate,
+                                  details=detail)
+            water, r = mesoscale_step(
+                receiver, water, event.mesoscale_dt, config, on_event=callback
+            )
+            if trace is not None and not trace.substeps:
+                trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
+                              water, details={"substep_seconds": event.mesoscale_dt})
+            accumulate_ocean(ocean_report, r)
+    return water, external, ocean_report
+
+
+def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
+    """Join the independent dynamics advances before the atomic surface exchange."""
+    if trace is not None:
+        trace.begin(adapter, air, receiver, sea)
+    # Energy traces observe a serial sequence of whole coupled states. Keep
+    # autograd and autocast calls on their calling thread as well.
+    overlap = (config.overlap_dynamics and trace is None and not torch.is_grad_enabled()
+               and not torch.is_autocast_enabled("cpu"))
+    if overlap:
+        inference = torch.is_inference_mode_enabled()
+
+        def advance_air_worker():
+            with torch.inference_mode(inference), torch.no_grad():
+                return _advance_air(adapter, air, receiver, sea, dt, config, None)
+
+        with ThreadPoolExecutor(max_workers=1, thread_name_prefix="vfs-air") as executor:
+            future = executor.submit(advance_air_worker)
+            water, external, ocean_report = _advance_water(adapter, air, receiver, sea, dt, config, None)
+            evolved = future.result()
+    else:
+        evolved = _advance_air(adapter, air, receiver, sea, dt, config, trace)
+        water, external, ocean_report = _advance_water(adapter, evolved, receiver, sea, dt, config, trace)
+    A = adapter.model.mesh.cell_area
     evolved, water, x, ar, sr = exchange_step(
         adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
     )
@@ -515,12 +584,17 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     )
     if trace is not None:
         trace.observe("post_exchange_ice_phase", adapter, evolved, receiver, water)
-    water, r = ale_step(receiver, water, config)
-    if trace is not None:
-        trace.observe("ale_remap", adapter, evolved, receiver, water,
-                      details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
-                               "ale_changed_columns": r["ale_changed_columns"]})
-    accumulate_ocean(ocean_report, r)
+    ale_dt = config.physics_dt if config.ale_dt is None else config.ale_dt
+    # Preserve historical behavior on a truncated final interval when ALE
+    # remains at its default every-exchange cadence.
+    if (event_due(evolved.time_seconds, ale_dt)
+            or (config.ale_dt is None and dt != config.physics_dt)):
+        water, r = ale_step(receiver, water, config)
+        if trace is not None:
+            trace.observe("ale_remap", adapter, evolved, receiver, water,
+                          details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
+                                   "ale_changed_columns": r["ale_changed_columns"]})
+        accumulate_ocean(ocean_report, r)
     return (
         evolved,
         water,
@@ -900,6 +974,8 @@ def main(argv=None):
     )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
+    parser.add_argument("--overlap-dynamics", action=argparse.BooleanOptionalAction, default=None,
+                        help="Run CPU atmosphere and ocean dynamics concurrently before surface exchange")
     parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
     parser.add_argument(
         "--compile", action=argparse.BooleanOptionalAction, default=None,
@@ -940,12 +1016,9 @@ def main(argv=None):
         parser.error("--resume-compatible-manifest requires --resume")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
-    config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
-    for name in ("device", "dtype", "threads"):
-        if getattr(args, name) is not None:
-            config = replace(config, **{name: getattr(args, name)}).validate()
-    if args.compile is not None:
-        config = replace(config, compile=args.compile).validate()
+    overrides = {name: getattr(args, name) for name in ("device", "dtype", "threads", "compile", "overlap_dynamics")
+                 if getattr(args, name) is not None}
+    config = CampaignConfig(**(yaml.safe_load(args.config.read_text()) | overrides)).validate()
     end = (
         config.days * DAY
         if args.stop_after_days is None
@@ -1026,6 +1099,10 @@ def main(argv=None):
             config.backscatter_viscosity_m2_s,
             config.biharmonic_viscosity_m4_s,
             config.ale_remap,
+        )
+        logger.info(
+            "Ocean–ice explicit dynamics integrator=%s",
+            config.ocean_dynamics_integrator,
         )
         logger.info(
             "GM energy scheme=%s; Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",

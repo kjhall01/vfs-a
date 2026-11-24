@@ -224,3 +224,32 @@ def test_limiter_switch_has_distinct_one_sided_derivatives():
     atol = 128 * torch.finfo(z.dtype).eps / h
     torch.testing.assert_close((at - left) / h, at.new_tensor(-1.0), rtol=0, atol=atol)
     torch.testing.assert_close((right - at) / h, at.new_tensor(0.0), rtol=0, atol=atol)
+
+
+@pytest.mark.parametrize("record_gradients", [False, True])
+def test_bounded_euler_reuses_one_stage_and_installs_ledger(monkeypatch, record_gradients):
+    from unittest.mock import Mock
+    from vfs.atmosphere import bounded_moist
+
+    model, state = smooth_case()
+    kernel = model.dynamics.kernel
+    dt = 30.0
+    rhs, expected_info = model.transport.evaluate(state, dt)
+    expected = state.combine(rhs, b=dt)
+    calls = {}
+    for owner, name in [(kernel, "mixture_gradients"), (kernel, "_transport_primitives"),
+                        (bounded_moist, "partial_chemical"), (bounded_moist, "_carrier_graph")]:
+        calls[name] = Mock(wraps=getattr(owner, name))
+        monkeypatch.setattr(owner, name, calls[name])
+    state = replace(state, u_e=state.u_e.clone().requires_grad_())
+    with torch.set_grad_enabled(record_gradients):
+        actual, info = model.transport.euler_with_info(state, dt, include_carrier_graph=True)
+    assert actual.u_e.requires_grad == record_gradients
+    for observed in calls.values():
+        observed.assert_called_once()
+    assert calls["partial_chemical"].call_args.args[1].shape == state.entropy_content.shape
+    for name in ("u_e", "ps", "entropy_content"):
+        assert torch.equal(getattr(actual, name), getattr(expected, name))
+    amounts = expected_info["amounts"][:, 1:].reshape_as(state.water_content)
+    assert torch.equal(actual.water_content, amounts / state.mesh.cell_area[:, None, None])
+    assert torch.equal(info["integrated_flux"], expected_info["integrated_flux"])

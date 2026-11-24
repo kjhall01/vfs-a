@@ -57,5 +57,12 @@ def test_atmospheric_delegation_exact():
         for key in left:
             if isinstance(left[key], torch.Tensor):
                 assert torch.equal(left[key], right[key]), key
+            elif key == "carrier_graph":
+                # Both staged formulations return the same four authoritative
+                # graph tensors. Tuples of tensors have no scalar == semantics.
+                assert isinstance(right[key], tuple)
+                assert len(left[key]) == len(right[key]) == 4
+                for a, b in zip(left[key], right[key]):
+                    assert torch.equal(a, b), key
             else:
                 assert left[key] == right[key], key

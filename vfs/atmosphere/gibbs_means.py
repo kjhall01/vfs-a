@@ -44,7 +44,7 @@ def partial_chemical(t, T, p, q):
     return ha - T[..., None] * sa
 
 
-def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
+def gibbs_face(t, Ti, pi, qi, Tj, pj, qj, *, chemical_potentials=None):
     """Return s*, q*, alpha* such that Delta mu_d+s*Delta T+
     q_water*dot(Delta(mu_water-mu_d)) = alpha*Delta p.
 
@@ -75,8 +75,11 @@ def gibbs_face(t, Ti, pi, qi, Tj, pj, qj):
     )
     density = dstar.sum(-1)
     q = dstar / density[..., None]
-    mu_i = partial_chemical(t, Ti, pi, qi)
-    mu_j = partial_chemical(t, Tj, pj, qj)
+    if chemical_potentials is None:
+        mu_i = partial_chemical(t, Ti, pi, qi)
+        mu_j = partial_chemical(t, Tj, pj, qj)
+    else:
+        mu_i, mu_j = chemical_potentials
     eta = 0.5 * (mu_i / Ti[..., None] + mu_j / Tj[..., None])
     cp = t.heat_capacity_p(q)
     R = t.gas_constant(q)

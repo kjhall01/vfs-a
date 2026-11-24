@@ -38,6 +38,44 @@ APPROVED_PRE_TRACE_HASHES = {
 VERIFIER = "workflows/coupled/restart_compat.py"
 TRACE_TARGET_DIGEST = "45db058e852bcce15dce1f5f562f1848817b71422a78acd54a1651da27453b46"
 
+# Exact source transition for the 2026-11-23 4096-cell campaign checkpoint
+# (fingerprint 8f6e7bfd...). Both digests cover ALL 258 Python source paths
+# other than this verifier. The old values come from the uploaded, checked
+# campaign manifest; the fixed energy hash is the reviewed source in this PR.
+# Neither digest includes this verifier to avoid a recursive source hash.
+DAY15_ORIGINAL_VERIFIER_SHA = "8835ab1a51c5748399c839508160df8da31ca6947b26304455fe154b9901b76a"
+DAY15_ENERGY_PATH = "workflows/pyam21/energy.py"
+DAY15_ORIGINAL_ENERGY_SHA = "00b0a55d6d0679e32d338c09423770af95922a6f27b411f97d01d2e6c71820e9"
+DAY15_FIXED_ENERGY_SHA = "5535ef4e12ecb4a1155d2c780dd9bda5f8045db522a6247ec7290951a69748b9"
+DAY15_ORIGINAL_SOURCES_DIGEST = "25ca65f87f86b7f419fd2aea20d5074b90fb363bd78c8878216769c5d259e56b"
+DAY15_FIXED_SOURCES_DIGEST = "8e39d515effc25df2e8fc2cc4b6e9a3c214720963b9d8141ba750fcad835a405"
+
+
+def _without_verifier_digest(sources):
+    other = {path: sha for path, sha in sources.items() if path != VERIFIER}
+    return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
+
+
+def _verified_day15_shared_flux_transition(old_hashes, current_hashes):
+    """Allow only the pinned exchange-check correction on one verified run.
+
+    An unknown path, differing source, or changed numerical configuration is
+    never accepted by this bridge. The caller additionally checks the full
+    campaign fingerprint, mesh, radiation provenance and execution metadata.
+    """
+    if (old_hashes.get(VERIFIER) != DAY15_ORIGINAL_VERIFIER_SHA
+            or old_hashes.get(DAY15_ENERGY_PATH) != DAY15_ORIGINAL_ENERGY_SHA):
+        return None
+    if current_hashes.get(DAY15_ENERGY_PATH) != DAY15_FIXED_ENERGY_SHA:
+        raise ValueError("day15 shared-flux restart requires the pinned fixed energy.py")
+    if (set(old_hashes) != set(current_hashes)
+            or _without_verifier_digest(old_hashes) != DAY15_ORIGINAL_SOURCES_DIGEST
+            or _without_verifier_digest(current_hashes) != DAY15_FIXED_SOURCES_DIGEST
+            or {k for k in old_hashes if old_hashes[k] != current_hashes[k]}
+               != {VERIFIER, DAY15_ENERGY_PATH}):
+        raise ValueError("day15 shared-flux restart sources differ from the audited pair")
+    return {"endpoint_fix_files": [], "shared_flux_fix_files": [DAY15_ENERGY_PATH]}
+
 
 def canonical_manifest_json(value):
     """Stable, strict JSON value equality across tuple/list round trips.
@@ -85,6 +123,9 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    roundoff = _verified_day15_shared_flux_transition(old_hashes, current_hashes)
+    if roundoff is not None:
+        return roundoff
     target = {k: v for k, v in current_hashes.items() if k != verifier}
     digest = hashlib.sha256(canonical_manifest_json(target).encode()).hexdigest()
     if digest != ENDPOINT_TARGET_DIGEST:

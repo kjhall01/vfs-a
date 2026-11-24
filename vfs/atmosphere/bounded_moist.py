@@ -15,8 +15,8 @@ specific entropy/vapor/liquid/ice. Pressure-weighted amounts / gravity give kg.
 import torch
 from .moist_conservative import MoistState
 from .moist_cp import interface_pressure_mass
-from .bounded_transport import graph, divergence, bounded_transfer, limited_traces
-from .gibbs_means import gibbs_face, composition_entropy_derivatives
+from .bounded_transport import _carrier_graph, bounded_transfer, divergence, graph, limited_traces
+from .gibbs_means import gibbs_face, partial_chemical, composition_entropy_derivatives
 
 
 def bounded_ssprk3_with_info(euler_with_info, s, time, dt):
@@ -57,7 +57,7 @@ class BoundedGibbs:
         self.vapor_floor, self.dry_floor = vapor_floor, dry_floor
         # Heat allocation closes the work from the actual limited Gibbs flux.
 
-    def evaluate(self, s, dt):
+    def evaluate(self, s, dt, *, include_carrier_graph=False):
         """Return the dt-budgeted RHS and ledger/limiter diagnostics.
 
         State: u_e (E,L) m/s; ps (C,1) Pa; entropy_content (C,I)
@@ -65,39 +65,52 @@ class BoundedGibbs:
         `info['amounts']` is the authoritative Euler species ledger (N,4),
         Pa m². `info['integrated_flux']` is its face transfer (H,4), Pa m².
         """
+        return self._stage(s, dt, endpoint=False, include_carrier_graph=include_carrier_graph)
+
+    def _stage(self, s, dt, *, endpoint, include_carrier_graph):
+        """Evaluate one unchanged state, then form a diagnostic RHS or an Euler endpoint."""
         d, mesh = self.base, s.mesh
         area = mesh.cell_area[:, None]
         # 1. Carrier geometry: mass (C,I) in Pa m², F (H,) in Pa m²/s.
         # dm is interface pressure thickness (Pa), not mass in kg.
-        mass, i, j, F = graph(d, s)
+        view = d.transport_state(s)
+        transport = d.kernel._transport_primitives(view)
+        mass, i, j, F = _carrier_graph(s, transport)
         dm = mass / area
         specific_entropy = s.entropy_content / dm
         water_fractions = s.water_content / dm[..., None]
         species_fractions = torch.cat(
             [1 - water_fractions.sum(-1, keepdim=True), water_fractions], -1
         )
-        n = specific_entropy.shape[1]
         # 2. Gibbs high traces: entropy J/(kg K), fractions kg/kg; (H,4).
         # Only horizontal traces differ from arithmetic means. The matched
         # momentum correction is retained when scalar RHS entries are replaced.
-        gibbs_rhs_correction, gibbs_info = self._gibbs_corrections(s)
+        pressure = s.column.interface_pressure(s.ps)
+        T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
+        gibbs_change = self._gibbs_trace_change(
+            s, specific_entropy, water_fractions, species_fractions, pressure, T
+        )
         node_traces = torch.cat(
             [specific_entropy[..., None], water_fractions], -1
         ).reshape(-1, 4)
-        high_traces = 0.5 * (node_traces[i] + node_traces[j]) + gibbs_info["delta_trace"]
+        high_traces = 0.5 * (node_traces[i] + node_traces[j]) + gibbs_change
         high_fractions = torch.cat(
             [1 - high_traces[:, 1:].sum(-1, keepdim=True), high_traces[:, 1:]], -1
         )
-        pressure = s.column.interface_pressure(s.ps)
-        T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
         composition_entropy = composition_entropy_derivatives(
             d.thermodynamics, T, pressure, species_fractions
         ).reshape(-1, 3)
-        base = d.tendency(s)
+        gradients = d.kernel.mixture_gradients(view, s.water_content)
+        centered = d.kernel._assemble(
+            view, s.water_content, primitives=transport, gradients=gradients,
+            combine=True, scalar_tendencies=False,
+        )
+        base_u = centered["u_e"]["total"]
+        base_ps = centered["ps"]["total"]
         # 3. Continuity sets the actual Euler carrier endpoint (N,), Pa m².
         # Existing fraction lower bounds constrain transfer; no state is clipped
         # or given a vapor floor. Positive vapor is required on entry.
-        target_ps = s.ps + dt * base.ps
+        target_ps = s.ps + dt * base_ps
         target_amount = (
             area
             * interface_pressure_mass(s.column.interface_pressure(target_ps).diff())
@@ -120,14 +133,13 @@ class BoundedGibbs:
         # 4. Limiting changes Gibbs traces. Area-normalized energy derivatives
         # have units K/g (entropy) and m (water); their jump times trace_change
         # gives work_per_carrier (H,) in m. F * work_per_carrier is power (W).
-        energy_gradient = d.energy_gradients(s)
+        entropy_gradient, _, water_gradient = gradients
         energy_covector = (
-            torch.cat(
-                [energy_gradient.entropy_content[..., None], energy_gradient.water_content], -1
-            )
-            / area[..., None]
+            torch.cat([entropy_gradient[..., None], water_gradient], -1) / area[..., None]
         ).reshape(-1, 4)
-        work_per_carrier = ((energy_covector[j] - energy_covector[i]) * trace_change).sum(-1)
+        covector_jump = energy_covector[j] - energy_covector[i]
+        gibbs_work = (covector_jump * gibbs_change).sum(-1)
+        work_per_carrier = (covector_jump * trace_change).sum(-1)
         work = F * work_per_carrier
         heat = (-work).clamp_min(0)
         mechanical_b = torch.where(work < 0, 0.0, work_per_carrier)
@@ -135,7 +147,7 @@ class BoundedGibbs:
         # it equally between endpoint energy budgets; divide by each endpoint's
         # dE/d(entropy_content) so entropy_source (N,) has Pa J/(kg K s).
         # This is equal power allocation, not equal entropy allocation.
-        entropy_energy_gradient = energy_gradient.entropy_content.flatten()
+        entropy_energy_gradient = entropy_gradient.flatten()
         if bool((entropy_energy_gradient <= 0).any()):
             raise ValueError("nonpositive entropy-energy derivative")
         entropy_source = (
@@ -143,32 +155,31 @@ class BoundedGibbs:
             .index_add(0, i, 0.5 * heat / entropy_energy_gradient[i])
             .index_add(0, j, 0.5 * heat / entropy_energy_gradient[j])
         )
-        transport = d.kernel._transport_primitives(d.transport_state(s))
         # 5. Carrier transpose returns an edge force (E,L), N. The kinetic
         # velocity metric (E,L), kg, converts it to acceleration (m/s²).
-        velocity_metric = (
-            mesh.dc_edge[:, None]
-            * mesh.dv_edge[:, None]
-            * transport["dp_e"]
-            / d.kernel.gravity
-        )
-        limiter_force = -self.pullback(s, mechanical_b) / velocity_metric
-        rhs = base.combine(gibbs_rhs_correction)
-        # 6. Keep corrected momentum/continuity, replace scalar tendencies with
-        # the limited fluxes. Antisymmetric divergence conserves global species.
-        # Water RHS is diagnostic here: Euler uses amounts directly below.
-        rhs = MoistState(
-            rhs.u_e + limiter_force,
-            rhs.ps,
+        dp_edge = transport["dp_e"]
+        velocity_metric = mesh.dc_edge[:, None] * mesh.dv_edge[:, None] * dp_edge / d.kernel.gravity
+        gibbs_force = -self._pullback(s, gibbs_work, dp_edge) / velocity_metric
+        limiter_force = -self._pullback(s, mechanical_b, dp_edge) / velocity_metric
+        wind_rhs = (base_u + gibbs_force) + limiter_force
+        entropy_rhs = (
             divergence(i, j, F * face_entropy, mass.numel()).reshape_as(specific_entropy) / area
-            + entropy_source.reshape_as(specific_entropy),
-            divergence(
-                i, j, info["integrated_flux"][:, 1:] / dt, mass.numel()
-            ).reshape_as(water_fractions)
-            / area[..., None],
-            mesh,
-            s.column,
+            + entropy_source.reshape_as(specific_entropy)
         )
+        if endpoint:
+            # The bounded species amounts are the authoritative Euler update.
+            water = info["amounts"][:, 1:].reshape_as(s.water_content) / area[..., None]
+            result = MoistState(
+                s.u_e + dt * wind_rhs, target_ps, s.entropy_content + dt * entropy_rhs,
+                water, mesh, s.column,
+            )
+            d.transport_state(result)
+        else:
+            water_rhs = divergence(i, j, info["integrated_flux"][:, 1:] / dt, mass.numel())
+            result = MoistState(
+                wind_rhs, base_ps, entropy_rhs,
+                water_rhs.reshape_as(water_fractions) / area[..., None], mesh, s.column,
+            )
         info.update(
             limiter_force=limiter_force,
             limiter_work=work,
@@ -179,7 +190,12 @@ class BoundedGibbs:
             face_fractions=face_fractions,
             target_mass=target_amount,
         )
-        return rhs, info
+        # Keep the established public report schema unchanged. The cloud
+        # transport integration explicitly opts into these already-computed
+        # tensors, avoiding redundant graph/transport primitive construction.
+        if include_carrier_graph:
+            info["carrier_graph"] = (mass, i, j, F)
+        return result, info
 
     def tendency(self, s, dt):
         return self.evaluate(s, dt)[0]
@@ -188,22 +204,9 @@ class BoundedGibbs:
         rhs, info = self.evaluate(s, dt)
         return rhs.combine(self.base.tendency(s), b=-1), info
 
-    def euler_with_info(self, s, dt):
+    def euler_with_info(self, s, dt, *, include_carrier_graph=False):
         """Euler stage: advance wind/pressure/entropy, install ledger water."""
-        rhs, info = self.evaluate(s, dt)
-        updated = s.combine(rhs, b=dt)
-        # (N,4) Pa m² -> (C,I,3) Pa, excluding the dry-air ledger column.
-        # Do not replace this by water_content + dt*rhs.water_content: that
-        # subtraction/addition loses the cancellation-safe bounded amounts.
-        water = (
-            info["amounts"][:, 1:].reshape_as(s.water_content)
-            / s.mesh.cell_area[:, None, None]
-        )
-        updated = MoistState(
-            updated.u_e, updated.ps, updated.entropy_content, water, s.mesh, s.column
-        )
-        self.base.transport_state(updated)
-        return updated, info
+        return self._stage(s, dt, endpoint=True, include_carrier_graph=include_carrier_graph)
 
     def step_with_info(self, s, dt):
         """SSPRK3 with three bounded Euler maps, each using the full dt budget.
@@ -234,12 +237,14 @@ class BoundedGibbs:
         This analytic transpose pairs scalar work with momentum; no autograd
         tendency or independent pressure-gradient operator is introduced.
         """
-        d = self.base
+        view = self.base.transport_state(s)
+        dp_edge = self.base.kernel._transport_primitives(view)["dp_e"]
+        return self._pullback(s, b, dp_edge)
+
+    @staticmethod
+    def _pullback(s, b, dp_e):
         m = s.mesh
         n = s.water_content.shape[1]
-        a = d.transport_state(s)
-        ctx = d.kernel._transport_primitives(a)
-        dp_e = ctx["dp_e"]
         nh = m.nEdges * n
         # bh (E,I), m: horizontal face work; averaging reverses layer -> CP.
         bh = b[:nh].reshape(m.nEdges, n)
@@ -278,30 +283,16 @@ class BoundedGibbs:
             float((dt * (-dpdot).clamp_min(0) / dp).max()),
         )
 
-    def _gibbs_corrections(self, s):
-        """Match horizontal Gibbs traces to their momentum work correction.
-
-        Return an RHS increment and face diagnostics. delta_trace (H,4) is
-        Gibbs minus arithmetic entropy/water trace; vertical entries are zero.
-        Its flux divergence is a scalar increment, paired with the negative
-        carrier transpose to cancel instantaneous total-energy work.
-        """
-        d = self.base
+    def _gibbs_trace_change(self, s, specific_entropy, water_fractions, species_fractions, pressure, T):
+        """Gibbs minus centered horizontal traces, extended by zero on vertical faces."""
         m = s.mesh
-        area = m.cell_area[:, None]
         n = s.water_content.shape[1]
-        mass, i, j, F = graph(d, s)
-        dm = mass / area
-        specific_entropy = s.entropy_content / dm
-        water_fractions = s.water_content / dm[..., None]
-        species_fractions = torch.cat(
-            [1 - water_fractions.sum(-1, keepdim=True), water_fractions], -1
-        )
-        pressure = s.column.interface_pressure(s.ps)
-        T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
+        thermo = self.base.thermodynamics
+        mu = partial_chemical(thermo, T, pressure, species_fractions)
         c0, c1 = m.cellsOnEdge.T
-        face_entropy, face_fractions, alpha = gibbs_face(
-            d.thermodynamics, T[c0], pressure[c0], species_fractions[c0], T[c1], pressure[c1], species_fractions[c1]
+        face_entropy, face_fractions, _ = gibbs_face(
+            thermo, T[c0], pressure[c0], species_fractions[c0], T[c1], pressure[c1], species_fractions[c1],
+            chemical_potentials=(mu[c0], mu[c1]),
         )
         trace_change = torch.cat(
             [
@@ -310,46 +301,6 @@ class BoundedGibbs:
             ],
             -1,
         )
-        trace_change = torch.cat(
+        return torch.cat(
             [trace_change.reshape(-1, 4), trace_change.new_zeros(m.nCells * (n - 1), 4)], 0
-        )
-        # F transports entropy at Pa m² J/(kg K s), water at Pa m²/s.
-        # Divide node divergence by area to recover pressure-weighted RHS units.
-        flux = F[:, None] * trace_change
-        scalar_correction = (
-            torch.zeros(m.nCells * n, 4, dtype=flux.dtype, device=flux.device)
-            .index_add(0, i, -flux)
-            .index_add(0, j, flux)
-            .reshape(m.nCells, n, 4)
-            / area[..., None]
-        )
-        energy_gradient = d.energy_gradients(s)
-        # Same work pairing as the limiter correction in evaluate, here applied
-        # to Gibbs-minus-arithmetic traces before any species-budget limiting.
-        energy_covector = (
-            torch.cat(
-                [energy_gradient.entropy_content[..., None], energy_gradient.water_content], -1
-            )
-            / area[..., None]
-        ).reshape(-1, 4)
-        work_per_carrier = ((energy_covector[j] - energy_covector[i]) * trace_change).sum(-1)
-        transport = d.kernel._transport_primitives(d.transport_state(s))
-        velocity_metric = (
-            m.dc_edge[:, None] * m.dv_edge[:, None] * transport["dp_e"] / d.kernel.gravity
-        )
-        rhs_correction = MoistState(
-            -self.pullback(s, work_per_carrier) / velocity_metric,
-            torch.zeros_like(s.ps),
-            scalar_correction[..., 0],
-            scalar_correction[..., 1:],
-            m,
-            s.column,
-        )
-        return rhs_correction, dict(
-            delta_trace=trace_change,
-            face_work=F * work_per_carrier,
-            carrier_flux=F,
-            face_entropy=face_entropy,
-            face_fractions=face_fractions,
-            face_alpha=alpha,
         )

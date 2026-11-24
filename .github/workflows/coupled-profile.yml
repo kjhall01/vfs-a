@@ -1,0 +1,37 @@
+name: Coupled performance profiler qualification
+
+on:
+  push:
+    branches:
+      - tools/coupled-profiler-20261123
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  profiler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONPATH: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU VFS and PyAM21
+        run: |
+          python -m pip install 'torch==2.15.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[test]'
+          python -m pip install 'gsw==3.6.23'
+          python -m pip install --no-deps -r workflows/pyam21/requirements.txt
+          python -m pip check
+      - name: Verify non-invasive profiler and coupled numerical parity
+        run: |
+          python -I -m pytest tests/test_coupled_profiler.py -q -rA
+          python -I -m pytest tests/test_multirate_schedule.py tests/ocean/test_ocean_ice_ssprk43.py -q

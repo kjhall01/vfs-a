@@ -22,6 +22,11 @@ def graph(d, s):
     """
     a = d.transport_state(s)
     ctx = d.kernel._transport_primitives(a)
+    return _carrier_graph(s, ctx)
+
+
+def _carrier_graph(s, ctx):
+    """Build the oriented graph from the validated stage transport primitives."""
     m = s.mesh
     mass = ctx["dm"] * m.cell_area[:, None]
     n = mass.shape[1]

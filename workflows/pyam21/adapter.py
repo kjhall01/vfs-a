@@ -70,6 +70,49 @@ def _consistent_cloud_stages(initial, rate, endpoint, dt, stages):
     )
 
 
+
+def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol):
+    """Identify the first rejected PyAM21 endpoint without changing acceptance.
+
+    Runs only on the existing failure path. Indices are native [cell, layer]
+    and values are unmodified post-physics endpoint fields. No clipping, floor,
+    threshold change, or state repair is performed.
+    """
+    for name in ("tdt", "rdt", "udt", "vdt"):
+        rate = out[name]
+        bad = ~torch.isfinite(rate)
+        if bad.any():
+            index = tuple(int(i) for i in bad.nonzero()[0])
+            return (f"field={name} tendency index={index}"
+                    f" value={float(rate[index]):.12g}")
+    checks = (
+        ("temperature_K", temperature, temperature <= 0, 0.0),
+        ("vapor_mass_fraction", tracers[..., 0], tracers[..., 0] <= 0, 0.0),
+        ("liquid_mass_fraction", tracers[..., 1],
+         tracers[..., 1] < -condensate_tol[0], -float(condensate_tol[0])),
+        ("ice_mass_fraction", tracers[..., 2],
+         tracers[..., 2] < -condensate_tol[1], -float(condensate_tol[1])),
+        ("total_water_fraction", tracers[..., :3].sum(-1),
+         tracers[..., :3].sum(-1) >= 1, 1.0),
+        ("cloud_fraction", tracers[..., 3],
+         (tracers[..., 3] < -128 * eps) | (tracers[..., 3] > 1 + 128 * eps),
+         None),
+    )
+    for name, values, bad, bound in checks:
+        if bad.any():
+            cell, layer = (int(v) for v in bad.nonzero()[0])
+            value = float(values[cell, layer])
+            threshold = (
+                f" required_bound={bound:.12g}" if bound is not None
+                else f" allowed_range=[{-128 * eps:.12g},{1 + 128 * eps:.12g}]"
+            )
+            return (
+                f"field={name} cell={cell} level={layer}"
+                f" value={value:.12g}{threshold}"
+            )
+    return "no endpoint violation located (check reporting tensors)"
+
+
 class AM2Adapter:
     def __init__(
         self,
@@ -480,8 +523,12 @@ class AM2Adapter:
             or (R1[..., 3] < -128 * eps).any()
             or (R1[..., 3] > 1 + 128 * eps).any()
         ):
+            detail = _inadmissible_column_detail(
+                T1, R1, out, eps, condensate_tolerance
+            )
             raise ValueError(
                 "PyAM21 returned an inadmissible finite column update; no clipping"
+                f"; dt={dt} seconds; {detail}"
             )
         qw = s.water_content / mass[..., None]
         amount = (

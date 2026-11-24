@@ -116,3 +116,225 @@ def test_work_cap_and_rest_pressure(probe):
         if factor==0:
             assert w.heat.count_nonzero()==0 and w.force_correction.count_nonzero()==0
             assert torch.equal(rhs.u_e,base.u_e)
+
+
+@pytest.mark.parametrize('kind',['front','tilted','near_fresh','upper_salt'])
+@pytest.mark.parametrize('coast',[False,True])
+def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeypatch):
+    """Compare new scratch reuse to old independent face-field reconstruction.
+
+    Both paths use identical energy/work equations, positivity constraints, and
+    differentiation. The old path is invoked by disabling scratch *only* in
+    the local correction; parent Gibbs still constructs its original traces.
+    """
+    from dataclasses import fields, is_dataclass
+    from vfs.ocean.stratified import transport as f, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    m, x, old_e=probe.q.p.case(kind,coast)
+    # Frozen research states omit the installed optional inversion guess.
+    # Rewrap the same raw physical tensors in the installed entropy container.
+    x=EntropyState(x.u_e,x.h,x.entropy_h,x.salt_h,x.tracer_h,x.mesh,x.column)
+    e=EntropyEnergy(m.dynamics.energy,old_e.reference)
+
+    def exact(a,b):
+        if isinstance(a,torch.Tensor):
+            assert torch.equal(a,b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh','column'):
+                    exact(getattr(a,field.name),getattr(b,field.name))
+        elif isinstance(a,(tuple,list)):
+            assert len(a)==len(b)
+            for aa,bb in zip(a,b):exact(aa,bb)
+        elif isinstance(a,dict):
+            assert a.keys()==b.keys()
+            for k in a:exact(a[k],b[k])
+        else:
+            assert a==b
+
+    original=f._local_target_fields
+    with torch.no_grad():
+        new_rhs,new_report=f.evaluate(m,x,10.,e)
+        def old_local(*args,**kwargs):
+            assert kwargs.get('scratch') is not None
+            return original(*args,**{**kwargs,'scratch':None})
+        with monkeypatch.context() as p:
+            p.setattr(f,'_local_target_fields',old_local)
+            old_rhs,old_report=f.evaluate(m,x,10.,e)
+        exact(new_rhs,old_rhs)
+        exact(new_report,old_report)
+
+    def grad(reuse):
+        inputs=[getattr(x,k).clone().detach().requires_grad_(True)
+                for k in ('u_e','h','entropy_h','salt_h')]
+        state=replace(x,**dict(zip(('u_e','h','entropy_h','salt_h'),inputs)))
+        if reuse:
+            rhs,report=f.evaluate(m,state,10.,e)
+        else:
+            def old_local(*args,**kwargs):
+                return original(*args,**{**kwargs,'scratch':None})
+            with monkeypatch.context() as p:
+                p.setattr(f,'_local_target_fields',old_local)
+                rhs,report=f.evaluate(m,state,10.,e)
+        loss=(rhs.u_e.square().sum()+rhs.h.square().sum()+
+              rhs.entropy_h.square().sum()+rhs.salt_h.square().sum()+
+              report.face_work.square().sum()*1e-8)
+        return [v.detach() for v in torch.autograd.grad(loss,inputs)]
+    # Tensor sharing can change the association order of reverse-mode
+    # accumulation even when the complete forward RHS/ledgers are bitwise.
+    # Require tight FP64 gradient agreement without claiming bitwise AD.
+    for field, actual, reference in zip(
+        ('u_e', 'h', 'entropy_h', 'salt_h'), grad(True), grad(False), strict=True
+    ):
+        atol = 1e-10
+        if kind == 'upper_salt' and field == 'u_e':
+            # The active salt bound combines opposing face-work contributions
+            # in the velocity VJP. A small net component can lose more digits
+            # than its neighbours. Keep the pointwise relative check and allow
+            # 64 FP64 epsilons of this velocity field as an absolute allowance.
+            assert torch.isfinite(reference).all() and torch.isfinite(actual).all()
+            atol = max(atol, 64 * torch.finfo(reference.dtype).eps * float(reference.abs().max()))
+        torch.testing.assert_close(actual, reference, rtol=1e-12, atol=atol)
+
+
+def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
+    from vfs.ocean.stratified import transport as f, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    m,x,old_e=probe.q.p.case('front',False)
+    x=EntropyState(x.u_e,x.h,x.entropy_h,x.salt_h,x.tracer_h,x.mesh,x.column)
+    e=EntropyEnergy(m.dynamics.energy,old_e.reference)
+    calls=[]
+    old=f.parent.bounded_transport
+    def track(*args,**kwargs):
+        calls.append(kwargs.get('scratch'))
+        return old(*args,**kwargs)
+    with monkeypatch.context() as p:
+        p.setattr(f.parent,'bounded_transport',track)
+        # A direct parent RHS must not expose or retain scratch results.
+        f.parent.evaluate(m,x,10.,e)
+        assert calls[-1] is None
+        # The composed front supplies a fresh dict and never shares it across
+        # independent stages or states.
+        f.evaluate(m,x,10.,e)
+        f.evaluate(m,x,10.,e)
+    assert isinstance(calls[-1],dict)
+    assert calls[-1] is not calls[-2]
+    assert all(k in calls[-1] for k in ('q','high','donor','anti'))
+
+
+@pytest.mark.parametrize('kind', ['front', 'tilted', 'near_fresh', 'upper_salt'])
+@pytest.mark.parametrize('coast', [False, True])
+def test_batched_incidence_matches_four_pass_reference(probe, kind, coast, monkeypatch):
+    """Compare full active ocean RHS, ledger, and AD—not just flux sums."""
+    from dataclasses import fields, is_dataclass
+    from vfs.ocean.stratified import transport as active, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    model, frozen, energy = probe.q.p.case(kind, coast)
+    state = EntropyState(frozen.u_e, frozen.h, frozen.entropy_h,
+                         frozen.salt_h, frozen.tracer_h,
+                         frozen.mesh, frozen.column)
+    e = EntropyEnergy(model.dynamics.energy, energy.reference)
+    original = active._local_target_fields
+
+    def evaluate(x, *, batched):
+        if not batched:
+            return active.evaluate(model, x, 10., e)
+        # Opt into the experimental grouped reduction only for this
+        # independent parity test, never for production calls.
+        def grouped(*args, **kwargs):
+            return original(*args, **{**kwargs, 'batch_incidence': True})
+        with monkeypatch.context() as p:
+            p.setattr(active, '_local_target_fields', grouped)
+            return active.evaluate(model, x, 10., e)
+
+    def exact(a, b):
+        if isinstance(a, torch.Tensor):
+            assert torch.equal(a, b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh', 'column'):
+                    exact(getattr(a, field.name), getattr(b, field.name))
+        elif isinstance(a, (tuple, list)):
+            for aa, bb in zip(a, b):
+                exact(aa, bb)
+        else:
+            assert a == b
+
+    with torch.no_grad():
+        a, la = evaluate(state, batched=True)
+        b, lb = evaluate(state, batched=False)
+        exact(a, b)
+        exact(la, lb)
+
+    def gradients(batched):
+        keys = ('u_e', 'h', 'entropy_h', 'salt_h')
+        leaves = [getattr(state, k).clone().detach().requires_grad_(True)
+                  for k in keys]
+        x = replace(state, **dict(zip(keys, leaves)))
+        rhs, report = evaluate(x, batched=batched)
+        loss = (rhs.u_e.square().sum() + rhs.h.square().sum()
+                + rhs.entropy_h.square().sum() + rhs.salt_h.square().sum()
+                + 1e-8 * report.face_work.square().sum())
+        return torch.autograd.grad(loss, leaves)
+
+    for a, b in zip(gradients(True), gradients(False)):
+        torch.testing.assert_close(a, b, rtol=1e-12, atol=1e-10)
+
+
+@pytest.mark.parametrize('kind', ['front', 'tilted', 'near_fresh', 'upper_salt'])
+@pytest.mark.parametrize('coast', [False, True])
+def test_composed_parent_skips_only_unused_work(probe, kind, coast, monkeypatch):
+    """Exact final RHS and every work-ledger field vs full parent assembly."""
+    from dataclasses import fields, is_dataclass
+    from vfs.ocean.stratified import transport as active, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
+    model, frozen, energy = probe.q.p.case(kind, coast)
+    state = EntropyState(frozen.u_e, frozen.h, frozen.entropy_h,
+                         frozen.salt_h, frozen.tracer_h,
+                         frozen.mesh, frozen.column)
+    e = EntropyEnergy(model.dynamics.energy, energy.reference)
+    real_parent = active.parent.evaluate
+
+    def run(x, use_full):
+        if not use_full:
+            return active.evaluate(model, x, 10., e)
+        def full(*args, **kwargs):
+            assert kwargs.get('_composed') is True
+            return real_parent(*args, **{**kwargs, '_composed': False})
+        with monkeypatch.context() as patch:
+            patch.setattr(active.parent, 'evaluate', full)
+            return active.evaluate(model, x, 10., e)
+
+    def exact(a, b):
+        if isinstance(a, torch.Tensor):
+            assert torch.equal(a, b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh', 'column'):
+                    exact(getattr(a, field.name), getattr(b, field.name))
+        elif isinstance(a, (tuple, list)):
+            assert len(a) == len(b)
+            for aa, bb in zip(a, b):
+                exact(aa, bb)
+        else:
+            assert a == b
+
+    with torch.no_grad():
+        reduced, ledger = run(state, use_full=False)
+        old, old_ledger = run(state, use_full=True)
+        exact(reduced, old)
+        exact(ledger, old_ledger)
+
+    def gradients(use_full):
+        keys = ('u_e', 'h', 'entropy_h', 'salt_h')
+        leaves = [getattr(state, k).clone().detach().requires_grad_(True)
+                  for k in keys]
+        x = replace(state, **dict(zip(keys, leaves)))
+        rhs, report = run(x, use_full)
+        objective = (rhs.u_e.square().sum() + rhs.h.square().sum()
+                     + rhs.entropy_h.square().sum() + rhs.salt_h.square().sum()
+                     + 1e-8 * report.face_work.square().sum())
+        return torch.autograd.grad(objective, leaves)
+
+    for a, b in zip(gradients(False), gradients(True)):
+        torch.testing.assert_close(a, b, rtol=1e-12, atol=1e-10)

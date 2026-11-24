@@ -35,7 +35,8 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
 
 
 def _local_target_fields(model, state, dt, eta_high, salt_high,
-                         composition_entropy, *, baseline=None, low=None):
+                         composition_entropy, *, baseline=None, low=None, scratch=None,
+                         batch_incidence=False):
     """Target limiter and traces, before materializing a transport ledger.
 
     The work-constrained path consumes only these fields and constructs its
@@ -46,14 +47,31 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
                                              salt_high, composition_entropy)
     if low is None:
         low = transport_for(model).advance(state.transport_view(), dt)
-    anti = baseline.high_integrated_flux-low.donor_integrated_flux
+    anti = (baseline.high_integrated_flux-low.donor_integrated_flux
+            if scratch is None else scratch["anti"])
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
     anti_positive, anti_negative = anti.clamp_min(0), (-anti).clamp_min(0)
-    positive = torch.zeros_like(amount).index_add(0, low.j, anti_positive)
-    positive = positive.index_add(0, low.i, anti_negative)
-    negative = torch.zeros_like(amount).index_add(0, low.i, anti_positive)
-    negative = negative.index_add(0, low.j, anti_negative)
+    if batch_incidence:
+        # Both budgets are independent channels of the same oriented graph.
+        # Preserve each channel's original pass order (j+ then i-, and i+
+        # then j-) while using just one index_add on disjoint node ranges.
+        nodes = amount.shape[0]
+        incidence = torch.cat((low.j, low.i, low.i + nodes, low.j + nodes))
+        contributions = torch.cat((
+            anti_positive, anti_negative, anti_positive, anti_negative
+        ), dim=0)
+        budgets = amount.new_zeros((2 * nodes, amount.shape[1])).index_add(
+            0, incidence, contributions
+        )
+        positive, negative = budgets[:nodes], budgets[nodes:]
+    else:
+        # Exact reference ordering, also used for differential regression
+        # and A/B timing in the verification suite.
+        positive = torch.zeros_like(amount).index_add(0, low.j, anti_positive)
+        positive = positive.index_add(0, low.i, anti_negative)
+        negative = torch.zeros_like(amount).index_add(0, low.i, anti_positive)
+        negative = negative.index_add(0, low.j, anti_negative)
     del anti_positive, anti_negative
     def ratio(room, demand):
         safe = torch.where(demand > 0, demand, torch.ones_like(demand))
@@ -66,16 +84,22 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
     beta = torch.cat([beta[:, :1], torch.minimum(beta[:, 1:], baseline.beta[:, 1:])], -1)
     beta = torch.where(beta < 1, beta*(1-64*torch.finfo(beta.dtype).eps), beta)
     del positive, negative, upper, lower
-    fields = [state.entropy_h[..., None], state.salt_h[..., None]]
-    if state.tracer_h is not None:
-        fields.append(state.tracer_h)
-    q = (torch.cat(fields, -1)/state.h[..., None]).reshape_as(amount)
-    active = slice(None) if model.domain is None else model.domain.active_edge
-    high = torch.cat([eta_high[active].reshape(-1, 1), salt_high[active].reshape(-1, 1),
-                      .5*(q[low.i, 2:]+q[low.j, 2:])], -1)
-    donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
+    if scratch is None:
+        fields = [state.entropy_h[..., None], state.salt_h[..., None]]
+        if state.tracer_h is not None:
+            fields.append(state.tracer_h)
+        q = (torch.cat(fields, -1)/state.h[..., None]).reshape_as(amount)
+        active = slice(None) if model.domain is None else model.domain.active_edge
+        high = torch.cat([eta_high[active].reshape(-1, 1), salt_high[active].reshape(-1, 1),
+                          .5*(q[low.i, 2:]+q[low.j, 2:])], -1)
+        donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
+    else:
+        # The parent Gibbs limiter produced these tensors for the identical
+        # Euler-stage state and flux graph. Reuse them, not a second graph of
+        # indexing, concatenation and donor selection.
+        q, high, donor = scratch["q"], scratch["high"], scratch["donor"]
     change = (1-beta)*(donor-high)
-    del donor, q, fields
+    del donor, q
     return baseline, low, high, beta, change
 
 
@@ -94,13 +118,19 @@ class FrontWorkLedger(parent.WorkLedger):
 
 def evaluate(model, state, dt, energy, *, physical=None):
     stage = parent._StageEvaluation(model, state, dt, energy, physical=physical)
-    original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
+    stage.transport_scratch = {}
+    original_rhs, original = parent.evaluate(
+        model, state, dt, energy, _stage=stage, _composed=True
+    )
     eta, salt, face = stage.eta, stage.salt, stage.face
     baseline, low, high, target_beta, target_change = _local_target_fields(model, state, dt, eta, salt,
-                                     face['composition_entropy'], baseline=original.transport, low=stage.low)
+                                     face['composition_entropy'], baseline=original.transport,
+                                     low=stage.low, scratch=stage.transport_scratch)
     del baseline  # original owns it until its final fields have been consumed
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
     g = stage.gradient
+    # Parent already computed the exact antidiffusive flux for this stage.
+    anti = stage.transport_scratch["anti"]
     # The shared stage has served the parent and local target. Its unused
     # dynamic gradients and face thermodynamics need not survive this stage.
     del stage, eta, salt, face
@@ -121,7 +151,6 @@ def evaluate(model, state, dt, energy, *, physical=None):
     change = torch.cat([active_change, target_change[:, 2:]], -1)
     beta_salt = original.transport.beta[:, 1]+fraction*(target_beta[:, 1]-original.transport.beta[:, 1])
     beta = torch.cat([target_beta[:, :1], beta_salt[:, None], target_beta[:, 2:]], -1)
-    anti = original.transport.high_integrated_flux-low.donor_integrated_flux
     original_force = original.force_correction
     original_face_work = original.face_work
     gibbs_identity = original.gibbs_identity
