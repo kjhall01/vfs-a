@@ -114,3 +114,46 @@ def test_profile_does_not_touch_numerical_source_hashes():
     # an existing numeric checkpoint's identity.
     hashes = c.source_hashes()
     assert not any(key.endswith("profile_coupled.py") for key in hashes)
+
+
+def test_cpu_overlap_joins_before_exchange_and_replays_checkpoint(source, config, tmp_path):
+    from threading import get_ident
+    from test_pyam21_workflow import same_tree
+
+    parallel = replace(config, overlap_dynamics=True).validate()
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(parallel, source, Path("synthetic"))
+    caller = get_ident()
+    dynamics = c.advance_dynamics
+    seen = []
+
+    def observe(*args):
+        seen.append((get_ident(), torch.is_grad_enabled()))
+        return dynamics(*args)
+
+    with torch.no_grad():
+        a1, s1, r1 = c.advance(adapter, air, receiver, sea, config.physics_dt, config)
+        with patch.object(c, "advance_dynamics", side_effect=observe):
+            a2, s2, r2 = c.advance(adapter, air, receiver, sea, config.physics_dt, parallel)
+        assert seen and all(tid != caller and not grad for tid, grad in seen)
+        checkpoint = c.pack(adapter, a2, receiver, s2, "test", r2)
+        same_tree(c.pack(adapter, a1, receiver, s1, "test", r1), checkpoint)
+        restored_air, restored_sea, _ = c.unpack(checkpoint, adapter, receiver, sea, "test")
+        a3, s3, r3 = c.advance(adapter, a1, receiver, s1, config.physics_dt, config)
+        a4, s4, r4 = c.advance(adapter, restored_air, receiver, restored_sea, config.physics_dt, parallel)
+        same_tree(c.pack(adapter, a3, receiver, s3, "test", r3),
+                  c.pack(adapter, a4, receiver, s4, "test", r4))
+        with patch.object(c, "advance_dynamics", side_effect=RuntimeError("air rejected")), \
+             patch.object(c, "exchange_step") as exchange:
+            with pytest.raises(RuntimeError, match="air rejected"):
+                c.advance(adapter, air, receiver, sea, config.physics_dt, parallel)
+            exchange.assert_not_called()
+
+    report, _, _ = run_profile(adapter, air, receiver, sea, parallel, output=tmp_path,
+                               identity="test", warmup_intervals=0, measure_intervals=1)
+    assert "atmosphere_dynamics" not in report["stages"]
+    assert report["stages"]["ocean_ice_dynamics"]["inclusive"]["calls"] == 1
+    stages = report["stages"].values()
+    exclusive = sum(stage["exclusive"]["total_s"] for stage in stages)
+    total = report["stages"]["coupled_interval"]["inclusive"]["total_s"]
+    assert exclusive == pytest.approx(total, abs=1e-8)

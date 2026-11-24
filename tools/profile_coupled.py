@@ -34,6 +34,7 @@ import resource
 import statistics
 import sys
 import time
+from threading import get_ident
 import traceback
 from unittest.mock import patch
 
@@ -85,11 +86,17 @@ class SectionClock:
         self.device = torch.device(device)
         self.sync_stages = synchronize_stages and self.device.type != "cpu"
         self.torch_ranges = torch_ranges
+        self.owner_thread = get_ident()
         self.stack = []
         self.samples = defaultdict(list)
 
     @contextmanager
     def section(self, label):
+        # Concurrent worker time overlaps the caller and cannot be subtracted
+        # from its nesting stack. Total interval time still includes the join.
+        if get_ident() != self.owner_thread:
+            yield
+            return
         if self.sync_stages:
             synchronize(self.device)
         start = time.perf_counter()
@@ -201,7 +208,7 @@ class Instrument:
         if a.model.transport is not None:
             self._method(a.model.transport, "euler_with_info", "atmosphere_bounded_euler")
         self._method(a.model.dynamics, "tendency", "atmosphere_unlimited_rhs")
-        self._method(a.model.dynamics.kernel, "_momentum_terms", "atmosphere_centered_momentum")
+        self._method(a.model.dynamics.kernel, "_assemble", "atmosphere_centered_assembly")
         self._method(a.model.dynamics.kernel, "mixture_gradients", "atmosphere_mixture_gradients")
 
         # Ocean–ice mechanics, optional cold-content and snow, plus column mixing.
@@ -312,7 +319,9 @@ def _render_summary(report):
         f"Throughput: {t['simulated_days_per_wall_hour']:.3f} simulated days/hour; "
         f"{t['SYPD']:.4f} SYPD",
         "",
-        "Exclusive time by operator (nested rows do NOT double count):",
+        ("Main-thread exclusive time (background air overlaps ocean; interval includes the join):"
+         if report["configuration"].get("overlap_dynamics") else
+         "Exclusive time by operator (nested rows do NOT double count):"),
         f"{'operator':39} {'calls':>7} {'exclusive s':>12} {'wall %':>9} "
         f"{'incl median ms':>16}",
         "-" * 92,

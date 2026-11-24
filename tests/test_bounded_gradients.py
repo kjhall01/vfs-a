@@ -226,6 +226,7 @@ def test_limiter_switch_has_distinct_one_sided_derivatives():
     torch.testing.assert_close((right - at) / h, at.new_tensor(0.0), rtol=0, atol=atol)
 
 
+@torch.no_grad()
 def test_bounded_euler_reuses_one_stage_and_installs_ledger(monkeypatch):
     from unittest.mock import Mock
     from vfs.atmosphere import bounded_moist

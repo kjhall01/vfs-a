@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from dataclasses import asdict, dataclass, replace
 import hashlib
@@ -116,6 +117,7 @@ class CampaignConfig:
     dtype: str = "float64"
     diagnostic_hours: int = 6
     restart_days: int = 5
+    overlap_dynamics: bool = False
 
     def validate(self):
         validate_precision(self.device, self.dtype)
@@ -144,9 +146,12 @@ class CampaignConfig:
             "backscatter",
             "ale_remap",
             "compile",
+            "overlap_dynamics",
         ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
+        if self.overlap_dynamics and torch.device(self.device).type != "cpu":
+            raise ValueError("overlap_dynamics requires CPU components")
         if self.start_year % 4 == 0 or self.days > 365:
             raise ValueError(
                 "campaign requires a non-leap start year and at most 365 days"
@@ -473,10 +478,7 @@ def build(
     return adapter, air, receiver, sea
 
 
-def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
-    """Atomic first-order composition; caller commits only after full success."""
-    if trace is not None:
-        trace.begin(adapter, air, receiver, sea)
+def _advance_air(adapter, air, receiver, sea, dt, config, trace):
     evolved = air
     for elapsed in range(0, dt, config.atmosphere_dt):
         evolved = advance_dynamics(
@@ -485,6 +487,10 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         if trace is not None:
             trace.observe("atmosphere_dynamics", adapter, evolved, receiver, sea,
                           details={"substep_seconds": min(config.atmosphere_dt, dt - elapsed)})
+    return evolved
+
+
+def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
     water = sea
     external = 0.0
     ocean_report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
@@ -533,6 +539,32 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
                 trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
                               water, details={"substep_seconds": event.mesoscale_dt})
             accumulate_ocean(ocean_report, r)
+    return water, external, ocean_report
+
+
+def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
+    """Join the independent dynamics advances before the atomic surface exchange."""
+    if trace is not None:
+        trace.begin(adapter, air, receiver, sea)
+    # Energy traces observe a serial sequence of whole coupled states. Keep
+    # autograd and autocast calls on their calling thread as well.
+    overlap = (config.overlap_dynamics and trace is None and not torch.is_grad_enabled()
+               and not torch.is_autocast_enabled("cpu"))
+    if overlap:
+        inference = torch.is_inference_mode_enabled()
+
+        def advance_air_worker():
+            with torch.inference_mode(inference), torch.no_grad():
+                return _advance_air(adapter, air, receiver, sea, dt, config, None)
+
+        with ThreadPoolExecutor(max_workers=1, thread_name_prefix="vfs-air") as executor:
+            future = executor.submit(advance_air_worker)
+            water, external, ocean_report = _advance_water(adapter, air, receiver, sea, dt, config, None)
+            evolved = future.result()
+    else:
+        evolved = _advance_air(adapter, air, receiver, sea, dt, config, trace)
+        water, external, ocean_report = _advance_water(adapter, evolved, receiver, sea, dt, config, trace)
+    A = adapter.model.mesh.cell_area
     evolved, water, x, ar, sr = exchange_step(
         adapter, evolved, receiver, water, dt, omega=pressure_velocity(adapter, evolved)
     )
@@ -942,6 +974,8 @@ def main(argv=None):
     )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
+    parser.add_argument("--overlap-dynamics", action=argparse.BooleanOptionalAction, default=None,
+                        help="Run CPU atmosphere and ocean dynamics concurrently before surface exchange")
     parser.add_argument("--threads", type=int, help="CPU thread count, including host work for GPU (overrides YAML)")
     parser.add_argument(
         "--compile", action=argparse.BooleanOptionalAction, default=None,
@@ -982,12 +1016,9 @@ def main(argv=None):
         parser.error("--resume-compatible-manifest requires --resume")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
-    config = CampaignConfig(**yaml.safe_load(args.config.read_text())).validate()
-    for name in ("device", "dtype", "threads"):
-        if getattr(args, name) is not None:
-            config = replace(config, **{name: getattr(args, name)}).validate()
-    if args.compile is not None:
-        config = replace(config, compile=args.compile).validate()
+    overrides = {name: getattr(args, name) for name in ("device", "dtype", "threads", "compile", "overlap_dynamics")
+                 if getattr(args, name) is not None}
+    config = CampaignConfig(**(yaml.safe_load(args.config.read_text()) | overrides)).validate()
     end = (
         config.days * DAY
         if args.stop_after_days is None
