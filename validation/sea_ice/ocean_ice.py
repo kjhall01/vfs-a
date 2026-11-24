@@ -270,7 +270,9 @@ class OceanIce:
             ).sum()
         ridge_heat = zero
         if ridging:
-            r, report = self.ridge.tendency(state)
+            # The full OceanIce stage was validated at tendency entry.
+            # Do not repeat the same ocean/temperature validation in ridging.
+            r, report = self.ridge.tendency(state, _validated=True)
             # A newly populated category can receive both transported ice and
             # ridge material of different thickness. Their unresolved thickness
             # variance releases PE; route that nonnegative mixing power to heat.
