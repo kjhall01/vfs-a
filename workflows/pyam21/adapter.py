@@ -19,6 +19,7 @@ from vfs.atmosphere.moist_cp import interface_pressure_mass
 from .mapping import ColumnMap, average, distribute, species_increment, species_endpoint
 from .state import PhysicsState, PhysicsReport, copy_tree
 from .energy import exchanges, transfer_energy
+from .surface import ColumnTiles, fund_column_evaporation, surface_layer, tile_fluxes
 from .vapor import restore_positive_vapor
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
@@ -317,8 +318,6 @@ class AM2Adapter:
                     mem,
                 )
             else:
-                from .surface import surface_layer
-
                 sfc, tile_raw = surface_layer(
                     self, columns, geometry, surf, mem, surface_tiles
                 )
@@ -350,6 +349,8 @@ class AM2Adapter:
                 surf["t_surf"],
             )
             cpl = p.couple(dn["vd"], sfc, surf, update_ocean=surface_tiles is None)
+            if isinstance(surface_tiles, ColumnTiles):
+                cpl, tile_raw = fund_column_evaporation(p, dn["vd"], surf, sfc, cpl, surface_tiles, dt)
             up = p.up(dt, T, u, v, R, pf, ph, zf, zh, omega, dn, cpl, surf, mem)
             out = {k: up[k] for k in ("udt", "vdt", "tdt", "rdt")}
             out.update(
@@ -383,8 +384,6 @@ class AM2Adapter:
                     + ", ".join(bad_column) + "; no state committed"
                 )
             if tile_raw is not None:
-                from .surface import tile_fluxes
-
                 out["tile_fluxes"] = tile_fluxes(tile_raw, surface_tiles, dn["vd"], cpl)
                 for key, value in out["tile_fluxes"].items():
                     error = (value.sum(-1) - out[key]).abs()

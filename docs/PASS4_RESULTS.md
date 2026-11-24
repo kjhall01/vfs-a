@@ -1,5 +1,21 @@
 # Pass 4 — physical-field workflow
 
+## Land column exchange with PyAM21
+
+The [mixed grassland and slab-ocean experiment](../workflows/coupled/LAND_COLUMNS.md)
+ports the archived four-layer land column and couples it to the same finite
+surface exchange used by VFS. On 32 cells (9 land), CPU float64, a radiation-off
+24-hour experiment at physics dt 2400 s and atmosphere dt 800 s gave precipitation
+1.2459, vapor to air 1.0039, runoff 30.5423 and storage change −30.3003 kg/m²
+of land. The deliberately wet initialization supplied most of the runoff.
+Maximum cell surface discrepancies were 6.67e-12 kg/m² and 8.33e-7 J/m².
+The complete model's numerical energy change was −80.88257 J/m²; an independent
+measurement across atmospheric dynamics gave −80.88257 J/m². With only column
+physics at the same interval the model residual was −5.75e-7 J/m².
+Tests also exercise synthetic fresh and cached radiation, a binding evaporation
+supply, nonzero wind stress and area-weighted delivery. GPU execution, real
+optical tables and coastal dynamics remain unqualified.
+
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
 
 ## Local GM funding on the mature 4,096-cell ocean

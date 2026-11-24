@@ -39,6 +39,15 @@ class OceanIceReceiver:
         self.H = snow.hamiltonian
         self.wind = KineticWindMap(self.H.model.ocean.mesh)
 
+    def check_geometry(self, adapter, atmosphere, state):
+        if atmosphere.surface["land"].any():
+            raise ValueError("shared ocean/ice exchange supports all-wet surfaces only")
+        ocean = state.coupled.ocean.ocean
+        if ocean.mesh is not adapter.model.mesh:
+            raise ValueError("shared exchange currently requires the identical mesh object")
+        if ocean.column.gravity != adapter.model.dynamics.kernel.gravity:
+            raise ValueError("component gravity must match")
+
     def tiles(self, state, ice_temperature):
         """Explicit CT+273.15 SST approximation; caller supplies ice skin K.
 
