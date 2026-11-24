@@ -17,11 +17,12 @@ See [the energy derivation](../pyam21/ENERGY.md#exact-zero-vapor-at-the-physics-
 
 ## Continue the failed run
 
-Fetch the correction branch and reinstall VFS from the repository:
+For a checkpoint from the merged ocean performance stack, update VFS on the campaign machine.
 
 ```bash
 git fetch origin
-git switch fix/pyam21-positive-vapor
+git switch main
+git pull --ff-only origin main
 python -m pip install -e .
 ```
 
@@ -35,13 +36,18 @@ Replace its output directory with a new one and add:
 --output /path/to/vapor-fix-continuation
 ```
 
-The checked restart bridge recognizes the exact numerical source inventory of
-main `dcda5cdd1832242557881e7d7438c820464db4fa`
-and this correction's pinned target inventory. The old inventory is reproduced
-from that public Git revision. All configuration, runtime,
-mesh and radiation identity checks remain active. The transition writes
-`compatible_resume_audit.json` with `numerical_change: funded_zero_vapor_v1`.
-It does not convert arbitrary old branches or change checkpoint fields.
+The restart bridge verifies the source inventory at both ends of each
+transition. Choose the row matching the checkout that wrote your checkpoint.
+
+| Checkpoint source | Checkout for continuation |
+| --- | --- |
+| Ocean performance stack at `5329122` (#113) or `3b090ed` (same sources on main) | Main at the integration of #109 and #113 |
+| Earlier main at `dcda5cd` | Original vapor fix at `e9a5702` (use `git switch --detach e9a5702` before installing) |
+
+Each pair changes only the vapor correction and its reporting or verification.
+Crossing between the two ocean revisions fails the source check. Configuration,
+runtime, mesh and radiation identities must also match. A successful transition
+writes `compatible_resume_audit.json` with `numerical_change: funded_zero_vapor_v1`.
 
 New campaign diagnostics accumulate:
 

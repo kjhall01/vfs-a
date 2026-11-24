@@ -46,9 +46,39 @@ class EddyReport:
 class LocalEddyEnergyError(FloatingPointError):
     """Negative eddy inventory after settling the finite work in a cell-layer."""
 
-    def __init__(self, name, bad, detail="reduce dt or supply a physical reservoir initial condition"):
+    def __init__(
+        self, name, bad, detail="reduce dt or supply a physical reservoir initial condition",
+        *, remaining=None,
+    ):
         super().__init__(f"{name} requires unavailable local eddy energy; {detail}")
         self.bad = bad
+        self.remaining = remaining
+
+
+@torch.no_grad()
+def _funded_factors(model, before, after, failure, metrics):
+    """Largest affordable halving along the current local GM transport direction.
+
+    With fixed donors the inflow and tracer increments scale linearly. The only
+    quadratic term in the remaining h*e is -a*(delta hCT)**2/h. Neighboring
+    layers can request different factors, so the actual endpoint must be checked.
+    """
+    h = before.ocean.h
+    bad = failure.bad
+    start = before.eddy_h[bad]
+    curvature = model.hamiltonian.base.coefficients(before.ocean)[0]
+    delta_ct = after.ocean.temp_h[bad] - before.ocean.temp_h[bad]
+    quadratic = -curvature[bad] * delta_ct.square() / h[bad]
+    fractions = 0.5 ** torch.arange(1, 21, dtype=h.dtype, device=h.device)
+    remaining = failure.remaining[bad]
+    budget = (1 - fractions) * start[:, None] + fractions * remaining[:, None]
+    budget = budget + (fractions * (fractions - 1)) * quadratic[:, None]
+    best = torch.where(budget >= 0, fractions, 0.).amax(1)
+    layer = torch.ones_like(h)
+    layer[bad] = torch.where(best > 0, best, 0.5)
+    i, j = metrics[3:5]
+    sides = torch.minimum(layer[i], layer[j])
+    return torch.minimum(sides[:, :-1], sides[:, 1:])
 
 
 class _RediGradient:
@@ -169,8 +199,13 @@ class GMRedi:
     The midpoint GM energy flux is the historical default. donor_parcel
     carries the upwind parcel's energy. funded_donor_parcel uses this flux
     and halves incident interface streamfunctions if local GM work exceeds
-    the eddy reservoir. The Redi step follows only an accepted GM update.
+    the eddy reservoir. quadratic_funded_donor_parcel predicts a local dyadic
+    scale from the Roquet energy curve and verifies the full trial before Redi.
     """
+
+    energy_schemes = (
+        "midpoint", "donor_parcel", "funded_donor_parcel", "quadratic_funded_donor_parcel"
+    )
 
     def __init__(
         self,
@@ -203,7 +238,7 @@ class GMRedi:
         if type(positive_redi) is not bool:
             raise ValueError("positive_redi must be boolean")
         self.positive_redi = positive_redi
-        if gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
+        if gm_energy_scheme not in self.energy_schemes:
             raise ValueError("Unknown GM energy scheme: " + str(gm_energy_scheme))
         self.gm_energy_scheme = gm_energy_scheme
         self.kappa_gm, self.kappa_redi = kappa_gm, kappa_redi
@@ -385,7 +420,7 @@ class GMRedi:
         eddy_h = transported.eddy_h - work / safe_mass
         bad = eddy_h < 0
         if bad.any():
-            raise LocalEddyEnergyError(name, bad)
+            raise LocalEddyEnergyError(name, bad, remaining=eddy_h.detach())
         end = EddyState(transported.ocean, transported.tke_h, eddy_h)
         # Transported CT/SA/TKE were already checked; exchange changes only e.
         model._check_eddy(end)
@@ -393,7 +428,7 @@ class GMRedi:
         residual = H.finite_change(before, end) - energy_inflow
         return end, exchange, residual
 
-    def _gm_step(self, model, state, dt, initial, volume, i, j, carrier):
+    def _gm_transport(self, model, state, dt, initial, volume, i, j, carrier):
         h = state.ocean.h
         rho0 = state.ocean.column.rho0
         outgoing = (
@@ -431,10 +466,7 @@ class GMRedi:
             reservoir = initial[donor_ids, -2:].sum(-1)
             energy_flux = rho0 * dt * carrier * (caloric + potential + reservoir)
         gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
-        gm, gm_exchange, gm_residual = self._settle(
-            model, state, gm_transport, gm_inflow, "GM"
-        )
-        return gm, gm_exchange, gm_residual, gm_inflow, fraction
+        return gm_transport, gm_inflow, fraction
 
     def apply(self, model, state, dt):
         from roquet import RoquetOcean
@@ -462,29 +494,52 @@ class GMRedi:
         initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
         # Retry from the same state. Halving an entire closed circulation
         # preserves zero divergence, including its two vertical return paths.
-        # Only an unfunded GM settlement enters this loop's retry branch.
+        # Only a local GM energy deficit can initiate funding retries.
         proposed = psi
         factors = None
-        for passes in range(21):
+        first_halving = None
+        halvings = 0
+        passes = 0
+        while True:
             try:
-                gm, gm_exchange, gm_residual, gm_inflow, fraction = self._gm_step(
+                transported, gm_inflow, fraction = self._gm_transport(
                     model, state, dt, initial, volume, i, j, carrier
                 )
+                gm, gm_exchange, gm_residual = self._settle(
+                    model, state, transported, gm_inflow, "GM"
+                )
                 break
-            except LocalEddyEnergyError as exc:
-                if self.gm_energy_scheme != "funded_donor_parcel":
-                    raise
-                if passes == 20:
-                    raise LocalEddyEnergyError(
-                        "GM", exc.bad, "exhausted 20 local streamfunction halvings"
-                    ) from exc
-                bad_layers = exc.bad[metrics[3]] | exc.bad[metrics[4]]
-                incident = bad_layers[:, :-1] | bad_layers[:, 1:]
-                if not incident.any():
-                    raise
-                if factors is None:
-                    factors = torch.ones_like(psi[:, 1:-1])
-                factors = torch.where(incident, 0.5 * factors, factors)
+            except (FloatingPointError, ValueError) as exc:
+                if first_halving is not None:
+                    if passes == 1 and isinstance(exc, LocalEddyEnergyError):
+                        # Recompute once along the actual, partly reduced circulation.
+                        correction = _funded_factors(model, state, transported, exc, metrics)
+                        factors = (factors * correction).clamp_min(0.5**20)
+                    else:
+                        # The interacting layers still need repair. Replay the original
+                        # halving sequence with its full budget of twenty attempts.
+                        factors, first_halving = first_halving, None
+                else:
+                    if not isinstance(exc, LocalEddyEnergyError) or self.gm_energy_scheme not in (
+                        "funded_donor_parcel", "quadratic_funded_donor_parcel"
+                    ):
+                        raise
+                    if halvings == 20:
+                        raise LocalEddyEnergyError(
+                            "GM", exc.bad, "exhausted 20 local streamfunction halvings"
+                        ) from exc
+                    bad_layers = exc.bad[metrics[3]] | exc.bad[metrics[4]]
+                    incident = bad_layers[:, :-1] | bad_layers[:, 1:]
+                    if not incident.any():
+                        raise
+                    if factors is None:
+                        factors = torch.ones_like(psi[:, 1:-1])
+                    factors = torch.where(incident, 0.5 * factors, factors)
+                    halvings += 1
+                    if passes == 0 and self.gm_energy_scheme == "quadratic_funded_donor_parcel":
+                        first_halving = factors
+                        factors = _funded_factors(model, state, transported, exc, metrics)
+            passes += 1
             psi = torch.cat((proposed[:, :1], proposed[:, 1:-1] * factors, proposed[:, -1:]), 1)
             horizontal, vertical, i, j, carrier = self._carriers(psi, metrics, h)
 

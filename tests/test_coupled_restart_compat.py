@@ -168,32 +168,38 @@ def test_day15_restart_rejects_source_drift_and_wrong_origin():
         )
 
 
-def vapor_sources():
-    import hashlib
-    root = Path(__file__).resolve().parents[1]
-    original = json.loads((root / "tests/fixtures/coupled_vapor_sources-dcda5cd.json").read_text())
-    fixed = dict(original)
-    for path in (module.VERIFIER, "workflows/coupled/campaign.py",
-                 "workflows/pyam21/adapter.py", "workflows/pyam21/state.py",
-                 "workflows/pyam21/vapor.py"):
-        fixed[path] = hashlib.sha256((root / path).read_bytes()).hexdigest()
-    return original, fixed
+def vapor_sources(revision):
+    """Reconstruct both audited inventories independently of the checkout."""
+    fixtures = Path(__file__).parent / "fixtures"
+    original = json.loads((fixtures / "coupled_vapor_sources-dcda5cd.json").read_text())
+    changes = json.loads((fixtures / "coupled_vapor_source_deltas.json").read_text())[revision]
+    before = {**original, **changes["base_delta"]}
+    return before, {**before, **changes["fix_delta"]}
 
 
-def test_vapor_restart_pins_the_implemented_source_transition():
-    before, after = vapor_sources()
+@pytest.mark.parametrize("revision", ["dcda5cd", "5329122"])
+def test_vapor_restart_pins_the_implemented_source_transition(revision):
+    before, after = vapor_sources(revision)
     result = module.verify_compatible_source_delta(before, after)
     assert result["numerical_change"] == "funded_zero_vapor_v1"
-    assert result["vapor_correction_files"] == sorted(
-        path for path in before.keys() | after.keys() if before.get(path) != after.get(path)
-    )
-    assert module._without_verifier_digest(before) == module.VAPOR_ORIGINAL_SOURCES_DIGEST
-    assert module._without_verifier_digest(after) == module.VAPOR_FIXED_SOURCES_DIGEST
+    assert result["vapor_correction_files"] == [
+        "workflows/coupled/campaign.py", module.VERIFIER, "workflows/pyam21/adapter.py",
+        "workflows/pyam21/state.py", "workflows/pyam21/vapor.py",
+    ]
 
 
+def test_vapor_restart_rejects_crossing_ocean_revisions():
+    old, fixed = vapor_sources("dcda5cd")
+    stack, combined = vapor_sources("5329122")
+    for before, after in ((old, combined), (stack, fixed)):
+        with pytest.raises(ValueError, match="vapor correction restart target"):
+            module.verify_compatible_source_delta(before, after)
+
+
+@pytest.mark.parametrize("revision", ["dcda5cd", "5329122"])
 @pytest.mark.parametrize("path", ["workflows/pyam21/vapor.py", "vfs/atmosphere/gibbs_means.py"])
-def test_vapor_restart_rejects_unreviewed_sources(path):
-    before, after = vapor_sources()
+def test_vapor_restart_rejects_unreviewed_sources(revision, path):
+    before, after = vapor_sources(revision)
     with pytest.raises(ValueError, match="audited"):
         module.verify_compatible_source_delta(before, {**after, path: "unknown"})
     with pytest.raises(ValueError, match="audited"):

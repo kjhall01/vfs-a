@@ -57,6 +57,14 @@ DAY15_FIXED_SOURCES_DIGEST = "8e39d515effc25df2e8fc2cc4b6e9a3c214720963b9d8141ba
 VAPOR_ORIGINAL_VERIFIER_SHA = "5a39bd00299ac9bb631bb82282d98f1011ae0e86ac56b7af6bb7e9d2b819dbf2"
 VAPOR_ORIGINAL_SOURCES_DIGEST = "60c3cce216b15d9a2e983e2d6b4345ced921f95bd6fb6b924a776b12664844e9"
 VAPOR_FIXED_SOURCES_DIGEST = "a0861e8909afe2d32309ec196b19f2d883eb5b599f5571967c2918c90f84b767"
+# PR #113 already contains the ice, GM and mixing changes on both sides
+# of its vapor transition. Pair the inventories so a restart cannot skip
+# any of those numerical changes. The original verifier is shared.
+VAPOR_TARGET_BY_ORIGIN = {
+    VAPOR_ORIGINAL_SOURCES_DIGEST: VAPOR_FIXED_SOURCES_DIGEST,
+    "1762a52b61ae4f11d4f8a25b2073af4d8224179c25bcd53bf76c958ccb31b05c":
+        "f7e7c56cafb64857884f2572f884e853902ce2bd548a647344a150bad49d0860",
+}
 
 
 def _without_verifier_digest(sources):
@@ -65,10 +73,12 @@ def _without_verifier_digest(sources):
 
 
 def _verified_vapor_transition(old_hashes, current_hashes):
-    if (old_hashes.get(VERIFIER) != VAPOR_ORIGINAL_VERIFIER_SHA
-            or _without_verifier_digest(old_hashes) != VAPOR_ORIGINAL_SOURCES_DIGEST):
+    if old_hashes.get(VERIFIER) != VAPOR_ORIGINAL_VERIFIER_SHA:
         return None
-    if _without_verifier_digest(current_hashes) != VAPOR_FIXED_SOURCES_DIGEST:
+    target = VAPOR_TARGET_BY_ORIGIN.get(_without_verifier_digest(old_hashes))
+    if target is None:
+        return None
+    if _without_verifier_digest(current_hashes) != target:
         raise ValueError("vapor correction restart target differs from the audited revision")
     changed = sorted(k for k in old_hashes.keys() | current_hashes.keys()
                      if old_hashes.get(k) != current_hashes.get(k))

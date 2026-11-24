@@ -1,9 +1,17 @@
 # Current package documentation
 
+The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
+
+[Quadratic GM funding](../docs/PASS4_RESULTS.md#local-gm-funding-on-the-mature-4096-cell-ocean)
+reduced complete GM/Redi time by 2.83× in a four-thread CPU replay of the
+day-21 ocean. The [operator notes and A100 benchmark command](../validation/temperature_coordinate/GMREDI.md#quadratic-funding-for-donor-gm-transport)
+cover the opt-in scheme, local energy checks, and fallback.
+
 The conservative PyAM21 adapter now funds exact-zero vapor from local cloud
 water, with a nominal `1e-12 kg/kg` target and the original native energy target.
 The [correction and checked restart instructions](../workflows/coupled/VAPOR_CORRECTION.md)
-cover the source transition from main dcda5cd. Installed-wheel focused checks:
+cover the historical dcda5cd transition and the separate transition from the
+merged ocean performance stack (#113). Installed-wheel focused checks:
 116 passed; unchanged portable frozen comparisons: 142/93. Correction counts
 and transferred mass are explicit campaign diagnostics. Private checkpoint
 data and diagnostics are excluded from the repository.
@@ -2234,3 +2242,9 @@ remain absent, the existing column phase API is unchanged, and only the thin
 category can be redistributed. Full shear/VP/EVP and calibration remain open.
 Installed-wheel portable suite: 1255 passed, 2 skipped; both frozen comparisons
 pass. CPU float64 only; no GPU or long coupled ocean–ice validation.
+
+## Ocean vertical mixing
+
+[Paired fresh and day-21 replays](../docs/PASS4_RESULTS.md#roquet-vertical-mixing-from-interface-fluxes)
+show 1.31–1.37× faster Roquet mixing on four CPU threads. The flux-based
+funding check returns identical accepted states and budgets in these cases.

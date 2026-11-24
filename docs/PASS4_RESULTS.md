@@ -1,5 +1,50 @@
 # Pass 4 — physical-field workflow
 
+The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
+
+## Local GM funding on the mature 4,096-cell ocean
+
+The optional [quadratic donor funding scheme](../validation/temperature_coordinate/GMREDI.md#quadratic-funding-for-donor-gm-transport)
+predicts a local streamfunction reduction from the Roquet Hamiltonian and
+verifies it with the original donor transport and energy settlement. It can
+return to the original halving sequence when constraints interact.
+
+CPU float64, eager PyTorch 2.14.1, four threads, 4,096 cells, 40 ocean layers,
+600 s per substep. Wall times cover complete GM/Redi calls with positivity
+limiting and all report fields. Four warmup calls were excluded per case.
+
+| Ocean input | Paired calls | Local halving, total s | Quadratic, total s | Speedup |
+|---|---:|---:|---:|---:|
+| Fresh initial condition | 12 | 3.737 | 3.720 | 1.00× |
+| Day 21.375 checkpoint and seven successive GM/Redi states | 16 | 17.956 | 6.338 | 2.83× |
+
+Each mature input was timed twice in opposite solver orders. The original
+retry counts over the eight states were 7, 10, 10, 10, 9, 10, 10, 10.
+The quadratic counts were 1, 1, 1, 1, 1, 2, 1, 1. Both schemes returned
+bitwise-equal prognostic fields, streamfunctions, and reports apart from
+the retry counter. The largest mature GM local energy residual divided by
+layer mass was 2.06e-16 J/kg. The fresh ocean needed zero retries.
+
+The campaign ocean/ice/snow dynamics branch on the same restart also ran
+with each policy. Four timing pairs replayed the same 1,200 s interval, with
+two excluded warmups and alternating solver order. Mean wall time fell from
+6.049 to 5.012 s (1.21×). Total GM retries fell from thirteen to three across
+the two substeps. After ocean dynamics and mixing, the second GM substep
+chose different funded streamfunctions at two of 503,562 stored entries.
+At the end of the water branch, maximum temperature and specific eddy-energy
+differences were 6.48e-9 K and 5.75e-8 J/kg. Salinity, passive tracer, layer
+thickness and velocities matched bitwise. Both updated reservoirs stayed
+nonnegative. Maximum local residuals per layer mass on the quadratic path
+were 2.07e-16 J/kg for GM and 1.56e-15 J/kg for Redi. This branch ends before
+the atmosphere/surface exchange and ALE.
+
+Installed-wheel checks (115 passed) cover an unlimited donor update, an isolated shortfall,
+overlapping shortfalls in adjacent layers, finite-amplitude quadratic work,
+recovery from deliberately rejected predictions, explicit CFL and Redi
+rejection, and two coupled intervals on a small grid. The historical corrected
+and dry portable fixtures pass (142 and 93 quantities). Accelerator timing,
+coupled throughput at day 21 and long-run equivalence remain unmeasured.
+
 ## Local positive-vapor correction at the PyAM21 boundary
 
 The user requested a small, explicitly funded positive endpoint when column
@@ -16,6 +61,12 @@ complete old/new source inventories and retains runtime, config, mesh and
 radiation checks. No long-run, fresh-optics, GPU/MPS or correction-boundary
 backward qualification is claimed. Private checkpoint data and diagnostics
 are excluded from the repository. See [behavior, validation and restart instructions](../workflows/coupled/VAPOR_CORRECTION.md).
+
+The combined #109–113 code also resumed a checkpoint written by the unmodified
+#113 campaign CLI. A CPU float64 smoke run on 16 cells reached 60 s on #113
+and continued to 120 s on the combined sources with radiation disabled. The
+audit identified the five expected workflow files. The historical dcda5cd
+transition retains its original fixed target.
 
 ## Bounded atmospheric stage reuse
 
@@ -1570,3 +1621,39 @@ cached radiation, without fresh optics. A reusable one-interval diagnostic now
 captures the pre-ALE state. Installed-wheel checks: **107 passed, 1 optional GSW
 skip**; frozen **142/93** comparisons pass. Mac/fresh-table seasonal rerun and
 long-run stability remain unverified. See [active-constraint evidence](../verification/ocean/ale-active-set/README.md).
+
+## Roquet vertical mixing from interface fluxes
+
+The [vertical mixing closure](../validation/temperature_coordinate/ROQUET.md#funding-vertical-mixing-from-interface-fluxes)
+now computes the exact local work of a Roquet candidate directly from its salt
+and enthalpy fluxes. It constructs the full tracer endpoint once per accepted
+substep. The coefficient predictor, all five internal substeps, and the funding
+decisions were retained.
+
+Benchmarks compared independent checkouts against parent `e366376`, with eager
+PyTorch 2.14.1 on four CPU threads, float64, the exact 4,096-cell mesh, and
+40 ocean layers. Both builds used the day-21 campaign configuration. Each row
+replayed a fixed input for both builds in alternating order after an excluded
+warmup per build. Times are mean wall seconds per 1,200 s interval.
+
+| Input and operation | Pairs | Parent | Reduced work | Speedup |
+|---|---:|---:|---:|---:|
+| Fresh ocean, complete mixing | 8 | 0.872 s | 0.664 s | 1.31× |
+| Day 21.375, complete mixing | 12 | 0.914 s | 0.667 s | 1.37× |
+| Day 21.375, ocean/ice/snow branch | 4 | 5.927 s | 5.540 s | 1.07× |
+
+The mixing outputs and every report field matched bit for bit at both inputs
+and after each of six successive 1,200 s mixing calls from day 21.
+On day 21 the 15 trial evaluations across five substeps limited 521,201
+interface occurrences and deferred zero columns in both builds. The minimum
+specific TKE was 1.022e-21 J/kg. The maximum absolute accumulated column energy
+residual per unit area was 1.188e-5 J/m². The ocean/ice/snow branch also
+returned bitwise-equal states and diagnostics. That branch ends before
+atmosphere/surface exchange and ALE. A100 throughput and long climate
+integrations remain unmeasured.
+
+
+The installed-wheel qualification covered 168 passing tests, including native
+CPU Inductor and coupled restart replay. Seven tests were skipped in the
+device suite. Both frozen fixture comparisons passed (142 corrected Gibbs
+quantities and 93 dry helper quantities).

@@ -12,6 +12,7 @@ import yaml
 
 pytest.importorskip("pyam21")
 from test_pyam21_workflow import same_tree, PrescribedRadiationPackage
+from test_coupled_restart_compat import vapor_sources
 from workflows.coupled import campaign as c
 from workflows.pyam21.radiation import RadiationSetup, build_radiation
 from pyam21.radiation.driver import RadiationDriver
@@ -207,11 +208,13 @@ def test_noncommensurate_process_cadences_fail_closed(config):
             replace(config, **changes).validate()
 
 
-def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config):
+@pytest.mark.parametrize("scheme", ["midpoint", "quadratic_funded_donor_parcel"])
+def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, config, scheme):
     # Both closures run half as often while retaining their full elapsed dt.
     # Radiation and atmosphere--ocean transfer remain one atomic physics call.
     scheduled = replace(
         config,
+        gm_energy_scheme=scheme,
         physics_dt=120,
         radiation_dt=120,
         ocean_dt=60,
@@ -448,13 +451,13 @@ def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, p
         assert not legacy_audit.exists()
 
 
-def test_cli_resumes_audited_zero_vapor_transition(source, config, tmp_path):
+@pytest.mark.parametrize("revision", ["dcda5cd", "5329122"])
+def test_cli_resumes_audited_zero_vapor_transition(revision, source, config, tmp_path):
     path = tmp_path / "config.yaml"
     path.write_text(yaml.safe_dump(c.asdict(config)))
     args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
     initial, resumed = tmp_path / "initial", tmp_path / "resumed"
-    prior_hashes = json.loads((Path(__file__).parent /
-        "fixtures/coupled_vapor_sources-dcda5cd.json").read_text())
+    prior_hashes, fixed_hashes = vapor_sources(revision)
     with patch.object(c, "source_hashes", return_value=prior_hashes):
         assert c.main(args + ["--output", str(initial), "--stop-after-days", str(60 / c.DAY)]) == 0
     restart = initial / "restarts/restart_00000060.pt"
@@ -463,8 +466,9 @@ def test_cli_resumes_audited_zero_vapor_transition(source, config, tmp_path):
         old["ledger"].pop(key)  # historical checkpoints lack these counters
     torch.save(old, restart)
     manifest = initial / "manifest.json"
-    assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
-                         "--resume", str(restart), "--resume-compatible-manifest", str(manifest)]) == 0
+    with patch.object(c, "source_hashes", return_value=fixed_hashes):
+        assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
+                             "--resume", str(restart), "--resume-compatible-manifest", str(manifest)]) == 0
     audit = json.loads((resumed / "compatible_resume_audit.json").read_text())
     status = json.loads((resumed / "status.json").read_text())
     assert audit["numerical_change"] == "funded_zero_vapor_v1"

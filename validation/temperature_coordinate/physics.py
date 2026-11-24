@@ -46,11 +46,13 @@ class TemperatureMixing(SubcycledLaggedClosure):
         TemperatureOcean(ocean).fields(end)
         return end,end
 
-    def _entropy_content(self,ocean,state):
-        return state.h*ocean.reference.evaluate(state.salinity(),state.temperature())['entropy']
+    def _entropy_content(self,ocean,state,reference):
+        return state.h*reference['entropy']
 
     def _apply(self,ocean,state,tke_h,dt,physical=None):
-        TemperatureOcean(ocean).fields(state)
+        # Subcycling passes the exact endpoint just validated by the prior heat step.
+        if physical is not state:
+            TemperatureOcean(ocean).fields(state)
         return super()._apply(ocean,state,tke_h,dt,physical=state)
 
 

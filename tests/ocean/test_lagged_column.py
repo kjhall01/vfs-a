@@ -51,3 +51,19 @@ def test_explicit_scalar_deferral_preserves_energy_and_inventory(ocean):
     assert (out.tke_h>=0).all() and r.budget_error<=1
     mass=ocean.energy.mass_area(s.ocean)*s.ocean.h
     assert abs(float((m.budgets(out)['total']-m.budgets(s)['total'])/mass.sum()))<1e-8
+
+
+@pytest.mark.parametrize("bad", [0., -1., float("nan"), float("inf")])
+def test_factor_rejects_invalid_interior_pivot(bad):
+    diagonal = torch.ones((3, 5), dtype=torch.float64)
+    diagonal[1, 2] = bad
+    off = torch.zeros_like(diagonal[:, :-1])
+    with pytest.raises(FloatingPointError, match="invalid pivot"):
+        lag.Factor(diagonal, off)
+
+
+def test_factor_rejects_incomplete_rhs():
+    diagonal = torch.ones((2, 5), dtype=torch.float64)
+    factor = lag.Factor(diagonal, torch.zeros_like(diagonal[:, :-1]))
+    with pytest.raises(ValueError, match="columns and layers"):
+        factor.solve(diagonal[:, :-1])

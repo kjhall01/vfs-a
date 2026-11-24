@@ -188,7 +188,7 @@ class CampaignConfig:
             value = getattr(self, key)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"{key} must be finite and nonnegative")
-        if self.gm_energy_scheme not in ("midpoint", "donor_parcel", "funded_donor_parcel"):
+        if self.gm_energy_scheme not in GMRedi.energy_schemes:
             raise ValueError("unknown gm_energy_scheme")
         if self.ocean_dynamics_integrator not in ("ssprk3", "ssprk43"):
             raise ValueError("ocean_dynamics_integrator must be ssprk3 or ssprk43")
@@ -252,6 +252,17 @@ def rest_thickness(config):
     )
 
 
+def gm_redi_operator(config):
+    return GMRedi(
+        kappa_redi=config.redi_diffusivity_m2_s,
+        positive_redi=config.redi_positive_transport,
+        gm_energy_scheme=config.gm_energy_scheme,
+        energy_closure=EddyMixingLength(
+            config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
+        ),
+    )
+
+
 def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
     """Explicit GM/Redi then eddy decay; both exchange energy internally.
 
@@ -263,14 +274,7 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
     report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     ocean = sea.coupled.ocean
     if config.gm_redi:
-        eddy = GMRedi(
-            kappa_redi=config.redi_diffusivity_m2_s,
-            positive_redi=config.redi_positive_transport,
-            gm_energy_scheme=config.gm_energy_scheme,
-            energy_closure=EddyMixingLength(
-                config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
-            ),
-        )
+        eddy = gm_redi_operator(config)
         for substep in range(config.eddy_substeps):
             ocean, r = eddy.apply(model, ocean, dt / config.eddy_substeps)
             if on_event is not None:
