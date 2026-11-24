@@ -272,6 +272,17 @@ class CategoryThermodynamics:
         mass = bisect_phase_mass(upper, target, lambda m: self.root_energy(initial, m))
         return torch.where(frozen, mass, torch.zeros_like(mass))
 
+    def _solve_mass(self, initial, wet, frozen, upper, target, melt_energy):
+        with torch.no_grad():
+            m = self._bisect_mass(initial, frozen, upper, target)
+        for _ in range(3):
+            state = self.phase_state(initial, m)
+            derivative = self.derivative(initial, state, m)
+            if (derivative[wet] >= 0).any():
+                raise ValueError("nonmonotone phase-energy relation")
+            m = torch.where(frozen, m - (self.thermal_energy(state) - target) / derivative, 0.0)
+        return m
+
     def apply(self, initial, dt, *, heat_flux):
         self.coupled.check(initial)
         if not math.isfinite(dt) or dt <= 0:
@@ -307,16 +318,7 @@ class CategoryThermodynamics:
         )
         if (frozen & (target < self.root_energy(initial, upper))).any():
             raise ValueError("cooling exhausts liquid/EOS bracket")
-        with torch.no_grad():
-            m = self._bisect_mass(initial, frozen, upper, target)
-        for _ in range(3):
-            state = self.phase_state(initial, m)
-            derivative = self.derivative(initial, state, m)
-            if (derivative[wet] >= 0).any():
-                raise ValueError("nonmonotone phase-energy relation")
-            m = torch.where(
-                frozen, m - (self.thermal_energy(state) - target) / derivative, zero
-            )
+        m = self._solve_mass(initial, wet, frozen, upper, target, melt_energy)
         if (m < 0).any() or not torch.isfinite(m).all():
             raise ValueError("inadmissible phase root")
         end = self.phase_state(initial, m)
