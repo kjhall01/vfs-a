@@ -1598,3 +1598,39 @@ cached radiation, without fresh optics. A reusable one-interval diagnostic now
 captures the pre-ALE state. Installed-wheel checks: **107 passed, 1 optional GSW
 skip**; frozen **142/93** comparisons pass. Mac/fresh-table seasonal rerun and
 long-run stability remain unverified. See [active-constraint evidence](../verification/ocean/ale-active-set/README.md).
+
+## Roquet vertical mixing from interface fluxes
+
+The [vertical mixing closure](../validation/temperature_coordinate/ROQUET.md#funding-vertical-mixing-from-interface-fluxes)
+now computes the exact local work of a Roquet candidate directly from its salt
+and enthalpy fluxes. It constructs the full tracer endpoint once per accepted
+substep. The coefficient predictor, all five internal substeps, and the funding
+decisions were retained.
+
+Benchmarks compared independent checkouts against parent `e366376`, with eager
+PyTorch 2.14.1 on four CPU threads, float64, the exact 4,096-cell mesh, and
+40 ocean layers. Both builds used the day-21 campaign configuration. Each row
+replayed a fixed input for both builds in alternating order after an excluded
+warmup per build. Times are mean wall seconds per 1,200 s interval.
+
+| Input and operation | Pairs | Parent | Reduced work | Speedup |
+|---|---:|---:|---:|---:|
+| Fresh ocean, complete mixing | 8 | 0.872 s | 0.664 s | 1.31× |
+| Day 21.375, complete mixing | 12 | 0.914 s | 0.667 s | 1.37× |
+| Day 21.375, ocean/ice/snow branch | 4 | 5.927 s | 5.540 s | 1.07× |
+
+The mixing outputs and every report field matched bit for bit at both inputs
+and after each of six successive 1,200 s mixing calls from day 21.
+On day 21 the 15 trial evaluations across five substeps limited 521,201
+interface occurrences and deferred zero columns in both builds. The minimum
+specific TKE was 1.022e-21 J/kg. The maximum absolute accumulated column energy
+residual per unit area was 1.188e-5 J/m². The ocean/ice/snow branch also
+returned bitwise-equal states and diagnostics. That branch ends before
+atmosphere/surface exchange and ALE. A100 throughput and long climate
+integrations remain unmeasured.
+
+
+The installed-wheel qualification covered 168 passing tests, including native
+CPU Inductor and coupled restart replay. Seven tests were skipped in the
+device suite. Both frozen fixture comparisons passed (142 corrected Gibbs
+quantities and 93 dry helper quantities).

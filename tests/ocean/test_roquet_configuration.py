@@ -129,3 +129,41 @@ def test_compile_dispatch_preserves_guards_and_energy(setup):
         if expected[key] is not None:torch.testing.assert_close(actual[key],expected[key],rtol=2e-13,atol=1.)
     with pytest.raises(ValueError):m.ocean.reference.evaluate(state.ocean.salinity(),state.ocean.temperature()*0+100.)
     with pytest.raises(ValueError):m.compile_thermodynamics(backend='inductor')
+
+
+@pytest.mark.parametrize("funding", ["split", "column", "local"])
+def test_flux_only_trials_match_materialized_endpoints(setup, funding):
+    from dataclasses import fields, replace
+
+    model, initial, _ = setup
+    closure = replace(model.closure, funding=funding, max_reductions=1)
+    s = initial.ocean
+    state = s.with_tensors(torch.zeros_like(s.u_e), s.h, s.h * s.h.new_tensor([28., 18., 8., 1.]),
+                           s.h * 35., s.tracer_h)
+    tke_h = state.h * 1e-8
+    # Expose only the original endpoint-based protocol to the reference path.
+    class EndpointWorkspace(RoquetWorkspace):
+        flux_work = None
+
+        def path_work(self, closure, physical, H0, fh, fs, mid, *, after=None):
+            assert after is not None
+            return RoquetWorkspace.flux_work(self, physical, fh, fs)
+
+    with patch.object(RoquetMixing, "_workspace", lambda self, o, s: EndpointWorkspace(o, s)):
+        expected, k_ref, report_ref = closure.apply(model.ocean, state, tke_h, 1200.)
+    with patch.object(RoquetMixing, "_mixed_state", autospec=True,
+                      side_effect=RoquetMixing._mixed_state) as build_endpoint:
+        actual, k, report = closure.apply(model.ocean, state, tke_h, 1200.)
+    assert build_endpoint.call_count == closure.substeps
+    assert report.iterations > closure.substeps * (1 + closure.predictor_steps)
+    for key in ("u_e", "h", "temp_h", "salt_h", "tracer_h"):
+        assert torch.equal(getattr(actual, key), getattr(expected, key))
+    assert torch.equal(k, k_ref)
+    for field in fields(report):
+        a, b = getattr(report, field.name), getattr(report_ref, field.name)
+        if isinstance(a, dict):
+            assert a.keys() == b.keys() and all(torch.equal(a[key], b[key]) for key in a)
+        elif torch.is_tensor(a):
+            assert torch.equal(a, b)
+        else:
+            assert a == b
