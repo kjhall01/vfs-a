@@ -108,6 +108,7 @@ def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatc
     reports and the number of temperature/entropy field evaluations.
     """
     from dataclasses import fields, is_dataclass
+    from vfs.ocean.state import OceanState
     with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
         adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
     snow = receiver.snow
@@ -126,6 +127,10 @@ def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatc
     def exact(a, b):
         if isinstance(a, torch.Tensor):
             assert torch.equal(a, b)
+        elif isinstance(a, OceanState):
+            assert a.mesh is b.mesh and a.column is b.column
+            for key in ("u_e", "h", "temp_h", "salt_h", "tracer_h"):
+                exact(getattr(a, key), getattr(b, key))
         elif is_dataclass(a):
             for field in fields(a):
                 if field.name not in ("mesh", "column"):
