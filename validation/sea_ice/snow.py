@@ -72,6 +72,15 @@ class SnowPhase(CategoryThermodynamics):
         super().__init__(coupled)
         self.initial_snow = initial_snow
 
+    @staticmethod
+    def _melt_area(old_area, old_ice_mass, new_mass):
+        fraction = torch.where(
+            old_ice_mass > 0,
+            torch.minimum(new_mass / safe(old_ice_mass), torch.ones_like(new_mass)),
+            (new_mass > 0).to(new_mass.dtype),
+        )
+        return old_area * fraction
+
     def geometry(self, initial, m):
         ice, da, dv, thickness = super().geometry(initial, m)
         rho = self.H.slab.parameters.density
@@ -80,12 +89,7 @@ class SnowPhase(CategoryThermodynamics):
         new_mass = rho * ice.volume
         # Snow melts first. Until underlying ice itself melts, losing snow
         # reduces the column's depth, not its horizontal footprint.
-        fraction = torch.where(
-            old_ice_mass > 0,
-            torch.minimum(new_mass / safe(old_ice_mass), torch.ones_like(new_mass)),
-            (new_mass > 0).to(new_mass.dtype),
-        )
-        melt_area = old.area * fraction
+        melt_area = self._melt_area(old.area, old_ice_mass, new_mass)
         melt_da = torch.where(
             new_mass < old_ice_mass, old.area * rho * dv / safe(old_ice_mass), 0.0
         )
