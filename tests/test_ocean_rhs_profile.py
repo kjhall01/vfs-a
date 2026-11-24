@@ -100,15 +100,19 @@ def test_deeper_profiler_observes_donor_and_parent_limiting(
     assert calls["rhs_caloric_reference_evaluate"] > 0
 
 
-def test_nested_temperature_validation_reuse_is_exact(source, config, monkeypatch):
+@pytest.mark.parametrize("integrator", ["ssprk3", "ssprk43"])
+def test_nested_temperature_validation_reuse_is_exact(
+    source, config, monkeypatch, integrator
+):
     """The same coupled SSP stage has one owner of full ocean validation.
 
     Reference path reinstates both redundant checks, including every caloric
     reference evaluation. Compare all prognostic tensors, physical source
     reports and the number of temperature/entropy field evaluations.
     """
-    from dataclasses import fields, is_dataclass
+    from dataclasses import fields, is_dataclass, replace as dc_replace
     from vfs.ocean.state import OceanState
+    config = dc_replace(config, ocean_dynamics_integrator=integrator).validate()
     with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
         adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
     snow = receiver.snow
