@@ -95,3 +95,6 @@ def test_deeper_profiler_observes_donor_and_parent_limiting(
     assert calls["rhs_local_flux_divergence"] > 0
     assert calls["rhs_Gibbs_face_traces"] > 0
     assert calls["rhs_entropy_domain_validation"] > 0
+    assert calls["rhs_temperature_ocean_check"] > 0
+    assert calls["rhs_ridge_validation"] > 0
+    assert calls["rhs_caloric_reference_evaluate"] > 0
