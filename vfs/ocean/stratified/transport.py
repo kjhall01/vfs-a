@@ -35,7 +35,7 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
 
 
 def _local_target_fields(model, state, dt, eta_high, salt_high,
-                         composition_entropy, *, baseline=None, low=None):
+                         composition_entropy, *, baseline=None, low=None, scratch=None):
     """Target limiter and traces, before materializing a transport ledger.
 
     The work-constrained path consumes only these fields and constructs its
@@ -46,7 +46,8 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
                                              salt_high, composition_entropy)
     if low is None:
         low = transport_for(model).advance(state.transport_view(), dt)
-    anti = baseline.high_integrated_flux-low.donor_integrated_flux
+    anti = (baseline.high_integrated_flux-low.donor_integrated_flux
+            if scratch is None else scratch["anti"])
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
     anti_positive, anti_negative = anti.clamp_min(0), (-anti).clamp_min(0)
@@ -66,16 +67,22 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
     beta = torch.cat([beta[:, :1], torch.minimum(beta[:, 1:], baseline.beta[:, 1:])], -1)
     beta = torch.where(beta < 1, beta*(1-64*torch.finfo(beta.dtype).eps), beta)
     del positive, negative, upper, lower
-    fields = [state.entropy_h[..., None], state.salt_h[..., None]]
-    if state.tracer_h is not None:
-        fields.append(state.tracer_h)
-    q = (torch.cat(fields, -1)/state.h[..., None]).reshape_as(amount)
-    active = slice(None) if model.domain is None else model.domain.active_edge
-    high = torch.cat([eta_high[active].reshape(-1, 1), salt_high[active].reshape(-1, 1),
-                      .5*(q[low.i, 2:]+q[low.j, 2:])], -1)
-    donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
+    if scratch is None:
+        fields = [state.entropy_h[..., None], state.salt_h[..., None]]
+        if state.tracer_h is not None:
+            fields.append(state.tracer_h)
+        q = (torch.cat(fields, -1)/state.h[..., None]).reshape_as(amount)
+        active = slice(None) if model.domain is None else model.domain.active_edge
+        high = torch.cat([eta_high[active].reshape(-1, 1), salt_high[active].reshape(-1, 1),
+                          .5*(q[low.i, 2:]+q[low.j, 2:])], -1)
+        donor = torch.where((low.carrier >= 0)[:, None], q[low.i], q[low.j])
+    else:
+        # The parent Gibbs limiter produced these tensors for the identical
+        # Euler-stage state and flux graph. Reuse them, not a second graph of
+        # indexing, concatenation and donor selection.
+        q, high, donor = scratch["q"], scratch["high"], scratch["donor"]
     change = (1-beta)*(donor-high)
-    del donor, q, fields
+    del donor, q
     return baseline, low, high, beta, change
 
 
@@ -94,10 +101,12 @@ class FrontWorkLedger(parent.WorkLedger):
 
 def evaluate(model, state, dt, energy, *, physical=None):
     stage = parent._StageEvaluation(model, state, dt, energy, physical=physical)
+    stage.transport_scratch = {}
     original_rhs, original = parent.evaluate(model, state, dt, energy, _stage=stage)
     eta, salt, face = stage.eta, stage.salt, stage.face
     baseline, low, high, target_beta, target_change = _local_target_fields(model, state, dt, eta, salt,
-                                     face['composition_entropy'], baseline=original.transport, low=stage.low)
+                                     face['composition_entropy'], baseline=original.transport,
+                                     low=stage.low, scratch=stage.transport_scratch)
     del baseline  # original owns it until its final fields have been consumed
     area, nodes = state.mesh.cell_area[:, None], state.h.numel()
     g = stage.gradient
