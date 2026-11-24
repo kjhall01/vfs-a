@@ -39,7 +39,9 @@ class RHSInstrument(base.Instrument):
         self._method(core, "fields", "rhs_temperature_entropy_fields")
         from vfs.ocean.stratified import transport
         self._method(transport, "evaluate", "rhs_conservative_transport_total")
-        self._method(transport, "bounded_transport", "rhs_bounded_transport")
+        # The Roquet path calls the shared entropy/Gibbs parent evaluator.
+        # Its older standalone bounded_transport() helper is not invoked.
+        self._method(transport.parent, "evaluate", "rhs_parent_gibbs_transport")
         self._method(transport, "local_target", "rhs_local_energy_target")
         self._method(transport, "_local_target_fields", "rhs_local_target_fields")
 
