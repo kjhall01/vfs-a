@@ -57,7 +57,7 @@ class BoundedGibbs:
         self.vapor_floor, self.dry_floor = vapor_floor, dry_floor
         # Heat allocation closes the work from the actual limited Gibbs flux.
 
-    def evaluate(self, s, dt):
+    def evaluate(self, s, dt, *, include_carrier_graph=False):
         """Return the dt-budgeted RHS and ledger/limiter diagnostics.
 
         State: u_e (E,L) m/s; ps (C,1) Pa; entropy_content (C,I)
@@ -179,6 +179,11 @@ class BoundedGibbs:
             face_fractions=face_fractions,
             target_mass=target_amount,
         )
+        # Keep the established public report schema unchanged. The cloud
+        # transport integration explicitly opts into these already-computed
+        # tensors, avoiding redundant graph/transport primitive construction.
+        if include_carrier_graph:
+            info["carrier_graph"] = (mass, i, j, F)
         return rhs, info
 
     def tendency(self, s, dt):
@@ -188,9 +193,11 @@ class BoundedGibbs:
         rhs, info = self.evaluate(s, dt)
         return rhs.combine(self.base.tendency(s), b=-1), info
 
-    def euler_with_info(self, s, dt):
+    def euler_with_info(self, s, dt, *, include_carrier_graph=False):
         """Euler stage: advance wind/pressure/entropy, install ledger water."""
-        rhs, info = self.evaluate(s, dt)
+        rhs, info = self.evaluate(
+            s, dt, include_carrier_graph=include_carrier_graph
+        )
         updated = s.combine(rhs, b=dt)
         # (N,4) Pa m² -> (C,I,3) Pa, excluding the dry-air ledger column.
         # Do not replace this by water_content + dt*rhs.water_content: that

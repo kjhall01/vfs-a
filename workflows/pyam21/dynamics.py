@@ -24,8 +24,13 @@ def advance_dynamics(adapter, state, dt):
         return area * interface_pressure_mass(s.column.interface_pressure(s.ps).diff())
 
     def euler(s, cloud_amount):
-        end, info = model.transport.euler_with_info(s, dt)
-        m, i, j, F = graph(model.dynamics, s)
+        end, info = model.transport.euler_with_info(
+            s, dt, include_carrier_graph=True
+        )
+        # Reuse the authoritative bounded-moist carrier graph from this exact
+        # Euler evaluation. Rebuilding it duplicates the transport primitives
+        # and graph index materialization three times per SSPRK3 step.
+        m, i, j, F = info["carrier_graph"]
         q = (cloud_amount / m).flatten()
         fractions = torch.stack((1 - q, q), -1)
         face = 0.5 * (fractions[i] + fractions[j])
