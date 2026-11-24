@@ -2,10 +2,8 @@
 
 Run this experiment to exercise rain, snow, signed vapor, radiation, heat and
 stress between PyAM21 and grassland or open water. Each cell has one surface.
-Wet cells have a finite, thermally active, stationary 50 m liquid slab. The
-existing ocean/ice campaign has its own all-wet receiver. Coastal ocean and
-ice dynamics, river travel time, soil freeze/thaw, and a restartable
-continent campaign are outside this experiment.
+Wet cells have a finite, thermally active, stationary 50 m liquid slab. For a restartable run with active ocean and sea ice, use the
+[coastal campaign](../../handoff/COASTAL_CAMPAIGN.md).
 
 With VFS installed from this checkout and the pinned PyAM21 environment active,
 run a one-day CPU experiment from the repository root.
@@ -22,7 +20,7 @@ The default 32-cell mesh has a meridional sector of grassland. Supply
 array in mesh generator order with both land and water present.
 Use `--surface-height height_m.npy` for terrain. Supply one elevation in metres
 per mesh cell, including the wet outlets. The default elevation is zero.
-The experiment uses its existing idealized initial pressure and temperature profile.
+Terrain sets the initial surface pressure through the VFS hydrostatic reference profile.
 `--radiation-data input-data/sea_esf --radiation-step 7200` enables SeaEsfRad.
 Without tables, radiation is off. Omit `--atmosphere-dt` for a column-physics
 experiment. Both modes use the real PyAM21 column solver. The example uses

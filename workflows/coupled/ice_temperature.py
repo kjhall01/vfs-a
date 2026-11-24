@@ -9,6 +9,7 @@ model, not a resolved vertical temperature/brine profile.
 from dataclasses import dataclass, replace
 import math
 import torch
+from vfs.land import LandState
 from .ocean_ice import OceanIceReceiver
 from .ice_phase_energy import ReducedPhaseEnergy
 from snow import SnowState, SnowOceanIce, SnowPhase
@@ -19,6 +20,7 @@ from ocean_ice import safe
 @dataclass(frozen=True)
 class ThermalIceState(SnowState):
     cold_content: torch.Tensor  # [cell,2], J/m2, <= 0; zero on absent categories
+    land: LandState | None = None
 
 
 class ThermalPhase(SnowPhase):
@@ -178,7 +180,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
             state, dt, snowfall
         )
         return (
-            ThermalIceState(bare.coupled, bare.snow_mass, state.cold_content),
+            ThermalIceState(bare.coupled, bare.snow_mass, state.cold_content, state.land),
             mass,
             energy,
         )
@@ -190,7 +192,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
         rho = self.hamiltonian.slab.parameters.density
         loss = (rho * (state.coupled.ice.volume - end.ice.volume)).clamp_min(0)
         melt = torch.minimum(loss, state.snow_mass)
-        result = ThermalIceState(end, state.snow_mass - melt, phase.cold(end.ice))
+        result = ThermalIceState(end, state.snow_mass - melt, phase.cold(end.ice), state.land)
         self.check(result)
         A = end.ocean.ocean.mesh.cell_area[:, None]
         return result, report.external_heat.sum(), (A * melt).sum()
@@ -221,7 +223,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
     def add(self, state, rhs, dt):
         bare = super().add(state, rhs, dt)
         return ThermalIceState(
-            bare.coupled, bare.snow_mass, state.cold_content + dt * rhs.cold_content
+            bare.coupled, bare.snow_mass, state.cold_content + dt * rhs.cold_content, state.land
         )
 
     def blend(self, first, second, weight):
@@ -229,7 +231,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
         return ThermalIceState(
             bare.coupled,
             bare.snow_mass,
-            (1 - weight) * first.cold_content + weight * second.cold_content,
+            (1 - weight) * first.cold_content + weight * second.cold_content, first.land,
         )
 
     def step(self, state, dt, **options):
@@ -285,7 +287,7 @@ class ThermalIceReceiver(OceanIceReceiver):
             raise ValueError("prognostic ice temperature cannot be overridden")
         return super().tiles(state, self.snow.temperature(state))
 
-    def finish(self, initial, candidate, exchange, impulses):
+    def finish(self, initial, candidate, exchange, impulses, *, runoff=None, runoff_energy=None):
         if exchange.surface_thermal is None:
             raise ValueError("thermal ice requires tiled surface thermal energy")
         # H already includes -Lf*m. Remove that contribution from incoming heat
@@ -296,5 +298,5 @@ class ThermalIceReceiver(OceanIceReceiver):
         candidate, _, _ = self.snow.surface_heat(initial, candidate, q, exchange.dt)
         storage = (candidate.cold_content - initial.cold_content).sum(-1)
         return super().finish(
-            initial, candidate, exchange, impulses, storage_change=storage
+            initial, candidate, exchange, impulses, storage_change=storage, runoff=runoff, runoff_energy=runoff_energy
         )

@@ -350,7 +350,7 @@ class AM2Adapter:
             )
             cpl = p.couple(dn["vd"], sfc, surf, update_ocean=surface_tiles is None)
             if isinstance(surface_tiles, ColumnTiles):
-                cpl, tile_raw = fund_column_evaporation(p, dn["vd"], surf, sfc, cpl, surface_tiles, dt)
+                cpl, tile_raw = fund_column_evaporation(p, dn["vd"], surf, sfc, cpl, surface_tiles, dt, tile_raw)
             up = p.up(dt, T, u, v, R, pf, ph, zf, zh, omega, dn, cpl, surf, mem)
             out = {k: up[k] for k in ("udt", "vdt", "tdt", "rdt")}
             out.update(

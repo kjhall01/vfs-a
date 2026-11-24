@@ -239,6 +239,9 @@ class Instrument:
         self._method(a, "apply_result", "atmosphere_conservative_settlement")
         self._method(self.receiver, "prepare", "ocean_surface_prepare")
         self._method(self.receiver, "finish", "ocean_surface_finish")
+        if hasattr(self.receiver, "land_surface"):
+            self._method(self.receiver.land_surface.column, "advance", "land_column")
+            self._method(self.receiver.land_surface, "route", "runoff_routing")
         p = a.physics
         for name, label in (
             ("down", "PyAM21_down"),
@@ -574,6 +577,9 @@ def main(argv=None):
     parser.add_argument("--config", type=Path, required=True,
                         help="Same YAML or configuration.json as campaign (without modifying it)")
     parser.add_argument("--source", type=Path, required=True, help="Pinned PyAM21 source")
+    coast = parser.add_mutually_exclusive_group()
+    coast.add_argument("--island", action="store_true", help="profile an island with active ocean and ice")
+    coast.add_argument("--geography", type=Path, help="mesh-ordered .npz with land, height_m, depth_m")
     parser.add_argument("--mesh", type=Path, help="Exact saved 4096x3 Voronoi generators")
     parser.add_argument("--radiation-data", type=Path,
                         help="Real SeaEsfRad data directory; omit ONLY with --smoke-no-radiation")
@@ -617,7 +623,7 @@ def main(argv=None):
             adapter, air, receiver, sea = c.build(
                 config, args.source, args.radiation_data,
                 smoke_no_radiation=args.smoke_no_radiation,
-                generator_xyz=xyz,
+                generator_xyz=xyz, island=args.island, geography=c.load_geography(args.geography),
             )
             fingerprint = c.fingerprint(
                 config, adapter, c.source_hashes(),
@@ -646,6 +652,7 @@ def main(argv=None):
             result["build_wall_seconds"] = init_wall
             result["source_fingerprint"] = fingerprint
             result["mesh"] = mesh
+            result["land_cells"] = int(receiver.land_surface.land.sum()) if sea.land is not None else 0
             result["radiation_enabled"] = not args.smoke_no_radiation
             (args.output / "profile.json").write_text(
                 json.dumps(result, indent=2, allow_nan=False) + "\n"

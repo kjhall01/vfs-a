@@ -28,10 +28,16 @@ class ColumnTiles(SurfaceTiles):
             if (value.shape != ref.shape or value.dtype != ref.dtype or value.device != ref.device
                     or not torch.isfinite(value).all()):
                 raise ValueError("invalid land boundary properties")
+        fixed_velocity = self.velocity if self.tile_count == 1 else self.velocity[self.land]
         if ((self.supply < 0).any() or (self.roughness <= 0).any()
                 or ((self.availability < 0) | (self.availability > 1)).any()
-                or (self.velocity != 0).any()):
+                or (fixed_velocity != 0).any()):
             raise ValueError("invalid fixed-column surface")
+
+
+class CoastalTiles(ColumnTiles):
+    """Tile zero is land on dry cells and open water on wet cells."""
+    tile_count = 3
 
 
 def prepare_surface(state, tiles):
@@ -52,21 +58,16 @@ def surface_layer(adapter, columns, geometry, surf, mem, tiles):
     p, m = adapter.physics, adapter.mapping
     T, u, v, R, ps = (columns[k] for k in ("T", "u", "v", "tracers", "ps"))
     land = surf["land"]
+    q_air = R[:, -1, 0]
+    q_surface = q_air
     if isinstance(tiles, ColumnTiles):
-        q_air = R[:, -1, 0]
-        q_sat = get_sat_vapor_pres().compute_qs(surf["t_surf"], ps)
-        gradient = q_sat - q_air
-        # Dry soil reduces evaporation. A cold skin can still collect dew.
-        q_skin = q_air + torch.where(gradient > 0, tiles.availability * gradient, gradient)
-        sfc = p.surface_layer(T, u, v, R, ps, geometry["zfull"][:, -1] - geometry["zhalf"][:, -1],
-                              geometry["pfull"][:, -1], surf["t_surf"], surf, mem,
-                              q_surf_in=q_skin)
-        return sfc, [sfc]
+        gradient = get_sat_vapor_pres().compute_qs(tiles.temperature[:, 0], ps) - q_air
+        # Land availability limits evaporation; dew uses the full gradient.
+        q_land = q_air + torch.where(gradient > 0, tiles.availability * gradient, gradient)
+        q_surface = torch.where(land, q_land, q_air)
     raw = []
-    for i in range(3):
-        # Upstream saturation lookup includes its ice/water temperature rule.
-        # No seawater salinity reduction on frozen tiles.
-        sea = torch.full_like(land, i == 0)
+    for i in range(tiles.tile_count):
+        sea = ~land if i == 0 else torch.zeros_like(land)
         ui = (tiles.velocity[:, i] * m.east).sum(-1)
         vi = (tiles.velocity[:, i] * m.north).sum(-1)
         raw.append(
@@ -80,7 +81,7 @@ def surface_layer(adapter, columns, geometry, surf, mem, tiles):
                 ps,
                 tiles.temperature[:, i],
                 tiles.temperature[:, i],
-                R[:, -1, 0],
+                q_surface if i == 0 else q_air,
                 ui,
                 vi,
                 surf["rough_mom"],
@@ -92,6 +93,8 @@ def surface_layer(adapter, columns, geometry, surf, mem, tiles):
                 sea,
             )
         )
+    if tiles.tile_count == 1:
+        return raw[0], raw
     # Bulk turbulence gets area-mean surface diagnostics; the implicit bottom
     # solve uses weighted fluxes/derivatives. This is an explicit mosaic closure.
     bulk = {k: sum(tiles.fraction[:, i] * raw[i][k] for i in range(3)) for k in raw[0]}
@@ -116,7 +119,7 @@ def tile_fluxes(raw, tiles, vd, coupled):
     }
 
 
-def fund_column_evaporation(physics, vd, surf, sfc, coupled, tiles, dt):
+def fund_column_evaporation(physics, vd, surf, sfc, coupled, tiles, dt, raw):
     """Re-solve the implicit air humidity increment at a binding water supply."""
     limit = tiles.supply / dt
     limited = tiles.land & (coupled["flux_q"] > limit)
@@ -126,4 +129,7 @@ def fund_column_evaporation(physics, vd, surf, sfc, coupled, tiles, dt):
         for key in ("dedq_atm", "dedq_surf", "dedt_surf"):
             sfc[key] = torch.where(limited, 0., sfc[key])
         coupled = physics.couple(vd, sfc, surf, update_ocean=False)
-    return coupled, [sfc]
+        raw[0] = dict(raw[0])
+        for key in ("flux_q", "dedq_atm", "dedq_surf", "dedt_surf"):
+            raw[0][key] = torch.where(limited, sfc[key], raw[0][key])
+    return coupled, raw

@@ -74,6 +74,8 @@ def example(
     if not 0.0 < top_pressure_pa < 100000.0:
         raise ValueError("top_pressure_pa must lie between 0 and reference surface pressure")
     A, B = make_hybrid_coefficients(levels, p_top=top_pressure_pa)
+    if callable(surface_height_m):
+        surface_height_m = surface_height_m(mesh)
     phi_s = 0.0 if surface_height_m is None else GRAV * torch.as_tensor(surface_height_m, dtype=torch.float64)
     column = CharneyPhillipsColumn(levels, A, B, phi_s=phi_s, phi_full_mode="direct_u_gl2_adjoint")
     model = MoistAtmosphere(mesh, column).to(dtype=torch.float64)
@@ -112,13 +114,21 @@ def example(
         radiation_id=None if rad is None else rad.identity,
     )
     adapter.radiation_manifest = None if rad is None else rad.manifest
-    p = model.interface_pressure(100000.0)
+    ps = 100000.0
+    if surface_height_m is not None:
+        from vfs.atmosphere.topography import atmospheric_surface_pressure_from_phi_s
+        ps = atmospheric_surface_pressure_from_phi_s(model.column.phi_s).reshape(-1, 1)
+        if (ps <= top_pressure_pa).any():
+            raise ValueError("terrain reaches the atmospheric pressure lid")
+    p = model.interface_pressure(ps)
     sine_lat = mesh.cell_xyz[:, 2]
     surface = 300.0 - (25 * sine_lat.square() if aquaplanet else 0 * sine_lat)
     T = 205 + (surface[:, None] - 205) * (p / 100000.0) ** 0.7
     vapor = 0.7 * get_sat_vapor_pres().compute_qs(T, p)
     atmosphere = model.state_from_fields(
-        temperature=T, surface_pressure=100000.0, normal_wind=0.0, vapor=vapor
+        temperature=T, surface_pressure=ps, normal_wind=0.0, vapor=vapor
     )
+    if surface_height_m is not None:
+        surface = T[:, -1]
     state = adapter.initialize(atmosphere, sst=surface + 1.0)
     return adapter, state
