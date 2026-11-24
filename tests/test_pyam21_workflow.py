@@ -434,8 +434,13 @@ def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
 
 def test_bounded_euler_reports_authoritative_carrier_graph(model):
     adapter, state = initial(model)
-    rhs, info = model.transport.evaluate(state.atmosphere, 1)
+    rhs, info = model.transport.evaluate(
+        state.atmosphere, 1, include_carrier_graph=True
+    )
     mass, i, j, flux = info["carrier_graph"]
+    # Ordinary public report consumers retain the original schema.
+    _, default_info = model.transport.evaluate(state.atmosphere, 1)
+    assert "carrier_graph" not in default_info
     assert flux is info["carrier"]
     assert mass.shape == state.atmosphere.entropy_content.shape
     assert i.ndim == j.ndim == flux.ndim == 1
