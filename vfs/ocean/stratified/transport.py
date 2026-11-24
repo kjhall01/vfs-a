@@ -36,7 +36,7 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
 
 def _local_target_fields(model, state, dt, eta_high, salt_high,
                          composition_entropy, *, baseline=None, low=None, scratch=None,
-                         batch_incidence=True):
+                         batch_incidence=False):
     """Target limiter and traces, before materializing a transport ledger.
 
     The work-constrained path consumes only these fields and constructs its
