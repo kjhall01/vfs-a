@@ -128,7 +128,8 @@ def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeyp
     the local correction; parent Gibbs still constructs its original traces.
     """
     from dataclasses import fields, is_dataclass
-    from vfs.ocean.stratified import transport as f, EntropyState, EntropyEnergy
+    from vfs.ocean.stratified import transport as f, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
     m, x, old_e=probe.q.p.case(kind,coast)
     # Frozen research states omit the installed optional inversion guess.
     # Rewrap the same raw physical tensors in the installed entropy container.
@@ -185,7 +186,8 @@ def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeyp
 
 
 def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
-    from vfs.ocean.stratified import transport as f, EntropyState, EntropyEnergy
+    from vfs.ocean.stratified import transport as f, EntropyState
+    from vfs.ocean.stratified.equations import EntropyEnergy
     m,x,old_e=probe.q.p.case('front',False)
     x=EntropyState(x.u_e,x.h,x.entropy_h,x.salt_h,x.tracer_h,x.mesh,x.column)
     e=EntropyEnergy(m.dynamics.energy,old_e.reference)
