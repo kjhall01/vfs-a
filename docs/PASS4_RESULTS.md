@@ -45,6 +45,29 @@ rejection, and two coupled intervals on a small grid. The historical corrected
 and dry portable fixtures pass (142 and 93 quantities). Accelerator timing,
 coupled throughput at day 21 and long-run equivalence remain unmeasured.
 
+## Local positive-vapor correction at the PyAM21 boundary
+
+The user requested a small, explicitly funded positive endpoint when column
+physics exhausts vapor. Conservative coupling now transfers nominally
+`1e-12 kg/kg` from local liquid/ice to vapor, records the transfer, and updates
+both endpoint and tendency outputs. All positive vapor values are unchanged.
+The original PyAM21 energy target is retained, including upstream defects;
+the existing native CP entropy solve pays for the phase change. No upstream
+PyAM21 source or packaged VFS kernel is changed.
+
+Installed-wheel focused suite: 116 passed. Frozen portable 142/93 comparisons
+pass with unchanged fixtures/tolerances. The audited restart bridge pins the
+complete old/new source inventories and retains runtime, config, mesh and
+radiation checks. No long-run, fresh-optics, GPU/MPS or correction-boundary
+backward qualification is claimed. Private checkpoint data and diagnostics
+are excluded from the repository. See [behavior, validation and restart instructions](../workflows/coupled/VAPOR_CORRECTION.md).
+
+The combined #109–113 code also resumed a checkpoint written by the unmodified
+#113 campaign CLI. A CPU float64 smoke run on 16 cells reached 60 s on #113
+and continued to 120 s on the combined sources with radiation disabled. The
+audit identified the five expected workflow files. The historical dcda5cd
+transition retains its original fixed target.
+
 ## Bounded atmospheric stage reuse
 
 The four-thread, 4,096-cell Linux atmosphere-plus-cloud benchmark measured

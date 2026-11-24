@@ -12,6 +12,10 @@ water. A local CP entropy solve enforces each layer's transferred energy; any
 imbalance already present in AM2 is retained and reported separately. The previous
 temperature-increment mapping remains available as `energy_mode="legacy"`.
 See [the energy contract](ENERGY.md) for the derivation and explicit assumptions.
+An exact-zero vapor endpoint is now funded from the same layer's cloud water,
+with a nominal target of `1e-12 kg/kg`. The native energy target is retained,
+and the phase transfer is reported explicitly. Positive vapor is unchanged.
+See [correction behavior, evidence and campaign restart instructions](../coupled/VAPOR_CORRECTION.md).
 The separate [shared exchange workflow](../coupled/README.md) now connects an
 interactive ocean and category ice with reciprocal water, momentum and energy.
 The standalone examples below retain prescribed SST.
@@ -58,6 +62,7 @@ verification files or model dependencies are vendored into this workflow.
 | `radiation.py`, `RADIATION.md` | Real SeaEsfRad construction, data manifest and explicit qualification status |
 | `surface.py` | Tiled moving-surface calls with one shared implicit bottom-air update |
 | `energy.py` | Surface-water energy/momentum contract and layerwise CP enthalpy inversion |
+| `vapor.py` | Local condensate-funded correction of exact-zero vapor, with a sparse ledger |
 | `state.py` | Atmospheric state, CP cloud fraction, physics memory, surface state, radiation cache and clock |
 | `dynamics.py` | Existing bounded SSPRK3 with a passive cloudy/clear transport ledger |
 | `setup.py` | Explicit configuration and analytic initial conditions for examples |

@@ -19,6 +19,7 @@ from vfs.atmosphere.moist_cp import interface_pressure_mass
 from .mapping import ColumnMap, average, distribute, species_increment, species_endpoint
 from .state import PhysicsState, PhysicsReport, copy_tree
 from .energy import exchanges, transfer_energy
+from .vapor import restore_positive_vapor
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
 RAD_FIELDS = ("lw_alarm", "sw_alarm", "saved", "coszen")
@@ -71,7 +72,8 @@ def _consistent_cloud_stages(initial, rate, endpoint, dt, stages):
 
 
 
-def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol):
+def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol,
+                                *, allow_zero_vapor=False):
     """Identify the first rejected PyAM21 endpoint without changing acceptance.
 
     Runs only on the existing failure path. Indices are native [cell, layer]
@@ -87,7 +89,8 @@ def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol):
                     f" value={float(rate[index]):.12g}")
     checks = (
         ("temperature_K", temperature, temperature <= 0, 0.0),
-        ("vapor_mass_fraction", tracers[..., 0], tracers[..., 0] <= 0, 0.0),
+        ("vapor_mass_fraction", tracers[..., 0],
+         tracers[..., 0] < 0 if allow_zero_vapor else tracers[..., 0] <= 0, 0.0),
         ("liquid_mass_fraction", tracers[..., 1],
          tracers[..., 1] < -condensate_tol[0], -float(condensate_tol[0])),
         ("ice_mass_fraction", tracers[..., 2],
@@ -517,19 +520,33 @@ class AM2Adapter:
         if (
             not all(torch.isfinite(out[k]).all() for k in ("tdt", "rdt", "udt", "vdt"))
             or (T1 <= 0).any()
-            or (R1[..., 0] <= 0).any()
+            or ((R1[..., 0] < 0) if self.energy_mode == "conservative"
+                else (R1[..., 0] <= 0)).any()
             or (R1[..., 1:3] < -condensate_tolerance).any()
             or (R1[..., :3].sum(-1) >= 1).any()
             or (R1[..., 3] < -128 * eps).any()
             or (R1[..., 3] > 1 + 128 * eps).any()
         ):
             detail = _inadmissible_column_detail(
-                T1, R1, out, eps, condensate_tolerance
+                T1, R1, out, eps, condensate_tolerance,
+                allow_zero_vapor=self.energy_mode == "conservative",
             )
             raise ValueError(
                 "PyAM21 returned an inadmissible finite column update; no clipping"
                 f"; dt={dt} seconds; {detail}"
             )
+        upstream_out = out
+        vapor_correction = None
+        if self.energy_mode == "conservative":
+            T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt)
+            if vapor_correction is not None:
+                cell, level = vapor_correction["indices"].unbind(-1)
+                layer_mass = dp[cell, level] / g
+                vapor_correction.update(
+                    vapor_added_kg_m2=layer_mass * vapor_correction["vapor_added"],
+                    water_residual_kg_m2=layer_mass * vapor_correction["water_residual"],
+                    am2_energy_residual_J_m2=layer_mass * vapor_correction["am2_energy_residual"],
+                )
         qw = s.water_content / mass[..., None]
         amount = (
             dt * dp[..., None] * out["rdt"][..., :3]
@@ -590,7 +607,10 @@ class AM2Adapter:
             s.mesh.cell_area[:, None, None] * dp[..., None] / g * velocity_increment
         )
         metric0, metric1 = mapping.metric(s), mapping.metric(trial)
-        budget = exchanges(self, state, dt, column, geom, out, water_boundary)
+        # The epsilon transfer is internal. Keep the unmodified upstream
+        # energy target (including its defects); the native solve pays for
+        # the altered phase partition using the actual VFS mixture enthalpy.
+        budget = exchanges(self, state, dt, column, geom, upstream_out, water_boundary)
         carrier_impulse = (
             (metric1 - metric0) * s.u_e
             if self.energy_mode == "legacy"
@@ -698,4 +718,5 @@ class AM2Adapter:
             metric1 * u1 - metric0 * s.u_e - impulse - carrier_impulse,
             out,
             transfer,
+            vapor_correction,
         )

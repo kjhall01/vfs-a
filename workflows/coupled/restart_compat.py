@@ -50,10 +50,40 @@ DAY15_FIXED_ENERGY_SHA = "5535ef4e12ecb4a1155d2c780dd9bda5f8045db522a6247ec72909
 DAY15_ORIGINAL_SOURCES_DIGEST = "25ca65f87f86b7f419fd2aea20d5074b90fb363bd78c8878216769c5d259e56b"
 DAY15_FIXED_SOURCES_DIGEST = "8e39d515effc25df2e8fc2cc4b6e9a3c214720963b9d8141ba750fcad835a405"
 
+# Exact numerical transition from main dcda5cd. State layout, configuration
+# and upstream PyAM21 are unchanged. Inventories are reproducible from Git.
+# Only the host vapor correction and its reporting are introduced. Both full
+# source inventories are pinned, excluding this verifier's recursive hash.
+VAPOR_ORIGINAL_VERIFIER_SHA = "5a39bd00299ac9bb631bb82282d98f1011ae0e86ac56b7af6bb7e9d2b819dbf2"
+VAPOR_ORIGINAL_SOURCES_DIGEST = "60c3cce216b15d9a2e983e2d6b4345ced921f95bd6fb6b924a776b12664844e9"
+VAPOR_FIXED_SOURCES_DIGEST = "a0861e8909afe2d32309ec196b19f2d883eb5b599f5571967c2918c90f84b767"
+# PR #113 already contains the ice, GM and mixing changes on both sides
+# of its vapor transition. Pair the inventories so a restart cannot skip
+# any of those numerical changes. The original verifier is shared.
+VAPOR_TARGET_BY_ORIGIN = {
+    VAPOR_ORIGINAL_SOURCES_DIGEST: VAPOR_FIXED_SOURCES_DIGEST,
+    "1762a52b61ae4f11d4f8a25b2073af4d8224179c25bcd53bf76c958ccb31b05c":
+        "f7e7c56cafb64857884f2572f884e853902ce2bd548a647344a150bad49d0860",
+}
+
 
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
+
+
+def _verified_vapor_transition(old_hashes, current_hashes):
+    if old_hashes.get(VERIFIER) != VAPOR_ORIGINAL_VERIFIER_SHA:
+        return None
+    target = VAPOR_TARGET_BY_ORIGIN.get(_without_verifier_digest(old_hashes))
+    if target is None:
+        return None
+    if _without_verifier_digest(current_hashes) != target:
+        raise ValueError("vapor correction restart target differs from the audited revision")
+    changed = sorted(k for k in old_hashes.keys() | current_hashes.keys()
+                     if old_hashes.get(k) != current_hashes.get(k))
+    return {"vapor_correction_files": changed,
+            "numerical_change": "funded_zero_vapor_v1"}
 
 
 def _verified_day15_shared_flux_transition(old_hashes, current_hashes):
@@ -123,6 +153,9 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    vapor = _verified_vapor_transition(old_hashes, current_hashes)
+    if vapor is not None:
+        return vapor
     roundoff = _verified_day15_shared_flux_transition(old_hashes, current_hashes)
     if roundoff is not None:
         return roundoff

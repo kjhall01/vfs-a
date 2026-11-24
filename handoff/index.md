@@ -7,6 +7,14 @@ reduced complete GM/Redi time by 2.83× in a four-thread CPU replay of the
 day-21 ocean. The [operator notes and A100 benchmark command](../validation/temperature_coordinate/GMREDI.md#quadratic-funding-for-donor-gm-transport)
 cover the opt-in scheme, local energy checks, and fallback.
 
+The conservative PyAM21 adapter now funds exact-zero vapor from local cloud
+water, with a nominal `1e-12 kg/kg` target and the original native energy target.
+The [correction and checked restart instructions](../workflows/coupled/VAPOR_CORRECTION.md)
+cover the historical dcda5cd transition and the separate transition from the
+merged ocean performance stack (#113). Installed-wheel focused checks:
+116 passed; unchanged portable frozen comparisons: 142/93. Correction counts
+and transferred mass are explicit campaign diagnostics. Private checkpoint
+data and diagnostics are excluded from the repository.
 
 The [coupled performance baseline and PR map](../tools/PROFILE_COUPLED.md#consolidated-coupled-performance-baseline) covers the integrated ocean and atmospheric optimizations, optional timesteps, profiler and measured CPU timings.
 

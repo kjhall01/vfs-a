@@ -47,6 +47,8 @@ from backscatter import EddyBackscatter
 from vfs.ocean import OceanColumn
 
 DAY = 86400
+VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2")
+VAPOR_PEAKS = ("vapor_correction_proxy_residual_J_m2",)
 OCEAN_SUMS = (
     "gmredi_steps",
     "gm_limiting_passes",
@@ -574,10 +576,24 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     )
     exchange_external = float((A * x.toa).sum() / A.sum())
     exchange_upstream = float((A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum())
+    vapor_report = dict.fromkeys(VAPOR_SUMS + VAPOR_PEAKS, 0.0)
+    if ar.vapor_correction is not None:
+        correction = ar.vapor_correction
+        cell = correction["indices"][:, 0]
+        vapor_report.update(
+            vapor_correction_events=cell.numel(),
+            vapor_correction_kg_m2=float(
+                (A[cell] * correction["vapor_added_kg_m2"]).sum() / A.sum()
+            ),
+            vapor_correction_proxy_residual_J_m2=float(
+                correction["am2_energy_residual_J_m2"].abs().max()
+            ),
+        )
     if trace is not None:
         trace.observe("atmosphere_surface_exchange", adapter, evolved, receiver,
                       water, external=exchange_external, upstream=exchange_upstream,
-                      details={"surface_residual_max_J": float(sr.energy_residual.abs().max()),
+                      details={**vapor_report,
+                               "surface_residual_max_J": float(sr.energy_residual.abs().max()),
                                "air_residual_max_J": float(ar.energy_transfer["layer_residual"].abs().max()),
                                "radiation_residual_max_W": float(
                                    ar.energy_changes["radiation_flux_residual"].abs().max() / dt)})
@@ -604,6 +620,7 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         water,
         dict(
             **ocean_report,
+            **vapor_report,
             external=external + exchange_external,
             upstream=exchange_upstream,
             surface_residual=float(sr.energy_residual.abs().max()),
@@ -676,6 +693,7 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().min()),
         max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().max()),
         **{k: ledger[k] for k in OCEAN_SUMS + OCEAN_PEAKS},
+        **{k: ledger.get(k, 0.0) for k in VAPOR_SUMS + VAPOR_PEAKS},
         **{
             k: ledger[k]
             for k in ("surface_residual", "air_residual", "radiation_residual")
@@ -1130,6 +1148,7 @@ def main(argv=None):
         )
         ledger = dict(
             **dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0),
+            **dict.fromkeys(VAPOR_SUMS + VAPOR_PEAKS, 0.0),
             initial=inventories(adapter, air, receiver, sea),
             external=0.0,
             upstream=0.0,
@@ -1187,6 +1206,8 @@ def main(argv=None):
             air, sea, ledger = unpack(
                 payload, adapter, receiver, sea, expected_restart_identity
             )
+            for key in VAPOR_SUMS + VAPOR_PEAKS:
+                ledger.setdefault(key, 0.0)
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
             raise ValueError("restart is already at or beyond requested end")
@@ -1278,6 +1299,10 @@ def main(argv=None):
                 ledger["upstream"] += report["upstream"]
                 ledger["radiation_energy_residual"] += report["radiation_energy_residual"]
                 accumulate_ocean(ledger, report)
+                for k in VAPOR_SUMS:
+                    ledger[k] += report[k]
+                for k in VAPOR_PEAKS:
+                    ledger[k] = max(ledger[k], report[k])
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds
