@@ -51,10 +51,19 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
     anti_positive, anti_negative = anti.clamp_min(0), (-anti).clamp_min(0)
-    positive = torch.zeros_like(amount).index_add(0, low.j, anti_positive)
-    positive = positive.index_add(0, low.i, anti_negative)
-    negative = torch.zeros_like(amount).index_add(0, low.i, anti_positive)
-    negative = negative.index_add(0, low.j, anti_negative)
+    # Accumulate two independent incidence budgets in one graph reduction.
+    # Within each channel, preserve the original contribution order:
+    # positive: j(+), then i(-); negative: i(+), then j(-).
+    # The second channel occupies a disjoint node range, preventing mixing.
+    nodes = amount.shape[0]
+    incidence = torch.cat((low.j, low.i, low.i + nodes, low.j + nodes))
+    contributions = torch.cat((
+        anti_positive, anti_negative, anti_positive, anti_negative
+    ), dim=0)
+    budgets = amount.new_zeros((2 * nodes, amount.shape[1])).index_add(
+        0, incidence, contributions
+    )
+    positive, negative = budgets[:nodes], budgets[nodes:]
     del anti_positive, anti_negative
     def ratio(room, demand):
         safe = torch.where(demand > 0, demand, torch.ones_like(demand))
