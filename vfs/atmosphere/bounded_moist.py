@@ -85,17 +85,11 @@ class BoundedGibbs:
         # 2. Gibbs high traces: entropy J/(kg K), fractions kg/kg; (H,4).
         # Only horizontal traces differ from arithmetic means. The matched
         # momentum correction is retained when scalar RHS entries are replaced.
-        # Sharing tensors changes reverse-mode summation order. The campaign
-        # uses no_grad; differentiable callers retain independent evaluations.
-        shared = not torch.is_grad_enabled()
-        if shared:
-            pressure = s.column.interface_pressure(s.ps)
-            T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
-            gibbs_change = self._gibbs_trace_change(
-                s, specific_entropy, water_fractions, species_fractions, pressure, T, shared=True
-            )
-        else:
-            gibbs_change, gibbs_force = self._independent_gibbs_force(s)
+        pressure = s.column.interface_pressure(s.ps)
+        T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
+        gibbs_change = self._gibbs_trace_change(
+            s, specific_entropy, water_fractions, species_fractions, pressure, T
+        )
         node_traces = torch.cat(
             [specific_entropy[..., None], water_fractions], -1
         ).reshape(-1, 4)
@@ -103,23 +97,16 @@ class BoundedGibbs:
         high_fractions = torch.cat(
             [1 - high_traces[:, 1:].sum(-1, keepdim=True), high_traces[:, 1:]], -1
         )
-        if not shared:
-            pressure = s.column.interface_pressure(s.ps)
-            T = d.thermodynamics.temperature_from_entropy(specific_entropy, pressure, species_fractions)
         composition_entropy = composition_entropy_derivatives(
             d.thermodynamics, T, pressure, species_fractions
         ).reshape(-1, 3)
-        if shared:
-            gradients = d.kernel.mixture_gradients(view, s.water_content)
-            centered = d.kernel._assemble(
-                view, s.water_content, primitives=transport, gradients=gradients,
-                combine=True, scalar_tendencies=False,
-            )
-            base_u = centered["u_e"]["total"]
-            base_ps = centered["ps"]["total"]
-        else:
-            base = d.tendency(s)
-            base_u, base_ps = base.u_e, base.ps
+        gradients = d.kernel.mixture_gradients(view, s.water_content)
+        centered = d.kernel._assemble(
+            view, s.water_content, primitives=transport, gradients=gradients,
+            combine=True, scalar_tendencies=False,
+        )
+        base_u = centered["u_e"]["total"]
+        base_ps = centered["ps"]["total"]
         # 3. Continuity sets the actual Euler carrier endpoint (N,), Pa m².
         # Existing fraction lower bounds constrain transfer; no state is clipped
         # or given a vapor floor. Positive vapor is required on entry.
@@ -146,15 +133,12 @@ class BoundedGibbs:
         # 4. Limiting changes Gibbs traces. Area-normalized energy derivatives
         # have units K/g (entropy) and m (water); their jump times trace_change
         # gives work_per_carrier (H,) in m. F * work_per_carrier is power (W).
-        if shared:
-            entropy_gradient, _, water_gradient = gradients
-        else:
-            gradient = d.energy_gradients(s)
-            entropy_gradient, water_gradient = gradient.entropy_content, gradient.water_content
+        entropy_gradient, _, water_gradient = gradients
         energy_covector = (
             torch.cat([entropy_gradient[..., None], water_gradient], -1) / area[..., None]
         ).reshape(-1, 4)
         covector_jump = energy_covector[j] - energy_covector[i]
+        gibbs_work = (covector_jump * gibbs_change).sum(-1)
         work_per_carrier = (covector_jump * trace_change).sum(-1)
         work = F * work_per_carrier
         heat = (-work).clamp_min(0)
@@ -173,14 +157,10 @@ class BoundedGibbs:
         )
         # 5. Carrier transpose returns an edge force (E,L), N. The kinetic
         # velocity metric (E,L), kg, converts it to acceleration (m/s²).
-        if shared:
-            dp_edge = transport["dp_e"]
-            velocity_metric = mesh.dc_edge[:, None] * mesh.dv_edge[:, None] * dp_edge / d.kernel.gravity
-            gibbs_work = (covector_jump * gibbs_change).sum(-1)
-            gibbs_force = -self._pullback(s, gibbs_work, dp_edge) / velocity_metric
-            limiter_force = -self._pullback(s, mechanical_b, dp_edge) / velocity_metric
-        else:
-            limiter_force = self._independent_force(s, mechanical_b)
+        dp_edge = transport["dp_e"]
+        velocity_metric = mesh.dc_edge[:, None] * mesh.dv_edge[:, None] * dp_edge / d.kernel.gravity
+        gibbs_force = -self._pullback(s, gibbs_work, dp_edge) / velocity_metric
+        limiter_force = -self._pullback(s, mechanical_b, dp_edge) / velocity_metric
         wind_rhs = (base_u + gibbs_force) + limiter_force
         entropy_rhs = (
             divergence(i, j, F * face_entropy, mass.numel()).reshape_as(specific_entropy) / area
@@ -189,11 +169,8 @@ class BoundedGibbs:
         if endpoint:
             # The bounded species amounts are the authoritative Euler update.
             water = info["amounts"][:, 1:].reshape_as(s.water_content) / area[..., None]
-            # The differentiable endpoint has its own pressure path. Sharing
-            # the limiter target would reassociate its active-bound adjoint.
-            endpoint_ps = target_ps if shared else s.ps + dt * base_ps
             result = MoistState(
-                s.u_e + dt * wind_rhs, endpoint_ps, s.entropy_content + dt * entropy_rhs,
+                s.u_e + dt * wind_rhs, target_ps, s.entropy_content + dt * entropy_rhs,
                 water, mesh, s.column,
             )
             d.transport_state(result)
@@ -306,19 +283,16 @@ class BoundedGibbs:
             float((dt * (-dpdot).clamp_min(0) / dp).max()),
         )
 
-    def _gibbs_trace_change(self, s, specific_entropy, water_fractions, species_fractions, pressure, T, *, shared):
+    def _gibbs_trace_change(self, s, specific_entropy, water_fractions, species_fractions, pressure, T):
         """Gibbs minus centered horizontal traces, extended by zero on vertical faces."""
         m = s.mesh
         n = s.water_content.shape[1]
         thermo = self.base.thermodynamics
+        mu = partial_chemical(thermo, T, pressure, species_fractions)
         c0, c1 = m.cellsOnEdge.T
-        potentials = None
-        if shared:
-            mu = partial_chemical(thermo, T, pressure, species_fractions)
-            potentials = (mu[c0], mu[c1])
         face_entropy, face_fractions, _ = gibbs_face(
             thermo, T[c0], pressure[c0], species_fractions[c0], T[c1], pressure[c1], species_fractions[c1],
-            chemical_potentials=potentials,
+            chemical_potentials=(mu[c0], mu[c1]),
         )
         trace_change = torch.cat(
             [
@@ -330,27 +304,3 @@ class BoundedGibbs:
         return torch.cat(
             [trace_change.reshape(-1, 4), trace_change.new_zeros(m.nCells * (n - 1), 4)], 0
         )
-
-    def _independent_force(self, s, work):
-        """Separate metric and transport-transpose paths for the original adjoint."""
-        d, mesh = self.base, s.mesh
-        dp_edge = d.kernel._transport_primitives(d.transport_state(s))["dp_e"]
-        metric = mesh.dc_edge[:, None] * mesh.dv_edge[:, None] * dp_edge / d.kernel.gravity
-        return -self.pullback(s, work) / metric
-
-    def _independent_gibbs_force(self, s):
-        """Preserve the Gibbs correction's independent thermodynamic derivative path."""
-        d, mesh = self.base, s.mesh
-        area = mesh.cell_area[:, None]
-        mass, i, j, _ = graph(d, s)
-        dm = mass / area
-        entropy, water = s.entropy_content / dm, s.water_content / dm[..., None]
-        fractions = torch.cat([1 - water.sum(-1, keepdim=True), water], -1)
-        pressure = s.column.interface_pressure(s.ps)
-        T = d.thermodynamics.temperature_from_entropy(entropy, pressure, fractions)
-        change = self._gibbs_trace_change(s, entropy, water, fractions, pressure, T, shared=False)
-        gradient = d.energy_gradients(s)
-        covector = (torch.cat([gradient.entropy_content[..., None], gradient.water_content], -1)
-                    / area[..., None]).reshape(-1, 4)
-        work = ((covector[j] - covector[i]) * change).sum(-1)
-        return change, self._independent_force(s, work)

@@ -19,7 +19,7 @@ checkpoint bridge applies only to the source pair in PR 98.
 | [106](https://github.com/kjhall01/vfs-a/pull/106) | Removed provisional parent flux/work that the composed ocean update replaces | Mac throughput went from 10.146 to 10.265 simulated days/hour. Experimental incidence batching stays disabled. |
 | [107](https://github.com/kjhall01/vfs-a/pull/107) | Removed two duplicate temperature-coordinate validations per ocean RHS | Mac call count fell by 384 across 24 intervals. Elapsed time increased from 233.795 to 247.428 s in that comparison. |
 
-Under `torch.no_grad()`, the bounded atmospheric Euler stage now evaluates the mixture gradients and
+The bounded atmospheric Euler stage evaluates the mixture gradients and
 carrier primitives once, evaluates chemical potentials at cell interfaces, and
 constructs the water endpoint from the limited species amounts. The diagnostic
 RHS continues to return water tendencies. The profiler reports centered momentum
@@ -54,17 +54,19 @@ optical radiation. Each run started from the same initialization.
 | Code and schedule | Wall seconds |
 | --- | ---: |
 | Previous benchmark branch, PR 107, serial | 67.27 |
-| Integrated optimizations, serial, two runs | 56.48 and 54.95 |
-| Integrated optimizations, CPU overlap | 42.67 |
+| Integrated optimizations, serial, three runs | 56.48, 54.95 and 59.20 |
+| Integrated optimizations, CPU overlap, two runs | 42.67 and 44.65 |
 
 After six intervals, all 36 packed tensors and 30 scalar entries matched the
 serial reference exactly, including the energy and tracer ledgers. Smaller
 tests exercise fresh/cached synthetic radiation and restart replay. On the
-historical structural cases, all 419 atmospheric state, ledger and gradient
-tensors match the reference from the same environment, including both active-
-and inactive-limiter reverse-mode derivatives. The `no_grad` campaign uses
-shared intermediates; differentiable calls preserve the independent adjoint
-paths and their summation order.
+historical structural cases, forward tensors and ledgers retain exact comparisons.
+Of 419 atmospheric tensors, 411 matched exactly. The eight complete-step
+gradient fields differed by at most 4.88e-16 relative to their individual
+maximum magnitudes. These gradients for smooth and active limiters use a
+float64 roundoff bound scaled by each reference field's own maximum magnitude.
+Directional finite differences independently check both limiter regimes. Training
+and inference share the same bounded stage.
 
 
 

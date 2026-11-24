@@ -35,6 +35,30 @@ def capture():
     return result
 
 
+def compare(actual, reference):
+    """Compare all forward results exactly; allow FP64 summation roundoff in bounded VJPs."""
+    actual, reference = dict(actual), dict(reference)
+    errors = {}
+    for case in ('smooth', 'active'):
+        key = 'bounded_gradient_' + case
+        actual[key], reference[key] = dict(actual[key]), dict(reference[key])
+        observed = actual[key].pop('gradients')
+        expected = reference[key].pop('gradients')
+        for field, left, right in zip(KEYS, observed, expected, strict=True):
+            # Reuse changes the sum order of cotangents at a shared node.
+            # Scale by this field's own gradient norm, including for tiny VJPs.
+            assert right.dtype == torch.float64
+            assert torch.isfinite(left).all() and torch.isfinite(right).all(), (case, field)
+            scale = float(right.abs().max())
+            epsilon = torch.finfo(right.dtype).eps
+            torch.testing.assert_close(left, right, rtol=0, atol=32 * epsilon * scale,
+                                       msg=lambda detail: f'{case}/{field}: {detail}')
+            error = float((left - right).abs().max())
+            errors[f'{case}/{field}'] = error / scale if scale else 0.0
+    exact = load(ROOT/'tools/capture_readability.py').compare(actual, reference)
+    return exact, errors
+
+
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     group=parser.add_mutually_exclusive_group(required=True)
@@ -46,5 +70,6 @@ if __name__ == '__main__':
         if args.save.exists():raise FileExistsError(args.save)
         torch.save(result,args.save)
     else:
-        count=load(ROOT/'tools/capture_readability.py').compare(result,torch.load(args.compare,weights_only=True))
-        print('Exactly equal atmospheric integration tensors:',count)
+        count, errors = compare(result, torch.load(args.compare, weights_only=True))
+        print('Exactly equal atmospheric integration tensors:', count)
+        print('Relative maximum error per bounded gradient field:', errors)
