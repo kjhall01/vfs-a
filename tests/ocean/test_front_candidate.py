@@ -116,3 +116,87 @@ def test_work_cap_and_rest_pressure(probe):
         if factor==0:
             assert w.heat.count_nonzero()==0 and w.force_correction.count_nonzero()==0
             assert torch.equal(rhs.u_e,base.u_e)
+
+
+@pytest.mark.parametrize('kind',['front','tilted','near_fresh','upper_salt'])
+@pytest.mark.parametrize('coast',[False,True])
+def test_shared_gibbs_stage_traces_bitwise_and_autograd(probe,kind,coast,monkeypatch):
+    """Compare new scratch reuse to old independent face-field reconstruction.
+
+    Both paths use identical energy/work equations, positivity constraints, and
+    differentiation. The old path is invoked by disabling scratch *only* in
+    the local correction; parent Gibbs still constructs its original traces.
+    """
+    from dataclasses import fields, is_dataclass
+    f=probe.front
+    m, x, e=probe.q.p.case(kind,coast)
+
+    def exact(a,b):
+        if isinstance(a,torch.Tensor):
+            assert torch.equal(a,b)
+        elif is_dataclass(a):
+            for field in fields(a):
+                if field.name not in ('mesh','column'):
+                    exact(getattr(a,field.name),getattr(b,field.name))
+        elif isinstance(a,(tuple,list)):
+            assert len(a)==len(b)
+            for aa,bb in zip(a,b):exact(aa,bb)
+        elif isinstance(a,dict):
+            assert a.keys()==b.keys()
+            for k in a:exact(a[k],b[k])
+        else:
+            assert a==b
+
+    original=f._local_target_fields
+    with torch.no_grad():
+        new_rhs,new_report=f.evaluate(m,x,10.,e)
+        def old_local(*args,**kwargs):
+            assert kwargs.get('scratch') is not None
+            return original(*args,**{**kwargs,'scratch':None})
+        with monkeypatch.context() as p:
+            p.setattr(f,'_local_target_fields',old_local)
+            old_rhs,old_report=f.evaluate(m,x,10.,e)
+        exact(new_rhs,old_rhs)
+        exact(new_report,old_report)
+
+    def grad(reuse):
+        inputs=[getattr(x,k).clone().detach().requires_grad_(True)
+                for k in ('u_e','h','entropy_h','salt_h')]
+        state=replace(x,**dict(zip(('u_e','h','entropy_h','salt_h'),inputs)))
+        if reuse:
+            rhs,report=f.evaluate(m,state,10.,e)
+        else:
+            def old_local(*args,**kwargs):
+                return original(*args,**{**kwargs,'scratch':None})
+            with monkeypatch.context() as p:
+                p.setattr(f,'_local_target_fields',old_local)
+                rhs,report=f.evaluate(m,state,10.,e)
+        loss=(rhs.u_e.square().sum()+rhs.h.square().sum()+
+              rhs.entropy_h.square().sum()+rhs.salt_h.square().sum()+
+              report.face_work.square().sum()*1e-8)
+        return [v.detach() for v in torch.autograd.grad(loss,inputs)]
+    # This is more stringent than approximate forward endpoint agreement.
+    for a,b in zip(grad(True),grad(False)):
+        assert torch.equal(a,b)
+
+
+def test_gibbs_scratch_is_only_used_by_opt_in_front(probe,monkeypatch):
+    f=probe.front
+    m,x,e=probe.q.p.case('front',False)
+    calls=[]
+    old=f.parent.bounded_transport
+    def track(*args,**kwargs):
+        calls.append(kwargs.get('scratch'))
+        return old(*args,**kwargs)
+    with monkeypatch.context() as p:
+        p.setattr(f.parent,'bounded_transport',track)
+        # A direct parent RHS must not expose or retain scratch results.
+        f.parent.evaluate(m,x,10.,e)
+        assert calls[-1] is None
+        # The composed front supplies a fresh dict and never shares it across
+        # independent stages or states.
+        f.evaluate(m,x,10.,e)
+        f.evaluate(m,x,10.,e)
+    assert isinstance(calls[-1],dict)
+    assert calls[-1] is not calls[-2]
+    assert all(k in calls[-1] for k in ('q','high','donor','anti'))
