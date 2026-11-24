@@ -35,7 +35,8 @@ def local_target(model, state, dt, eta_high, salt_high, composition_entropy,
 
 
 def _local_target_fields(model, state, dt, eta_high, salt_high,
-                         composition_entropy, *, baseline=None, low=None, scratch=None):
+                         composition_entropy, *, baseline=None, low=None, scratch=None,
+                         batch_incidence=True):
     """Target limiter and traces, before materializing a transport ledger.
 
     The work-constrained path consumes only these fields and constructs its
@@ -51,19 +52,26 @@ def _local_target_fields(model, state, dt, eta_high, salt_high,
     amount = low.low_amounts.reshape(state.h.numel(), -1)
     # Sum incoming/outgoing magnitudes separately, without cancellation.
     anti_positive, anti_negative = anti.clamp_min(0), (-anti).clamp_min(0)
-    # Accumulate two independent incidence budgets in one graph reduction.
-    # Within each channel, preserve the original contribution order:
-    # positive: j(+), then i(-); negative: i(+), then j(-).
-    # The second channel occupies a disjoint node range, preventing mixing.
-    nodes = amount.shape[0]
-    incidence = torch.cat((low.j, low.i, low.i + nodes, low.j + nodes))
-    contributions = torch.cat((
-        anti_positive, anti_negative, anti_positive, anti_negative
-    ), dim=0)
-    budgets = amount.new_zeros((2 * nodes, amount.shape[1])).index_add(
-        0, incidence, contributions
-    )
-    positive, negative = budgets[:nodes], budgets[nodes:]
+    if batch_incidence:
+        # Both budgets are independent channels of the same oriented graph.
+        # Preserve each channel's original pass order (j+ then i-, and i+
+        # then j-) while using just one index_add on disjoint node ranges.
+        nodes = amount.shape[0]
+        incidence = torch.cat((low.j, low.i, low.i + nodes, low.j + nodes))
+        contributions = torch.cat((
+            anti_positive, anti_negative, anti_positive, anti_negative
+        ), dim=0)
+        budgets = amount.new_zeros((2 * nodes, amount.shape[1])).index_add(
+            0, incidence, contributions
+        )
+        positive, negative = budgets[:nodes], budgets[nodes:]
+    else:
+        # Exact reference ordering, also used for differential regression
+        # and A/B timing in the verification suite.
+        positive = torch.zeros_like(amount).index_add(0, low.j, anti_positive)
+        positive = positive.index_add(0, low.i, anti_negative)
+        negative = torch.zeros_like(amount).index_add(0, low.i, anti_positive)
+        negative = negative.index_add(0, low.j, anti_negative)
     del anti_positive, anti_negative
     def ratio(room, demand):
         safe = torch.where(demand > 0, demand, torch.ones_like(demand))
