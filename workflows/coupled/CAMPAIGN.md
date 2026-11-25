@@ -39,12 +39,10 @@ interval, and repeats it from a serialized restart, requiring bitwise replay.
 Inspect `status.json` for `preflight_passed`. Missing tables or any component
 failure return a nonzero exit code. This does not qualify a full year.
 
-**Outstanding external dependency:** the real GFDL SeaEsfRad tables are not
-included. See [radiation setup](../pyam21/RADIATION.md). The advertised download
-still returns HTTP 503 here as of 2026-11-15, so real-radiation execution remains
-unverified. Synthetic radiation tests verify scheduling, shared fluxes and
-restart handling only. The campaign never substitutes synthetic radiation or
-silently disables it.
+Seasonal radiation requires the external GFDL SeaEsfRad tables. See the
+[radiation setup guide](../pyam21/RADIATION.md) for data preparation and the
+[device guide](GPU.md) for measured runs. Automated tests use synthetic
+radiation to exercise scheduling, shared fluxes and restart handling.
 
 ## Run the year locally
 
@@ -68,7 +66,7 @@ substeps 240 seconds, radiation hourly. Mixing and GM–Redi each use ten
 substeps per ocean step (120 seconds). The earlier ocean sweep supports the
 chosen ocean step under its tested conditions; it does not validate the entire
 coupled configuration. Optional regional compilation is described below;
-GPU execution remains unqualified.
+see the device guide for the tested GPU configurations.
 
 All three components start with **zero velocity**, with analytic moist
 atmospheric stratification, a meridional SST gradient, stable ocean temperature

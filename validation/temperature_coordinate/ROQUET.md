@@ -166,7 +166,7 @@ pivots in one tensor reduction before allowing a solve. These changes keep
 the original order of the Thomas elimination and substitution.
 
 See the [paired CPU results](../../docs/PASS4_RESULTS.md#roquet-vertical-mixing-from-interface-fluxes).
-To compare on Derecho, use the same `tools/profile_coupled.py` arguments on
+To compare GPU throughput, use the same `tools/profile_coupled.py` arguments on
 the parent and patched checkouts with separate output directories. Compare
 both complete coupled throughput and the exclusive
 `ocean_mixing_internal_substep` row, using identical stage synchronization,

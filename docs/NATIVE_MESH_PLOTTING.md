@@ -14,7 +14,7 @@ once with `python -m pip install -e '.[plotting]'`. With Matplotlib and Cartopy
 already available, you can run the command directly from the checkout.
 
 ```bash
-run=/glade/work/khall/earth-shelf-40m-day1
+run=runs/earth-shelf-40m-day1
 python -m vfs_plotting "$run/snapshots/state_00086400.nc" ocean_temperature \
     --isel ocean_level=0 --wet-only --central-longitude 180 \
     --title 'Sea surface temperature at day 1' --output "$run/sst-day1.png"

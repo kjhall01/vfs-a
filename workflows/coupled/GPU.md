@@ -25,11 +25,10 @@ snow and prognostic ice temperature as configured. CUDA never implicitly turns
 off radiation or substitutes a simpler physics package. `--compile` remains an
 independent option for the same nine tensor regions.
 
-**Qualification:** this implementation was developed on CPU-only PyTorch.
-CPU regression checks and GPU test definitions are distinct from executed GPU
-evidence. CUDA/MPS correctness, real-table execution and GPU throughput require
-the tests below on actual hardware. The reported
-successful two-day Mac run belongs to the merged CPU branch, not this CUDA pass.
+The [project run records](../../handoff/index.md) include two-day
+float64 campaigns with real radiation tables on T4 (eager) and L4 (compiled)
+GPUs. These are user-reported runs. For a numerical comparison on a specific
+mesh and device, use the CPU/CUDA comparison below.
 
 **Float32 is experimental.** Full-physics CPU float32 checks pass, but a 32-cell,
 four-interval comparison at the default 1200/240/3600-second schedule has a

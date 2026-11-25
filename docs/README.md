@@ -5,6 +5,10 @@
 | Topic | Guide |
 | --- | --- |
 | Installation and examples | [Repository README](../README.md) |
+| Coupled Earth with partial ocean columns | [Earth pilot and NetCDF output](../workflows/coupled/EARTH_SHELF.md) |
+| Coupled aquaplanet | [Campaign and restarts](../workflows/coupled/CAMPAIGN.md) |
+| Plot fields on the native mesh | [Robinson maps and globes](NATIVE_MESH_PLOTTING.md) |
+| Coupled performance | [Profiler guide](../tools/PROFILE_COUPLED.md) |
 | Tensor shapes, units and geometry | [State ownership](STATE_OWNERSHIP.md) |
 | Atmospheric initialization and output | [Physical fields](PHYSICAL_FIELDS_API.md) |
 | Moist model and steppers | [Moist API](MOIST_MODULE_API.md) |
@@ -15,7 +19,7 @@
 | Ocean radiation and prescribed heating | [Surface heating](OCEAN_RADIATION.md) |
 | Ocean wind stress and bottom drag | [Boundary stress](OCEAN_BOUNDARY_STRESS.md) |
 | Optional prognostic ocean turbulence | [TKE closure](OCEAN_TKE.md) |
-| Explicit and implicit stepping | [Timestep paths](CURRENT_PATHS.md) |
+| Time integration in the standalone cores | [Timestep paths](CURRENT_PATHS.md) |
 | Atmospheric thermal relaxation and drag | [Held–Suarez forcing](HELD_SUAREZ.md) |
 | Horizontal rotation | [Compatible rotation](COMPATIBLE_ROTATION.md) |
 | Latitude–longitude diagnostics | [Equiangular grid](EQUIANGULAR_GRID.md) |

@@ -8,13 +8,12 @@ allocation and software environment. This example uses the 4,096-cell mesh,
 dynamics and 7,200 s radiation. Each timed segment spans 16 simulated hours.
 
 ```bash
-cd /glade/work/khall/vfs-a
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
-run_dir=$(mktemp -d /glade/work/khall/coastal-profile-XXXXXX)
+run_dir=$(mktemp -d ./coastal-profile-XXXXXX)
 common=(--config workflows/coupled/aquaplanet_multirate_4096_40.yaml
         --mesh input-data/mesh_4096_exact_3000.npy
-        --source /glade/work/khall/PyAM21
-        --radiation-data /glade/work/khall/vfs-a/input-data/sea_esf
+        --source ../PyAM21
+        --radiation-data input-data/sea_esf
         --device cuda:0 --dtype float64 --threads 4 --no-compile
         --set atmosphere_dt=800 --set radiation_dt=7200
         --warmup-intervals 4 --measure-intervals 24)

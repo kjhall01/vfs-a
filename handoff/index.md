@@ -1,5 +1,7 @@
 # Current package documentation
 
+Start with the [repository guide](../README.md) to choose a campaign or standalone component.
+
 The [column vapor repair](../workflows/coupled/VAPOR_CORRECTION.md) documents the transfer, budgets and compatible Earth campaign restart.
 The [campaign package cleanup](../docs/PASS4_RESULTS.md#campaign-package-cleanup) records the maintained import paths, retired experiments and restart comparison.
 
@@ -11,7 +13,7 @@ existing ordered mesh and geography files.
 
 The [coupled Earth presets](../workflows/coupled/EARTH_SHELF.md) now advance
 bathymetry-dependent wet layer counts throughout the ocean. The pilot guide
-includes a 40 m bathymetry build and the one-day Derecho command. Both the
+includes a 40 m bathymetry build and the one-day pilot command. Both the
 Earth launcher and the direct campaign script load VFS and the ocean physics
 from their checkout when an older wheel is installed.
 

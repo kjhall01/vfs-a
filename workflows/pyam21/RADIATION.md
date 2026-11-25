@@ -10,14 +10,10 @@ the same Simmons–Burridge full-pressure readout as the adapter. Neither upstre
 code nor package defaults are changed. Missing inputs fail with an actionable
 path; there is no synthetic fallback or network access during stepping.
 
-**Status: the user reports six hours with real data, but the corrected mapping
-has not yet been rerun with those data.** The radiation-on preflight in this
-runtime on 2026-11-17 could not initialize because the external data are absent.
-Both the historical `/perm/pjp/SCM/` and currently advertised
-`/perm/GFDL_pubrelease/SCM/` FTP locations failed from this environment; HTTPS on
-the FTP host returned 503 and the candidate nomads/data1 HTTPS locations returned
-404. No reference data were fabricated or substituted. See the
-[recorded attempt and configuration correction](../../verification/atmosphere/pyam21/campaign/radiation-setup/README.md).
+The radiation tables are supplied separately. The [original setup report](../../verification/atmosphere/pyam21/campaign/radiation-setup/README.md)
+records the November 2026 download failures. Subsequent user runs exercised
+real tables on T4 and L4 GPUs. See the [coupled device guide](../coupled/GPU.md)
+for their scope and instructions for checking a new configuration.
 
 ## Radiation and model layer masses
 

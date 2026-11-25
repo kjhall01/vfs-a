@@ -6,14 +6,16 @@ It calls the actual AM2.1 physics in Evan Wellmeyer's
 `e1bdfcc3b23c05adea80b35af880702bb85718eb`. Neither `vfs/` nor upstream PyAM21
 is edited. VFS's installed dependencies and defaults are unchanged.
 
-The default `energy_mode="conservative"` transfers AM2 layer energy into the
+The adapter transfers AM2 layer energy into the
 native VFS Hamiltonian, including the enthalpy and momentum carried by exchanged
 water. A local CP entropy solve enforces each layer's transferred energy; any
 imbalance already present in AM2 is retained and reported separately.
 See [the energy contract](ENERGY.md) for the derivation and explicit assumptions.
-An exact-zero vapor endpoint is now funded from the same layer's cloud water,
-with a nominal target of `1e-12 kg/kg`. The native energy target is retained,
-and the phase transfer is reported explicitly. Positive vapor is unchanged.
+When a finite physics update leaves zero or negative vapor, the adapter draws
+on same-layer condensate first and can draw remaining water from vapor in
+nearby layers of the same column. It records the transfer, accounts for
+thermal and latent energy and retains the original native energy target.
+An unfundable update still fails.
 See [correction behavior, evidence and campaign restart instructions](../coupled/VAPOR_CORRECTION.md).
 The separate [shared exchange workflow](../coupled/README.md) now connects an
 interactive ocean and category ice with reciprocal water, momentum and energy.
@@ -43,9 +45,7 @@ momentum transport and stratiform cloud processes through PyAM21.
 **Radiation is off by default.** Supply `--radiation-data /path/to/sea_esf` to
 construct actual upstream SeaEsfRad. [Setup and qualification status](RADIATION.md)
 explain the required GFDL data, manifest and explicit climatology sampling.
-The real package remains unverified because the data download failed here;
-regular tests use explicitly synthetic radiation. These are integration checks,
-not climate simulations.
+Automated integration tests use synthetic radiation. The [campaign device guide](../coupled/GPU.md) records separate real-table runs.
 
 Use `-I` as shown: drivers append the workflow root after site-packages, and VFS
 and PyAM21 resolve to separately installed packages. Output is text: every-step
@@ -61,7 +61,7 @@ verification files or model dependencies are vendored into this workflow.
 | `radiation.py`, `RADIATION.md` | Real SeaEsfRad construction, data manifest and explicit qualification status |
 | `surface.py` | Tiled moving-surface calls with one shared implicit bottom-air update |
 | `energy.py` | Surface-water energy/momentum contract and layerwise CP enthalpy inversion |
-| `vapor.py` | Local condensate-funded correction of exact-zero vapor, with a sparse ledger |
+| `vapor.py` | Column water transfers for nonpositive vapor and their energy ledger |
 | `state.py` | Atmospheric state, CP cloud fraction, physics memory, surface state, radiation cache and clock |
 | `dynamics.py` | Existing bounded SSPRK3 with a passive cloudy/clear transport ledger |
 | `setup.py` | Explicit configuration and analytic initial conditions for examples |
@@ -113,7 +113,7 @@ It is a **first-order sequential composition**. Physics memory is not advanced
 inside Runge–Kutta stages. The cloud transport wrapper uses the existing atmospheric
 Euler maps and the same SSP combinations; tests check bitwise atmospheric equivalence.
 Cloud/clear amounts use the native carrier graph and bounded transfer routine.
-The current cloud wrapper supports bounded SSPRK3, not IMEX.
+The current cloud wrapper supports bounded SSPRK3.
 
 For convection, `pressure_velocity` converts the relative hybrid-coordinate mass
 flux to a physical pressure-velocity diagnostic by adding coordinate motion and
@@ -140,14 +140,13 @@ Water increments are interpreted as amount sources on the **old** pressure
 carrier: `delta W_layer = dp * (q_endpoint - q_initial)` in conservative mode.
 The actual endpoint exposed by PyAM21's moist stage is checked against its returned
 tendencies and used directly, avoiding cancellation when condensate is exhausted.
-Legacy mode uses `dt * dp * rdt_water`. The column sum updates surface
+The column sum updates surface
 pressure, retaining dry-air inventory. Water contents receive precisely those
 sources; fractions are then recomputed on the new hybrid-coordinate mass weights.
 This is an explicit finite source convention, not a claim of exact equivalence
 to AM2's fixed-pressure fraction update or a resolved vertical mass-source remap.
 For withdrawals, remaining layer amounts are distributed with nonnegative donor
-weights; zero stores can therefore be exhausted exactly. Signed roundoff in an
-upstream endpoint is retained, not clipped. A species with zero sources throughout
+weights; zero stores can therefore be exhausted exactly. The adapter handles nonpositive vapor through the column repair described above. A species with zero sources throughout
 a column keeps its original contents bitwise. Entropy is then solved against the layer energy constraints at the new pressure,
 composition and native kinetic energy. The solve uses analytic derivatives and
 rejects nonconvergence, without changing water or momentum.
@@ -160,8 +159,7 @@ through its exact transpose and the native edge mass metric. The tests check
 the work identity independently using differentiation. Surface-water momentum
 enters through the same transpose at the bottom layer; the new velocity follows
 from old momentum plus physics and water impulses divided by the new mass metric.
-The report's `carrier_impulse` now contains this water impulse. Legacy mode retains
-its previous diagnostic wind map and co-moving native-air convention. The [shared exchange driver](../coupled/README.md) adds moving-surface reciprocal
+The report's `carrier_impulse` now contains this water impulse. The [shared exchange driver](../coupled/README.md) adds moving-surface reciprocal
 stress and one cross-component water-energy reference.
 
 ## Exchange outputs and energy audit
@@ -247,8 +245,7 @@ finite-step cloud fraction roundoff up to 128 float64 eps beyond [0,1] is likewi
 retained rather than clipped. Tests distinguish that from substantive violations.
 
 Radiation scheduling, exposed flux signs and cache restart are tested using the
-real PyAM21 driver with a **synthetic radiation package**. Full `SeaEsfRad` with
-the GFDL data bundle has not been exercised in this workflow. Selected smooth
+real PyAM21 driver with a **synthetic radiation package**. Selected smooth
 backward checks do not qualify threshold crossings or long trajectories.
 
 See [current energy verification](../../verification/atmosphere/pyam21/energy/README.md)

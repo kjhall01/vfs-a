@@ -262,8 +262,7 @@ predictions. The scheme can choose a different funded streamfunction when
 constraints interact. Redi still evaluates its slopes on the accepted GM state
 and enforces its own energy budget.
 
-To time the mature-ocean case on Derecho, run from the repository on an
-allocated GPU. Supply the original campaign manifest, checkpoint, exact
+To time the mature-ocean case, run from the repository root with a CUDA device. Supply the original campaign manifest, checkpoint, exact
 mesh, and PyAM21 source tree.
 
 ```bash

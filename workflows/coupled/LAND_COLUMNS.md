@@ -10,7 +10,7 @@ run a one-day CPU experiment from the repository root.
 
 ```bash
 python -u -I workflows/coupled/run_land_columns.py \
-  --source /glade/work/khall/PyAM21 --steps 36 --dt 2400 \
+  --source ../PyAM21 --steps 36 --dt 2400 \
   --atmosphere-dt 800 --soil-water 135
 ```
 

@@ -1,23 +1,24 @@
-# Shared atmosphere–ocean–ice exchange
+# Coupled campaigns and surface exchange
 
-An opt-in, same-mesh CPU float64 workflow outside `vfs/` and PyAM21. The shared
-[`Exchange`](../exchange.py) record contains **interval-integrated** water,
-heat, momentum and radiation, with one set of units, signs and water enthalpies.
-[`exchange_step`](driver.py) produces the record once and applies it to both
-components. A failure returns neither updated state; inputs and radiation caches
-remain unchanged. The caller owns scheduling and must not replay an interval.
+Use [the Earth runner](EARTH_SHELF.md) for an atmosphere, ocean, sea ice,
+snow and land run with topography and partial ocean columns. Use the
+[aquaplanet campaign](CAMPAIGN.md) for an all-ocean planet. Both use
+[campaign.py](campaign.py) for time integration, diagnostics and NetCDF
+restarts. The Earth runner supplies the Earth preset and locates its inputs.
+The [device guide](GPU.md) covers CPU and accelerator configurations.
 
-This connects the actual AM2 surface/column physics to the existing Roquet
-Hamiltonian ocean, category ice and snow. The [365-day campaign](CAMPAIGN.md) adds prognostic ice temperature,
-conservative cold-content transport, conduction and a shared energy budget.
-It explicitly schedules GM–Redi, eddy-energy decay, funded backscatter with a
-budgeted biharmonic sink, and post-physics adaptive thermal ALE; the YAML and
-startup log identify the enabled components.
-The original `run.py` demonstration below retains its prescribed 270 K skin
-input for reproducibility. Neither path is a qualified climate configuration. Full SeaEsfRad execution also awaits external data;
-see [radiation setup](../pyam21/RADIATION.md).
+At each physics interval, [exchange_step](driver.py) applies one
+[exchange record](../exchange.py) to the atmosphere and the surface. On
+land, the [coastal receiver](coast.py) supplies the land skin temperature,
+advances the land stores and routes runoff to wet cells. The campaign also
+schedules ocean mixing, GM–Redi, eddy-energy decay, backscatter and ALE
+according to its YAML configuration.
 
-## Run
+## Small all-ocean demonstration
+
+The standalone `run.py` example uses a prescribed 270 K ice skin. The
+exchange contract below describes that example. The campaign adds prognostic
+ice temperature and cold content.
 
 With the separately installed VFS wheel and pinned PyAM21 dependency:
 
@@ -118,10 +119,7 @@ A deliberately injected upstream heat defect verifies that it remains visible.
 There is no global energy rescaling, package monkeypatch or forward autograd.
 The surface thermal increment can be negative; inadmissible thermodynamic roots
 reject. Heat arriving through ice is represented in the common ocean–ice energy,
-then redistributed by the existing phase operator on the next split step. A
-resolved ice sensible-energy reservoir, brine physics, shear rheology, solved
-skin balance, long climate runs, GPU/backward qualification and a combined
-restart-file format remain future work. Atmospheric physics/cache restart remains
-available; restart schema 4 rejects atmospheric payloads from the old momentum map.
+then redistributed by the existing phase operator on the next split step. For the prognostic ice reservoir and combined restart format,
+see the [campaign guide](CAMPAIGN.md).
 
 See [verification](../../verification/atmosphere/pyam21/coupled/README.md).

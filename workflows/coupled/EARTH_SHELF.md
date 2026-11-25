@@ -41,14 +41,13 @@ rezones. `ale_changed_columns` and `ale_deferred_columns` count completed and
 deferred column rezones across events. Both groups continue advancing dynamics
 and physics.
 
-On an allocated Derecho node, activate the VFS/PyAM21 environment, then run
+From the repository root, with the coupled environment active and a CUDA device available, run
 
 ```bash
-cd /glade/work/khall/vfs-a
 python -u tools/run_earth_shelf.py --device cuda:0 --preflight \
-    --output /glade/work/khall/earth-shelf-preflight
+    --output runs/earth-shelf-preflight
 python -u tools/run_earth_shelf.py --device cuda:0 --stop-after-days 1 \
-    --output /glade/work/khall/earth-shelf-day1
+    --output runs/earth-shelf-day1
 ```
 
 Each output directory must be new or empty. The preflight checks one coupled
@@ -83,9 +82,9 @@ exist. To convert a matched pair once, from the checkout:
 ```bash
 python tools/convert_earth_inputs.py \
     --mesh input-data/mesh_4096_exact_3000.npy \
-    --mesh-output /glade/work/khall/mesh_4096_exact_3000.nc \
-    --geography /glade/work/khall/earth_4096_geography_40m.npz \
-    --geography-output /glade/work/khall/earth_4096_geography_40m.nc
+    --mesh-output input-data/mesh_4096_exact_3000.nc \
+    --geography input-data/earth_4096_geography_40m.npz \
+    --geography-output input-data/earth_4096_geography_40m.nc
 ```
 
 This preserves generator order, mesh identity, bathymetry floor, raw depths and
@@ -104,7 +103,7 @@ depth in snapshots follow the evolving state.
 from pathlib import Path
 import xarray as xr
 
-run = Path("/glade/work/khall/earth-shelf-40m-day1")
+run = Path("runs/earth-shelf-40m-day1")
 with xr.open_dataset(run / "snapshots/state_00000000.nc") as ds:
     wet_temperature = ds.ocean_temperature.where(ds.ocean_layer_depth.notnull())
     shelf = (ds.ocean_depth_m > 0) & (ds.ocean_depth_m <= 40)
@@ -114,9 +113,28 @@ with xr.open_dataset(run / "diagnostics.nc") as diag:
     print(diag.numerical_energy_residual_J_m2.to_series())
 ```
 
+**Reading SST from a restart.** A snapshot contains `ocean_temperature` in
+°C. A restart stores `ocean_temp_h`, layer thickness times conservative
+temperature (m·°C). Dry land cells can have finite placeholder thicknesses
+and temperatures. Use the active layer count for the wet mask.
+
+```python
+with xr.open_dataset(run / "restarts/restart_00086400.nc") as ds:
+    wet = ds.ocean_active_layer_count > 0
+    h = ds.ocean_h.isel(ocean_level=0).where(wet)
+    sst_degC = (ds.ocean_temp_h.isel(ocean_level=0) / h).load()
+```
+
+This includes water beneath sea ice. For a full-depth field, the active slots
+satisfy `ds.ocean_level < ds.ocean_active_layer_count`. The atmospheric
+`air_surface_t_surf` covers the whole mesh, including land.
+
 To continue a one-day segment, pass the same inputs and configuration with
-`--resume /glade/work/khall/earth-shelf-40m-day1/restarts/restart_00086400.nc`,
-a new output directory and the new end day. The restart holds native prognostic
+`--resume runs/earth-shelf-40m-day1/restarts/restart_00086400.nc`,
+a new output directory and the new end day. For example,
+`--stop-after-days 14` ends at model day 14 counted from initialization.
+The end must fall on a whole second within the configured campaign horizon.
+Omit the flag to run to the configured final day. The restart holds native prognostic
 inventories, the coupled clock, budget ledgers, and PyAM21 physics and radiation
 memory. Use xarray directly for inspection.
 
@@ -137,7 +155,7 @@ Supply the same mesh file to the generator and the campaign.
 python tools/build_earth_geography.py \
     --mesh input-data/mesh_4096_exact_3000.npy \
     --min-wet-depth-m 40 \
-    --output /glade/work/khall/earth_4096_geography_40m.nc
+    --output input-data/earth_4096_geography_40m.nc
 ```
 
 Use this archive explicitly for a fresh 40 m shelf pilot with 600 s atmospheric
@@ -148,8 +166,8 @@ dynamics, 1,200 s ocean SSPRK3, five mixing substeps, two GM/Redi substeps, and
 python -u tools/run_earth_shelf.py --device cuda:0 \
     --config workflows/coupled/earth_shelf_4096_benchmark.yaml \
     --mesh input-data/mesh_4096_exact_3000.npy \
-    --geography /glade/work/khall/earth_4096_geography_40m.nc \
-    --stop-after-days 1 --output /glade/work/khall/earth-shelf-40m-day1
+    --geography input-data/earth_4096_geography_40m.nc \
+    --stop-after-days 1 --output runs/earth-shelf-40m-day1
 ```
 
 The generator defaults to a 600 m depth floor for reproducibility. An existing

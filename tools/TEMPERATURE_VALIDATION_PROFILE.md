@@ -60,9 +60,9 @@ timing, using `--ocean-line-intervals 0` to minimize perturbation.
 ```bash
 python -u -I tools/profile_ocean_rhs.py \
   --config workflows/coupled/aquaplanet_multirate_4096_40.yaml \
-  --mesh "$HOME/Desktop/mesh_4096_exact_3000.npy" \
-  --source "$HOME/Desktop/PyAM21" \
-  --radiation-data "$HOME/Desktop/sea_esf" \
+  --mesh "input-data/mesh_4096_exact_3000.npy" \
+  --source "../PyAM21" \
+  --radiation-data "input-data/sea_esf" \
   --set physics_dt=2400 \
   --set atmosphere_dt=800 \
   --set ocean_dt=1200 \
@@ -74,7 +74,7 @@ python -u -I tools/profile_ocean_rhs.py \
   --threads 4 \
   --warmup-intervals 4 \
   --measure-intervals 24 \
-  --output "$HOME/Desktop/vfs-temperature-validation-01"
+  --output "runs/vfs-temperature-validation-01"
 ```
 
 Compare full runtime, `rhs_temperature_entropy_fields`,

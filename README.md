@@ -1,14 +1,24 @@
-# VFS — atmosphere and ocean dynamics in PyTorch
+# VFS — a coupled atmosphere, ocean, sea-ice and land model in PyTorch
 
-VFS models hydrostatic atmospheric and ocean flow on spherical Voronoi C-grids.
-It provides dry and moist atmospheric cores, an active stratified ocean with
-JMD95 density, conservative transport, and energy-derived dynamical operators.
-Models use explicit tensor states and inspectable component objects.
+VFS advances hydrostatic flow on a spherical Voronoi C-grid. The coupled
+campaign links a moist atmosphere and PyAM2.1 column physics to a Roquet
+ocean, moving sea ice, snow and an optional land surface with runoff.
+The component models live in `vfs/`. The campaign, external physics adapter
+and experiment configurations live in `workflows/` and run from a checkout.
+
+| What do you want to do? | Start here |
+| --- | --- |
+| Run with continents, topography and shallow shelves | [Earth pilot, required inputs and restart instructions](workflows/coupled/EARTH_SHELF.md) |
+| Run a coupled aquaplanet | [Default aquaplanet](workflows/coupled/CAMPAIGN.md) or [4,096-cell full-depth configuration](workflows/coupled/FULL_DEPTH_4096.md) |
+| Run atmosphere and physics with prescribed SST | [PyAM2.1 column and aquaplanet drivers](workflows/pyam21/README.md) |
+| Explore standalone dynamics | [Dry Held–Suarez atmosphere](examples/held_suarez.py), [moist atmosphere](examples/moist_atmosphere.py), [stratified ocean](examples/ocean_stratified.py) |
+| Inspect or plot model output | [NetCDF fields and masks](workflows/coupled/EARTH_SHELF.md#existing-inputs-and-netcdf-output) and [native mesh plots](docs/NATIVE_MESH_PLOTTING.md) |
+| Benchmark the coupled workflow | [Throughput and operator profiling](tools/PROFILE_COUPLED.md) |
 
 ## Install
 
-Python 3.10 or newer is required; verification uses Python 3.12 and CPU float64.
-From a checkout:
+Python 3.10 or newer is required. Regression verification uses Python 3.12 and CPU float64.
+Run these commands from the repository root.
 
 ```bash
 python -m pip install .
@@ -20,7 +30,7 @@ For an editable installation, use `python -m pip install -e '.[test]'`.
 Optional extras include `plotting`, `data`, `diagnostics` and `validation`.
 See [contributing](CONTRIBUTING.md) for the complete test environment.
 
-## Models
+## Standalone models
 
 | Model | Main features | Example |
 | --- | --- | --- |
@@ -63,14 +73,14 @@ or timestep recommendations for other resolutions.
   The atmospheric energy budget includes the fixed-pressure lid reservoir.
 - Tensor operations retain autograd connections, but limiter switches, iterative
   solves and long backward trajectories require separate qualification.
-- CPU float64 is the verified baseline. GPU, reduced precision and long climate
-  runs are not generally qualified. No coupled atmosphere–ocean driver or
-  horizontal EKE closure is provided. An optional prescribed-length
-  [ocean TKE closure](docs/OCEAN_TKE.md) supports
-  [wind stress and bottom drag](docs/OCEAN_BOUNDARY_STRESS.md), and
-  [prescribed radiation/heating](docs/OCEAN_RADIATION.md).
-  [Prescribed surface exchange](docs/OCEAN_SURFACE_EXCHANGE.md) updates water,
-  momentum and energy from supplied fluxes.
+- The coupled campaign supports CPU and CUDA float64. Device-specific checks,
+  precision limits and experimental MPS support are described in the
+  [device guide](workflows/coupled/GPU.md). Short runs establish throughput
+  and budget behavior for their particular configuration. Climate fidelity
+  requires longer integrations and comparison with observations.
+- For a forced ocean without atmospheric physics, see the examples for
+  [wind stress](examples/ocean_boundary_stress.py), [radiative heating](examples/ocean_radiation.py)
+  and [surface fluxes](examples/ocean_surface_fluxes.py).
 
 ## Documentation
 

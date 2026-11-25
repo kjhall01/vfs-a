@@ -5,17 +5,14 @@ This is a **read-only timing extension** of the real 4096-cell, 32-level atmosph
 ## Run on Mac CPU float64
 
 ```bash
-cd "$HOME/Desktop/vfs-a"
-
-git fetch origin
-git switch --track origin/tools/ocean-transport-deep-profile-20261123
+# Run from the repository root.
 python -m pip install -e .
 
 python -u -I tools/profile_ocean_rhs.py \
   --config workflows/coupled/aquaplanet_multirate_4096_40.yaml \
-  --mesh "$HOME/Desktop/mesh_4096_exact_3000.npy" \
-  --source "$HOME/Desktop/PyAM21" \
-  --radiation-data "$HOME/Desktop/sea_esf" \
+  --mesh "input-data/mesh_4096_exact_3000.npy" \
+  --source "../PyAM21" \
+  --radiation-data "input-data/sea_esf" \
   --set physics_dt=2400 \
   --set atmosphere_dt=800 \
   --set ocean_dt=1200 \
@@ -28,7 +25,7 @@ python -u -I tools/profile_ocean_rhs.py \
   --warmup-intervals 4 \
   --measure-intervals 24 \
   --ocean-line-intervals 1 \
-  --output "$HOME/Desktop/vfs-ocean-deep-profile-01"
+  --output "runs/vfs-ocean-deep-profile-01"
 ```
 
 Use a fresh/empty output directory. Switch to an existing local branch with

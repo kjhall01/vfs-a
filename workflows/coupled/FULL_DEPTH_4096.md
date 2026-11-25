@@ -2,15 +2,15 @@
 
 ## Fresh 30-day run with two GM/Redi substeps
 
-Run the following from the repository root in the coupled environment, with PyAM21 installed. The example uses the saved 4,096-cell mesh, the PyAM21 source checkout and the Sea ESF tables on the Desktop.
+Run the following from the repository root in the coupled environment, with PyAM21 installed. The example uses the saved 4,096-cell mesh, the PyAM21 source checkout and the Sea ESF tables. Substitute your input paths below.
 
 ```sh
 python -u -I workflows/coupled/campaign.py \
   --config workflows/coupled/aquaplanet_full_depth_4096_gm2.yaml \
-  --mesh "$HOME/Desktop/mesh_4096_exact_3000.npy" \
-  --source "$HOME/Desktop/PyAM21" \
-  --radiation-data "$HOME/Desktop/sea_esf" \
-  --output "$HOME/Desktop/vfs-4096-gm2-fresh" --verbose
+  --mesh "input-data/mesh_4096_exact_3000.npy" \
+  --source "../PyAM21" \
+  --radiation-data "input-data/sea_esf" \
+  --output "runs/vfs-4096-gm2-fresh" --verbose
 ```
 
 The campaign initializes at day zero. The preset uses 32 atmospheric levels up to 1 hPa, 60 ocean layers to 5,000 m, seasonal Sea ESF radiation, and all ocean and ice processes. Atmosphere and ocean dynamics run every 600 s. The coupling and radiation period is 1,200 s. Within each ocean step, GM/Redi runs twice at 300 s and vertical mixing retains ten substeps. The preset selects the locally funded donor-parcel GM scheme, CPU float64, four threads and regional compilation. The `gm_limiting_passes` and `gm_limited_interfaces` diagnostic columns accumulate the number of retry passes and the number of interfaces limited in accepted updates. An interface limited on successive substeps counts once per substep.
@@ -32,23 +32,19 @@ The original `aquaplanet_full_depth_4096.yaml` preset changes the vertical geome
 
 The ocean uses the existing analytic initial temperature field with an exponential 250 m thermocline e-folding scale, and constant 34 g/kg salinity. **This is not a spun-up, full-depth equilibrium state.** The 5,000 m bottom has not been validated for the existing mixing/bathymetry-free configuration. A local first attempt with ocean_dt=1200 s rejected at model second 2400 with 'actual carrier outflow exceeds Euler budget'; the configuration now uses 300-second ocean substeps as an unverified conservative trial. This error checks layerwise volume outflow, not gravity-wave CFL directly. Do not loosen the carrier limiter. The atmosphere initialization uses the existing 205 K upper-temperature profile, extended to 1 hPa. No land, bottom topography or geographic basin boundaries exist.
 
-## Derecho GPU: preflight first
+## CUDA preflight
 
-On a CUDA-equipped compute node, after activating the same environment used for the working 16,384-cell 2-day campaign:
+From the repository root with the coupled environment active:
 
 ```bash
-cd /glade/work/khall/vfs-a
-git fetch origin
-git switch experiment/full-depth-aquaplanet-4096
 python -m pip install -e .
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
-mkdir -p /glade/derecho/scratch/khall
 python -u -I workflows/coupled/campaign.py \
   --config workflows/coupled/aquaplanet_full_depth_4096.yaml \
-  --source /glade/work/khall/PyAM21 \
-  --radiation-data /glade/work/khall/vfs-a/input-data/sea_esf \
+  --source ../PyAM21 \
+  --radiation-data input-data/sea_esf \
   --device cuda:0 --dtype float64 --threads 4 --no-compile \
-  --output /glade/derecho/scratch/khall/vfs-4096-full-depth-preflight \
+  --output runs/vfs-4096-full-depth-preflight \
   --preflight --verbose
 ```
 
@@ -63,23 +59,23 @@ For a first complete day, use a **new output directory**:
 ```bash
 python -u -I workflows/coupled/campaign.py \
   --config workflows/coupled/aquaplanet_full_depth_4096.yaml \
-  --source /glade/work/khall/PyAM21 \
-  --radiation-data /glade/work/khall/vfs-a/input-data/sea_esf \
+  --source ../PyAM21 \
+  --radiation-data input-data/sea_esf \
   --device cuda:0 --dtype float64 --threads 4 --no-compile \
   --stop-after-days 1 \
-  --output /glade/derecho/scratch/khall/vfs-4096-full-depth-day1 --verbose
+  --output runs/vfs-4096-full-depth-day1 --verbose
 ```
 
 After examining the diagnostic history, resume to model day 2 from
-`vfs-4096-full-depth-day1/restarts/restart_00086400.nc`, adding:
+`runs/vfs-4096-full-depth-day1/restarts/restart_00086400.nc`, adding:
 ```bash
-  --resume /glade/derecho/scratch/khall/vfs-4096-full-depth-day1/restarts/restart_00086400.nc \
+  --resume runs/vfs-4096-full-depth-day1/restarts/restart_00086400.nc \
   --stop-after-days 2 \
-  --output /glade/derecho/scratch/khall/vfs-4096-full-depth-day1-to2
+  --output runs/vfs-4096-full-depth-day1-to2
 ```
 with the same config, source, radiation, device, dtype, threads, and compilation flags.
 
-Do not launch a 365-day job before a two-day run and a comparison of numerical budgets and basic physics. Monitor `numerical_energy_residual_J_m2`, `upstream_residual_J_m2`, column temperature/salinity, minimum thickness, atmospheric velocity, ice area, and ocean TKE/EKE. A longer run requires a production queue and walltime/checkpoint planning; the develop queue is only for short tests.
+Do not launch a 365-day job before a two-day run and a comparison of numerical budgets and basic physics. Monitor `numerical_energy_residual_J_m2`, `upstream_residual_J_m2`, column temperature/salinity, minimum thickness, atmospheric velocity, ice area, and ocean TKE/EKE.
 
 ## Important constraints
 
