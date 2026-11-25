@@ -508,6 +508,9 @@ def build(
             else None
         ),
     )
+    if config.shelf_redi:
+        from workflows.coupled.shelf_transport import ShelfTemperatureOcean
+        model.dynamics = ShelfTemperatureOcean(model.ocean)
     dz = rest_thickness(config).to(mesh.cell_area)
     h = dz[None].expand(mesh.nCells, -1).clone()
     if domain is not None:
@@ -1216,7 +1219,7 @@ def main(argv=None):
             generator_xyz=generators, island=args.island, geography=geography,
         )
         if config.shelf_redi:
-            logger.info("Redi uses partial cells and open shelf faces; GM and resolved dynamics use native ocean layers")
+            logger.info("Resolved and GM transport use physical wet openings; Redi uses partial-cell geometry")
         hashes = source_hashes()
         identity = fingerprint(
             config, adapter, hashes, args.smoke_no_radiation, mesh_info.get("sha256")

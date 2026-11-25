@@ -217,3 +217,99 @@ def test_one_layer_and_missing_neighbors():
         torch.empty_like(closed.opening), closed, tensor([2]), 1025.0
     )
     assert u.numel() == 0 and dke.item() == 0
+
+
+@pytest.mark.parametrize("gradient, acceleration_limit", [(0.0, 1e-16), (0.003, 2e-9)])
+def test_hydrostatic_rest_on_merged_shelf(gradient, acceleration_limit, monkeypatch):
+    from types import SimpleNamespace
+    from vfs.ocean.partial_cell_dynamics import pressure_transport
+
+    root = Path(__file__).resolve().parents[2] / "validation"
+    for name in ("ocean_column", "temperature_coordinate"):
+        monkeypatch.syspath_prepend(str(root / name))
+    from roquet import RoquetEnergy, RoquetFreezingEOS
+
+    depth = tensor([603, 2500])
+    h = reference_thickness(depth, tensor([50] * 50))
+    z = h.flip([1]).cumsum(1).flip([1]) - depth[:, None] - 0.5 * h
+    t, s = 12 + gradient * z, torch.full_like(z, 35)
+    area = tensor([1e10, 1e10])
+    physical = SimpleNamespace(
+        h=h,
+        temperature=lambda: t,
+        salinity=lambda: s,
+        column=SimpleNamespace(total_depth_like=lambda _: depth[:, None]),
+        mesh=SimpleNamespace(cell_area=area),
+    )
+    energy = RoquetEnergy(RoquetFreezingEOS(), gravity=9.8, rho0=1025.0)
+    _, g = energy.stratification(physical)
+    faces = WetFaces.from_columns(depth, h, torch.tensor([[0, 1]]))
+    rhs = pressure_transport(
+        faces,
+        torch.zeros_like(faces.opening),
+        tensor([1e5]),
+        tensor([1e5]),
+        area,
+        energy.rho0,
+        t,
+        s,
+        g["h"],
+        g["temp_h"],
+        g["salt_h"],
+    )
+    assert rhs.velocity.abs().max().item() < acceleration_limit
+
+
+@pytest.mark.parametrize("scheme", ["donor", "fct"])
+def test_native_shelf_carries_tracer_and_tke_through_variable_layer_count(
+    monkeypatch, scheme
+):
+    from test_continuity_momentum import channel
+    from vfs.ocean.shelf_state import ShelfState
+    from vfs.ocean.continuity_momentum import reconstruct_cell_velocity
+
+    root = Path(__file__).resolve().parents[2] / "validation"
+    for directory in ("ocean_column", "temperature_coordinate"):
+        monkeypatch.syspath_prepend(str(root / directory))
+    from roquet import RoquetEnergy, RoquetFreezingEOS
+
+    depth, h, cells = shelf()
+    mesh, _ = channel(3, cells.tolist())
+    mesh.dc_edge = 5e4 * mesh.dc_edge
+    mesh.dv_edge = 4e4 * mesh.dv_edge
+    mesh.cell_area = mesh.cell_area * 2e9
+    faces = WetFaces.from_columns(depth, h, cells)
+    u = tensor([0.01, -0.02, 0.03])
+    z = h.cumsum(1) - 0.5 * h
+    ct = 19.0 - 0.05 * z + tensor([0.1, 0, 0])[:, None]
+    tke = h * (1 + ct / 20)
+    q = torch.stack((h * 0.25, h * (z > 10)), -1)
+    state = ShelfState(
+        h,
+        h * ct,
+        h * 34,
+        tke,
+        0.1 * h,
+        u,
+        reconstruct_cell_velocity(mesh, h, faces, u),
+        q,
+    )
+    energy = RoquetEnergy(RoquetFreezingEOS(), gravity=9.8, rho0=1025.0)
+    transported = state.transport(mesh, depth, 5.0, energy.rho0, scheme=scheme)
+    mixed = transported.mesoscale(mesh, depth, energy, 100.0, 100.0, 5.0)
+    assert not torch.equal(mixed.tke_h, transported.tke_h)
+    torch.testing.assert_close(
+        mixed.tke_h.sum(1).sum(), transported.tke_h.sum(), rtol=1e-14, atol=1e-14
+    )
+    target = mixed.h.clone()
+    target[0, 0] += target[0, 1]
+    target[0, 1] = 0.0
+    final = mixed.rezone(mesh, depth, target, energy)
+    assert (final.h > 0).sum() == (state.h > 0).sum() - 1
+    for end in (transported, mixed, final):
+        torch.testing.assert_close(
+            end.tracer_h.sum((0, 1)), q.sum((0, 1)), atol=1e-14, rtol=1e-14
+        )
+        torch.testing.assert_close(end.tracer_h[..., 0], 0.25 * end.h)
+        assert end.tracer_h.min() >= 0 and end.tke_h.min() >= 0
+        assert end.tracer_h[end.h == 0].count_nonzero() == 0

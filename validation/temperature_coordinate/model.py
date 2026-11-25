@@ -56,6 +56,12 @@ class TemperatureOcean:
                    +(t*ref['entropy_theta']+s*ref['entropy_s']-eta)*rhs.h)/ref['entropy_theta']
         return state.with_tensors(rhs.u_e,rhs.h,thermal,rhs.salt_h,rhs.tracer_h),report
 
+    def loading_acceleration(self, state, load, report):
+        du = -state.mesh.grad(load) / state.column.rho0
+        if self.ocean.domain is not None:
+            du = self.ocean.domain.apply_edge(du)
+        return du.expand_as(state.u_e)
+
     def euler(self, state, dt, *, extra_tendency=None):
         rhs,report = self.tendency_with_report(state,dt)
         area = state.mesh.cell_area[:,None]

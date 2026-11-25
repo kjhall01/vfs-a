@@ -73,3 +73,85 @@ def test_mesh_order_check(tmp_path):
     with pytest.raises(ValueError, match="mesh_sha256"):
         c.load_geography(path, mesh_sha256="different")
     assert c.load_geography(path, mesh_sha256="expected")["height_m"][0] == 100.0
+
+
+@torch.no_grad()
+def test_shelf_resolved_and_gm_transport_share_physical_openings(config, source):
+    from vfs.ocean.transport import divergence
+    from workflows.coupled.shelf_transport import ShelfTemperatureOcean
+
+    cfg = replace(config, shelf_redi=True, ocean_levels=6)
+    land = np.arange(cfg.cells) == 0
+    depths = np.linspace(8.0, cfg.ocean_depth_m, cfg.cells)
+    geography = dict(land=land, depth_m=depths, height_m=1200.0 * land)
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        _, _, receiver, sea = c.build(
+            cfg, source, Path("synthetic"), geography=geography
+        )
+    model = receiver.H.model
+    state = sea.coupled.ocean
+    s = state.ocean
+    assert isinstance(model.dynamics, ShelfTemperatureOcean)
+    m = s.mesh
+    wet = model.ocean.domain.active_edge
+    generator = torch.Generator().manual_seed(255)
+
+    def rand(x):
+        return torch.randn(x.shape, generator=generator, dtype=x.dtype)
+
+    u = 0.03 * rand(s.u_e) * wet[:, None]
+    q = torch.stack(((rand(s.h) > 0).to(s.h), torch.full_like(s.h, 0.25)), -1)
+    s = s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.h[..., None] * q)
+    rhs, report = model.dynamics.tendency_with_report(s, 60.0)
+    faces = report.faces
+    k = s.h.shape[1]
+    edge = faces.velocity_slot // k
+    assert (faces.left % k != faces.right % k).any()
+    torch.testing.assert_close(m.cellsOnEdge[edge, 0], faces.left // k)
+    torch.testing.assert_close(m.cellsOnEdge[edge, 1], faces.right // k)
+    assert wet[edge].all()
+    area = s.h.new_zeros(m.nEdges).index_add(0, edge, faces.area)
+    depth = model.ocean.domain.depth[:, 0]
+    expected = torch.minimum(depth[m.cellsOnEdge[:, 0]], depth[m.cellsOnEdge[:, 1]])
+    torch.testing.assert_close(area, wet * m.dv_edge * expected)
+    torch.testing.assert_close(rhs.tracer_h[:, :, 1], 0.25 * rhs.h)
+    end = report.transport.install(s)
+    # Compare finite entropy with the actual donor-water inflow in each cell.
+    entropy = torch.log1p(s.temperature() / 273.15)
+    flux = 60.0 * report.transport.carrier
+    donor = torch.where(flux >= 0, faces.left, faces.right)
+    advected = (
+        s.h * entropy
+        + divergence(
+            faces.left, faces.right, flux * entropy.flatten()[donor], s.h.numel()
+        ).reshape_as(s.h)
+        / m.cell_area[:, None]
+    )
+    assert (end.h * torch.log1p(end.temperature() / 273.15) >= advected - 1e-12).all()
+    assert end.tracer_h.min() >= 0
+    assert (end.tracer_h[..., 0] <= end.h + 1e-12).all()
+    for field in (rhs.h, rhs.temp_h, rhs.salt_h, rhs.tracer_h[..., 0]):
+        amount = m.cell_area[:, None] * field
+        assert amount.sum().abs() < 1e-13 * amount.abs().sum()
+    load = 100 * rand(s.h[:, :1])
+    load_force = model.dynamics.loading_acceleration(s, load, report)
+    grad = model.energy.base.gradients(s)
+    work = (
+        (grad["h"] + load * m.cell_area[:, None]) * rhs.h
+        + grad["temp_h"] * rhs.temp_h
+        + grad["salt_h"] * rhs.salt_h
+    ).sum()
+    kinetic = grad["u_e"] * (rhs.u_e + load_force)
+    assert (work + kinetic.sum()).abs() < 2e-12 * kinetic.abs().sum()
+
+    eddy = c.gm_redi_operator(cfg)
+    metrics = eddy._metrics(model, state)
+    _, psi, horizontal, vertical, i, j, carrier, _, _ = eddy._geometry(
+        model, state, metrics=metrics
+    )
+    assert horizontal.abs().max() > 0
+    assert horizontal[~wet].count_nonzero() == 0
+    assert vertical[:, [0, -1]].count_nonzero() == 0
+    assert psi[:, [0, -1]].count_nonzero() == 0
+    residual = divergence(i, j, carrier, s.h.numel())
+    assert residual.abs().max() < 5e-14 * carrier.abs().max()

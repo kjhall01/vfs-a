@@ -12,9 +12,12 @@ The geography file must use the same cell order as the mesh and contain
 `land` and `depth_m`. Both paths are supplied by the caller.
 
 The experiment uses float64, four CPU threads and 40 reference ocean levels.
-It exercises split wet faces, four 120 s unforced continuity and donor-momentum
-updates, and a separate GM/Redi and ALE experiment. The stdout report includes
-per-edge momentum and energy residuals, minimum TKE, and the ALE column energy
-residual. Positive TKE is required when a local momentum update consumes energy.
-The coupled campaign still uses its existing vertical layout. Rotation, pressure
-integration, coupled restart and A100 throughput remain unqualified.
+Four composed 120 s steps exercise continuity, donor momentum, GM/Redi and
+ALE on the evolving partial columns. All material inventories, including
+optional passives and the turbulent and eddy reservoirs, follow the current
+wet geometry. The runner also audits each isolated budget. Positive TKE is
+required when a local unforced momentum update consumes energy.
+
+The coupled Earth runner shares the wet-opening transport principles and
+keeps its existing terrain-following storage. See the [coupled shelf
+configuration](../../workflows/coupled/EARTH_SHELF.md).

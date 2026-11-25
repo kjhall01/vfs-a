@@ -1,5 +1,5 @@
-# Coupled Earth geography. Redi uses partial cells; resolved ocean and GM
-# use native terrain-following layers. Supply matching --mesh and --geography.
+# Coupled Earth with wet-face transport and partial-cell GM/Redi.
+# Supply matching --mesh and --geography.
 days: 30
 cells: 4096
 atmosphere_levels: 32
@@ -9,7 +9,7 @@ ocean_depth_m: 5000.0
 top_layer_m: 10.0
 lloyd_iterations: 0
 physics_dt: 2400
-atmosphere_dt: 800
+atmosphere_dt: 600
 ocean_dt: 1200
 ocean_dynamics_integrator: ssprk3
 mixing_dt: 1200

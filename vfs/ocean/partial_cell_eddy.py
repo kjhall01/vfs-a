@@ -89,7 +89,9 @@ class ShelfRedi:
         bound = self._transpose(self.measure * w.sum(1), w)
         return torch.where(bound > 0, volume / bound, torch.inf).amin()
 
-    def advance_roquet(self, depth, h, temp_h, salt_h, eddy_h, area, energy, dt):
+    def advance_roquet(
+        self, depth, h, temp_h, salt_h, eddy_h, area, energy, dt, *, carried_h=None
+    ):
         """Fixed-volume Redi update with conservative local dynamic-enthalpy flux.
 
         cp*CT follows the CT flux exactly. Advect the layer-mean parcel
@@ -101,11 +103,53 @@ class ShelfRedi:
                 "Redi timestep exceeds the explicit bound or is nonpositive"
             )
 
-        def increment(q):
-            return dt * self.inventory_tendency(q) / area[:, None]
+        divisor = torch.where(h > 0, h, 1.0)
+        measure = self.measure
+        if carried_h is not None:
+            # One factor per rotated diffusion row keeps all fields and the
+            # transported thermodynamic potential on the same funded exchange.
+            scale = torch.ones_like(measure)
+            for content in (salt_h, eddy_h, *carried_h.unbind(-1)):
+                q = (content / divisor).flatten()
+                gradient = (q[self.owners] * self.weights).sum(1)
+                changes = -dt * (measure * gradient)[:, None] * self.weights
+                withdrawals = (-changes).clamp_min(0)
+                demand = q.new_zeros(q.shape).index_add(
+                    0, self.owners.flatten(), withdrawals.flatten()
+                )
+                amount = (area[:, None] * content).flatten()
+                room = (amount / torch.where(demand > 0, demand, 1.0)).clamp(max=1.0)
+                room = torch.where(
+                    room < 1, room * (1 - 64 * torch.finfo(q.dtype).eps), room
+                )
+                scale = torch.minimum(
+                    scale, torch.where(withdrawals > 0, room[self.owners], 1.0).amin(1)
+                )
+            measure = measure * scale
 
-        carried = eddy_h + increment(eddy_h / torch.where(h > 0, h, 1.0))
-        return _settle_exchange(depth, h, temp_h, salt_h, carried, energy, increment)
+        def increment(q):
+            grad = (q.flatten()[self.owners] * self.weights).sum(1)
+            return -dt * self._transpose(measure * grad, self.weights) / area[:, None]
+
+        return _transport_and_settle(
+            depth, h, temp_h, salt_h, eddy_h, carried_h, energy, increment
+        )
+
+
+def _transport_and_settle(
+    depth, h, temp_h, salt_h, eddy_h, carried_h, energy, increment
+):
+    divisor = torch.where(h > 0, h, 1.0)
+    eddy = eddy_h + increment(eddy_h / divisor)
+    result = _settle_exchange(depth, h, temp_h, salt_h, eddy, energy, increment)
+    if carried_h is None:
+        return result
+    updated = torch.stack(
+        [content + increment(content / divisor) for content in carried_h.unbind(-1)], -1
+    )
+    if not torch.isfinite(updated).all() or (updated < 0).any():
+        raise ValueError("invalid transported passive or turbulent energy inventory")
+    return (*result, updated)
 
 
 def _settle_exchange(depth, h, temp_h, salt_h, eddy_h, energy, increment):
@@ -155,7 +199,19 @@ def gm_volume_carriers(faces, h, length, interface_psi):
 
 
 def advance_gm_roquet(
-    faces, depth, h, temp_h, salt_h, eddy_h, area, energy, length, transport, dt
+    faces,
+    depth,
+    h,
+    temp_h,
+    salt_h,
+    eddy_h,
+    area,
+    energy,
+    length,
+    transport,
+    dt,
+    *,
+    carried_h=None,
 ):
     """Upwind GM parcel exchange, including vertical return flow and carried EKE.
 
@@ -186,5 +242,6 @@ def advance_gm_roquet(
         )
         return delta.view_as(h) / area[:, None]
 
-    carried = eddy_h + increment(eddy_h / torch.where(h > 0, h, 1.0))
-    return _settle_exchange(depth, h, temp_h, salt_h, carried, energy, increment)
+    return _transport_and_settle(
+        depth, h, temp_h, salt_h, eddy_h, carried_h, energy, increment
+    )
