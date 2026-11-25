@@ -20,7 +20,8 @@ The default 32-cell mesh has a meridional sector of grassland. Supply
 array in mesh generator order with both land and water present.
 Use `--surface-height height_m.npy` for terrain. Supply one elevation in metres
 per mesh cell, including the wet outlets. The default elevation is zero.
-Terrain sets the initial surface pressure through the VFS hydrostatic reference profile.
+Initial surface pressure follows the hydrostatic integral of each column's prescribed
+temperature and specific humidity from sea level to the terrain.
 `--radiation-data input-data/sea_esf --radiation-step 7200` enables SeaEsfRad.
 Without tables, radiation is off. Omit `--atmosphere-dt` for a column-physics
 experiment. Both modes use the real PyAM21 column solver. The example uses

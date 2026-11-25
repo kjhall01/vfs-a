@@ -1,5 +1,17 @@
 # Pass 4 — physical-field workflow
 
+## Hydrostatic initialization over Earth terrain
+
+A fresh coupled run computes surface pressure from the prescribed moist column
+at each latitude. On the 4,096-cell Earth mesh, atmospheric dynamics at 600 s
+lost 1.79 J/m² during the first 40 simulated minutes, compared with 49.29 J/m²
+using the previous 288 K isothermal pressure estimate. The
+[pilot guide](../workflows/coupled/EARTH_SHELF.md) records the six-hour comparison.
+
+CPU tests check the initialized pressure against an independent integral of
+specific volume in float32 and float64, including sea level and a terrain
+surface that reaches the pressure lid.
+
 ## Land column exchange with PyAM21
 
 The [mixed grassland and slab-ocean experiment](../workflows/coupled/LAND_COLUMNS.md)

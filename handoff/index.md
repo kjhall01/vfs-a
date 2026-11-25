@@ -1,5 +1,9 @@
 # Current package documentation
 
+The [Earth shelf pilot](../workflows/coupled/EARTH_SHELF.md) initializes surface
+pressure over land from the prescribed moist atmospheric profile. Start at day
+zero to use this initialization.
+
 The [land-column experiment](../workflows/coupled/LAND_COLUMNS.md) couples the archived grassland soil and snow equations to PyAM21, with conservative runoff delivery to stationary ocean slabs.
 
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.

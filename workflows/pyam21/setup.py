@@ -1,6 +1,7 @@
 """Explicit example configuration; no data download or package-default changes."""
 
 from pathlib import Path
+import numpy as np
 import torch
 from pyam21.constants import GRAV
 from pyam21.namelist import read_namelist
@@ -13,6 +14,44 @@ from vfs import (
 )
 from .adapter import AM2Adapter
 from workflows.coupled.device import initialization_dtype, resolve_device, validate_precision
+
+
+_SEA_LEVEL_PRESSURE = 100000.0  # Pa
+
+
+def _moist_profile(pressure, sea_level_temperature):
+    temperature = 205 + (sea_level_temperature - 205) * (pressure / _SEA_LEVEL_PRESSURE) ** 0.7
+    vapor = 0.7 * get_sat_vapor_pres().compute_qs(temperature, pressure)
+    return temperature, vapor
+
+
+def _terrain_surface_pressure(phi_s, sea_level_temperature, thermo, top_pressure_pa):
+    """Invert moist hydrostatic balance from sea level to the terrain in each column."""
+    nodes, weights = np.polynomial.legendre.leggauss(12)
+    nodes = phi_s.new_tensor((nodes + 1) / 2)
+    weights = phi_s.new_tensor(weights / 2)
+    phi_s = phi_s.reshape(-1, 1)
+
+    def gas_constant_times_temperature(log_pressure_ratio):
+        pressure = _SEA_LEVEL_PRESSURE * log_pressure_ratio.exp()
+        temperature, vapor = _moist_profile(pressure, sea_level_temperature)
+        return (thermo.R_d + (thermo.R_v - thermo.R_d) * vapor) * temperature
+
+    # With x = log(p_s / p0), the terrain geopotential is -integral_0^x R_mix T dx.
+    # Its endpoint derivative supplies the Newton step. Sea level stays at x = 0.
+    def residual(x):
+        return phi_s + x * (weights * gas_constant_times_temperature(x * nodes)).sum(-1, keepdim=True)
+
+    lid = phi_s.new_tensor(np.log(top_pressure_pa / _SEA_LEVEL_PRESSURE))
+    if (residual(lid) >= 0).any():
+        raise ValueError("terrain reaches the atmospheric pressure lid")
+    x = -phi_s / (thermo.R_d * sea_level_temperature)
+    for _ in range(5):
+        x = x - residual(x) / gas_constant_times_temperature(x)
+    ps = _SEA_LEVEL_PRESSURE * x.exp()
+    if not torch.isfinite(ps).all() or (ps <= top_pressure_pa).any():
+        raise ValueError("invalid hydrostatic surface pressure above terrain")
+    return ps
 
 
 @initialization_dtype(torch.float64)
@@ -71,7 +110,7 @@ def example(
     mesh = VoronoiMesh(
         n_cells=cells, **({"lloyd_iters": 0, "verbose": False} | (mesh_options or {}))
     )
-    if not 0.0 < top_pressure_pa < 100000.0:
+    if not 0.0 < top_pressure_pa < _SEA_LEVEL_PRESSURE:
         raise ValueError("top_pressure_pa must lie between 0 and reference surface pressure")
     A, B = make_hybrid_coefficients(levels, p_top=top_pressure_pa)
     if callable(surface_height_m):
@@ -114,17 +153,15 @@ def example(
         radiation_id=None if rad is None else rad.identity,
     )
     adapter.radiation_manifest = None if rad is None else rad.manifest
-    ps = 100000.0
-    if surface_height_m is not None:
-        from vfs.atmosphere.topography import atmospheric_surface_pressure_from_phi_s
-        ps = atmospheric_surface_pressure_from_phi_s(model.column.phi_s).reshape(-1, 1)
-        if (ps <= top_pressure_pa).any():
-            raise ValueError("terrain reaches the atmospheric pressure lid")
-    p = model.interface_pressure(ps)
     sine_lat = mesh.cell_xyz[:, 2]
     surface = 300.0 - (25 * sine_lat.square() if aquaplanet else 0 * sine_lat)
-    T = 205 + (surface[:, None] - 205) * (p / 100000.0) ** 0.7
-    vapor = 0.7 * get_sat_vapor_pres().compute_qs(T, p)
+    ps = _SEA_LEVEL_PRESSURE
+    if surface_height_m is not None:
+        ps = _terrain_surface_pressure(
+            model.column.phi_s, surface[:, None], model.dynamics.thermodynamics, top_pressure_pa
+        )
+    p = model.interface_pressure(ps)
+    T, vapor = _moist_profile(p, surface[:, None])
     atmosphere = model.state_from_fields(
         temperature=T, surface_pressure=ps, normal_wind=0.0, vapor=vapor
     )

@@ -73,17 +73,24 @@ unfloored wet depth and the fractional land area alongside the campaign fields.
 
 The geography supplies land mask, grid-mean terrain and wet-column depth in
 matching mesh order. The loader verifies its embedded mesh digest when present.
-Terrain enters the atmosphere through surface geopotential and a height-adjusted
-initial pressure. The zero-wind, latitude-dependent initialization undergoes
-adjustment. The supplied geography has a 600 m minimum wet-column depth.
+For fresh runs the atmosphere computes terrain pressure by integrating
+`R_mix T` in log pressure from sea level (100,000 Pa) using the same local
+temperature and vapor profile used to construct the atmospheric state. The
+zero-wind atmosphere still adjusts to its meridional temperature gradient.
+The supplied geography has a 600 m minimum wet-column depth.
 
-The 4,096-cell Earth benchmark preset completed six simulated hours on CPU
-in float64 with radiation disabled. With 600 s atmospheric dynamics and
-1,200 s ocean dynamics, this covered 36 GM/Redi updates and four ALE remaps.
-The whole-system numerical energy residual was −279.47 J/m², of which
-−277.38 J/m² accrued during atmospheric dynamics. The earlier 800 s
-atmospheric run with the same mesh, terrain and ocean schedule gave
-−426.66 J/m². Both runs used the same terrain-pressure initialization.
+At the 600 s atmosphere step, the following six-hour comparison used the same
+4,096-cell mesh, geography, CPU float64 configuration, disabled radiation and
+1,200 s ocean step. Both runs completed 36 GM/Redi updates and four ALE remaps.
+
+| Numerical energy residual (J/m²) | Previous 288 K pressure estimate | Moist hydrostatic initialization |
+|---|---:|---:|
+| Atmosphere dynamics, first 40 minutes | −49.29 | −1.79 |
+| Atmosphere dynamics, six hours | −277.38 | −16.39 |
+| Whole coupled system, six hours | −279.47 | −18.48 |
+
+The earlier six-hour run at an 800 s atmosphere step used the 288 K pressure
+estimate and gave a whole-system residual of −426.66 J/m².
 
 At rest on the same grid with constant salinity of 35 g/kg, constant CT of
 12 °C gives a maximum resolved ocean acceleration of 5.12e-17 m/s². For
