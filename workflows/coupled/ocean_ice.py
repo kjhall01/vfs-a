@@ -133,7 +133,8 @@ class OceanIceReceiver:
         h = torch.cat((s.h[:, :1] + dm / s.column.rho0, s.h[:, 1:]), -1)
         if (h[:, :1] < self.snow.phase.min_liquid).any():
             raise ValueError("exchange exhausts liquid top layer; reduce dt")
-        salinity = s.salt_h / h
+        # Freshwater changes only the surface layer, whose thickness was checked above.
+        salinity = s.salt_h[:, :1] / h[:, :1]
         if ((salinity <= 0) | (salinity >= 42)).any():
             raise ValueError("exchange leaves ocean salinity domain")
         temp_h = torch.cat((h[:, :1] * s.temperature()[:, :1], s.temp_h[:, 1:]), -1)

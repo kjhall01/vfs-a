@@ -21,12 +21,15 @@ class ConstantDensityEnergy:
         self.domain = domain
 
     def velocity(self, state):
-        return state.u_e if self.domain is None else self.domain.apply_edge(state.u_e)
+        return state.u_e if self.domain is None else self.domain.apply_layer_edge(state.u_e)
 
     def metric(self, state):
-        """Diagonal kinetic metric M = rho0 A_e I(h), before coast masking."""
+        """Diagonal kinetic metric M = rho0 A_e I(h), with closed partial-column faces removed."""
         mesh = state.mesh
-        return self.rho0 * (mesh.dc_edge * mesh.dv_edge)[:, None] * mesh.cell_to_edge(state.h)
+        metric = self.rho0 * (mesh.dc_edge * mesh.dv_edge)[:, None] * mesh.cell_to_edge(state.h)
+        if self.domain is not None and self.domain.active_edge_layers is not None:
+            return self.domain.apply_layer_edge(metric)
+        return metric
 
     @staticmethod
     def interpolation_transpose(mesh, edge_covector):

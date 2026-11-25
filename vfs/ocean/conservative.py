@@ -60,8 +60,13 @@ class ConstantDensityDynamics(nn.Module):
         mesh = state.mesh
         u = self.energy.velocity(state)
         if mesh.rotation_scheme == "compatible":
-            acceleration = mesh.compatible_rotation(u, state.h, self.rotation_rate)
-            return acceleration if self.domain is None else self.domain.apply_edge(acceleration)
+            if state.column.active_layers is not None:
+                from vfs.geometry.mesh.rotation import compatible_rotation
+                acceleration = compatible_rotation(mesh, u, self.domain.apply_cell(state.h),
+                                                   self.rotation_rate, dry_layers=True)
+            else:
+                acceleration = mesh.compatible_rotation(u, state.h, self.rotation_rate)
+            return acceleration if self.domain is None else self.domain.apply_layer_edge(acceleration)
         metric = self.energy.metric(state)
         absolute_vorticity = mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
         v0,v1 = mesh.verticesOnEdge[:,0],mesh.verticesOnEdge[:,1]
@@ -72,8 +77,8 @@ class ConstantDensityDynamics(nn.Module):
         contributions = coefficients * (metric*u)[:,None,:]
         transpose = torch.zeros_like(u).index_add(0,stencil.reshape(-1),
                                                   contributions.reshape(-1,u.shape[-1]))
-        acceleration = .5 * (metric*forward-transpose) / metric
-        return acceleration if self.domain is None else self.domain.apply_edge(acceleration)
+        acceleration = .5 * (metric*forward-transpose) / torch.where(metric != 0, metric, 1.)
+        return acceleration if self.domain is None else self.domain.apply_layer_edge(acceleration)
 
     def tendency_terms(self, state):
         self._check_state(state)
@@ -85,7 +90,7 @@ class ConstantDensityDynamics(nn.Module):
         pressure_and_kinetic = -mesh.grad(bernoulli)
         if self.domain is not None:
             h_dot = self.domain.apply_cell(h_dot)
-            pressure_and_kinetic = self.domain.apply_edge(pressure_and_kinetic)
+            pressure_and_kinetic = self.domain.apply_layer_edge(pressure_and_kinetic)
 
         def content_tendency(concentration):
             # Passive donor-cell flux uses the same carrier F, so a uniform

@@ -16,11 +16,30 @@ circulation with a vertical return flow. Redi averages native concentrations
 onto the partial cells and returns fluxes through the transpose of that map.
 Both use the prognostic inventories for their local eddy-energy settlement.
 
-The campaign checkpoint still stores the same number of terrain-following
-layers in every wet column. Vertical mixing, the rotational velocity stencil,
-surface drag and the ALE target use that layout. The standalone shelf
-experiment exercises variable counts, merged bottom cells and moving-face
-momentum with zero-thickness padding.
+Both Earth presets enable `partial_cell_layers: true`. Each wet column uses the
+reference interfaces above its seabed. The last layer ends at the bed. A bottom
+sliver thinner than one quarter of its nominal layer merges into the layer above.
+In trenches the last nominal layer extends down to the bed. For example, at
+initialization a 40 m column has a 10 m surface layer and 30 m of water below
+it. An 8 m column has one layer. The deepest columns have all 40. The count is
+fixed by bathymetry as layer thicknesses and sea level evolve.
+
+Snapshots store `ocean_active_layer_count` for each cell (zero on land).
+Checkpoints retain rectangular tensors. Slots below a wet column's bed have
+exactly zero thickness and zero inventories of heat, salt, tracers, TKE and EKE.
+Normal velocities and transport close at shelf walls. Vertical mixing and
+backscatter act on the open layers and faces. Sea ice and runoff exchange with
+the top wet layer. Start a fresh run when switching from the old stretched
+40-layer state.
+
+ALE targets each column's own reference profile scaled to its current liquid
+depth. It conserves edge-integrated momentum and checks column Hamiltonian
+and entropy after remapping. If the thermal correction is infeasible, the
+column and its incident wet neighbors can keep their current interfaces for that
+event. This holds the shared face momentum fixed while the rest of the grid
+rezones. `ale_changed_columns` and `ale_deferred_columns` count completed and
+deferred column rezones across events. Both groups continue advancing dynamics
+and physics.
 
 On an allocated Derecho node, activate the VFS/PyAM21 environment, then run
 
@@ -63,10 +82,25 @@ Supply the same mesh file to the generator and the campaign.
 ```bash
 python tools/build_earth_geography.py \
     --mesh input-data/mesh_4096_exact_3000.npy \
-    --output /glade/work/khall/earth_4096_geography.npz
+    --min-wet-depth-m 40 \
+    --output /glade/work/khall/earth_4096_geography_40m.npz
 ```
 
-Pass that output to the runner with `--geography`, or set `VFS_GEOGRAPHY`.
+Use this archive explicitly for a fresh 40 m shelf pilot with 600 s atmospheric
+dynamics, 1,200 s ocean SSPRK3, five mixing substeps, two GM/Redi substeps, and
+4,800 s radiation and ALE. With the source and radiation paths already set:
+
+```bash
+python -u tools/run_earth_shelf.py --device cuda:0 \
+    --config workflows/coupled/earth_shelf_4096_benchmark.yaml \
+    --mesh input-data/mesh_4096_exact_3000.npy \
+    --geography /glade/work/khall/earth_4096_geography_40m.npz \
+    --stop-after-days 1 --output /glade/work/khall/earth-shelf-40m-day1
+```
+
+The generator defaults to a 600 m depth floor for reproducibility. An existing
+600 m archive has already deepened the shallower cells. Use the 40 m archive
+for this experiment.
 To use existing source files offline, pass `--relief /path/to/earth_relief_10m_p.grd`
 and `--coastline /path/to/ne_50m_land.geojson`. The archive includes the
 unfloored wet depth and the fractional land area alongside the campaign fields.
@@ -77,7 +111,7 @@ For fresh runs the atmosphere computes terrain pressure by integrating
 `R_mix T` in log pressure from sea level (100,000 Pa) using the same local
 temperature and vapor profile used to construct the atmospheric state. The
 zero-wind atmosphere still adjusts to its meridional temperature gradient.
-The supplied geography has a 600 m minimum wet-column depth.
+The historical comparison below used the 600 m floor and the original stretched columns.
 
 At the 600 s atmosphere step, the following six-hour comparison used the same
 4,096-cell mesh, geography, CPU float64 configuration, disabled radiation and
@@ -92,7 +126,7 @@ At the 600 s atmosphere step, the following six-hour comparison used the same
 The earlier six-hour run at an 800 s atmosphere step used the 288 K pressure
 estimate and gave a whole-system residual of −426.66 J/m².
 
-At rest on the same grid with constant salinity of 35 g/kg, constant CT of
+In the earlier stretched-column test, at rest with constant salinity of 35 g/kg, constant CT of
 12 °C gives a maximum resolved ocean acceleration of 5.12e-17 m/s². For
 CT = 12 + 0.001 z °C, with z in meters positive upward, the maximum is
 4.73e-9 m/s² and the 99th percentile among open velocity slots is 1.95e-9 m/s².

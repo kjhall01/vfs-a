@@ -39,8 +39,8 @@ Use a NumPy archive with one entry per mesh cell, in generator order.
 | `depth_m` | Resting liquid ocean depth in metres, positive at sea. Dry entries can be zero. |
 
 The atmosphere starts from an idealized pressure-dependent thermal profile with
-hydrostatically adjusted surface pressure. Ocean layers initially follow the preset
-fractions of local depth. Check that the shallowest wet cells support the ice
+hydrostatically adjusted surface pressure. The Earth presets truncate the reference layers at the bed and merge thin bottom
+cells. Other presets retain stretched fractions of local depth by default. Check that the shallowest wet cells support the ice
 solver's minimum liquid thickness and that the timestep suits the chosen terrain.
 The coastal geometry is static. Nearest-wet runoff is delivered within one physics
 interval. This setup supports land at or above the receiving sea level.

@@ -9,6 +9,7 @@ After bounded retries, remaining unfunded columns defer scalar mixing explicitly
 from dataclasses import dataclass,replace
 import math
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from path_work import PathWorkClosure
 from coupled import CoupledReport
 from vfs.ocean.stratified.tke import diffuse,positive_sqrt
@@ -106,14 +107,15 @@ class LaggedClosure(PathWorkClosure):
         area=energy.mass_area(state);mass=area*h
         # Inactive columns have no physical mass or flux. Give their isolated
         # linear systems an identity diagonal while retaining zero budget weight.
-        solve_mass = mass if ocean.domain is None else torch.where(area > 0, mass, 1.)
-        k0=tke_h/h
+        solve_mass = mass if ocean.domain is None else nonzero_divisor(mass)
+        den_h=nonzero_divisor(h)
+        k0=tke_h/den_h
         zero=h.new_zeros(h.shape[0],1)
         div=lambda f:torch.cat((f,zero),-1)-torch.cat((zero,f),-1)
         add=lambda f:torch.cat((f,zero),-1)+torch.cat((zero,f),-1)
         he=mesh.cell_to_edge(h);mechanical=energy.base.mechanical
         metric=mechanical.metric(physical)
-        allocate=lambda e:h*mechanical.interpolation_transpose(mesh,e/he)
+        allocate=lambda e:h*mechanical.interpolation_transpose(mesh,e/nonzero_divisor(he))
         workbuf=self._workspace(ocean,physical)
         parts=workbuf.parts if workbuf else lambda p:thermal_parts(ocean,p)
         psi0,ref0=parts(physical)
@@ -121,7 +123,7 @@ class LaggedClosure(PathWorkClosure):
         if workbuf is None:
             node,weight=energy.base._quadrature(h)
             z=energy.base.height(physical)[...,None]+h[...,None]*(node-.5)
-        alpha=h[:,:-1]/(h[:,:-1]+h[:,1:])
+        alpha=h[:,:-1]/nonzero_divisor(h[:,:-1]+h[:,1:])
         flux_work = getattr(workbuf, "flux_work", None)
         eta_round=self._baseline_entropy(energy,workbuf,s0,theta0,H0)
 
@@ -134,7 +136,7 @@ class LaggedClosure(PathWorkClosure):
 
         values=[s0,H0]
         if state.tracer_h is not None:
-            values.extend((state.tracer_h/h[...,None]).unbind(-1))
+            values.extend((state.tracer_h/den_h[...,None]).unbind(-1))
         values=torch.stack(values,-1)
         layer_spacing=.5*(h[:,:-1]+h[:,1:])
         edge_measure=ocean.column.rho0*(mesh.dc_edge*mesh.dv_edge)[:,None]
@@ -149,10 +151,14 @@ class LaggedClosure(PathWorkClosure):
                 g=resistance(km,h)
                 eg=edge_measure*resistance(ek,he)
             else:
-                g=.5*(km[:,:-1]+km[:,1:])/layer_spacing
-                eg=edge_measure*.5*(ek[:,:-1]+ek[:,1:])/(.5*(he[:,:-1]+he[:,1:]))
-            if ocean.domain is not None:eg=eg*ocean.domain.active_edge[:,None]
-            solve_metric = metric if ocean.domain is None else torch.where(ocean.domain.active_edge[:,None], metric, 1.)
+                g=.5*(km[:,:-1]+km[:,1:])/nonzero_divisor(layer_spacing)
+                eg=edge_measure*.5*(ek[:,:-1]+ek[:,1:])/nonzero_divisor(.5*(he[:,:-1]+he[:,1:]))
+            interface = (h[:, 1:] > 0) & (h[:, :-1] > 0)
+            g = g * interface
+            if ocean.domain is not None:
+                edges = ocean.domain.layer_edge_mask(state.u_e).expand_as(state.u_e)
+                eg = eg * edges[:, :-1] * edges[:, 1:]
+            solve_metric = metric if ocean.domain is None else torch.where(edges.bool(), metric, 1.)
             u=diffuse(state.u_e,solve_metric,eg,dt)
             es=dt*eg*(u[:,1:]-u[:,:-1]).square();ez=torch.zeros_like(u[:,:1])
             shear=allocate(.5*(torch.cat((es,ez),-1)+torch.cat((ez,es),-1)))
@@ -162,17 +168,17 @@ class LaggedClosure(PathWorkClosure):
                 # The divided difference stays finite when either side is zero.
                 den=root[:,:-1]+root[:,1:]
                 mean=(2/3)*(k[:,:-1]+root[:,:-1]*root[:,1:]+k[:,1:])/torch.where(den>0,den,torch.ones_like(den))
-                gk=self.c_mu*self.mixing_length*mean/layer_spacing
+                gk=self.c_mu*self.mixing_length*mean/nonzero_divisor(layer_spacing)
             else:gk=g
-            conductance=area*gk/self.sigma_k
+            conductance=area*gk*interface/self.sigma_k
             diss=dt*mass*self.c_epsilon*root/self.mixing_length
             diag=solve_mass+add(dt*conductance)+diss
             return u,production,g,conductance,diss,diag,-dt*conductance
 
         def finish_transport(u, transport, work):
             gh,solutions,fs,fh=transport
-            salt_h=state.salt_h+div(fs);salt=salt_h/h
-            enthalpy=H0+div(fh)/h
+            salt_h=state.salt_h+div(fs);salt=salt_h/den_h
+            enthalpy=H0+div(fh)/den_h
             theta=self._enthalpy_temperature(energy,workbuf,salt,enthalpy,theta0)
             tracer=state.tracer_h
             if tracer is not None:
@@ -206,7 +212,7 @@ class LaggedClosure(PathWorkClosure):
 
         def scalar_trial(u, g, scalar_scale):
             gh=g/self.prandtl*scalar_scale if self.mix_scalars else torch.zeros_like(g)
-            solutions=diffuse_many(values,h,gh,dt)
+            solutions=diffuse_many(values,den_h,gh,dt)
             salt,enthalpy=solutions[...,0],solutions[...,1]
             fs=dt*gh*(salt[:,1:]-salt[:,:-1]);fh=dt*gh*(enthalpy[:,1:]-enthalpy[:,:-1])
             transport=(gh,solutions,fs,fh)
@@ -270,7 +276,7 @@ class LaggedClosure(PathWorkClosure):
         actual_residual=mass*(final-k0)-production+work+diss*final-div(tflux)
         budget_scale=mass*self.budget_atol+self.budget_rtol*(mass*k0+production+work.abs())
         if ocean.domain is not None:
-            budget_scale = torch.where(area > 0, budget_scale, 1.)
+            budget_scale = torch.where(mass > 0, budget_scale, 1.)
         budget_error=(actual_residual.abs()/budget_scale).max()
         if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')
         heat=diss*final

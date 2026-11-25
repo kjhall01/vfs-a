@@ -17,6 +17,7 @@ class OceanColumn(nn.Module):
         *,
         total_depth: float | torch.Tensor = 4000.0,
         rest_thickness: torch.Tensor | None = None,
+        partial_cells: bool = False,
         gravity: float = OCEAN_GRAVITY,
         rho0: float = OCEAN_RHO0,
     ) -> None:
@@ -33,7 +34,7 @@ class OceanColumn(nn.Module):
         if not torch.isfinite(rest).all() or float(rest.min().item()) <= 0.0:
             raise ValueError("rest_thickness must be finite and strictly positive")
         depth = torch.as_tensor(total_depth, dtype=torch.float64)
-        if depth.ndim > 2:
+        if depth.ndim > 2 or (depth.ndim == 2 and depth.shape[-1] != 1):
             raise ValueError("total_depth must be scalar, [nCells], or [nCells, 1]")
         if depth.ndim == 1:
             depth = depth[:, None]
@@ -49,6 +50,12 @@ class OceanColumn(nn.Module):
         self.rho0 = float(rho0)
         self.register_buffer("rest_thickness", rest)
         self.register_buffer("total_depth", depth)
+        layer_reference = None
+        if partial_cells:
+            from .partial_cells import reference_thickness
+            layer_reference = reference_thickness(depth.reshape(-1), rest.to(depth.device))
+        self.register_buffer("layer_reference", layer_reference)
+        self.register_buffer("active_layers", None if layer_reference is None else layer_reference > 0)
 
     @classmethod
     def top_refined(
@@ -89,6 +96,8 @@ class OceanColumn(nn.Module):
         )
 
     def rest_thickness_like(self, h: torch.Tensor) -> torch.Tensor:
+        if self.layer_reference is not None:
+            return self.layer_reference.to(h).expand_as(h)
         rest = self.rest_thickness.to(dtype=h.dtype, device=h.device)
         shape = (1,) * (h.ndim - 1) + (self.n_layers,)
         return rest.reshape(shape).expand_as(h)
@@ -121,6 +130,10 @@ class OceanColumn(nn.Module):
     def validate_thickness(self, h: torch.Tensor, *, min_thickness: float = 0.0) -> None:
         if not torch.isfinite(h).all().item():
             raise FloatingPointError("ocean layer thickness is not finite")
+        if self.active_layers is not None:
+            if ((self.active_layers & (h <= min_thickness)) | (~self.active_layers & (h != 0))).any():
+                raise FloatingPointError("wet layers must remain positive and inactive thickness must stay zero")
+            return
         h_min = float(h.min().item())
         if h_min <= float(min_thickness):
             raise FloatingPointError(f"ocean layer thickness below minimum: h_min={h_min:.3e}")

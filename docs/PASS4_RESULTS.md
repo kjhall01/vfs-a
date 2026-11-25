@@ -1,5 +1,27 @@
 # Pass 4 — physical-field workflow
 
+## Prognostic wet layers on the Earth shelves
+
+The [Earth runner](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active
+ocean layers across 2,912 wet columns on the 4,096-cell mesh with a 40 m
+minimum wet depth. The old layout used 116,480. Of the wet columns, 34 have two
+active layers and 750 have all 40. Tensor storage remains rectangular.
+
+CPU float64 tests advance a coupled mesh containing one-layer shelves,
+merged-bottom columns, and 40-layer trenches through SSPRK3, GM/Redi, vertical
+mixing, ice exchange, and ALE. They check that closed faces carry zero
+velocity and that below-bed slots have zero inventories. A synthetic radiation
+case checks bitwise replay of the next coupled interval from an on-disk restart.
+
+A moving shelf-edge test exercises the case where conserving momentum during
+a proposed rezone would require cooling an isothermal, single-layer column.
+The infeasible rezone is held locally. Other columns remap, with conserved
+edge-integrated momentum and column-integrated salt, passive tracers, TKE and
+EKE. A separate check verifies that changing the land placeholder thickness
+leaves backscatter and its local eddy-energy tendency unchanged. A subprocess
+test starts the campaign with older VFS and ocean-helper modules earlier on
+`PYTHONPATH` and verifies that the checkout takes precedence.
+
 ## Hydrostatic initialization over Earth terrain
 
 A fresh coupled run computes surface pressure from the prescribed moist column

@@ -155,3 +155,138 @@ def test_shelf_resolved_and_gm_transport_share_physical_openings(config, source)
     assert psi[:, [0, -1]].count_nonzero() == 0
     residual = divergence(i, j, carrier, s.h.numel())
     assert residual.abs().max() < 5e-14 * carrier.abs().max()
+
+
+@torch.no_grad()
+def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config, source, tmp_path):
+    """One-layer, merged-bottom, 40 m and abyssal water share a physical shelf."""
+    import xarray as xr
+
+    cfg = replace(config, ocean_levels=40, ocean_depth_m=5000., top_layer_m=10.,
+                  shelf_redi=True, partial_cell_layers=True, ale_dt=config.physics_dt)
+    depths = np.resize([8., 40., 11., 5000., 5600., 300., 600., 2000.], cfg.cells)
+    land = np.arange(cfg.cells) == 3
+    geo = dict(land=land, depth_m=depths, height_m=300. * land)
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(cfg, source, Path("synthetic"), geography=geo)
+    model = receiver.H.model
+    domain = model.ocean.domain
+    initial = sea.coupled.ocean.ocean
+    ref = initial.column.layer_reference
+    active = initial.column.active_layers
+    torch.testing.assert_close(ref[:3, :2], ref.new_tensor([[8., 0.], [10., 30.], [11., 0.]]))
+    torch.testing.assert_close(ref[~land].sum(-1), ref.new_tensor(depths[~land]))
+    assert active[4].all() and active[2].sum() == 1
+    assert sea.coupled.ice.volume[~land].sum() > 0
+
+    def check_state(water):
+        st = water.coupled.ocean
+        for x in (st.ocean.h, st.ocean.temp_h, st.ocean.salt_h, st.ocean.tracer_h, st.tke_h, st.eddy_h):
+            assert torch.isfinite(x).all()
+            assert torch.count_nonzero(x[~active]) == 0
+        assert torch.all(st.ocean.h[active] > 0)
+        assert torch.count_nonzero(st.ocean.u_e[~domain.active_edge_layers]) == 0
+        model.check(st)
+
+    check_state(sea)
+    # Exercise the pressure/transport work identity with moving water at the shelf wall.
+    generator = torch.Generator().manual_seed(92)
+    u = .02 * torch.randn(initial.u_e.shape, dtype=initial.u_e.dtype, generator=generator)
+    water = initial.with_tensors(domain.apply_layer_edge(u), initial.h, initial.temp_h,
+                                 initial.salt_h, initial.tracer_h)
+    # Vary only the land dummy column. It has no physical volume and must
+    # contribute neither vertex stress nor eddy energy at adjacent wet faces.
+    moving = replace(sea.coupled.ocean, ocean=water)
+    land_factor = torch.where(domain.wet_cell[:, None], 1., 2.).to(water.h)
+    dummy = water.with_tensors(water.u_e, water.h*land_factor, water.temp_h*land_factor,
+                               water.salt_h*land_factor, water.tracer_h*land_factor[..., None])
+    du, de, _ = model.backscatter.tendency(model, moving)
+    other_du, other_de, _ = model.backscatter.tendency(model, replace(moving, ocean=dummy))
+    assert torch.equal(du, other_du) and torch.equal(de, other_de)
+    rhs, rhs_report = model.dynamics.tendency_with_report(water, cfg.ocean_dt)
+    faces = rhs_report.faces
+    assert domain.active_edge_layers.flatten()[faces.velocity_slot].all()
+    assert active.flatten()[faces.left].all() and active.flatten()[faces.right].all()
+    grad = model.energy.base.gradients(water)
+    work = sum((grad[k] * getattr(rhs, k)).sum() for k in ('h', 'temp_h', 'salt_h', 'u_e'))
+    scale = (grad['u_e'] * rhs.u_e).abs().sum()
+    assert work.abs() <= 2e-12 * scale
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=replace(sea.coupled.ocean, ocean=water)))
+    air, sea, report = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
+    check_state(sea)
+    assert report['ale_steps'] == 1 and report['gmredi_steps'] == cfg.eddy_substeps
+    assert report['ale_column_residual_J_m2'] < 1e-3
+    after = sea.coupled.ocean.ocean.h
+    torch.testing.assert_close(after / after.sum(-1, keepdim=True), ref / ref.sum(-1, keepdim=True))
+    c.snapshot(tmp_path / "active.nc", adapter, air, receiver, sea)
+    with xr.open_dataset(tmp_path / "active.nc", decode_times=False) as ds:
+        np.testing.assert_array_equal(ds.ocean_active_layer_count[0], (active & domain.wet_cell[:, None]).sum(-1))
+    identity = c.fingerprint(cfg, adapter, {}, False)
+    path = tmp_path / "active.pt"
+    c.checkpoint(path, c.pack(adapter, air, receiver, sea, identity, {}))
+    restored_air, restored_sea, _ = c.unpack(torch.load(path, weights_only=True), adapter, receiver, sea, identity)
+    a, s, r = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
+    b, t, replay = c.advance(adapter, restored_air, receiver, restored_sea, cfg.physics_dt, cfg)
+    check_state(s)
+    assert r == replay
+    same_tree(c.pack(adapter, a, receiver, s, identity, {}), c.pack(adapter, b, receiver, t, identity, {}))
+
+
+@torch.no_grad()
+def test_single_layer_defers_infeasible_ale_at_shared_moving_face(config, source):
+    """A faster shelf current cannot be funded by cooling its only layer."""
+    from vfs.ocean.stratified.remap import ThermalProjectionInfeasible
+
+    cfg = replace(config, ocean_levels=5, shelf_redi=True, partial_cell_layers=True)
+    depth = np.full(cfg.cells, cfg.ocean_depth_m)
+    depth[0] = 8.
+    land = np.arange(cfg.cells) == cfg.cells - 1
+    geo = dict(land=land, depth_m=depth, height_m=100. * land)
+    _, _, receiver, sea = c.build(cfg, source, None, geography=geo, smoke_no_radiation=True)
+    model = receiver.H.model
+    s = sea.coupled.ocean.ocean
+    domain = model.ocean.domain
+    edge = torch.where((s.mesh.cellsOnEdge == 0).any(-1) & domain.active_edge)[0][0]
+    h = s.h.clone()
+    deep = domain.wet_cell & (s.column.active_layers.sum(-1) > 1)
+    # Returning all deep upper layers to reference makes the moving face
+    # lighter. Conserving its momentum then increases the shelf column's KE.
+    h[deep, 0] += 1.
+    h[deep, 1] -= 1.
+    u = torch.zeros_like(s.u_e)
+    u[edge, 0] = 1.
+    cells = s.mesh.cellsOnEdge
+    shelf_edges = (cells == 0).any(-1)
+    neighbors = torch.zeros_like(deep)
+    neighbors[cells[shelf_edges].flatten()] = True
+    remote = torch.where(domain.active_edge & ~neighbors[cells].any(-1))[0][0]
+    profile = torch.linspace(.1, .3, cfg.ocean_levels, dtype=h.dtype)
+    u[remote] = profile
+    tracer = profile.expand_as(h)[..., None]
+    state = model.state(u_e=u, h=h, conservative_temperature=torch.full_like(h, 10.),
+                        absolute_salinity=torch.full_like(h, 35.), tracer=tracer,
+                        tke=1e-4 * domain.wet_cell[:, None], eddy_energy=.1)
+    ref = s.column.layer_reference
+    target = h.sum(-1, keepdim=True) * (ref / ref.sum(-1, keepdim=True))
+    with pytest.raises(ThermalProjectionInfeasible) as failure:
+        model.remap_with_report(state, target)
+    assert failure.value.columns[0]
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=state))
+    remapped, report = c.ale_step(receiver, sea, cfg)
+    end = remapped.coupled.ocean.ocean
+    assert report["ale_changed_columns"] > 0 and report["ale_deferred_columns"] > 0
+    assert report["ale_changed_columns"] + report["ale_deferred_columns"] == int(deep.sum())
+    assert torch.equal(end.u_e[edge], u[edge])
+    assert torch.equal(end.temp_h[0], state.ocean.temp_h[0])
+    assert torch.equal(end.h[:, 0] != h[:, 0], deep & (end.h[:, 0] == target[:, 0]))
+    # Compare the model's actual generalized momentum before and after ALE.
+    metric = model.energy.base.mechanical.metric
+    momentum0 = metric(state.ocean) * u
+    momentum1 = metric(end) * end.u_e
+    assert not torch.equal(momentum0[remote], momentum1[remote])
+    torch.testing.assert_close(momentum1.sum(-1), momentum0.sum(-1), rtol=2e-14, atol=0.)
+    for old, new in ((state.ocean.salt_h, end.salt_h),
+                     (state.ocean.tracer_h[..., 0], end.tracer_h[..., 0]),
+                     (state.tke_h, remapped.coupled.ocean.tke_h),
+                     (state.eddy_h, remapped.coupled.ocean.eddy_h)):
+        torch.testing.assert_close(new.sum(-1), old.sum(-1), rtol=2e-14, atol=0.)

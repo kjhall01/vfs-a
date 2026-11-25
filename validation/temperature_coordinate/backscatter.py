@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from vfs.ocean.stratified.tke_model import TKEStepReport
 import math
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from eddy_energy import EddyState
 
 
@@ -69,7 +70,11 @@ class EddyBackscatter:
         mesh, base = s.mesh, H.base.mechanical
         mass = H.mass_area(s).expand_as(s.h)
         allowance = mass * state.eddy_h * (self.fraction / self.timescale)
-        he = mesh.cell_to_edge(s.h)
+        domain = model.ocean.domain
+        # Land holds a finite dummy column. Its thickness must not contribute
+        # to the vertex viscosity seen by open faces along a partial-cell coast.
+        thickness = domain.apply_cell(s.h) if s.column.active_layers is not None else s.h
+        he = mesh.cell_to_edge(thickness)
         hv = he[mesh.edgesOnVertex].mean(dim=1)
         u = base.velocity(s)
         stress = self.viscosity * hv * mesh.curl(u)
@@ -88,11 +93,10 @@ class EddyBackscatter:
             signs[..., None]
             * stress[vertices]
             / mesh.dv_edge[:, None, None]
-            / he[:, None, :]
+            / nonzero_divisor(he)[:, None, :]
         )
-        domain = model.ocean.domain
         if domain is not None:
-            force_parts = force_parts * domain.active_edge[:, None, None]
+            force_parts = force_parts * domain.layer_edge_mask(u)[:, None, :]
         metric = base.metric(s)
         # Sum positive incidence powers BEFORE cancellations. Scaling every
         # contributing vertex by <= a cell's ratio bounds its positive debit.
@@ -108,9 +112,9 @@ class EddyBackscatter:
         scale = torch.where(
             scale < 1, scale * (1 - 64 * torch.finfo(u.dtype).eps), scale
         )
-        force = mesh.curl_adjoint(stress * scale) / he
+        force = mesh.curl_adjoint(stress * scale) / nonzero_divisor(he)
         if domain is not None:
-            force = domain.apply_edge(force)
+            force = domain.apply_layer_edge(force)
         local = H.kinetic_power(state, force)
         safe_mass = torch.where(mass > 0, mass, torch.ones_like(mass))
         reservoir_rhs = -local / safe_mass
@@ -133,9 +137,9 @@ class EddyBackscatter:
 
             def rotational_laplacian(v):
                 if domain is not None:
-                    v = domain.apply_edge(v)
-                out = mesh.curl_adjoint(hv * mesh.curl(v)) / he
-                return out if domain is None else domain.apply_edge(out)
+                    v = domain.apply_layer_edge(v)
+                out = mesh.curl_adjoint(hv * mesh.curl(v)) / nonzero_divisor(he)
+                return out if domain is None else domain.apply_layer_edge(out)
 
             lap_u = rotational_laplacian(u)
             sink = -self.biharmonic_viscosity * rotational_laplacian(lap_u)

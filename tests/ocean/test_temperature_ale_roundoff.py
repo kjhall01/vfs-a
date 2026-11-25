@@ -78,7 +78,7 @@ def test_cold_ale_accepts_the_stored_state_and_conserves_columns(threads, seed, 
 def test_unsolved_projection_still_rejects_with_column_diagnostics(monkeypatch):
     import ale
     model, initial, target = cold_columns()
-    def no_step(displacement, *args):
+    def no_step(displacement, *args, settled=None):
         return torch.zeros_like(displacement), torch.zeros(displacement.shape[0], dtype=torch.bool)
     monkeypatch.setattr(ale, 'minimum_change_step', no_step)
     with pytest.raises((FloatingPointError, ValueError), match=r'column=\d+, .*tolerance=.*iterations=24'):

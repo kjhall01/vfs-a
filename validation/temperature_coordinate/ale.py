@@ -5,8 +5,10 @@ energy/entropy constraints and tolerances; no entropy-to-T reconstructions.
 """
 from dataclasses import dataclass
 import torch
+from vfs.ocean.helpers import nonzero_divisor
+from vfs.ocean.partial_cells import remap_active_contents
 from vfs.ocean.ale import remap_contents, _geometry
-from vfs.ocean.stratified.remap import minimum_change_step, AdaptiveThermalReport
+from vfs.ocean.stratified.remap import minimum_change_step, AdaptiveThermalReport, ThermalProjectionInfeasible
 from vfs.ocean.stratified.enthalpy_remap import EnthalpyRemapReport
 from vfs.ocean.stratified.energy_columns import column_terms
 from fast_thermo import Caloric
@@ -51,7 +53,10 @@ class TemperatureEnthalpyRemapper:
         if domain is not None:
             target_h = torch.where(domain.wet_cell[:, None], target_h, state.h)
         state.column.validate_thickness(target_h, min_thickness=model.dynamics.min_thickness)
-        _geometry(state.h, target_h)
+        partial = state.column.layer_reference is not None
+        if not partial:
+            _geometry(state.h, target_h)
+        remap = remap_active_contents if partial else remap_contents
         changed = (target_h != state.h).any(-1)
         fields = ['temp_h', 'salt_h']
         reference = energy.reference
@@ -62,18 +67,29 @@ class TemperatureEnthalpyRemapper:
             contents = [enthalpy_h[...,None], state.salt_h[...,None]]
             if state.tracer_h is not None:
                 contents.append(state.tracer_h)
-            mapped = remap_contents(state.h, torch.cat(contents,-1), target_h, method=self.method)
+            mapped = remap(state.h, torch.cat(contents,-1), target_h, method=self.method)
             # Retain untouched columns exactly, including land placeholders.
             original = torch.cat(contents,-1)
             mapped = torch.where(changed[:,None,None], mapped, original)
             old_edge = model.mesh.cell_to_edge(state.h)
             new_edge = model.mesh.cell_to_edge(target_h)
-            momentum = remap_contents(old_edge, old_edge*state.u_e, new_edge, method=self.method)
+            if partial:
+                # Only shared velocity levels own momentum. Rezone in cumulative
+                # edge mass fraction: the adjacent deep column can move mass
+                # across the bottom shared level during a cellwise ALE remap.
+                old_edge = domain.apply_layer_edge(old_edge)
+                new_edge = domain.apply_layer_edge(new_edge)
+                ratio = old_edge.sum(-1, keepdim=True) / nonzero_divisor(new_edge.sum(-1, keepdim=True))
+                coordinate = new_edge * ratio
+            else:
+                coordinate = new_edge
+            momentum = remap(old_edge, old_edge*state.u_e, coordinate, method=self.method)
             active = (new_edge != old_edge).any(-1)
             if domain is not None:
                 active = active & domain.active_edge
-            u = torch.where(active[:,None], momentum/new_edge, state.u_e)
-            theta = self._temperature(reference,mapped[...,1]/target_h,mapped[...,0]/target_h,physical.temperature())
+            u = torch.where(active[:,None], momentum/nonzero_divisor(new_edge), state.u_e)
+            den_h = nonzero_divisor(target_h)
+            theta = self._temperature(reference,mapped[...,1]/den_h,mapped[...,0]/den_h,physical.temperature())
             temp_h=torch.where(changed[:,None],target_h*theta,state.temp_h)
             end=state.with_tensors(u,target_h,temp_h,mapped[...,1],
                                   None if state.tracer_h is None else mapped[...,2:])
@@ -142,8 +158,11 @@ class TemperatureRemapper:
             # unconstrained step. Final acceptance tolerances are unchanged.
             entropy_violated=entropy_violated|(entropy_change < -entropy_tolerance)
             activation_tolerance=torch.where(entropy_violated,torch.zeros_like(entropy_tolerance),entropy_tolerance)
+            settled = None
+            if state.column.layer_reference is not None:
+                settled = (residual.abs() <= energy_tolerance) & (entropy_change >= -entropy_tolerance)
             step,active=minimum_change_step(theta-theta0,g,s,residual/safe_mass,
-                entropy_change/safe_mass,weights,activation_tolerance/safe_mass)
+                entropy_change/safe_mass,weights,activation_tolerance/safe_mass,settled=settled)
             ever_active=ever_active|(active&wet)
             step=torch.where(wet[:,None],step,torch.zeros_like(step))
             # Fraction-to-boundary damping changes the attempted step, never
@@ -152,12 +171,16 @@ class TemperatureRemapper:
             room=torch.where(step>0,high-theta,theta-low)
             ratio=torch.where(step!=0,room/torch.where(step!=0,step.abs(),torch.ones_like(step)),torch.ones_like(step))
             fraction=torch.minimum(torch.ones_like(depth),.9*ratio.amin(-1))
-            if (fraction<=0).any():raise ValueError('thermal projection has no interior-domain step')
+            if (fraction <= 0).any():
+                raise ThermalProjectionInfeasible('thermal projection has no interior-domain step', fraction <= 0)
             theta=theta+fraction[:,None]*step
         end=provisional.with_tensors(provisional.u_e,provisional.h,torch.where(wet[:,None],after.h*theta,state.temp_h),provisional.salt_h,provisional.tracer_h)
         final=validate(model,end,energy);final_terms,_=column_terms(energy,final)
         residual=sum(final_terms[k]-old[k] for k in old)
         entropy_change=(mass*(entropy_content(energy,end)-entropy_content(energy,state))).sum(-1)
+        infeasible = (residual.abs() > energy_tolerance) | (entropy_change < -entropy_tolerance)
+        if state.column.layer_reference is not None and infeasible.any():
+            raise ThermalProjectionInfeasible('partial-cell rezone failed the column energy or entropy check', infeasible)
         if (residual.abs()>energy_tolerance).any():
             ratio=residual.abs()/energy_tolerance;index=int(ratio.argmax())
             raise FloatingPointError('adaptive thermal projection failed column energy residual check '

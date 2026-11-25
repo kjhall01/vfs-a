@@ -34,8 +34,11 @@ def cell_to_dual(mesh, value):
         mesh.dual_transfer_weights[:,None]*value[mesh.dual_transfer_cells])
 
 
-def compatible_rotation(mesh, u, thickness, rotation_rate):
+def compatible_rotation(mesh, u, thickness, rotation_rate, *, dry_layers=False):
     dual_mass = cell_to_dual(mesh, thickness)
+    if dry_layers:
+        # Empty dual cells carry no PV flux. Their surrounding velocities are closed.
+        dual_mass = torch.where(dual_mass == 0, 1., dual_mass)
     if not torch.isfinite(dual_mass).all() or (dual_mass <= 0).any():
         raise ValueError('compatible rotation requires finite positive dual carrier thickness')
     if u.shape != (mesh.nEdges,thickness.shape[1]):

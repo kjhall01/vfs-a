@@ -17,15 +17,25 @@ class AdaptiveThermalReport(HamiltonianRemapReport):
     iterations: int
 
 
+class ThermalProjectionInfeasible(ValueError):
+    """A proposed rezone cannot satisfy the thermal constraints in these columns."""
+
+    def __init__(self, message, columns):
+        super().__init__(message)
+        self.columns = columns
+
+
 def minimum_change_step(displacement, energy_gradient, entropy_gradient,
-                        energy_residual, entropy_change, weights, entropy_tolerance):
+                        energy_residual, entropy_change, weights, entropy_tolerance,
+                        *, settled=None):
     """Solve the mass-weighted two-constraint linearized projection per column.
 
     Orthogonalize the entropy gradient against the energy gradient instead of
     subtracting two nearly equal entries of a 2x2 normal-equation determinant.
     Returns a step and the active entropy constraint; no forward autograd.
     """
-    g,s,w=energy_gradient,entropy_gradient,weights
+    # Inactive layers have zero gradient and weight. Leave their update zero.
+    g,s,w=energy_gradient,entropy_gradient,torch.where(weights == 0, 1., weights)
     gg=(g*g/w).sum(-1)
     if (gg<=0).any():raise ValueError('degenerate thermal energy gradient')
     step=-displacement+(g/w)*( ((g*displacement).sum(-1)-energy_residual)/gg )[:,None]
@@ -35,8 +45,14 @@ def minimum_change_step(displacement, energy_gradient, entropy_gradient,
     norm=(orthogonal.square()/w).sum(-1)
     scale=(s.square()/w).sum(-1)
     deficient=norm<=64*torch.finfo(w.dtype).eps*scale
+    if settled is not None:
+        # A column already satisfying both nonlinear tolerances may keep its
+        # stored state if a further linearized correction is rank deficient.
+        hold = settled & active & deficient
+        step = torch.where(hold[:, None], 0., step)
+        active = active & ~hold
     if (active&deficient).any():
-        raise ValueError('energy and entropy constraints lack independent thermal directions')
+        raise ThermalProjectionInfeasible('energy and entropy constraints lack independent thermal directions', active & deficient)
     denominator=torch.where(active,norm,torch.ones_like(norm))
     step=step+(orthogonal/w)*torch.where(active,-predicted/denominator,torch.zeros_like(norm))[:,None]
     return step,active

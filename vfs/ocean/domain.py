@@ -42,6 +42,7 @@ class OceanDomain(nn.Module):
         coast_edge = wet0 ^ wet1
         land_edge = ~(wet_edge | coast_edge)
 
+        self.register_buffer("active_edge_layers", None)
         self.n_cells = n_cells
         self.n_edges = n_edges
         self.register_buffer("wet_cell", wet)
@@ -64,6 +65,17 @@ class OceanDomain(nn.Module):
     @classmethod
     def global_ocean(cls, mesh, *, depth: torch.Tensor | None = None) -> "OceanDomain":
         return cls(mesh, torch.ones(int(mesh.nCells), dtype=torch.bool), depth=depth)
+
+    def set_active_layers(self, layers):
+        """Velocity exists only where both neighboring columns have this layer."""
+        left, right = self.mesh.cellsOnEdge.to(self.wet_cell.device).T
+        if layers.ndim != 2 or layers.shape[0] not in (1, self.n_cells):
+            raise ValueError("expected a layer mask for each ocean column")
+        layers = layers.expand(self.n_cells, -1)
+        mask = self.active_edge[:, None] & layers[left] & layers[right]
+        if self.active_edge_layers is not None and not torch.equal(self.active_edge_layers, mask):
+            raise ValueError("ocean models sharing a domain must share its wet layer layout")
+        self.active_edge_layers = mask
 
     def shelf_geometry(self, nominal, *, merge_fraction=0.25):
         """Reference wet-layer and open-face geometry for partial-cell operators."""
@@ -119,6 +131,17 @@ class OceanDomain(nn.Module):
             dtype = value.dtype if value.is_floating_point() else torch.bool
         return mask.to(dtype=dtype, device=value.device)
 
+    def layer_edge_mask(self, value):
+        """Mask for an unbatched ocean-layer edge field."""
+        if self.active_edge_layers is None:
+            return self.edge_mask(value)
+        if value.shape != self.active_edge_layers.shape:
+            raise ValueError("layer edge field must match the velocity layout")
+        return self.active_edge_layers.to(value)
+
+    def apply_layer_edge(self, value):
+        return value * self.layer_edge_mask(value)
+
     def coast_mask(self, value: torch.Tensor, *, dtype: torch.dtype | None = None) -> torch.Tensor:
         mask = self._mask_like(value, self.coast_edge, name="coast edge")
         if dtype is None:
@@ -149,7 +172,7 @@ class OceanDomain(nn.Module):
         self.check_compatible(state)
         u_e, h, temp_h, salt_h = state._require_tensors()
         wet = self.cell_mask(h)
-        edge = self.edge_mask(u_e)
+        edge = self.layer_edge_mask(u_e) if self.active_edge_layers is not None else self.edge_mask(u_e)
         rest = state.column.rest_thickness_like(h)
         rest_fraction = rest / rest.sum(dim=-1, keepdim=True).clamp_min(torch.finfo(h.dtype).tiny)
         dummy_h = rest_fraction * state.column.total_depth_like(h)

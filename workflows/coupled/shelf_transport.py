@@ -39,6 +39,11 @@ class SplitFluxGraph:
             ),
             1,
         )
+        if domain.active_edge_layers is not None:
+            # The deepest shared velocity bin owns the remainder of the opening.
+            middle = torch.cat((middle[:, :1], torch.where(
+                domain.active_edge_layers[edge, 1:], middle[:, 1:-1].clamp(max=bed), bed
+            ), bed), 1)
         ends = (
             torch.cat((left, middle, right), 1).clamp(min=top, max=bed).sort(1).values
         )
