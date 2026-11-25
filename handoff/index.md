@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [experimental ocean comparison](../verification/ocean/direct-roquet/README.md) covers the direct Roquet constructor, flat state, restart replay, and CPU timings.
+
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
 
 The [column vapor repair](../workflows/coupled/VAPOR_CORRECTION.md) documents the transfer, budgets and compatible Earth campaign restart.

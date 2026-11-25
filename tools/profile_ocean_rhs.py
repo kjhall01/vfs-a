@@ -41,7 +41,7 @@ class RHSInstrument(base.Instrument):
         # All three wrappers are observational and retain every validation.
         self._method(ocean, "check", "rhs_temperature_ocean_check")
         self._method(coupled.ridge, "check", "rhs_ridge_validation")
-        self._method(ocean.ocean.reference, "evaluate", "rhs_caloric_reference_evaluate")
+        self._method(ocean.layers.reference, "evaluate", "rhs_caloric_reference_evaluate")
         from vfs.ocean.stratified import transport
         self._method(transport, "evaluate", "rhs_conservative_transport_total")
         # The Roquet path calls the shared entropy/Gibbs parent evaluator.
@@ -61,19 +61,15 @@ class RHSInstrument(base.Instrument):
         ):
             self._method(eq, name, label)
         self._method(transport, "divergence", "rhs_local_flux_divergence")
-        if hasattr(native := ocean.ocean.base, "_stratified_transport"):
+        native = ocean.layers.base
+        if hasattr(native, "_stratified_transport"):
             self._method(
                 native._stratified_transport, "advance",
                 "rhs_donor_transport_advance"
             )
 
-        # Native core: transport primitives, Hamiltonian derivatives, physical
-        # ocean pressure / balance and limiter work.
-        native = ocean.ocean.base
-        self._method(native.dynamics, "tendency", "rhs_native_ocean_dynamics")
-        if hasattr(native.dynamics, "tendency_terms"):
-            self._method(native.dynamics, "tendency_terms", "rhs_native_tendency_terms")
-        self._method(ocean.ocean.energy.base, "gradients", "rhs_ocean_energy_gradients")
+        self._method(ocean.hamiltonian.base, "gradients", "rhs_ocean_energy_gradients")
+        self._method(native.dynamics.mechanical, "rotation_acceleration", "rhs_ocean_rotation")
 
         # Sea-ice contributions on the same RHS stage; identify graph advection
         # versus ridging/compaction versus energy and drag work.
@@ -100,8 +96,8 @@ def _profile_line_pass(kwargs, intervals):
     import sys
     import time
     from collections import defaultdict
-    from vfs.ocean.temperature.model import TemperatureOcean
-    from vfs.ocean.temperature.system import TemperatureSystem
+    from vfs.ocean.temperature.model import layer_fields
+    from vfs.ocean import Ocean
     from tools.profile_coupled import synchronize
     from vfs.ocean.stratified import transport
     from vfs.ocean.stratified import equations
@@ -120,8 +116,8 @@ def _profile_line_pass(kwargs, intervals):
             ("local", transport._local_target_fields),
             ("parent", equations.evaluate),
             ("parent", equations.bounded_transport),
-            ("temperature", TemperatureOcean.fields),
-            ("temperature", TemperatureSystem.check),
+            ("temperature", layer_fields),
+            ("temperature", Ocean.check),
         )
     }
     counts = defaultdict(int)

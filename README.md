@@ -79,9 +79,9 @@ evaluates both components at each Runge–Kutta stage.
   [device guide](workflows/coupled/GPU.md). Short runs establish throughput
   and budget behavior for their particular configuration. Climate fidelity
   requires longer integrations and comparison with observations.
-- For a forced ocean without atmospheric physics, see the examples for
-  [wind stress](examples/ocean_boundary_stress.py), [radiative heating](examples/ocean_radiation.py)
-  and [surface fluxes](examples/ocean_surface_fluxes.py).
+- For a forced ocean without atmospheric physics, see the [standalone Roquet example](examples/ocean.py).
+  The [comparison report](verification/ocean/direct-roquet/README.md) records
+  the experimental branch's numerical checks and benchmark instructions.
 
 ## Documentation
 

@@ -168,3 +168,22 @@ def test_flux_only_trials_match_materialized_endpoints(setup, funding):
             assert torch.equal(a, b)
         else:
             assert a == b
+
+
+def test_public_ocean_builds_roquet_directly(mesh):
+    from vfs.ocean import Ocean, OceanColumn, OceanState
+
+    column = OceanColumn(3, total_depth=300.)
+    with patch("vfs.ocean.stratified.model.StratifiedOcean.__init__", side_effect=AssertionError), \
+         patch("vfs.ocean.jmd95.JMD95Dynamics.__init__", side_effect=AssertionError):
+        ocean = Ocean(mesh, column)
+        h = mesh.cell_area.new_full((mesh.nCells, 3), 100.)
+        state = ocean.state(u_e=h.new_zeros(mesh.nEdges, 3), h=h,
+                            conservative_temperature=torch.full_like(h, 8.),
+                            absolute_salinity=torch.full_like(h, 35.),
+                            tke=1.e-4, eddy_energy=0.1)
+        end = ocean.step(state, 1.)
+    assert isinstance(end, OceanState)
+    assert end.h is end.resolved.h
+    assert end.temp_h is end.resolved.temp_h
+    torch.testing.assert_close(end.temperature(), torch.full_like(h, 8.))

@@ -1,5 +1,7 @@
 # Pass 4 — physical-field workflow
 
+For the direct Roquet ocean refactor, see the [stage comparisons and mature shelf replay](../verification/ocean/direct-roquet/README.md).
+
 ## Native mesh plotting
 
 The [plotting utility](NATIVE_MESH_PLOTTING.md) was exercised on a 4,096-cell
