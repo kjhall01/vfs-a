@@ -1,5 +1,7 @@
 # Current package documentation
 
+[Native mesh plotting](../docs/NATIVE_MESH_PLOTTING.md) draws scalar fields from a coupled snapshot or live mesh on a Robinson map or a rotatable 3D globe.
+
 The [Earth I/O guide](../workflows/coupled/EARTH_SHELF.md#existing-inputs-and-netcdf-output)
 covers NetCDF4 snapshots, complete restarts, diagnostics, and conversion of
 existing ordered mesh and geography files.

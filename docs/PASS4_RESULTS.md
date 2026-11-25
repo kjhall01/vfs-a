@@ -1,5 +1,14 @@
 # Pass 4 — physical-field workflow
 
+## Native mesh plotting
+
+The [plotting utility](NATIVE_MESH_PLOTTING.md) was exercised on a 4,096-cell
+Earth snapshot, restart, generator-only geography and historical snapshot.
+Checks compare polygon ownership on either side of three Robinson map cuts and
+near both poles against the nearest spherical generator. Other checks cover
+native edge and vertex placement, compact land columns, masked samples, and
+cell labels after slicing. The visualizations use CPU geometry and Matplotlib.
+
 ## NetCDF4 Earth campaign I/O
 
 The CPU float64 shelf run used 4,096 cells, 98,766 active ocean layers, the
