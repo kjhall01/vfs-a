@@ -105,6 +105,7 @@ class CampaignConfig:
     gm_efficiency: float = 0.1
     gm_kinetic_fraction: float = 0.5
     redi_diffusivity_m2_s: float = 100.0
+    shelf_redi: bool = False
     redi_positive_transport: bool = True
     eddy_initial_energy_J_kg: float = 0.1
     eddy_substeps: int = 10
@@ -147,6 +148,7 @@ class CampaignConfig:
         for key in (
             "gm_redi",
             "redi_positive_transport",
+            "shelf_redi",
             "eddy_dissipation",
             "backscatter",
             "ale_remap",
@@ -256,7 +258,14 @@ def rest_thickness(config):
 
 
 def gm_redi_operator(config):
-    return GMRedi(
+    factory = GMRedi
+    options = {}
+    if config.shelf_redi:
+        from workflows.coupled.shelf_redi import ShelfGMRedi
+        factory = ShelfGMRedi
+        options["nominal"] = rest_thickness(config)
+    return factory(
+        **options,
         kappa_redi=config.redi_diffusivity_m2_s,
         positive_redi=config.redi_positive_transport,
         gm_energy_scheme=config.gm_energy_scheme,
@@ -393,10 +402,14 @@ def island_height(mesh):
     return 1000. * radius.square()
 
 
-def load_geography(path):
+def load_geography(path, *, mesh_sha256=None):
     if path is None:
         return None
     with np.load(path, allow_pickle=False) as archive:
+        if "metadata" in archive:
+            expected = json.loads(str(archive["metadata"])).get("mesh_sha256")
+            if expected is not None and expected != mesh_sha256:
+                raise ValueError("geography mesh_sha256 differs from the supplied mesh")
         return {k: archive[k] for k in ("land", "height_m", "depth_m")}
 
 
@@ -429,6 +442,8 @@ def build(
             zenith_spec="diurnally_varying",
         ),
     )
+    if config.shelf_redi and (not config.gm_redi or (geography is None and not island)):
+        raise ValueError('shelf_redi requires GM/Redi and coastal geography or an island')
     if island and geography is not None:
         raise ValueError("choose either island or supplied geography")
     height = None
@@ -1192,7 +1207,7 @@ def main(argv=None):
             logger.info("Mesh %s; SHA256 %s", args.mesh, mesh_info["sha256"])
         if config.compile:
             logger.info("Enabling regional torch.compile with Inductor; first kernel calls can take several minutes")
-        geography = load_geography(args.geography)
+        geography = load_geography(args.geography, mesh_sha256=mesh_info.get("sha256"))
         adapter, air, receiver, sea = build(
             config,
             args.source,
@@ -1200,6 +1215,8 @@ def main(argv=None):
             smoke_no_radiation=args.smoke_no_radiation,
             generator_xyz=generators, island=args.island, geography=geography,
         )
+        if config.shelf_redi:
+            logger.info("Redi uses partial cells and open shelf faces; GM and resolved dynamics use native ocean layers")
         hashes = source_hashes()
         identity = fingerprint(
             config, adapter, hashes, args.smoke_no_radiation, mesh_info.get("sha256")

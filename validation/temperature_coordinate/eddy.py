@@ -112,6 +112,9 @@ class _RediGradient:
             ..., None
         ] + 0.5 * self.relative[..., None] * (dz[self.i] + dz[self.j])
 
+    def face_mean(self, values):
+        return 0.5 * (values[self.i] + values[self.j])
+
     def transpose(self, flux, *, absolute=False):
         # Horizontal difference transpose uses the existing conservative ledger.
         horizontal = flux / self.dc[..., None]
@@ -574,7 +577,7 @@ class GMRedi:
         # A single conjugate per row defines a conservative energy flux over
         # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
         column_mu = mu.reshape_as(column_values)
-        mu_face = 0.5 * (column_mu[operator.i] + column_mu[operator.j])
+        mu_face = operator.face_mean(column_mu)
         energy_flux = rho0 * (-dt * (flux * mu_face).sum(-1))
         redi_inflow = operator.transpose(energy_flux[..., None])[..., 0]
         end, redi_exchange, redi_residual = self._settle(

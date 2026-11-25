@@ -623,7 +623,7 @@ def main(argv=None):
             adapter, air, receiver, sea = c.build(
                 config, args.source, args.radiation_data,
                 smoke_no_radiation=args.smoke_no_radiation,
-                generator_xyz=xyz, island=args.island, geography=c.load_geography(args.geography),
+                generator_xyz=xyz, island=args.island, geography=c.load_geography(args.geography, mesh_sha256=mesh.get("sha256")),
             )
             fingerprint = c.fingerprint(
                 config, adapter, c.source_hashes(),
