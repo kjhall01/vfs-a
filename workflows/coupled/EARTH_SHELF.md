@@ -74,6 +74,8 @@ to the checkout. For the benchmark schedule, pass
 
 ### Existing inputs and NetCDF output
 
+See [native mesh plotting](../../docs/NATIVE_MESH_PLOTTING.md) to draw a field on a Robinson map or 3D globe.
+
 You can keep using your original `.npy` generators and `.npz` geography.
 The launcher prefers the NetCDF files when both versions of a default input
 exist. To convert a matched pair once, from the checkout:
