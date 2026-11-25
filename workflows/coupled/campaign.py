@@ -677,7 +677,7 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         correction = ar.vapor_correction
         cell = correction["indices"][:, 0]
         vapor_report.update(
-            vapor_correction_events=cell.numel(),
+            vapor_correction_events=correction.get("recipient_count", cell.numel()),
             vapor_correction_kg_m2=float(
                 (A[cell] * correction["vapor_added_kg_m2"]).sum() / A.sum()
             ),

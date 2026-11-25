@@ -519,7 +519,7 @@ class AM2Adapter:
         if (
             not all(torch.isfinite(out[k]).all() for k in ("tdt", "rdt", "udt", "vdt"))
             or (T1 <= 0).any()
-            or (R1[..., 0] < 0).any()
+            or not torch.isfinite(R1).all()
             or (R1[..., 1:3] < -condensate_tolerance).any()
             or (R1[..., :3].sum(-1) >= 1).any()
             or (R1[..., 3] < -128 * eps).any()
@@ -534,15 +534,19 @@ class AM2Adapter:
                 f"; dt={dt} seconds; {detail}"
             )
         upstream_out = out
-        T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt)
+        T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt, dp=dp)
         if vapor_correction is not None:
             cell, level = vapor_correction["indices"].unbind(-1)
             layer_mass = dp[cell, level] / g
             vapor_correction.update(
                 vapor_added_kg_m2=layer_mass * vapor_correction["vapor_added"],
-                water_residual_kg_m2=layer_mass * vapor_correction["water_residual"],
                 am2_energy_residual_J_m2=layer_mass * vapor_correction["am2_energy_residual"],
             )
+            if "layer_water_transfer" in vapor_correction:
+                vapor_correction["layer_water_transfer_kg_m2"] = layer_mass * vapor_correction["layer_water_transfer"]
+                vapor_correction["water_residual_kg_m2"] = vapor_correction["column_water_residual_Pa"] / g
+            else:
+                vapor_correction["water_residual_kg_m2"] = layer_mass * vapor_correction["water_residual"]
         amount = dp[..., None] * (R1[..., :3] - column["tracers"][..., :3])
         water = species_endpoint(s.water_content, dp, amount, R1[..., :3])
         dw = water - s.water_content

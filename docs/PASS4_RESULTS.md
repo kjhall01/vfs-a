@@ -1794,3 +1794,14 @@ python verification/coupled/cleanup/compare.py --checkout . --compare /tmp/vfs-b
 An independent CLI replay resumed the reference checkout's 120-second NetCDF checkpoint and matched its uninterrupted 180-second control for every saved state tensor and ledger value. Resume a pre-cleanup campaign with `--resume <checkpoint.nc> --resume-compatible-manifest <original-manifest.json>`. The bridge pins both source inventories and preserves configuration, runtime, geometry and radiation identity checks. GPU runs, production-table radiation, throughput and long trajectories were outside the comparison.
 
 The outside-checkout installed wheel passed 1,656 tests in portable mode with 14 skips. The native CPU Inductor radiation and restart test also passed when enabled separately. Frozen moist and dry portable fixtures passed 142 and 93 tensor comparisons. The historical cross-platform exact fixture differs by up to 4.45e-15 m/s in the initial wind on this host on both revisions. The same-host comparisons above use byte equality.
+
+## Column vapor repair at the PyAM2.1 boundary
+
+A CPU float64 replay of the 1,088,400 s Earth checkpoint reproduced the raw
+stratiform endpoint of −2.92397779373e−5 kg/kg at cell 985, level 0.
+With the adapter repair, layer 1 supplies 0.00015704209 kg/m² to layer 0
+and the original 1,200 s coupled interval completes. The measured column
+water residual is zero. The maximum native air energy residual is 5.34e−8 J/m².
+The diagnostic replay used Linux eager execution, saved radiation and the
+reconstructed Mac state. GPU and long-run behavior remain unverified.
+See the [repair and restart guide](../workflows/coupled/VAPOR_CORRECTION.md).

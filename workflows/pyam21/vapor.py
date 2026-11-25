@@ -1,4 +1,4 @@
-"""Fund an exact-zero vapor endpoint from the same layer's cloud water."""
+"""Conserve water while restoring positive vapor in a column physics endpoint."""
 
 import torch
 from pyam21.constants import CP_AIR, HLV, HLF
@@ -9,11 +9,11 @@ from pyam21.constants import CP_AIR, HLV, HLF
 VAPOR_EPSILON = 1e-12
 
 
-def restore_positive_vapor(temperature, tracers, out, dt):
+def restore_positive_vapor(temperature, tracers, out, dt, *, dp=None):
     """Return corrected copies and a sparse ledger, or the original objects.
 
     The adapter first validates the upstream endpoint/tendency agreement and
-    all fields except exact-zero vapor. Withdraw liquid/ice in proportion to
+    all fields except vapor positivity. Withdraw liquid/ice in proportion to
     their available stores. Use the actual representable withdrawals, rather
     than adding water that a rounded subtraction failed to remove.
 
@@ -22,7 +22,7 @@ def restore_positive_vapor(temperature, tracers, out, dt):
     internal phase transfer supplies no external energy and hides no upstream
     defect. The small AM2 cooling roundoff is reported separately.
     """
-    indices = (tracers[..., 0] == 0).nonzero()
+    indices = (tracers[..., 0] <= 0).nonzero()
     if indices.numel() == 0:
         return temperature, tracers, out, None
     cell, level = indices.unbind(-1)
@@ -35,6 +35,10 @@ def restore_positive_vapor(temperature, tracers, out, dt):
         available.new_full(available.shape, VAPOR_EPSILON),
         8 * torch.finfo(available.dtype).eps * available,
     )
+    if dp is not None and ((old_q[:, 0] < 0) | (available < requested)).any():
+        return redistribute_column_vapor(temperature, tracers, out, dt, dp, indices)
+    if (old_q[:, 0] < 0).any():
+        raise ValueError("negative-vapor redistribution requires layer pressure thickness")
     if (available < requested).any():
         bad = int((available < requested).nonzero()[0, 0])
         raise ValueError(
@@ -76,3 +80,82 @@ def restore_positive_vapor(temperature, tracers, out, dt):
         upstream_rdt=out["rdt"][cell, level],
     )
     return T, q, corrected, report
+
+
+def redistribute_column_vapor(temperature, tracers, out, dt, dp, recipients):
+    """Fund depleted layers from local condensate, then nearest column vapor.
+
+    Transfers use pressure-weighted amounts. Only originally positive layers
+    may donate vapor. Each donor retains a positive reserve. All edits are
+    transactional and the native solver still receives the raw energy target.
+    """
+    q = tracers.clone()
+    # The correction is rare. Visit only affected columns and preserve order
+    # when several layers draw from the same finite donor.
+    for cell, level in recipients.tolist():
+        row = q[cell, level]
+        cloud = row[1:3].clamp_min(0)
+        available = cloud.sum()
+        floor = torch.maximum(row.new_tensor(VAPOR_EPSILON),
+                              8 * torch.finfo(row.dtype).eps * available)
+        need = floor - row[0]
+        if available > 0:
+            fraction = (need / available).clamp(max=1)
+            remaining = torch.where(row[1:3] > 0, cloud * (1 - fraction), row[1:3])
+            removed = (row[1:3] - remaining).sum()
+            q[cell, level, 1:3] = remaining
+            q[cell, level, 0] = row[0] + removed
+        if row[0] < floor:
+            deficit = (floor - row[0]) * dp[cell, level]
+            for donor in sorted(range(q.shape[1]), key=lambda k: abs(k - level)):
+                if tracers[cell, donor, 0] <= VAPOR_EPSILON:
+                    continue
+                original = q[cell, donor, 0].clone()
+                capacity = (original - VAPOR_EPSILON).clamp_min(0) * dp[cell, donor]
+                if capacity <= 0:
+                    continue
+                take = torch.minimum(deficit, capacity)
+                remaining = (original - take / dp[cell, donor]).clamp_min(VAPOR_EPSILON)
+                # If a rounded debit underpays, transfer one more donor ulp.
+                # Credit its actual mass to the recipient, including the excess.
+                if (original - remaining) * dp[cell, donor] < take and remaining > VAPOR_EPSILON:
+                    lower = torch.nextafter(remaining.detach(), torch.zeros_like(remaining))
+                    remaining = (remaining + (lower - remaining.detach())).clamp_min(VAPOR_EPSILON)
+                q[cell, donor, 0] = remaining
+                deficit = deficit - (original - remaining) * dp[cell, donor]
+                if deficit <= 0:
+                    break
+            # An unrepresentable remainder is acceptable only at the scale of
+            # the recipient's positive reserve. Never fill it from nowhere.
+            q[cell, level, 0] = floor - deficit / dp[cell, level]
+        if row[0] <= 0:
+            raise ValueError(f"insufficient column water to restore vapor; cell={cell} level={level}")
+
+    indices = (q != tracers).any(-1).nonzero()
+    c, k = indices.unbind(-1)
+    change = q[c, k] - tracers[c, k]
+    cells = recipients[:, 0].unique()
+    water_change = (q[cells, :, :3] - tracers[cells, :, :3]).sum(-1) * dp[cells]
+    residual = water_change.sum(-1)
+    scale = (dp[cells, :, None] * tracers[cells, :, :3].abs()).sum((1, 2))
+    if (residual.abs() > 32 * torch.finfo(q.dtype).eps * scale).any():
+        raise ValueError("column vapor correction failed its water budget")
+    latent = HLV * change[:, 0] - HLF * change[:, 2]
+    T = temperature.clone()
+    T[c, k] = temperature[c, k] - latent / CP_AIR
+    if (T[c, k] <= 0).any() or not torch.isfinite(T[c, k]).all() or (q[c, k, :3].sum(-1) >= 1).any():
+        raise ValueError("column vapor correction exhausted thermal or dry-air capacity")
+    dT = T[c, k] - temperature[c, k]
+    rdt, tdt = out["rdt"].clone(), out["tdt"].clone()
+    rdt[c, k] += change / dt
+    tdt[c, k] += dT / dt
+    corrected = dict(out, endpoint_temperature=T, endpoint_tracers=q, tdt=tdt, rdt=rdt)
+    return T, q, corrected, dict(
+        indices=indices, recipient_count=len(recipients),
+        column_indices=cells, column_water_residual_Pa=residual,
+        vapor_added=change[:, 0].clamp_min(0), vapor_donated=(-change[:, 0]).clamp_min(0),
+        liquid_removed=-change[:, 1], ice_removed=-change[:, 2], temperature_change=dT,
+        layer_water_transfer=change[:, :3].sum(-1), am2_energy_residual=CP_AIR * dT + latent,
+        upstream_temperature=temperature[c, k], upstream_tracers=tracers[c, k],
+        upstream_tdt=out["tdt"][c, k], upstream_rdt=out["rdt"][c, k],
+    )
