@@ -25,7 +25,13 @@ The preset has a 30-day horizon, 800 s atmospheric dynamics, 2,400 s physics,
 600 s ocean dynamics, and 7,200 s radiation and ALE. It defaults to CPU
 float64 eager execution. Use the same device and configuration for restart.
 
-Default paths are relative to the checkout. Each can be overridden independently.
+The Python launcher supplies defaults to the same `workflows.coupled.campaign`
+entry point. To use scattered inputs, pass `--mesh` and `--geography` as file
+paths and `--source` and `--radiation-data` as directory paths. Explicit flags
+override the environment variables below. Relative paths you supply are
+resolved from your current working directory. Built-in defaults are relative
+to the checkout. For the benchmark schedule, pass
+`--config workflows/coupled/earth_shelf_4096_benchmark.yaml` from the repo root.
 
 | Input | Default | Environment override |
 |---|---|---|

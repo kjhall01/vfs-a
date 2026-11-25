@@ -8,22 +8,22 @@ import sys
 
 def main(argv=None):
     repo = Path(__file__).resolve().parents[1]
-    os.chdir(repo)
     sys.path.insert(0, str(repo))
     os.environ["CUBLAS_WORKSPACE_CONFIG"] = os.environ.get("CUBLAS_WORKSPACE_CONFIG") or ":4096:8"
 
     from workflows.coupled import campaign
 
     args = list(sys.argv[1:] if argv is None else argv)
+    data = repo / "input-data"
     defaults = [
-        "--config", "workflows/coupled/earth_shelf_4096.yaml",
+        "--config", str(repo / "workflows/coupled/earth_shelf_4096.yaml"),
         "--source", os.environ.get("PYAM21_SOURCE") or str(repo.parent / "PyAM21"),
-        "--mesh", os.environ.get("VFS_MESH") or "input-data/mesh_4096_exact_3000.npy",
-        "--geography", os.environ.get("VFS_GEOGRAPHY") or "input-data/earth_4096_geography.npz",
+        "--mesh", os.environ.get("VFS_MESH") or str(data / "mesh_4096_exact_3000.npy"),
+        "--geography", os.environ.get("VFS_GEOGRAPHY") or str(data / "earth_4096_geography.npz"),
         "--verbose",
     ]
     if "--smoke-no-radiation" not in args:
-        defaults.extend(["--radiation-data", os.environ.get("PYAM21_RADIATION_DATA") or "input-data/sea_esf"])
+        defaults.extend(["--radiation-data", os.environ.get("PYAM21_RADIATION_DATA") or str(data / "sea_esf")])
     return campaign.main(defaults + args)
 
 
