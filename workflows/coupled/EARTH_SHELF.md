@@ -2,12 +2,25 @@
 
 The runner advances the native moist atmosphere and PyAM21 physics, seasonally
 forced SeaEsfRad radiation, land and runoff, ocean, moving sea ice and snow.
-The bathymetry-aware Redi operator averages native concentrations onto
-partial cells and returns fluxes with the transpose of the same overlap map.
-The positive-inventory limiter and local eddy-energy settlement operate on
-the prognostic inventories. Resolved dynamics, GM, vertical mixing, ice drag
-and ALE use the native ocean layers. This arrangement requires no auxiliary
-face-momentum state in a checkpoint.
+With `shelf_redi: true`, resolved ocean transport intersects the left and
+right water columns with the staggered velocity layers at every RK stage.
+Only the portion of a face wet on both sides can carry water. One bounded
+flux ledger carries CT, SA, passive tracers, TKE and EKE. The pressure force
+(including ice loading) uses the transpose of that volume-flux map. With the
+Roquet caloric law, a cell's bounded CT update also preserves at least the
+entropy brought by the donor water.
+
+GM constructs its streamfunction on merged reference partial cells, evaluates
+it at the physical boundaries of the prognostic wet openings and closes the
+circulation with a vertical return flow. Redi averages native concentrations
+onto the partial cells and returns fluxes through the transpose of that map.
+Both use the prognostic inventories for their local eddy-energy settlement.
+
+The campaign checkpoint still stores the same number of terrain-following
+layers in every wet column. Vertical mixing, the rotational velocity stencil,
+surface drag and the ALE target use that layout. The standalone shelf
+experiment exercises variable counts, merged bottom cells and moving-face
+momentum with zero-thickness padding.
 
 On an allocated Derecho node, activate the VFS/PyAM21 environment, then run
 
@@ -46,7 +59,7 @@ Terrain enters the atmosphere through surface geopotential and a height-adjusted
 initial pressure. The zero-wind, latitude-dependent initialization undergoes
 adjustment. The supplied geography has a 600 m minimum wet-column depth.
 
-On the supplied 4,096-cell geography, a CPU float64 two-hour radiation-off run
+With the earlier Redi-only configuration on the supplied 4,096-cell geography, a CPU float64 two-hour radiation-off run
 completed 60 GM/Redi updates and one ALE remap. The maximum local GM/Redi
 energy residual was 4.0e-12 J/m². Whole-system numerical energy changed by
 −202.1 J/m². A separate preflight replayed bitwise. Prescribed-radiation tests

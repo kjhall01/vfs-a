@@ -76,9 +76,7 @@ def _funded_factors(model, before, after, failure, metrics):
     best = torch.where(budget >= 0, fractions, 0.).amax(1)
     layer = torch.ones_like(h)
     layer[bad] = torch.where(best > 0, best, 0.5)
-    i, j = metrics[3:5]
-    sides = torch.minimum(layer[i], layer[j])
-    return torch.minimum(sides[:, :-1], sides[:, 1:])
+    return GMRedi._interface_min(layer, metrics)
 
 
 class _RediGradient:
@@ -271,6 +269,19 @@ class GMRedi:
         a = -wu / du
         c = wl / dl
         return torch.stack((upper, ids, lower), -1), torch.stack((a, -a - c, c), -1)
+
+    @staticmethod
+    def _interface_min(layer, metrics):
+        if hasattr(metrics, "interface_min"):
+            return metrics.interface_min(layer)
+        i, j = metrics[3:5]
+        sides = torch.minimum(layer[i], layer[j])
+        return torch.minimum(sides[:, :-1], sides[:, 1:])
+
+    def _gm_diffusivity(self, state, metrics):
+        if self.energy_closure is None:
+            return None
+        return self.energy_closure.diffusivity(state, metrics[3], metrics[4])
 
     @staticmethod
     def _metrics(model, state):
@@ -485,11 +496,7 @@ class GMRedi:
         volume = (s.mesh.cell_area[:, None] * h).flatten()
         rho0 = s.column.rho0
         metrics = self._metrics(model, state)
-        gm_diffusivity = (
-            None
-            if self.energy_closure is None
-            else self.energy_closure.diffusivity(state, metrics[3], metrics[4])
-        )
+        gm_diffusivity = self._gm_diffusivity(state, metrics)
         geom = self._geometry(
             model, state, part="gm", metrics=metrics, gm_diffusivity=gm_diffusivity
         )
@@ -531,8 +538,7 @@ class GMRedi:
                         raise LocalEddyEnergyError(
                             "GM", exc.bad, "exhausted 20 local streamfunction halvings"
                         ) from exc
-                    bad_layers = exc.bad[metrics[3]] | exc.bad[metrics[4]]
-                    incident = bad_layers[:, :-1] | bad_layers[:, 1:]
+                    incident = ~self._interface_min(~exc.bad, metrics)
                     if not incident.any():
                         raise
                     if factors is None:

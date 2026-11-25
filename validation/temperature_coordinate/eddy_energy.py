@@ -152,6 +152,9 @@ class EddyMixingLength:
         # Average specific energy onto the same active edges as GM's slopes.
         e = state.specific_eddy_energy()
         edge = 0.5 * (e[i] + e[j])
+        return self.from_edge_energy(edge)
+
+    def from_edge_energy(self, edge):
         if not torch.isfinite(edge).all() or (edge < 0).any():
             raise ValueError("finite nonnegative eddy energy required")
         # sqrt has a singular derivative at zero. Evaluate only its positive

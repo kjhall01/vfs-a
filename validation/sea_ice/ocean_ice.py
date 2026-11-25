@@ -227,7 +227,7 @@ class OceanIce:
         )
         packed, carried = self.packed(state.ocean)
         if ocean_dynamics:
-            rhs, _ = self.ocean.dynamics.tendency_with_report(packed, dt)
+            rhs, transport_report = self.ocean.dynamics.tendency_with_report(packed, dt)
         else:
             rhs = packed.with_tensors(
                 torch.zeros_like(packed.u_e),
@@ -262,8 +262,9 @@ class OceanIce:
         if transport:
             da, dv, di, transport_power = self.ice_transport(state)
         if ocean_dynamics:
-            load = -mesh.grad(s.column.gravity * H.mass(state)) / rho
-            load = torch.where(ocean_active, load, 0.0).expand_as(s.u_e)
+            load = self.ocean.dynamics.loading_acceleration(
+                s, s.column.gravity * H.mass(state), transport_report
+            )
             du = du + load
             loading_power = (
                 self.ocean.energy.base.mechanical.metric(s) * s.u_e * load

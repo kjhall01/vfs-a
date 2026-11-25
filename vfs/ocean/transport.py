@@ -142,13 +142,17 @@ class HorizontalTransport:
         return torch.where(out > 0,self.cfl_safety*(volume-floor)/safe,torch.full_like(out,float('inf'))).min()
 
     def advance(self, state, dt):
+        return self.advance_graph(state, dt, self.graph(state))
+
+    def advance_graph(self, state, dt, graph, *, tracer_h=None, velocity=None, caloric_reference_K=None):
+        """Limit transport on the supplied stage graph (volume, left, right, flux)."""
         if not math.isfinite(float(dt)) or dt <= 0:
             raise ValueError('dt must be finite and positive')
-        volume,i,j,flux = self.graph(state)
+        volume,i,j,flux = graph
         G = float(dt)*flux
         outgoing = torch.zeros_like(volume).index_add(0,i,G.clamp_min(0)).index_add(0,j,(-G).clamp_min(0))
         floor = (self.mesh.cell_area[:,None]*torch.full_like(state.h,self.min_thickness)).flatten()
-        capacity = self.cfl_safety*(volume-floor)
+        capacity = self.cfl_safety*(volume-torch.where(volume > 0, floor, 0.))
         exceeded = outgoing > capacity
         if exceeded.any().item():
             # Diagnostic only: preserve the strict transport rejection and
@@ -160,6 +164,7 @@ class HorizontalTransport:
             out_rate = outgoing[worst] / float(dt)
             dt_limit = (capacity[worst] / out_rate).item() if out_rate > 0 else float("inf")
             # This is an Euler-stage limit evaluated at this stage state.
+            velocity = state.u_e if velocity is None else velocity
             raise FloatingPointError(
                 'actual carrier outflow exceeds Euler budget; reduce dt; '
                 f'cell={cell} layer={layer} dt={float(dt):.9g}s '
@@ -169,15 +174,19 @@ class HorizontalTransport:
                 f'outgoing_m3={float(outgoing[worst]):.9g} '
                 f'capacity_m3={float(capacity[worst]):.9g} '
                 f'local_dt_limit={float(dt_limit):.9g}s '
-                f'max_abs_edge_velocity={float(state.u_e.abs().max()):.9g}m/s'
+                f'max_abs_edge_velocity={float(velocity.abs().max()):.9g}m/s'
             )
         remaining = volume-outgoing
         incoming = torch.zeros_like(volume).index_add(0,j,G.clamp_min(0)).index_add(0,i,(-G).clamp_min(0))
         new_volume = remaining+incoming
         fields = [state.temp_h[...,None],state.salt_h[...,None]]
-        if state.tracer_h is not None:
-            fields.append(state.tracer_h)
-        q = (torch.cat(fields,-1)/state.h[...,None]).reshape(volume.numel(),-1)
+        if tracer_h is None:
+            tracer_h = state.tracer_h
+        if tracer_h is not None:
+            fields.append(tracer_h)
+        contents = torch.cat(fields,-1)
+        divisor = torch.where(state.h > 0, state.h, 1.)
+        q = (contents/divisor[...,None]).reshape(volume.numel(),-1)
         qi, qj = q[i], q[j]
         positive, negative = G.clamp_min(0), (-G).clamp_min(0)
         donor = torch.where((G >= 0)[:,None],qi,qj)
@@ -188,11 +197,29 @@ class HorizontalTransport:
         low = (remaining[:,None]*q).index_add(0,j,positive[:,None]*qi)
         low = low.index_add(0,i,negative[:,None]*qj)
         prepared = getattr(self, '_prepared', None)
-        neighbors = (torch.cat((j,i)) if prepared is None else prepared['neighbors'])[:,None].expand(-1,q.shape[-1])
+        neighbors = (torch.cat((j,i)) if prepared is None or prepared['i'] is not i else prepared['neighbors'])[:,None].expand(-1,q.shape[-1])
         values = torch.cat((qi,qj))
         qmin = q.scatter_reduce(0,neighbors,values,reduce='amin',include_self=True)
         qmax = q.scatter_reduce(0,neighbors,values,reduce='amax',include_self=True)
         lower, upper = new_volume[:,None]*qmin,new_volume[:,None]*qmax
+        if caloric_reference_K is not None and self.scheme == 'fct':
+            # Roquet entropy is cp*log(T_K/T_ref). Carry that entropy with
+            # the donor water and require each updated parcel to contain at
+            # least its incoming entropy. Jensen gives this bound already
+            # for the low-order state. Use ratios about each receiving cell
+            # to keep constant profiles and small CT differences accurate.
+            temperature = q[:, 0]
+            kelvin = temperature + caloric_reference_K
+            if (kelvin <= 0).any():
+                raise ValueError('caloric entropy requires positive absolute temperature')
+            contrast = temperature[i] - temperature[j]
+            incoming_log = torch.zeros_like(volume).index_add(
+                0, j, positive * torch.log1p(contrast / kelvin[j])
+            ).index_add(0, i, negative * torch.log1p(-contrast / kelvin[i]))
+            safe_volume = torch.where(new_volume > 0, new_volume, 1.)
+            geometric_ct = temperature + kelvin * torch.expm1(incoming_log / safe_volume)
+            minimum = torch.minimum(new_volume * geometric_ct, low[:, 0])
+            lower = torch.cat((torch.maximum(lower[:, :1], minimum[:, None]), lower[:, 1:]), 1)
         # Extrema are now cell-local; release the doubled edge gather before
         # allocating antidiffusive budgets. This changes no tensor expression.
         del values, neighbors, qi, qj, qmax, positive, negative
@@ -231,4 +258,4 @@ class HorizontalTransport:
         return TransportLedger(new_volume.reshape_as(state.h),
             amounts.reshape(*state.h.shape,-1),low.reshape(*state.h.shape,-1),
             integrated_flux,high_flux,low_flux,beta,lower,upper,i,j,flux,
-            trace_change,(outgoing/volume).reshape_as(state.h))
+            trace_change,(outgoing/torch.where(volume > 0, volume, 1.)).reshape_as(state.h))
