@@ -13,9 +13,9 @@ On an allocated Derecho node, activate the VFS/PyAM21 environment, then run
 
 ```bash
 cd /glade/work/khall/vfs-a
-bash tools/run_earth_shelf.sh --device cuda:0 --preflight \
+python -u tools/run_earth_shelf.py --device cuda:0 --preflight \
     --output /glade/work/khall/earth-shelf-preflight
-bash tools/run_earth_shelf.sh --device cuda:0 --stop-after-days 1 \
+python -u tools/run_earth_shelf.py --device cuda:0 --stop-after-days 1 \
     --output /glade/work/khall/earth-shelf-day1
 ```
 
