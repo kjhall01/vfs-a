@@ -1,4 +1,22 @@
-# Stratified ocean API
+# Ocean model
+
+Use `from vfs.ocean import Ocean, OceanColumn, OceanState` for the standalone
+and coupled Roquet model. `Ocean.state` accepts Conservative Temperature in °C
+and Absolute Salinity in g/kg. The state stores `temp_h`, `salt_h`, and energy
+reservoirs as thickness-weighted contents. The [forced example](../examples/ocean.py)
+shows initialization, prescribed surface heating, and a step report.
+
+`ocean.dynamics` evaluates the fluxes and pressure work. `ocean.hamiltonian`
+accounts for resolved, turbulent and mesoscale energy. `shelf_transport=True`
+selects the wet-opening dynamics on a supplied ocean domain. The campaign
+selects this from its existing shelf setting. With coupled sea ice, the joint
+integrator calls the ocean stage tendency and applies ice loading on the same
+stage. GM–Redi, eddy decay, mixing and ALE follow the campaign schedule.
+
+## Historical entropy and JMD95 reference
+
+The following API is retained for reproducing earlier experiments.
+
 
 `StratifiedOcean` combines active JMD95 density, entropy/salinity transport,
 checked SSPRK3 and an optional adaptive energy-closing vertical remap.

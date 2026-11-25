@@ -16,7 +16,7 @@ sys.path[:0] = [
 ]
 from vfs.ice.ocean_ice import OceanIce
 from vfs.ice.ridging import CategoryIce, RidgingState
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 

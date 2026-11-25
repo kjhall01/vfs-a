@@ -649,12 +649,7 @@ def test_mesoscale_and_nontrivial_ale_conserve_combined_ice_energy(source, confi
         salt_h=h * s.salinity(),
         tracer_h=h[..., None] * s.tracer_h / s.h[..., None],
     )
-    ocean = replace(
-        original,
-        ocean=physical,
-        tke_h=h * original.tke_h / s.h,
-        eddy_h=h * original.eddy_h / s.h,
-    )
+    ocean = original.with_layers(physical, tke_h=h * original.tke_h / s.h, eddy_h=h * original.eddy_h / s.h)
     sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
     before_energy = receiver.snow.total_energy(sea)
     area = s.mesh.cell_area[:, None]

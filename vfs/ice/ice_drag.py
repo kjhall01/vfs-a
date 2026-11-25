@@ -119,7 +119,7 @@ def midpoint_drag(coupled, state, dt, tolerance=None):
     )
     end = replace(
         state,
-        ocean=replace(state.ocean, ocean=physical, tke_h=state.ocean.tke_h + dk),
+        ocean=state.ocean.with_layers(physical, tke_h=state.ocean.tke_h + dk),
         ice=replace(state.ice, velocity=ui),
     )
     dki = (Mi * (ui - state.ice.velocity) * 0.5 * (ui + state.ice.velocity)).sum()

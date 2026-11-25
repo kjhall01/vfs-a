@@ -43,7 +43,8 @@ from workflows.coupled.device import (validate_precision, resolve_device, execut
 from vfs.ice.ocean_ice import OceanIce
 from vfs.ice.ridging import CategoryIce, RidgingState
 from vfs.ice.snow import SnowState
-from vfs.ocean.temperature.roquet import RoquetOcean, RoquetMixing
+from vfs.ocean import Ocean
+from vfs.ocean.temperature.roquet import RoquetMixing
 from vfs.ocean.temperature.eddy import GMRedi
 from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
 from vfs.ocean.temperature.backscatter import EddyBackscatter
@@ -351,7 +352,7 @@ def ale_step(receiver, sea, config):
     if s.column.active_layers is None:
         ocean, r = model.remap_with_report(initial, target)
     else:
-        domain = model.ocean.domain
+        domain = model.domain
         left, right = s.mesh.cellsOnEdge[domain.active_edge].T
         # ALE is optional motion of the computational interfaces. A nearly
         # homogeneous shelf can lack two independent thermal directions for
@@ -512,11 +513,12 @@ def build(
         column = OceanColumn(
             config.ocean_levels, gravity=9.8, **column_options
         ).to(device=device, dtype=dtype)
-    model = RoquetOcean(
+    model = Ocean(
         mesh,
         column,
         domain=domain,
-        closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps,
+        shelf_transport=config.shelf_redi,
+        mixing=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps,
                             budget_rtol=mixing_budget_rtol(dtype)),
         backscatter=(
             EddyBackscatter(
@@ -529,9 +531,6 @@ def build(
             else None
         ),
     )
-    if config.shelf_redi:
-        from vfs.ocean.temperature.shelf_transport import ShelfTemperatureOcean
-        model.dynamics = ShelfTemperatureOcean(model.ocean)
     dz = rest_thickness(config).to(mesh.cell_area)
     adapter.campaign_ocean_thickness = dz
     h = dz[None].expand(mesh.nCells, -1).clone()
@@ -920,9 +919,7 @@ def unpack(payload, adapter, receiver, template, identity):
     p = copy_tree(payload, device=adapter.model.mesh.cell_area.device)
     air = adapter.unpack(p["air"])
     physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
-    ocean = replace(
-        template.coupled.ocean, ocean=physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"]
-    )
+    ocean = template.coupled.ocean.with_layers(physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"])
     sea = ThermalIceState(
         RidgingState(ocean, CategoryIce(**p["ice"])), p["snow_mass"], p["cold_content"]
     )

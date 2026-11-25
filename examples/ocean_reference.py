@@ -1,7 +1,8 @@
 """Ten explicit steps of the recovered ocean reference; not a climate benchmark."""
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 
 torch.set_default_dtype(torch.float64)
 mesh=VoronoiMesh(n_cells=32,lloyd_iters=1,verbose=False)

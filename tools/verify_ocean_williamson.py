@@ -15,7 +15,9 @@ from pathlib import Path
 import numpy as np
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 
 

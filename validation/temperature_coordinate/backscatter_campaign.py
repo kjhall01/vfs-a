@@ -28,23 +28,15 @@ def closure_step(model, state, op, dt):
     s = state.ocean
 
     def blend(a, b, wa, wb):
-        return replace(
-            a,
-            ocean=s.with_tensors(
+        return a.with_layers(s.with_tensors(
                 wa * a.ocean.u_e + wb * b.ocean.u_e, s.h, s.temp_h, s.salt_h, s.tracer_h
-            ),
-            eddy_h=wa * a.eddy_h + wb * b.eddy_h,
-        )
+            ), eddy_h=wa * a.eddy_h + wb * b.eddy_h)
 
     def euler(x):
         du, de, r = op.tendency(model, x)
-        out = replace(
-            x,
-            ocean=s.with_tensors(
+        out = x.with_layers(s.with_tensors(
                 x.ocean.u_e + dt * du, s.h, s.temp_h, s.salt_h, s.tracer_h
-            ),
-            eddy_h=x.eddy_h + dt * de,
-        )
+            ), eddy_h=x.eddy_h + dt * de)
         model.check(out)
         return out, r
 

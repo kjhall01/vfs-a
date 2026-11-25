@@ -12,7 +12,8 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import TKEState,OceanSurfaceFluxes
-from vfs.ocean.temperature.roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,TemperatureBoundary,convert_jmd95_initialization
+from vfs.ocean.model import Ocean as RoquetOcean
+from vfs.ocean.temperature.roquet import RoquetMixing, RoquetHeating, RoquetExchange, TemperatureBoundary, convert_jmd95_initialization
 
 
 def model(mesh,column,substeps,physics=True):

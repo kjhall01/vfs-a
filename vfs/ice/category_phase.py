@@ -208,7 +208,7 @@ class CategoryThermodynamics:
         )
         physical = s.with_tensors(s.u_e, h, th, s.salt_h, s.tracer_h)
         ice, *_ = self.geometry(initial, m)
-        return RidgingState(replace(initial.ocean, ocean=physical), ice)
+        return RidgingState(initial.ocean.with_layers(physical), ice)
 
     def derivative(self, initial, state, m):
         s = state.ocean.ocean
@@ -262,7 +262,7 @@ class CategoryThermodynamics:
         mass = H.model.energy.mass_area(t)
         dk = torch.cat((cells / safe(mass), torch.zeros_like(t.h[:, 1:])), -1)
         out = RidgingState(
-            replace(end.ocean, ocean=physical, tke_h=end.ocean.tke_h + dk),
+            end.ocean.with_layers(physical, tke_h=end.ocean.tke_h + dk),
             replace(end.ice, velocity=new_ui),
         )
         residual = Mi1 * new_ui + Mo1 * new_uo - Mi0 * ui - Mo0 * uo
@@ -327,10 +327,10 @@ class CategoryThermodynamics:
         heat = torch.cat(
             (extra / (s.column.rho0 * t.h[:, :1]), torch.zeros_like(t.h[:, 1:])), -1
         )
-        physical, _, _ = RoquetWorkspace(H.model.ocean, t).heat(
+        physical, _, _ = RoquetWorkspace(H.model.layers, t).heat(
             t, t, heat, allow_cooling=True
         )
-        end = replace(end, ocean=replace(end.ocean, ocean=physical))
+        end = replace(end, ocean=end.ocean.with_layers(physical))
         end, gain, momentum = self.exchange_momentum(initial, end)
         self.coupled.check(end)
         area = s.mesh.cell_area[:, None]

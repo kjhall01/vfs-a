@@ -19,7 +19,7 @@ sys.path[:0] = [
 from vfs.ocean.temperature.eddy import GMRedi
 from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
 from eddy_campaign import make
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 

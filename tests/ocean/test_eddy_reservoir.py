@@ -13,8 +13,8 @@ sys.path[:0] = [
 from vfs.ocean.temperature.eddy_energy import EddyState
 from vfs.ocean.temperature.eddy import GMRedi
 from eddy_campaign import make
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ocean.temperature.roquet import (
-    RoquetOcean,
     RoquetMixing,
     RoquetHeating,
     RoquetExchange,
@@ -34,7 +34,7 @@ def test_single_hamiltonian_all_state_derivatives(mesh, coast):
     wet = (model.energy.mass_area(s) > 0).expand_as(s.h)
     kh = torch.where(wet, s.h.detach() * 1e-4, 0.0).requires_grad_()
     eh = torch.where(wet, s.h.detach() * 0.1, 0.0).requires_grad_()
-    state = EddyState(s, kh, eh)
+    state = EddyState.from_layers(s, kh, eh)
     model.check(state)
     actual = torch.autograd.grad(model.total_energy(state), (*leaves, kh, eh))
     resolved = model.dynamics.gradients(s)
@@ -178,9 +178,7 @@ def test_optional_state_no_passives_identity_and_invalid_reservoir(mesh):
     with pytest.raises(ValueError, match="unchanged geometry"):
         m.hamiltonian.finite_change(
             state,
-            replace(
-                state, ocean=s.with_tensors(s.u_e, s.h * 1.01, s.temp_h, s.salt_h, None)
-            ),
+            state.with_layers(s.with_tensors(s.u_e, s.h * 1.01, s.temp_h, s.salt_h, None)),
         )
 
 
@@ -191,12 +189,9 @@ def test_one_step_reservoir_gradient_against_finite_difference():
 
     def loss(alpha):
         s = initial.ocean
-        changed = replace(
-            initial,
-            ocean=s.with_tensors(
+        changed = initial.with_layers(s.with_tensors(
                 s.u_e, s.h, s.temp_h, s.salt_h + alpha * s.h * x, s.tracer_h
-            ),
-        )
+            ))
         end, _ = eddy.apply(model, changed, 60.0)
         return (x * end.specific_eddy_energy()).mean()
 
@@ -217,16 +212,11 @@ def test_transport_adapter_still_rejects_invalid_fields(operation, invalid):
     if invalid == "reservoir":
         state = replace(state, eddy_h=-state.eddy_h)
     elif invalid == "temperature":
-        state = replace(
-            state,
-            ocean=s.with_tensors(
+        state = state.with_layers(s.with_tensors(
                 s.u_e, s.h, s.temp_h * float("nan"), s.salt_h, s.tracer_h
-            ),
-        )
+            ))
     else:
-        state = replace(
-            state, ocean=s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, -s.tracer_h)
-        )
+        state = state.with_layers(s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, -s.tracer_h))
     with pytest.raises(ValueError):
         if operation == "step":
             model.step_with_report(state, 1.0)

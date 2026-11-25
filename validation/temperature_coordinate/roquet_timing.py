@@ -12,7 +12,8 @@ from vfs.ocean.temperature.system import TemperatureSystem
 from vfs.ocean.temperature.path import TemperaturePathMixing
 from vfs.ocean.temperature.surface import TemperatureBoundary,FastSurfaceHeating,FastSurfaceExchange
 from vfs.ocean.temperature.linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange
-from vfs.ocean.temperature.roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,convert_jmd95_initialization
+from vfs.ocean.model import Ocean as RoquetOcean
+from vfs.ocean.temperature.roquet import RoquetMixing, RoquetHeating, RoquetExchange, convert_jmd95_initialization
 from vfs.ocean.stratified import TKEState
 
 

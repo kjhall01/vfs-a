@@ -3,7 +3,9 @@ import pytest
 import torch
 
 from vfs.geometry.remap import LatLonGrid, MeshToLatLonKNN
-from vfs.ocean import Ocean, OceanColumn, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.ocean.dynamics import MultilayerOceanDynamics
 from vfs.ocean.regrid import state_to_latlon

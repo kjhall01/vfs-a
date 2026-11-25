@@ -17,13 +17,19 @@ import torch
 
 def snapshot(value):
     """Save prognostic fields and reports without pickling model/geometry objects."""
-    from vfs.ocean import OceanState
+    from vfs.ocean.state import OceanState
 
     if isinstance(value, torch.Tensor):
         return value.detach().cpu().clone()
     if isinstance(value, OceanState):
         return {k: snapshot(getattr(value, k))
                 for k in ("u_e", "h", "temp_h", "salt_h", "tracer_h", "attrs")}
+    if hasattr(value, "resolved") and hasattr(value, "tke_h"):
+        # Compare stored layer fields across the change in state ownership.
+        result = dict(ocean=snapshot(value.resolved), tke_h=snapshot(value.tke_h))
+        if hasattr(value, "eddy_h"):
+            result["eddy_h"] = snapshot(value.eddy_h)
+        return result
     if is_dataclass(value):
         return {f.name: snapshot(getattr(value, f.name)) for f in fields(value)
                 if f.name not in ("mesh", "column", "domain")}
@@ -79,7 +85,18 @@ def capture():
         advance = campaign.advance
 
         def recorded(adapter, air, receiver, sea, dt, config, *args, **kwargs):
-            air, sea, report = advance(adapter, air, receiver, sea, dt, config, *args, **kwargs)
+            dynamics = receiver.H.model.dynamics
+            tendency = dynamics.tendency_with_report
+            stages = []
+
+            def record_stage(state, stage_dt):
+                rhs, work = tendency(state, stage_dt)
+                stages.append(snapshot([rhs, work.transport]))
+                return rhs, work
+
+            with patch.object(dynamics, "tendency_with_report", record_stage):
+                air, sea, report = advance(adapter, air, receiver, sea, dt, config, *args, **kwargs)
+            steps.append(stages)
             steps.append([campaign.pack(adapter, air, receiver, sea, "comparison", {}), report])
             return air, sea, report
 

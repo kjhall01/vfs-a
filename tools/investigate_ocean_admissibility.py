@@ -9,7 +9,8 @@ import importlib.util
 from pathlib import Path
 
 import torch
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.integrators.explicit import forward_euler, ssprk3
 

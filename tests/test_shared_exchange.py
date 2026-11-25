@@ -23,7 +23,7 @@ from workflows.coupled.driver import exchange_step
 from vfs.ice.ocean_ice import OceanIce
 from vfs.ice.ridging import CategoryIce, RidgingState
 from vfs.ice.snow import SnowOceanIce
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ocean import OceanColumn
 from pyam21.radiation.driver import RadiationDriver, RadiationDriverConfig
 

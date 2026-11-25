@@ -13,7 +13,8 @@ import numpy as np
 from scipy import sparse
 import torch
 from vfs import VoronoiMesh
-from vfs.ocean import OceanColumn, OceanState
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 
 

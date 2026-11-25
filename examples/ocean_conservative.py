@@ -1,7 +1,8 @@
 """Explicit selection of the constant-density energy-derived ocean."""
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 
 torch.set_default_dtype(torch.float64)

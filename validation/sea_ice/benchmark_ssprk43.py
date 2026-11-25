@@ -21,7 +21,7 @@ sys.path[:0] = [str(ROOT)] + [str(ROOT / "validation" / p) for p in (
 )]
 from vfs.ice.ocean_ice import OceanIce
 from vfs.ice.ridging import CategoryIce, RidgingState
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ice.snow import SnowState
 from workflows.coupled.ice_temperature import ThermalSnowOceanIce
 from vfs.geometry.mesh import VoronoiMesh

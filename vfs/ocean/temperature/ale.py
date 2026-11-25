@@ -12,7 +12,7 @@ from vfs.ocean.stratified.remap import minimum_change_step, AdaptiveThermalRepor
 from vfs.ocean.stratified.enthalpy_remap import EnthalpyRemapReport
 from vfs.ocean.stratified.energy_columns import column_terms
 from vfs.ocean.mixing.fast_thermo import Caloric
-from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.model import layer_fields
 
 
 class TemperatureEnergy:
@@ -32,7 +32,7 @@ def entropy_content(energy,state):
 
 
 def validate(model,state,energy):
-    TemperatureOcean(energy.owner).fields(state)
+    layer_fields(energy.owner, state)
     return state
 
 
@@ -198,3 +198,13 @@ class TemperatureRemapper:
             report.changed_columns,entropy_change.sum(),(end.h*new_h0-state.h*old_h0).sum(-1),
             residual,entropy_change,theta-theta0,report.energy_change,ever_active,iteration+1)
         return end,result
+
+
+class ConstantHeatCapacityEnthalpyRemapper(TemperatureEnthalpyRemapper):
+    def _temperature(self,reference,salt,enthalpy,guess):
+        return reference.temperature_from_enthalpy(salt,enthalpy)
+
+
+class ConstantHeatCapacityRemapper(TemperatureRemapper):
+    def __init__(self,*,method='plm'):
+        self.remapper=ConstantHeatCapacityEnthalpyRemapper(method=method)

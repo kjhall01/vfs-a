@@ -191,7 +191,8 @@ def test_domain_and_full_stage_rejection_are_explicit(probe):
 
 
 def test_reference_rest_and_caloric_pressure_cancellation(probe):
-    from vfs.ocean import Ocean, OceanColumn
+    from vfs.ocean.reference import Ocean
+    from vfs.ocean import OceanColumn
     from vfs.ocean.jmd95 import JMD95Dynamics
     original, _, _ = probe.case()
     mesh = original.mesh

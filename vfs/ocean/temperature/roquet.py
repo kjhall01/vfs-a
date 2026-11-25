@@ -9,13 +9,12 @@ import math
 import torch
 from vfs.ocean.helpers import nonzero_divisor
 from vfs.ocean.energy import ConstantDensityEnergy
-from vfs.ocean.jmd95_energy import JMD95Energy
-from vfs.ocean.stratified import StratifiedOcean,TKEState,OceanSurfaceHeating
+from vfs.ocean.energy import StratificationEnergy
+from vfs.ocean.stratified import OceanSurfaceHeating
 from vfs.ocean.stratified.equations import EntropyEnergy
-from vfs.ocean.temperature.linear import LinearCaloric,LinearMixing,LinearRemapper
-from vfs.ocean.temperature.model import TemperatureOcean
-from vfs.ocean.temperature.system import TemperatureSystem
-from vfs.ocean.temperature.eddy_energy import EddyState,RoquetHamiltonian
+from .caloric import ConstantHeatCapacity
+from .physics import TemperatureMixing
+from vfs.ocean.temperature.model import layer_fields
 from vfs.ocean.temperature.surface import FastSurfaceExchange,TemperatureBoundary
 
 
@@ -46,7 +45,7 @@ class RoquetFreezingEOS:
         return self.s*(sa-self.SA0)+(ct-self.CT0)*(self.t+self.tt*(ct+self.CT0)-self.tz*z)
 
 
-class RoquetCaloric(LinearCaloric):
+class RoquetCaloric(ConstantHeatCapacity):
     """h0=cp*CT; idealized eta=cp*log((CT+273.15)/273.15).
 
     eta is a model entropy coordinate, not physical TEOS-10 entropy. Likewise
@@ -58,7 +57,7 @@ class RoquetCaloric(LinearCaloric):
     data={'temperature_ITS90_range_C':[-2.5,40.],'practical_salinity_range':[0.,42.]}
 
 
-class RoquetEnergy(JMD95Energy):
+class RoquetEnergy(StratificationEnergy):
     """Exact layer integral of the fixed-datum polynomial dynamic enthalpy."""
     def __init__(self,config,*,gravity,rho0,domain=None):
         self.config=config;self.T0=config.CT0;self.S0=config.SA0
@@ -146,12 +145,15 @@ class RoquetWorkspace:
         delta=2*heat/(capacity+torch.sqrt(discriminant))
         if (capacity+2*self.a*delta<=0).any():raise ValueError('nonpositive final heat capacity')
         end=state.with_tensors(state.u_e,state.h,state.temp_h+state.h*delta,state.salt_h,state.tracer_h)
-        TemperatureOcean(self.ocean).fields(end)
+        layer_fields(self.ocean, end)
         return end,(capacity+self.a*delta)*delta-heat,end
 
 
 @dataclass(frozen=True)
-class RoquetMixing(LinearMixing):
+class RoquetMixing(TemperatureMixing):
+    def _enthalpy_temperature(self, energy, workbuf, salt, enthalpy, guess):
+        return energy.reference.temperature_from_enthalpy(salt, enthalpy)
+
     def _workspace(self,ocean,physical):return RoquetWorkspace(ocean,physical)
 
 
@@ -165,148 +167,6 @@ class RoquetHeating(OceanSurfaceHeating):
 
 class RoquetExchange(FastSurfaceExchange):
     _thermal_update=staticmethod(roquet_heat)
-
-
-class RoquetOcean(TemperatureSystem):
-    def __init__(self,mesh,column,*,config=None,domain=None,closure=None,boundary=None,heating=None,exchange=None,backscatter=None):
-        config=RoquetFreezingEOS() if config is None else config
-        if not isinstance(config,RoquetFreezingEOS):raise TypeError('RoquetFreezingEOS required')
-        for value,kind in ((closure,RoquetMixing),(heating,RoquetHeating),(exchange,RoquetExchange)):
-            if value is not None and not isinstance(value,kind):raise TypeError('use matched Roquet physics adapters')
-        ocean=StratifiedOcean(mesh,column,domain=domain,warm_start=True)
-        base=RoquetEnergy(config,gravity=column.gravity,rho0=column.rho0,domain=domain)
-        ocean.base.dynamics.energy=base;ocean.base.dynamics.eos='roquet_freezing';ocean.base.dynamics.energy_label='roquet_hamiltonian'
-        ocean.reference=RoquetCaloric(config);ocean.energy=RoquetEntropyEnergy(base,ocean.reference)
-        super().__init__(ocean,closure=closure,boundary=boundary,heating=heating,exchange=exchange)
-        self.config=config;self.remapper=LinearRemapper()
-        self.hamiltonian=RoquetHamiltonian(self.energy)
-        from vfs.ocean.temperature.backscatter import EddyBackscatter
-        if backscatter is not None and not isinstance(backscatter, EddyBackscatter):
-            raise TypeError('backscatter must be EddyBackscatter or None')
-        self.backscatter = backscatter
-
-    def compile_thermodynamics(self, *, backend='inductor'):
-        """Compile selected pure kernels; validation and timestep control stay eager."""
-        previous=getattr(self,'_compile_backend',None)
-        if previous is not None:
-            if previous!=backend:raise ValueError('rebuild the model to change compile backend')
-            return self
-        options=dict(backend=backend,fullgraph=True,dynamic=True)
-        base=self.ocean.energy.base
-        base.stratification=torch.compile(base.stratification,**options)
-        base.parcel_potential=torch.compile(base.parcel_potential,**options)
-        base.coefficients=torch.compile(base.coefficients,**options)
-        self.ocean.reference._values=torch.compile(self.ocean.reference._values,**options)
-        self._compile_backend=backend
-        return self
-
-    def state(self,*,conservative_temperature,absolute_salinity,tke=0.,eddy_energy=None,**fields):
-        """No implicit conversion: CT [deg C], SA [g/kg]."""
-        if 'temperature' in fields or 'salinity' in fields:raise TypeError('use explicit CT/SA keyword names')
-        s=self.ocean.base.state(temperature=conservative_temperature,salinity=absolute_salinity,**fields)
-        out=TKEState(s,s.h*torch.as_tensor(tke,dtype=s.h.dtype,device=s.h.device));self.check(out)
-        return out if eddy_energy is None else self.with_eddy_reservoir(out,eddy_energy)
-
-
-    def total_energy(self, state):
-        return self.hamiltonian.terms(state)["total"]
-
-    def check(self, state):
-        super().check(state)
-        self._check_eddy(state)
-
-    def _check_eddy(self, state):
-        """Validate the reservoir when all other fields were checked unchanged."""
-        if isinstance(state, EddyState):
-            e, h = state.eddy_h, state.ocean.h
-            if (
-                e.shape != h.shape
-                or e.dtype != h.dtype
-                or e.device != h.device
-                or not torch.isfinite(e).all()
-                or (e < 0).any()
-            ):
-                raise ValueError(
-                    "eddy reservoir must match h and be finite/nonnegative"
-                )
-            wet = (self.energy.mass_area(state.ocean) > 0) & (h > 0)
-            if (e[~wet] != 0).any():
-                raise ValueError("dry eddy reservoir must be zero")
-
-    def with_eddy_reservoir(self, state, specific_energy):
-        """Explicitly initialize e [J/kg]; never invent or reset a hidden seed."""
-        if isinstance(state, EddyState):
-            raise TypeError("state already has an eddy reservoir")
-        self.check(state)
-        h = state.ocean.h
-        e = h * torch.as_tensor(specific_energy, dtype=h.dtype, device=h.device)
-        wet = (self.energy.mass_area(state.ocean) > 0).expand_as(h)
-        out = EddyState(
-            state.ocean, state.tke_h, torch.where(wet, e, torch.zeros_like(e))
-        )
-        self.check(out)
-        return out
-
-    @staticmethod
-    def _carry_eddy(state):
-        # Existing dynamics, mixing, freshwater exchange and ALE already carry
-        # passive contents conservatively. Their energy-blind tracer slot is
-        # only a transport adapter: full-H diagnostics always see EddyState.
-        s = state.ocean
-        q = (
-            state.eddy_h[..., None]
-            if s.tracer_h is None
-            else torch.cat((s.tracer_h, state.eddy_h[..., None]), -1)
-        )
-        return TKEState(s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, q), state.tke_h)
-
-    @staticmethod
-    def _recover_eddy(state, original):
-        s = state.ocean
-        q = None if original.ocean.tracer_h is None else s.tracer_h[..., :-1]
-        return EddyState(
-            s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, q),
-            state.tke_h,
-            s.tracer_h[..., -1],
-        )
-
-    def step_with_report(self, state, dt, **forcing):
-        if not isinstance(state, EddyState):
-            if self.backscatter is not None:
-                raise TypeError('enabled backscatter requires EddyState')
-            return super().step_with_report(state, dt, **forcing)
-        self._check_eddy(state)
-        reports = []
-        if self.backscatter is not None:
-            if dt*self.backscatter.fraction > self.backscatter.timescale:
-                raise ValueError('backscatter source positivity requires dt*fraction <= timescale')
-            def extra(packed):
-                q = packed.tracer_h
-                physical = packed.with_tensors(packed.u_e, packed.h, packed.temp_h,
-                    packed.salt_h, None if q.shape[-1] == 2 else q[..., :-2])
-                stage = EddyState(physical, q[..., -1], q[..., -2])
-                du, de, report = self.backscatter.tendency(self, stage)
-                reports.append(report)
-                dq = torch.cat((torch.zeros_like(q[..., :-2]), de[..., None],
-                                torch.zeros_like(q[..., -1:])), -1)
-                return du, dq
-            forcing['_extra_tendency'] = extra
-        end, report = super().step_with_report(self._carry_eddy(state), dt, **forcing)
-        if self.backscatter is not None:
-            from vfs.ocean.temperature.backscatter import BackscatterStepReport
-            report = BackscatterStepReport(**vars(report), backscatter=tuple(reports))
-        end = self._recover_eddy(end, state)
-        self._check_eddy(end)
-        return end, report
-
-    def remap_with_report(self, state, target_h):
-        if not isinstance(state, EddyState):
-            return super().remap_with_report(state, target_h)
-        self._check_eddy(state)
-        end, report = super().remap_with_report(self._carry_eddy(state), target_h)
-        end = self._recover_eddy(end, state)
-        self._check_eddy(end)
-        return end, report
 
 
 def convert_jmd95_initialization(*,potential_temperature_ipts68,practical_salinity,pressure_dbar,longitude,latitude):

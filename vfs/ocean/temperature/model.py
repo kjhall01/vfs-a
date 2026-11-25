@@ -11,22 +11,26 @@ from vfs.ocean.stratified.equations import EntropyState, validate
 from vfs.ocean.stratified import transport
 
 
-class TemperatureOcean:
-    """Wrap an existing StratifiedOcean; evolve OceanState.temp_h = h*theta."""
+def layer_fields(ocean, state):
+    if state.mesh is not ocean.mesh or state.column is not ocean.column:
+        raise ValueError('state must borrow model geometry')
+    ref = ocean.reference.evaluate(state.salinity(), state.temperature(),
+                                        entropy_derivatives=True)
+    if (ref['entropy_theta'] <= 0).any():
+        raise ValueError('temperature coordinate requires positive entropy derivative')
+    entropy = EntropyState(state.u_e,state.h,state.h*ref['entropy'],state.salt_h,
+                           state.tracer_h,state.mesh,state.column)
+    validate(ocean.base,entropy,ocean.energy,physical=state)
+    return entropy,ref
+
+
+class LayerDynamics:
+    """Advance thickness, velocity and conservative layer contents on matching levels."""
     def __init__(self, ocean):
         self.ocean = ocean
 
     def fields(self, state):
-        if state.mesh is not self.ocean.mesh or state.column is not self.ocean.column:
-            raise ValueError('state must borrow model geometry')
-        ref = self.ocean.reference.evaluate(state.salinity(), state.temperature(),
-                                            entropy_derivatives=True)
-        if (ref['entropy_theta'] <= 0).any():
-            raise ValueError('temperature coordinate requires positive entropy derivative')
-        entropy = EntropyState(state.u_e,state.h,state.h*ref['entropy'],state.salt_h,
-                               state.tracer_h,state.mesh,state.column)
-        validate(self.ocean.base,entropy,self.ocean.energy,physical=state)
-        return entropy,ref
+        return layer_fields(self.ocean, state)
 
     def energy(self, state):
         _,ref = self.fields(state)
@@ -97,3 +101,6 @@ class TemperatureOcean:
         del third
         self.fields(end)
         return end
+
+# Historical name used by the temperature-coordinate comparison experiments.
+TemperatureOcean = LayerDynamics

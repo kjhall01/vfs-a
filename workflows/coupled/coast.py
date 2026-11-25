@@ -11,7 +11,7 @@ from workflows.pyam21.surface import CoastalTiles
 class CoastalReceiver(ThermalIceReceiver):
     def __init__(self, owner, adapter, land_mask):
         super().__init__(owner)
-        if not torch.equal(self.H.model.ocean.domain.wet_cell, ~land_mask):
+        if not torch.equal(self.H.model.domain.wet_cell, ~land_mask):
             raise ValueError("land and ocean masks must be complementary")
         self.land_surface = LandCatchment(adapter, land_mask)
 

@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 import torch
 from vfs import VoronoiMesh, MoistAtmosphere
-from vfs.ocean import OceanState, OceanColumn
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.geometry.mesh.grid import _save_mesh as save_mesh_netcdf, _load_mesh as load_mesh_netcdf
 

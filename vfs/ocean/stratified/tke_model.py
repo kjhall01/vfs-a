@@ -17,6 +17,9 @@ class TKEState:
     ocean: EntropyState
     tke_h: torch.Tensor
 
+    def with_layers(self, layers, **reservoirs):
+        return replace(self, ocean=layers, **reservoirs)
+
     def specific_tke(self):
         return self.tke_h/nonzero_divisor(self.ocean.h)
 

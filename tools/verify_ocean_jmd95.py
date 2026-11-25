@@ -14,7 +14,8 @@ import numpy as np
 import torch
 import vfs
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 from vfs.ocean.eos import jmd95_seawater_density
 from vfs.ocean.jmd95 import JMD95Dynamics, checked_ssprk3
 from vfs.ocean.jmd95_energy import JMD95Energy

@@ -61,16 +61,16 @@ class EddyBackscatter:
 
     def tendency(self, model, state):
         """Return (du/dt, d(h e)/dt, power report); never modify the state."""
-        from vfs.ocean.temperature.roquet import RoquetOcean
+        from vfs.ocean.model import Ocean
 
-        if not isinstance(model, RoquetOcean) or not isinstance(state, EddyState):
-            raise TypeError("backscatter requires RoquetOcean and EddyState")
+        if not isinstance(model, Ocean) or not isinstance(state, EddyState):
+            raise TypeError("backscatter requires Ocean and EddyState")
         model.check(state)
         s, H = state.ocean, model.hamiltonian
         mesh, base = s.mesh, H.base.mechanical
         mass = H.mass_area(s).expand_as(s.h)
         allowance = mass * state.eddy_h * (self.fraction / self.timescale)
-        domain = model.ocean.domain
+        domain = model.domain
         # Land holds a finite dummy column. Its thickness must not contribute
         # to the vertex viscosity seen by open faces along a partial-cell coast.
         thickness = domain.apply_cell(s.h) if s.column.active_layers is not None else s.h

@@ -3,7 +3,9 @@ import pytest
 import torch
 
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn, OceanDomain, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.eos import jmd95_seawater_density
 from vfs.ocean.jmd95 import JMD95Dynamics, checked_ssprk3
 from vfs.ocean.jmd95_energy import JMD95Energy, jmd95_partials

@@ -32,7 +32,7 @@ def setup(mesh, coast=False):
     factor = 1 + 0.05 * mesh.cell_xyz[:, :1]
     state = replace(
         state,
-        ocean=replace(state.ocean, ocean=physical),
+        ocean=state.ocean.with_layers(physical),
         ice=replace(
             state.ice, area=state.ice.area * factor, volume=state.ice.volume * factor
         ),
@@ -60,7 +60,7 @@ def leaf_state(state):
     physical = s.with_tensors(u, h, t, salt, s.tracer_h)
     return (
         RidgingState(
-            replace(state.ocean, ocean=physical, tke_h=k, eddy_h=e),
+            state.ocean.with_layers(physical, tke_h=k, eddy_h=e),
             CategoryIce(a, v, ui),
         ),
         leaves,

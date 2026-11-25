@@ -10,7 +10,7 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation/temperature_coordinate"),
     str(Path(__file__).resolve().parents[2] / "validation/ocean_column"),
 ]
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ocean.temperature.eddy import GMRedi
 from vfs.ocean.temperature.eddy_energy import EddyState
 from vfs.ocean.stratified import TKEState
@@ -105,7 +105,7 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
     ct = torch.full_like(z, 10.0)
     sa = 35.0 - 0.001 * z
     s = s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h)
-    state = EddyState(s, state.tke_h, state.eddy_h)
+    state = EddyState.from_layers(s, state.tke_h, state.eddy_h)
     eddy = GMRedi(1000.0, 1000.0)
     slope, _, _, _, _, _, _, operator, _ = eddy._geometry(m, state)
     assert slope.abs().max() < 1e-16
@@ -118,7 +118,7 @@ def test_density_tangent_nullspace_and_tilted_grid_metric(mesh):
     # With a lateral salinity gradient, the unclipped slope still annihilates
     # the reference buoyancy itself (discrete along-density derivative).
     sa = sa + 0.1 * mesh.cell_xyz[:, :1]
-    state = EddyState(
+    state = EddyState.from_layers(
         s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h),
         state.tke_h,
         state.eddy_h,
@@ -157,7 +157,7 @@ def test_weak_stratification_no_transport(mesh):
     # Vertically uniform buoyancy, with lateral gradients: no finite slope.
     ct = (10.0 + mesh.cell_xyz[:, :1]).expand_as(s.h)
     sa = torch.full_like(s.h, 35.0)
-    state = EddyState(
+    state = EddyState.from_layers(
         s.with_tensors(s.u_e, s.h, s.h * ct, s.h * sa, s.tracer_h),
         state.tke_h,
         state.eddy_h,
@@ -184,7 +184,7 @@ def test_rejects_redi_negative_tracer_without_mutating_input():
     s = state.ocean
     tracer = torch.zeros_like(s.tracer_h)
     tracer[0, 3, 0] = s.h[0, 3]
-    state = EddyState(
+    state = EddyState.from_layers(
         s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, tracer),
         state.tke_h,
         state.eddy_h,
@@ -205,7 +205,7 @@ def test_positive_redi_transports_sharp_stores_without_clipping():
     tracer[0, 3, 0] = s.h[0, 3]
     k = torch.full_like(state.tke_h, 1e-20)
     k[0, 3] = s.h[0, 3] * 1e-4
-    state = EddyState(
+    state = EddyState.from_layers(
         s.with_tensors(s.u_e, s.h, s.temp_h, s.salt_h, tracer), k, state.eddy_h
     )
     before = tracer.clone()
@@ -284,7 +284,7 @@ def test_finite_energy_work_against_independent_midpoint_gradient(mesh):
     sh = ((s.salt_h + t.salt_h) / 2).detach().requires_grad_()
     kh = ((state.tke_h + end.tke_h) / 2).detach().requires_grad_()
     eh = ((state.eddy_h + end.eddy_h) / 2).detach().requires_grad_()
-    mid = EddyState(s.with_tensors(s.u_e, s.h, th, sh, s.tracer_h), kh, eh)
+    mid = EddyState.from_layers(s.with_tensors(s.u_e, s.h, th, sh, s.tracer_h), kh, eh)
     gradients = torch.autograd.grad(m.total_energy(mid), (th, sh, kh, eh))
     work = [
         g * d

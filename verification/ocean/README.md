@@ -1,6 +1,6 @@
 # Ocean verification
 
-The active stratified model is `vfs.ocean.stratified.StratifiedOcean`. It uses
+The historical entropy-coordinate reference model is `vfs.ocean.stratified.StratifiedOcean`. It uses
 JMD95 density, entropy/salt transport, checked SSPRK3 and an explicitly selected
 adaptive thermal ALE remapper. See [the API](../../docs/OCEAN_INTEGRATION.md) and
 [example](../../examples/ocean_stratified.py).

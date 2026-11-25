@@ -29,7 +29,6 @@ adapters. There is no universal state or coupled-model registry.
 ```python
 from vfs import DryAtmosphere, MoistAtmosphere, VoronoiMesh, CharneyPhillipsColumn
 from vfs.ocean import Ocean, OceanState, OceanColumn, OceanDomain
-from vfs.ocean.stratified import StratifiedOcean, EntropyState, AdaptiveThermalRemapper
 ```
 
 Atmospheric models are PyTorch modules; move their geometry with `.to()` before

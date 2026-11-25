@@ -13,7 +13,7 @@
 | Atmospheric initialization and output | [Physical fields](PHYSICAL_FIELDS_API.md) |
 | Moist model and steppers | [Moist API](MOIST_MODULE_API.md) |
 | Optional external AM2 column physics | [PyAM21 workflow and energy-audit scope](../workflows/pyam21/README.md) |
-| Stratified ocean and vertical remapping | [Ocean API](OCEAN_INTEGRATION.md) |
+| Roquet ocean and reference experiments | [Ocean API](OCEAN_INTEGRATION.md) |
 | Prescribed ocean freshwater and heat exchange | [Surface exchange](OCEAN_SURFACE_EXCHANGE.md) |
 | Coupled ocean–ice–snow freshwater and runoff | [Research freshwater boundary](../validation/sea_ice/FRESHWATER.md) |
 | Ocean radiation and prescribed heating | [Surface heating](OCEAN_RADIATION.md) |

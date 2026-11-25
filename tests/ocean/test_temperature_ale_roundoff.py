@@ -2,7 +2,7 @@
 import pytest
 import torch
 
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ocean.temperature.ale import entropy_content
 from vfs import VoronoiMesh
 from vfs.ocean import OceanColumn

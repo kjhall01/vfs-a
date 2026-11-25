@@ -16,9 +16,7 @@ def test_full_hamiltonian_and_positive_deposit(mesh, coast, nu2):
     s = initial.ocean
     u = s.u_e.clone().requires_grad_()
     e = initial.eddy_h.clone().requires_grad_()
-    state = replace(
-        initial, ocean=s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h), eddy_h=e
-    )
+    state = initial.with_layers(s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h), eddy_h=e)
     op = EddyBackscatter(nu2, 86400.0, 0.25, biharmonic_viscosity=1e15)
     with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
         du, de, r = op.tendency(m, state)
@@ -54,9 +52,7 @@ def test_empty_reservoir_is_filled_and_sink_is_local(mesh):
     edge = torch.where(m.ocean.domain.active_edge)[0][0]
     u = torch.zeros_like(s.u_e)
     u[edge] = 1
-    state = replace(
-        initial, ocean=s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h)
-    )
+    state = initial.with_layers(s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h))
     du, _, _ = op.tendency(m, state)
     affected = torch.zeros(mesh.nEdges, dtype=torch.bool)
     affected[edge] = True
@@ -82,9 +78,7 @@ def test_quadratic_modal_damping(mesh):
     for index in [-1, -10]:
         u = torch.zeros_like(s.u_e)
         u[:, 0] = modes[:, index] / root
-        state = replace(
-            initial, ocean=s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h)
-        )
+        state = initial.with_layers(s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h))
         du, _, _ = op.tendency(m, state)
         torch.testing.assert_close(
             du, -op.biharmonic_viscosity * eig[index] ** 2 * u, rtol=2e-12, atol=1e-25
@@ -97,9 +91,7 @@ def test_sink_backward_and_coupled_stages(mesh):
     s = state.ocean
 
     def objective(a):
-        x = replace(
-            state, ocean=s.with_tensors(a * s.u_e, s.h, s.temp_h, s.salt_h, s.tracer_h)
-        )
+        x = state.with_layers(s.with_tensors(a * s.u_e, s.h, s.temp_h, s.salt_h, s.tracer_h))
         du, de, _ = m.backscatter.tendency(m, x)
         return du.square().sum() + de.square().sum()
 

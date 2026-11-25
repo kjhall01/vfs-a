@@ -9,7 +9,9 @@ import importlib.util
 from pathlib import Path
 
 import torch
-from vfs.ocean import Ocean, OceanColumn, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.ocean.dynamics import MultilayerOceanDynamics
 from vfs.ocean.constants import OCEAN_ALPHA_T, OCEAN_BETA_S, OCEAN_T0, OCEAN_S0

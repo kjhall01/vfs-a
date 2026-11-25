@@ -23,7 +23,7 @@ def thermal_case(model, cover=True, temperature=260.0):
     bare = replace(
         bare,
         coupled=replace(
-            bare.coupled, ocean=replace(bare.coupled.ocean, ocean=physical)
+            bare.coupled, ocean=bare.coupled.ocean.with_layers(physical)
         ),
     )
     owner = ThermalSnowOceanIce(receiver.snow.coupled)
@@ -225,7 +225,7 @@ def test_reduced_phase_energy_on_category_and_liquidus_branches(model):
     salt = (row * 2.2).expand_as(h)
     water = water.with_tensors(water.u_e, h, -0.054 * salt * h, salt * h, water.tracer_h)
     sea = replace(sea, coupled=replace(sea.coupled, ice=ice,
-                  ocean=replace(sea.coupled.ocean, ocean=water)),
+                  ocean=sea.coupled.ocean.with_layers(water)),
                   cold_content=sea.cold_content * present,
                   snow_mass=rho_i * ice.volume * ice.volume.new_tensor([0.75, 0.125]))
     phase = ThermalPhase(receiver.snow, sea)

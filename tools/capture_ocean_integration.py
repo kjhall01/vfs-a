@@ -9,7 +9,13 @@ import importlib.util
 from pathlib import Path
 
 import torch
-from vfs.ocean import Ocean, OceanColumn, OceanDomain, OceanState
+# This comparison driver also runs against the installed historical wheel.
+if importlib.util.find_spec("vfs.ocean.reference") is None:
+    from vfs.ocean.model import Ocean
+else:
+    from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.ocean.dynamics import MultilayerOceanDynamics
 

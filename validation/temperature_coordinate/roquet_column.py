@@ -31,8 +31,8 @@ def main():
             state=start;initial=m.total_energy(start);mass=(m.energy.mass_area(s)*s.h).sum();external=0.;count=0;error=None
             try:
                 for n in range(a.steps):
-                    st,k,br=m.boundary.apply(m.facade,state.ocean,state.tke_h,a.dt,surface_stress=f['surface_stress'],_physical=state.ocean)
-                    st,hr=m.heating.apply(m.facade,st,a.dt,shortwave=f['shortwave'],surface_heat=f['surface_heat'],_physical=st)
+                    st,k,br=m.boundary.apply(m.layers,state.ocean,state.tke_h,a.dt,surface_stress=f['surface_stress'],_physical=state.ocean)
+                    st,hr=m.heating.apply(m.layers,st,a.dt,shortwave=f['shortwave'],surface_heat=f['surface_heat'],_physical=st)
                     st,k,mr=m.closure.apply(m.ocean,st,k,a.dt);state=type(state)(st,k);external+=br.surface_work+hr.external_heat;count=n+1
             except (ValueError,FloatingPointError) as exc:error=str(exc)
             st=state.ocean;density=anomaly(m,st) if name=='jmd95' else c.anomaly(st.temperature(),st.salinity(),r.ocean.energy.base.height(st))

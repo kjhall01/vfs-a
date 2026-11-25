@@ -11,12 +11,7 @@ from vfs.ocean.helpers import nonzero_divisor
 from vfs.ocean.stratified import TKEState
 
 
-@dataclass(frozen=True)
-class EddyState(TKEState):
-    eddy_h: torch.Tensor  # cell × layer, h*e [m³/s²]; e [J/kg]
-
-    def specific_eddy_energy(self):
-        return self.eddy_h / nonzero_divisor(self.ocean.h)
+from vfs.ocean.prognostics import EddyState
 
 
 class RoquetHamiltonian:
@@ -201,10 +196,11 @@ class EddyDissipation:
 
     def apply(self, model, state, dt):
         import math
-        from vfs.ocean.temperature.roquet import RoquetOcean, RoquetWorkspace
+        from vfs.ocean.model import Ocean
+        from vfs.ocean.temperature.roquet import RoquetWorkspace
 
-        if not isinstance(model, RoquetOcean) or not isinstance(state, EddyState):
-            raise TypeError("eddy dissipation requires RoquetOcean and EddyState")
+        if not isinstance(model, Ocean) or not isinstance(state, EddyState):
+            raise TypeError("eddy dissipation requires Ocean and EddyState")
         if not math.isfinite(float(dt)) or dt <= 0:
             raise ValueError("positive finite dt required")
         model.check(state)
@@ -214,8 +210,8 @@ class EddyDissipation:
         s = state.ocean
         # This existing algebraic quadratic solve includes cp*CT AND the exact
         # Roquet potential-energy change; adding removed/(h*cp) would not close H.
-        heated, _, _ = RoquetWorkspace(model.ocean, s).heat(s, s, removed / nonzero_divisor(s.h))
-        end = EddyState(heated, state.tke_h, remaining)
+        heated, _, _ = RoquetWorkspace(model.layers, s).heat(s, s, removed / nonzero_divisor(s.h))
+        end = EddyState.from_layers(heated, state.tke_h, remaining)
         model._check_eddy(end)  # other fields validated by the matched heat solve
         H = model.hamiltonian
         thermal = H.finite_change(state, end, include_eddy=False)

@@ -3,7 +3,8 @@ import pytest
 import torch
 
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn, OceanDomain
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.ale import ALEStepper, ReferenceGrid, VerticalRemapper, remap_contents
 from vfs.ocean.jmd95 import JMD95Dynamics, checked_ssprk3
 

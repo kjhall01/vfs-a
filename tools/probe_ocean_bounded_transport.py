@@ -14,7 +14,9 @@ from pathlib import Path
 import torch
 import vfs
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn, OceanDomain, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.jmd95 import JMD95Dynamics
 from vfs.ocean.transport import HorizontalTransport, divergence
 

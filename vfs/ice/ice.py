@@ -12,7 +12,8 @@ import torch
 from vfs.ocean.stratified import TKEState
 from vfs.ocean.stratified.energy_columns import column_terms
 from vfs.ocean.temperature.eddy_energy import EddyState
-from vfs.ocean.temperature.roquet import RoquetOcean, RoquetWorkspace
+from vfs.ocean.model import Ocean
+from vfs.ocean.temperature.roquet import RoquetWorkspace
 
 
 @dataclass(frozen=True)
@@ -62,8 +63,8 @@ class IceHamiltonian:
     """
 
     def __init__(self, ocean_model, parameters=IceParameters()):
-        if not isinstance(ocean_model, RoquetOcean):
-            raise TypeError("matched RoquetOcean required")
+        if not isinstance(ocean_model, Ocean):
+            raise TypeError("matched Ocean required")
         self.model, self.parameters = ocean_model, parameters
 
     def column_terms(self, state):
@@ -199,7 +200,7 @@ class SeaIceThermodynamics:
                 s.salt_h,
                 s.tracer_h,
             )
-            return IceOceanState(replace(state.ocean, ocean=physical), SeaIceState(m))
+            return IceOceanState(state.ocean.with_layers(physical), SeaIceState(m))
 
         zero = torch.zeros_like(old_mass)
         melted = phase(zero)
@@ -243,10 +244,10 @@ class SeaIceThermodynamics:
         heat = torch.cat(
             (extra / (rho * physical.h[:, :1]), torch.zeros_like(physical.h[:, 1:])), -1
         )
-        heated, _, _ = RoquetWorkspace(H.model.ocean, physical).heat(
+        heated, _, _ = RoquetWorkspace(H.model.layers, physical).heat(
             physical, physical, heat, allow_cooling=True
         )
-        end = IceOceanState(replace(end.ocean, ocean=heated), end.ice)
+        end = IceOceanState(end.ocean.with_layers(heated), end.ice)
         self.check(end)
         before_terms = H.column_terms(state)
         after_terms = H.column_terms(end)

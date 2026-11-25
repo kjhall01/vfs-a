@@ -13,7 +13,7 @@ sys.path[:0] = [
 ]
 from vfs.ice.ridging import CategoryIce, RidgingState, CompressionRidging
 from vfs.ice.ice import IceOceanState, SeaIceState
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 
@@ -65,7 +65,7 @@ def test_independent_full_hamiltonian_contraction(
         for x in (state.ice.area, state.ice.volume, state.ice.velocity, s.temp_h)
     ]
     physical = s.with_tensors(s.u_e, s.h, t, s.salt_h, s.tracer_h)
-    state = RidgingState(replace(state.ocean, ocean=physical), CategoryIce(a, v, u))
+    state = RidgingState(state.ocean.with_layers(physical), CategoryIce(a, v, u))
     gradients = torch.autograd.grad(op.hamiltonian.total_energy(state), (a, v, u, t))
     with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
         rhs, report = op.tendency(state)

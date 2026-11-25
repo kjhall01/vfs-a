@@ -5,7 +5,7 @@
 | `DryAtmosphere` | `DrySSPRK3()` (default) | Conservative unbatched, tracer-free dry core |
 | `MoistAtmosphere` | `BoundedSSPRK3()` (default) | Three bounded Euler species-amount budgets |
 | `StratifiedOcean` | Checked sharp-front SSPRK3 | Entropy/salt work pairing; optional explicit post-step ALE |
-| `Ocean` | `ssprk3` (default) | Behavior depends on the supplied dynamics and sources |
+| `Ocean` | Standalone bounded SSPRK3 | Roquet CT/SA transport. Coupled ocean–ice stepping uses the configured joint integrator. |
 
 Atmospheric models advance through `model(state, dt)` or `model.step(state, dt)`.
 Ocean facades use `model.step(state, dt)`. Timesteps are seconds. Invalid states
@@ -44,7 +44,7 @@ for timestep drift. See [ocean API and limits](OCEAN_INTEGRATION.md).
 ## Forcing and diagnostics
 
 [Held–Suarez forcing](HELD_SUAREZ.md) is explicitly summed into each dry SSPRK3
-stage. `Ocean` sums supplied source tendencies; `StratifiedOcean` currently has
+stage. The historical layered reference sums supplied source tendencies; `StratifiedOcean` currently has
 no source interface. Diagnostics report tensor budgets. Neither a successful
 example nor a converged implicit solve establishes physical accuracy; see
 [verification](../verification/README.md).

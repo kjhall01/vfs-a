@@ -32,10 +32,10 @@ class OceanIceReceiver:
     def __init__(self, snow):
         self.snow = snow
         self.H = snow.hamiltonian
-        self.wind = KineticWindMap(self.H.model.ocean.mesh)
+        self.wind = KineticWindMap(self.H.model.mesh)
 
     def check_geometry(self, adapter, atmosphere, state):
-        domain = self.H.model.ocean.domain
+        domain = self.H.model.domain
         land = atmosphere.surface["land"]
         if domain is None and land.any():
             raise ValueError("an all-wet ocean cannot receive land surface fluxes")
@@ -133,7 +133,7 @@ class OceanIceReceiver:
         trial = s.with_tensors(s.u_e, h, temp_h, s.salt_h, s.tracer_h)
         candidate = replace(
             initial,
-            coupled=replace(old, ice=ice1, ocean=replace(old.ocean, ocean=trial)),
+            coupled=replace(old, ice=ice1, ocean=old.ocean.with_layers(trial)),
             snow_mass=snow1,
         )
         # Both native discretizations use the transpose of the SAME cell wind
@@ -153,7 +153,7 @@ class OceanIceReceiver:
             self.wind.transpose((-A * x)[:, None])
             for x in (exchange.stress[:, 0], exchange.stress[:, 1:].sum(1))
         )
-        domain = H.model.ocean.domain
+        domain = H.model.domain
         if domain is not None:
             Iw, Ii, Jw, Ji = (domain.apply_edge(v) for v in (Iw, Ii, Jw, Ji))
         mechanical = H.model.energy.base.mechanical
@@ -180,7 +180,7 @@ class OceanIceReceiver:
             coupled=replace(
                 candidate.coupled,
                 ice=replace(ice1, velocity=ui1),
-                ocean=replace(old.ocean, ocean=trial),
+                ocean=old.ocean.with_layers(trial),
             ),
         )
         residual = (
@@ -210,13 +210,13 @@ class OceanIceReceiver:
         specific = torch.cat(
             ((A * thermal)[:, None] / safe(mass), torch.zeros_like(s.h[:, 1:])), 1
         )
-        end, _, _ = RoquetWorkspace(H.model.ocean, s).heat(
+        end, _, _ = RoquetWorkspace(H.model.layers, s).heat(
             s, s, specific, allow_cooling=True
         )
         result = replace(
             candidate,
             coupled=replace(
-                candidate.coupled, ocean=replace(candidate.coupled.ocean, ocean=end)
+                candidate.coupled, ocean=candidate.coupled.ocean.with_layers(end)
             ),
         )
         self.snow.check(result)

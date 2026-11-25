@@ -70,7 +70,7 @@ def test_coastal_runoff_ice_and_restart(config, source, tmp_path):
     assert velocity.abs().max() > 0
     ice = c.CategoryIce(cover, cover * s.h.new_tensor([.5, 1.]), velocity)
     s = s.with_tensors(s.u_e, s.h, s.h * (-.054 * 34.), s.salt_h, s.tracer_h)
-    sea = replace(sea, coupled=replace(sea.coupled, ocean=replace(sea.coupled.ocean, ocean=s), ice=ice),
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=sea.coupled.ocean.with_layers(s), ice=ice),
                   cold_content=-2. * receiver.snow.heat_capacity * receiver.H.slab.parameters.density * ice.volume,
                   land=l.column.initialize(sea.land.skin, soil_water=150.))
     initial = c.inventories(adapter, air, receiver, sea)

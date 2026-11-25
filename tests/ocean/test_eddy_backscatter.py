@@ -16,9 +16,7 @@ def test_instantaneous_full_hamiltonian_and_local_power(mesh, coast, nu):
     s = initial.ocean
     u = s.u_e.detach().clone().requires_grad_()
     e = initial.eddy_h.detach().clone().requires_grad_()
-    state = replace(
-        initial, ocean=s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h), eddy_h=e
-    )
+    state = initial.with_layers(s.with_tensors(u, s.h, s.temp_h, s.salt_h, s.tracer_h), eddy_h=e)
     op = EddyBackscatter(nu, 86400.0, 0.25)
     with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
         du, de, r = op.tendency(m, state)
@@ -48,12 +46,9 @@ def test_zero_cases(mesh, mode):
     if mode == "empty":
         state = replace(state, eddy_h=torch.zeros_like(state.eddy_h))
     if mode == "rest":
-        state = replace(
-            state,
-            ocean=s.with_tensors(
+        state = state.with_layers(s.with_tensors(
                 torch.zeros_like(s.u_e), s.h, s.temp_h, s.salt_h, s.tracer_h
-            ),
-        )
+            ))
     op = EddyBackscatter(
         0 if mode == "zero_viscosity" else 1e12,
         86400.0,
@@ -88,9 +83,7 @@ def test_backward(mesh, limited):
     op = EddyBackscatter(1e12 if limited else 1e5, 86400.0, 0.25)
 
     def f(a):
-        x = replace(
-            state, ocean=s.with_tensors(a * s.u_e, s.h, s.temp_h, s.salt_h, s.tracer_h)
-        )
+        x = state.with_layers(s.with_tensors(a * s.u_e, s.h, s.temp_h, s.salt_h, s.tracer_h))
         du, de, _ = op.tendency(m, x)
         return du.square().sum() + de.square().sum()
 

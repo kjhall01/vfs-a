@@ -19,13 +19,13 @@ from workflows.coupled.driver import exchange_step
 from vfs.ice.ocean_ice import OceanIce
 from vfs.ice.ridging import RidgingState, CategoryIce
 from vfs.ice.snow import SnowOceanIce
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean
 from vfs.ocean import OceanColumn
 
 
 def initial_surface(adapter, air, cover):
     mesh = adapter.model.mesh
-    model = RoquetOcean(mesh, OceanColumn(3, total_depth=200.0, gravity=9.8))
+    model = Ocean(mesh, OceanColumn(3, total_depth=200.0, gravity=9.8))
     h = torch.tensor([20.0, 60.0, 120.0]).expand(mesh.nCells, -1).clone()
     frozen = mesh.cell_xyz[:, 2].abs() > 0.6
     ice_area = (

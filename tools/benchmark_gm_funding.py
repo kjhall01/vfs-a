@@ -90,8 +90,7 @@ def main():
                                       generator_xyz=xyz)
         template = sea.coupled.ocean
         values = c.copy_tree(payload["ocean"], device=device)
-        state = replace(template, ocean=template.ocean.with_tensors(**values),
-                        tke_h=payload["tke_h"].to(device), eddy_h=payload["eddy_h"].to(device))
+        state = template.with_layers(template.ocean.with_tensors(**values), tke_h=payload["tke_h"].to(device), eddy_h=payload["eddy_h"].to(device))
         result = benchmark(receiver.H.model, state, config, args.steps)
     print(json.dumps(result, indent=2, allow_nan=False))
 

@@ -103,20 +103,6 @@ class OceanIce:
                 ) from error
             raise
 
-    def packed(self, ocean):
-        carried = (
-            self.ocean._carry_eddy(ocean) if isinstance(ocean, EddyState) else ocean
-        )
-        return self.ocean.pack(carried), carried
-
-    def unpack(self, packed, original, carried):
-        result = self.ocean.unpack(packed, carried)
-        return (
-            self.ocean._recover_eddy(result, original)
-            if isinstance(original, EddyState)
-            else result
-        )
-
     def conjugates(self, state, birth_thickness=None):
         """Cell energy derivatives per area at fixed ice velocity; omit constant latent datum."""
         H = self.hamiltonian
@@ -172,7 +158,7 @@ class OceanIce:
         metric = H.metric(state)
         absolute = (
             mesh.curl(ui)
-            + self.ocean.ocean.base.dynamics.mechanical.rotation_rate
+            + self.ocean.rotation_rate
             * mesh.coriolis_unit_vertex[:, None]
         )
         v0, v1 = mesh.verticesOnEdge.T
@@ -222,10 +208,10 @@ class OceanIce:
         active = self.ridge.active_edges(state)
         ocean_active = (
             torch.ones_like(active)
-            if self.ocean.ocean.domain is None
-            else self.ocean.ocean.domain.active_edge[:, None]
+            if self.ocean.domain is None
+            else self.ocean.domain.active_edge[:, None]
         )
-        packed, carried = self.packed(state.ocean)
+        packed = self.ocean.pack_transport(state.ocean)
         if ocean_dynamics:
             rhs, transport_report = self.ocean.dynamics.tendency_with_report(packed, dt)
         else:
@@ -236,20 +222,16 @@ class OceanIce:
                 torch.zeros_like(packed.salt_h),
                 torch.zeros_like(packed.tracer_h),
             )
-        base = self.unpack(rhs, state.ocean, carried)
+        base = self.ocean.unpack_transport(rhs, state.ocean)
         if self.ocean.backscatter is not None:
             closure = self.ocean.backscatter
             if dt * closure.fraction > closure.timescale:
                 raise ValueError("backscatter requires dt*fraction <= timescale")
             extra_u, extra_e, _ = closure.tendency(self.ocean, state.ocean)
             b = base.ocean
-            base = replace(
-                base,
-                ocean=b.with_tensors(
+            base = base.with_layers(b.with_tensors(
                     b.u_e + extra_u, b.h, b.temp_h, b.salt_h, b.tracer_h
-                ),
-                eddy_h=base.eddy_h + extra_e,
-            )
+                ), eddy_h=base.eddy_h + extra_e)
         du = base.ocean.u_e
         dtemp = base.ocean.temp_h
         dk = base.tke_h
@@ -317,7 +299,7 @@ class OceanIce:
             )
             da = da + pack_da
             heat = self.packing_friction * potential + birth_heat
-            workspace = RoquetWorkspace(self.ocean.ocean, s)
+            workspace = RoquetWorkspace(self.ocean.layers, s)
             capacity = (
                 workspace.reference.cp_theta
                 + 2 * workspace.a * s.temperature()
@@ -398,7 +380,7 @@ class OceanIce:
         physical = base.ocean.with_tensors(
             du, base.ocean.h, dtemp, base.ocean.salt_h, base.ocean.tracer_h
         )
-        ocean_rhs = replace(base, ocean=physical, tke_h=dk)
+        ocean_rhs = base.with_layers(physical, tke_h=dk)
         return RidgingState(ocean_rhs, CategoryIce(da, dv, di)), CoupledReport(
             wind_power, drag_power, ridge_heat, transport_power, loading_power
         )
@@ -406,7 +388,7 @@ class OceanIce:
     @staticmethod
     def add(state, rhs, dt):
         a, b = state.ocean, rhs.ocean
-        ocean = replace(a, ocean=a.ocean + dt * b.ocean, tke_h=a.tke_h + dt * b.tke_h)
+        ocean = a.with_layers(a.ocean + dt * b.ocean, tke_h=a.tke_h + dt * b.tke_h)
         if isinstance(a, EddyState):
             ocean = replace(ocean, eddy_h=a.eddy_h + dt * b.eddy_h)
         return RidgingState(
@@ -421,11 +403,7 @@ class OceanIce:
     @staticmethod
     def blend(first, second, weight):
         a, b = first.ocean, second.ocean
-        ocean = replace(
-            a,
-            ocean=(1 - weight) * a.ocean + weight * b.ocean,
-            tke_h=(1 - weight) * a.tke_h + weight * b.tke_h,
-        )
+        ocean = a.with_layers((1 - weight) * a.ocean + weight * b.ocean, tke_h=(1 - weight) * a.tke_h + weight * b.tke_h)
         if isinstance(a, EddyState):
             ocean = replace(ocean, eddy_h=(1 - weight) * a.eddy_h + weight * b.eddy_h)
         ice = CategoryIce(
@@ -489,11 +467,11 @@ class OceanIce:
         if self.ocean.closure is not None:
             previous = state.ocean.ocean
             mixed, k, _ = self.ocean.closure.apply(
-                self.ocean.ocean, previous, state.ocean.tke_h, dt
+                self.ocean.layers, previous, state.ocean.tke_h, dt
             )
             if not torch.equal(mixed.h, previous.h):
                 raise ValueError("ice coupling requires fixed-geometry mixing")
-            state = replace(state, ocean=replace(state.ocean, ocean=mixed, tke_h=k))
+            state = replace(state, ocean=state.ocean.with_layers(mixed, tke_h=k))
         state, _ = self.drag_step(state, 0.5 * dt)
         q1 = (
             prescribed

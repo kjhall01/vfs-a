@@ -1,7 +1,9 @@
 """Independent derivative/work checks for the constant-density numerical change."""
 import torch
 import pytest
-from vfs.ocean import Ocean, OceanColumn, OceanDomain, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.geometry.mesh import VoronoiMesh
 

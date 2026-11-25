@@ -196,12 +196,12 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
                                  initial.salt_h, initial.tracer_h)
     # Vary only the land dummy column. It has no physical volume and must
     # contribute neither vertex stress nor eddy energy at adjacent wet faces.
-    moving = replace(sea.coupled.ocean, ocean=water)
+    moving = sea.coupled.ocean.with_layers(water)
     land_factor = torch.where(domain.wet_cell[:, None], 1., 2.).to(water.h)
     dummy = water.with_tensors(water.u_e, water.h*land_factor, water.temp_h*land_factor,
                                water.salt_h*land_factor, water.tracer_h*land_factor[..., None])
     du, de, _ = model.backscatter.tendency(model, moving)
-    other_du, other_de, _ = model.backscatter.tendency(model, replace(moving, ocean=dummy))
+    other_du, other_de, _ = model.backscatter.tendency(model, moving.with_layers(dummy))
     assert torch.equal(du, other_du) and torch.equal(de, other_de)
     rhs, rhs_report = model.dynamics.tendency_with_report(water, cfg.ocean_dt)
     faces = rhs_report.faces
@@ -211,7 +211,7 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
     work = sum((grad[k] * getattr(rhs, k)).sum() for k in ('h', 'temp_h', 'salt_h', 'u_e'))
     scale = (grad['u_e'] * rhs.u_e).abs().sum()
     assert work.abs() <= 2e-12 * scale
-    sea = replace(sea, coupled=replace(sea.coupled, ocean=replace(sea.coupled.ocean, ocean=water)))
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=sea.coupled.ocean.with_layers(water)))
     air, sea, report = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
     check_state(sea)
     assert report['ale_steps'] == 1 and report['gmredi_steps'] == cfg.eddy_substeps

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import torch
 
-from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.model import LayerDynamics
 from vfs.ocean.partial_cells import layer_interfaces
 from vfs.ocean.transport import HorizontalTransport, TransportLedger, divergence
 
@@ -79,7 +79,7 @@ class ShelfTransportReport:
     metric: torch.Tensor
 
 
-class ShelfTemperatureOcean(TemperatureOcean):
+class PartialCellDynamics(LayerDynamics):
     """Use one split carrier graph for continuity, bounded CT/SA and pressure work."""
 
     def __init__(self, ocean):
@@ -150,3 +150,5 @@ class ShelfTemperatureOcean(TemperatureOcean):
             )
         self.fields(end)
         return end
+
+ShelfTemperatureOcean = PartialCellDynamics

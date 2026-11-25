@@ -44,7 +44,7 @@ class RidgingHamiltonian:
 
     def __init__(self, model, parameters=IceParameters()):
         self.slab = IceHamiltonian(model, parameters)
-        if parameters.density >= model.ocean.base.column.rho0:
+        if parameters.density >= model.column.rho0:
             raise ValueError(
                 "floating ice requires density below reference water density"
             )
@@ -145,7 +145,7 @@ class CompressionRidging:
     def active_edges(self, state):
         H = self.hamiltonian
         active = H.metric(state) > 0
-        domain = H.model.ocean.domain
+        domain = H.model.domain
         if domain is not None:
             active = active & domain.active_edge[:, None]
         return active
@@ -223,7 +223,7 @@ class CompressionRidging:
         potential = cost * compression
         heating = (self.friction * cost + viscous) * compression
         # Full-H caloric conjugate: warming also changes Roquet potential energy.
-        workspace = RoquetWorkspace(H.model.ocean, s)
+        workspace = RoquetWorkspace(H.model.layers, s)
         capacity = (
             workspace.reference.cp_theta
             + 2 * workspace.a * s.temperature()
@@ -253,7 +253,7 @@ class CompressionRidging:
             s.u_e, s.h, s.temp_h + dt * rhs.temp_h, s.salt_h, s.tracer_h
         )
         return RidgingState(
-            replace(state.ocean, ocean=physical),
+            state.ocean.with_layers(physical),
             CategoryIce(
                 ice.area + dt * rhs.area,
                 ice.volume + dt * rhs.volume,

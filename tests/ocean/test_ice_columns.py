@@ -40,7 +40,7 @@ def cold_case(mesh, coast=False, mass=0.0, temperature=None):
     )
     wet = model.energy.mass_area(s) > 0
     ice = SeaIceState(torch.where(wet, torch.full_like(s.h[:, :1], mass), 0.0))
-    return model, IceOceanState(replace(old, ocean=physical), ice)
+    return model, IceOceanState(old.with_layers(physical), ice)
 
 
 @pytest.mark.parametrize("coast", [False, True])
@@ -100,7 +100,7 @@ def test_phase_derivative_independent_autograd(mesh):
     h = torch.cat((s.h[:, :1] + (initial.ice.mass - m) / s.column.rho0, s.h[:, 1:]), -1)
     th = torch.cat((-0.054 * s.salt_h[:, :1], s.temp_h[:, 1:]), -1)
     physical = s.with_tensors(s.u_e, h, th, s.salt_h, s.tracer_h)
-    state = IceOceanState(replace(initial.ocean, ocean=physical), SeaIceState(m))
+    state = IceOceanState(initial.ocean.with_layers(physical), SeaIceState(m))
     (expected,) = torch.autograd.grad(H.energy_per_area(state).sum(), m)
     torch.testing.assert_close(
         H.phase_mass_derivative(state), expected, rtol=2e-14, atol=1e-8
@@ -156,7 +156,7 @@ def test_rejects_unsupported_motion_and_exhaustion(mesh):
     s = initial.ocean.ocean
     moving = s.with_tensors(torch.ones_like(s.u_e), s.h, s.temp_h, s.salt_h, s.tracer_h)
     with pytest.raises(ValueError, match="stationary"):
-        thermo.check(replace(initial, ocean=replace(initial.ocean, ocean=moving)))
+        thermo.check(replace(initial, ocean=initial.ocean.with_layers(moving)))
     with pytest.raises(ValueError, match="exhausts"):
         thermo.apply(
             initial, 86400.0, heat_flux=torch.full_like(initial.ice.mass, -1e8)
@@ -208,7 +208,7 @@ def test_salinity_ceiling_allows_warming_but_not_more_freezing(mesh):
     physical = s.with_tensors(
         s.u_e, s.h, -0.054 * salinity * s.h, salinity * s.h, s.tracer_h
     )
-    initial = replace(initial, ocean=replace(initial.ocean, ocean=physical))
+    initial = replace(initial, ocean=initial.ocean.with_layers(physical))
     thermo = SeaIceThermodynamics(model)
     end, _ = thermo.apply(initial, 60.0, heat_flux=torch.ones_like(initial.ice.mass))
     assert torch.count_nonzero(end.ice.mass) == 0

@@ -140,7 +140,8 @@ def temporal_refinement():
 def internal_wave(n):
     """Repeat #31's continuum two-layer reference with this candidate step."""
     from vfs.geometry.mesh import VoronoiMesh
-    from vfs.ocean import Ocean, OceanColumn
+    from vfs.ocean.reference import Ocean
+    from vfs.ocean import OceanColumn
     from vfs.ocean.jmd95 import JMD95Dynamics
     from vfs.ocean.eos import jmd95_seawater_density
     mesh = VoronoiMesh(n_cells=n, radius=1e5, lloyd_iters=10, verbose=False)

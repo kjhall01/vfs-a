@@ -340,14 +340,14 @@ class SnowOceanIce:
             return state
         original = state.coupled.ocean
         mixed, k, _ = model.closure.apply(
-            model.ocean, original.ocean, original.tke_h, dt
+            model.layers, original.ocean, original.tke_h, dt
         )
         if not torch.equal(mixed.h, original.ocean.h):
             raise ValueError("snow coupling requires fixed-geometry mixing")
         state = replace(
             state,
             coupled=replace(
-                state.coupled, ocean=replace(original, ocean=mixed, tke_h=k)
+                state.coupled, ocean=original.with_layers(mixed, tke_h=k)
             ),
         )
         if stage_callback is not None:

@@ -9,7 +9,7 @@ from importlib.resources import files
 import json
 import math
 import torch
-from ..model import Ocean
+from ..reference import Ocean
 from ..transport import HorizontalTransport
 from ..jmd95 import JMD95Dynamics
 from ..jmd95_energy import JMD95Energy

@@ -12,7 +12,7 @@ from vfs.ocean.temperature.model import TemperatureOcean
 from vfs.ocean.temperature.system import TemperatureSystem
 from vfs.ocean.temperature.path import TemperaturePathMixing
 from vfs.ocean.temperature.surface import FastSurfaceHeating,FastSurfaceExchange,TemperatureBoundary
-from vfs.ocean import OceanState
+from vfs.ocean.state import OceanState
 from vfs.ocean.stratified import StratifiedOcean,TKEState,OceanSurfaceFluxes
 
 

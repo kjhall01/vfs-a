@@ -68,7 +68,10 @@ def jmd95_partials(s, t, pressure_dbar):
     return density, dt, ds, dp
 
 
-class JMD95Energy:
+from .energy import StratificationEnergy
+
+
+class JMD95Energy(StratificationEnergy):
     """K + free-surface energy + quadrature-defined dynamic enthalpy, in joules.
 
     Fixed Gauss quadrature is part of the Hamiltonian, not an approximate
@@ -91,11 +94,6 @@ class JMD95Energy:
 
     def _quadrature(self, like):
         return like.new_tensor(self.nodes), like.new_tensor(self.weights)
-
-    def height(self, state):
-        """Layer midpoints in metres above the fixed sea-level datum."""
-        below_and_self = state.h.flip(-1).cumsum(-1).flip(-1)
-        return -state.column.total_depth_like(state.h) + below_and_self - .5*state.h
 
     def density(self, state):
         pressure = -self.rho0*self.gravity*self.height(state)/1e4
@@ -139,16 +137,3 @@ class JMD95Energy:
         energy = (area_mass*mask(h*mean(psi))).sum()
         return energy, {'h':area_mass*mask(qh), 'temp_h':area_mass*mask(qt),
                         'salt_h':area_mass*mask(qs)}
-
-    def terms(self, state):
-        result = self.mechanical.terms(state)
-        result['dynamic_enthalpy'] = self.stratification(state)[0]
-        result['total'] = result['total'] + result['dynamic_enthalpy']
-        return result
-
-    def gradients(self, state):
-        result = self.mechanical.gradients(state)
-        _, extra = self.stratification(state)
-        for name, value in extra.items():
-            result[name] = result[name] + value
-        return result

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def wave(cells, layers):
     import torch
-    from vfs.ocean.temperature.roquet import RoquetOcean
+    from vfs.ocean.model import Ocean as RoquetOcean
     from vfs.geometry.mesh import VoronoiMesh
     from vfs.ocean import OceanColumn
 
@@ -51,7 +51,7 @@ def checks():
     from dataclasses import replace, fields
     from vfs.ocean.temperature.eddy import GMRedi
     from eddy_campaign import make
-    from vfs.ocean.temperature.roquet import RoquetOcean
+    from vfs.ocean.model import Ocean as RoquetOcean
     from vfs.ocean import OceanDomain
     from vfs.ocean.stratified import TKEState
 
@@ -87,12 +87,9 @@ def checks():
         alpha = torch.tensor(0.0, requires_grad=True)
         s = initial.ocean
         x = s.mesh.cell_xyz[:, :1]
-        changed = replace(
-            initial,
-            ocean=s.with_tensors(
+        changed = initial.with_layers(s.with_tensors(
                 s.u_e, s.h, s.temp_h, s.salt_h + alpha * s.h * x, s.tracer_h
-            ),
-        )
+            ))
         end, _ = GMRedi(1000.0, 1000.0).apply(model, changed, 60.0)
         result["gradient"] = torch.autograd.grad(
             (x * end.specific_eddy_energy()).mean(), alpha
@@ -172,7 +169,7 @@ def main():
             samples[name].append(time.perf_counter() - start)
             del out
         print("repeat", repeat + 1, flush=True)
-    from vfs.ocean.temperature.roquet import RoquetOcean
+    from vfs.ocean.model import Ocean as RoquetOcean
     from vfs.ocean.temperature.eddy_energy import RoquetHamiltonian
     import inspect
 

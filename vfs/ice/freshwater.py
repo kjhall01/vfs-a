@@ -173,8 +173,8 @@ class FreshwaterBoundary:
         area = mesh.cell_area[:, None]
         wet = H.model.energy.mass_area(s) > 0
         active = torch.ones_like(original.ice.velocity, dtype=torch.bool)
-        if H.model.ocean.domain is not None:
-            active = H.model.ocean.domain.active_edge[:, None]
+        if H.model.domain is not None:
+            active = H.model.domain.active_edge[:, None]
         rain, rain_h, rain_u = self._liquid(initial, fluxes.rain, "rain", wet, active)
         runoff, runoff_h, runoff_u = self._liquid(
             initial, fluxes.runoff, "runoff", wet, active
@@ -228,7 +228,7 @@ class FreshwaterBoundary:
         )
         candidate = replace(
             frozen,
-            coupled=replace(frozen.coupled, ocean=replace(original.ocean, ocean=trial)),
+            coupled=replace(frozen.coupled, ocean=original.ocean.with_layers(trial)),
         )
         # Boundary convention: exact hydrostatic incorporation work at fixed
         # solid mass during this liquid stage, and each stream's incoming KE.
@@ -263,14 +263,14 @@ class FreshwaterBoundary:
         specific = torch.cat(
             (correction / safe(top_mass), torch.zeros_like(h[:, 1:])), -1
         )
-        physical, _, _ = RoquetWorkspace(H.model.ocean, trial).heat(
+        physical, _, _ = RoquetWorkspace(H.model.layers, trial).heat(
             trial, trial, specific, allow_cooling=True
         )
         end = replace(
             candidate,
             coupled=replace(
                 candidate.coupled,
-                ocean=replace(candidate.coupled.ocean, ocean=physical),
+                ocean=candidate.coupled.ocean.with_layers(physical),
             ),
         )
         self.snow.check(end)
@@ -374,8 +374,8 @@ class FreshwaterBoundary:
         enthalpy = (heat_cell / safe(mass_cell))[:, None]
         # Validate the supplied entry momentum before returning a forcing packet.
         active = torch.ones_like(state.coupled.ice.velocity, dtype=torch.bool)
-        if self.H.model.ocean.domain is not None:
-            active = self.H.model.ocean.domain.active_edge[:, None]
+        if self.H.model.domain is not None:
+            active = self.H.model.domain.active_edge[:, None]
         value = LiquidWater(rate, enthalpy, velocity)
         self._liquid(state, value, "runoff", wet[:, None], active)
         return value

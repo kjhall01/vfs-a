@@ -25,7 +25,7 @@ import torch
 from eddy_performance import wave
 from eddy_campaign import make
 from vfs.ocean.temperature.eddy_energy import EddyState
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.ocean import OceanDomain
 from vfs.ocean.transport import HorizontalTransport
 import vfs
@@ -59,7 +59,7 @@ def capture():
             if coast:
                 domain = OceanDomain(s.mesh, s.mesh.cell_xyz[:, 2] > -0.4)
                 m = RoquetOcean(s.mesh, s.column, domain=domain)
-                state = EddyState(
+                state = EddyState.from_layers(
                     domain.project_state(s),
                     domain.apply_cell(state.tke_h),
                     domain.apply_cell(state.eddy_h),
@@ -74,7 +74,7 @@ def capture():
             )
             prefix = f"{front}/{coast}"
             tensors(
-                m.dynamics.tendency_with_report(m.pack(m._carry_eddy(state)), 10.0),
+                m.dynamics.tendency_with_report(m.pack_transport(state), 10.0),
                 prefix + "/rhs",
                 result,
             )

@@ -213,7 +213,8 @@ def test_no_forward_ad_and_directional_derivative(probe, monkeypatch):
 
 
 def test_reference_composition_rest_over_topography(probe):
-    from vfs.ocean import Ocean, OceanColumn
+    from vfs.ocean.reference import Ocean
+    from vfs.ocean import OceanColumn
     from vfs.ocean.jmd95 import JMD95Dynamics
     original, _, _ = probe.case()
     mesh = original.mesh

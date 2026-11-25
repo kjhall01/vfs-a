@@ -17,7 +17,9 @@ from types import SimpleNamespace
 import numpy as np
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.jmd95 import JMD95Dynamics
 from vfs.ocean.eos import jmd95_seawater_density
 

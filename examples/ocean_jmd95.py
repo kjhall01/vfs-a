@@ -5,7 +5,8 @@ invalid stages. This is not a bounded/mixed/forced climate configuration.
 """
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 from vfs.ocean.jmd95 import JMD95Dynamics, checked_ssprk3
 
 

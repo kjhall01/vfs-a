@@ -18,7 +18,7 @@ from vfs.ocean.temperature.eddy import GMRedi
 class CoupledShelfRedi:
     def __init__(self, model, state, nominal, eddy):
         s = state.ocean
-        mesh, domain = s.mesh, model.ocean.domain
+        mesh, domain = s.mesh, model.domain
         h = torch.where(domain.wet_cell[:, None], s.h, 0.0)
         depth = torch.where(domain.wet_cell, domain.depth[:, 0], 0.0)
         ref = reference_thickness(depth, nominal.to(h))
@@ -130,7 +130,7 @@ class _ShelfCirculation:
         self.operator = op
         self.shelf = _FaceSlots(op.faces)
         s = state.ocean
-        h = torch.where(model.ocean.domain.wet_cell[:, None], s.h, 0.0)
+        h = torch.where(model.domain.wet_cell[:, None], s.h, 0.0)
         self.h = h
         self.length = s.mesh.dv_edge
         self.native = _FaceSlots(WetFaces.from_columns(op.depth, h, s.mesh.cellsOnEdge))

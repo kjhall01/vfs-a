@@ -11,7 +11,7 @@ and experiment configurations live in `workflows/` and run from a checkout.
 | Run with continents, topography and shallow shelves | [Earth pilot, required inputs and restart instructions](workflows/coupled/EARTH_SHELF.md) |
 | Run a coupled aquaplanet | [Default aquaplanet](workflows/coupled/CAMPAIGN.md) or [4,096-cell full-depth configuration](workflows/coupled/FULL_DEPTH_4096.md) |
 | Run atmosphere and physics with prescribed SST | [PyAM2.1 column and aquaplanet drivers](workflows/pyam21/README.md) |
-| Explore standalone dynamics | [Dry Held–Suarez atmosphere](examples/held_suarez.py), [moist atmosphere](examples/moist_atmosphere.py), [stratified ocean](examples/ocean_stratified.py) |
+| Explore standalone dynamics | [Dry Held–Suarez atmosphere](examples/held_suarez.py), [moist atmosphere](examples/moist_atmosphere.py), [stratified ocean](examples/ocean.py) |
 | Inspect or plot model output | [NetCDF fields and masks](workflows/coupled/EARTH_SHELF.md#existing-inputs-and-netcdf-output) and [native mesh plots](docs/NATIVE_MESH_PLOTTING.md) |
 | Benchmark the coupled workflow | [Throughput and operator profiling](tools/PROFILE_COUPLED.md) |
 
@@ -23,7 +23,7 @@ Run these commands from the repository root.
 ```bash
 python -m pip install .
 python examples/moist_atmosphere.py
-python examples/ocean_stratified.py
+python examples/ocean.py
 ```
 
 For an editable installation, use `python -m pip install -e '.[test]'`.
@@ -36,8 +36,7 @@ See [contributing](CONTRIBUTING.md) for the complete test environment.
 | --- | --- | --- |
 | `vfs.DryAtmosphere` | Conservative dry dynamics; SSPRK3 | [Dry atmosphere](examples/dry_atmosphere.py) |
 | `vfs.MoistAtmosphere` | Entropy and water contents; bounded SSPRK3 with matched energy work | [Moist atmosphere](examples/moist_atmosphere.py) |
-| `vfs.ocean.stratified.StratifiedOcean` | Active temperature/salinity, JMD95 density, bounded transport, optional energy-closing ALE | [Stratified ocean](examples/ocean_stratified.py) |
-| `vfs.ocean.Ocean` | Configurable layered equations and source objects | [Layered reference](examples/ocean_reference.py), [constant density](examples/ocean_conservative.py), [centered JMD95](examples/ocean_jmd95.py) |
+| `vfs.ocean.Ocean` | Roquet CT/SA dynamics, bounded transport, optional mixing, surface forcing, EKE and ALE | [Forced ocean](examples/ocean.py), [partial-column Earth campaign](workflows/coupled/EARTH_SHELF.md) |
 
 The atmosphere uses a hybrid pressure Charney–Phillips column. The ocean uses
 layer thicknesses and layer-centered thermodynamic contents. Both store horizontal
@@ -59,16 +58,18 @@ state = model(state, dt=1.)
 budgets = model.diagnostics(state)
 ```
 
-The [ocean example](examples/ocean_stratified.py) constructs a three-layer state,
-advances it, explicitly remaps its vertical grid, and reports energy and salt
-budgets. Examples demonstrate API use; they are not balanced initial conditions
-or timestep recommendations for other resolutions.
+The [ocean example](examples/ocean.py) constructs the campaign ocean on three
+layers and applies a prescribed surface heat flux for one minute. The flat
+state exposes layer thickness, edge velocity, temperature and salt inventories,
+tracers and turbulent energy. Supplying `eddy_energy` adds a mesoscale reservoir.
+The coupled workflow gives the same ocean to the ocean–ice integrator, which
+evaluates both components at each Runge–Kutta stage.
 
 ## Numerical scope
 
 - Moist SSPRK3 requires positive vapor and uses bounded species-amount ledgers.
-- `StratifiedOcean` is unforced and unbatched. Its ALE correction checks column
-  energy and entropy feasibility and rejects unsuccessful remaps.
+- The Earth preset selects partial-column transport when constructing the ocean.
+  The aquaplanet uses matching layer indices across wet edges.
 - Semidiscrete energy closure does not imply exact finite-step conservation.
   The atmospheric energy budget includes the fixed-pressure lid reservoir.
 - Tensor operations retain autograd connections, but limiter switches, iterative
@@ -88,7 +89,7 @@ or timestep recommendations for other resolutions.
 - [State shapes and ownership](docs/STATE_OWNERSHIP.md)
 - [Timestepping](docs/CURRENT_PATHS.md) and [package structure](docs/PACKAGE_OWNERSHIP.md)
 - [Atmospheric initialization](docs/PHYSICAL_FIELDS_API.md) and [moist API](docs/MOIST_MODULE_API.md)
-- [Stratified ocean API](docs/OCEAN_INTEGRATION.md)
+- [Roquet ocean and historical reference configurations](docs/OCEAN_INTEGRATION.md)
 - [Verification](verification/README.md) and [ocean measurements](verification/ocean/README.md)
 
 - [Compatible atmosphere/ocean rotation](docs/COMPATIBLE_ROTATION.md)

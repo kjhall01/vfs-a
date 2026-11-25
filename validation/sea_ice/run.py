@@ -17,7 +17,7 @@ sys.path[:0] = [
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
 from vfs.ice.ice import SeaIceState, IceOceanState, SeaIceThermodynamics, ConductiveIceBoundary
-from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.model import Ocean as RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 

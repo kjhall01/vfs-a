@@ -14,7 +14,9 @@ from pathlib import Path
 import numpy as np
 import torch
 import vfs
-from vfs.ocean import Ocean, OceanColumn, OceanState, OceanDomain
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.ocean.dynamics import MultilayerOceanDynamics
 from vfs.geometry.mesh import VoronoiMesh

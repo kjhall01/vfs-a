@@ -72,3 +72,24 @@ class ConstantDensityEnergy:
                 'temp_h': torch.zeros_like(state.temp_h),
                 'salt_h': torch.zeros_like(state.salt_h),
                 'tracer_h': None if state.tracer_h is None else torch.zeros_like(state.tracer_h)}
+
+
+class StratificationEnergy:
+    """Combine mechanical energy with the layer integral for the chosen density law."""
+    def height(self, state):
+        """Layer midpoints in metres above the fixed sea-level datum."""
+        below_and_self = state.h.flip(-1).cumsum(-1).flip(-1)
+        return -state.column.total_depth_like(state.h) + below_and_self - .5*state.h
+
+    def terms(self, state):
+        result = self.mechanical.terms(state)
+        result['dynamic_enthalpy'] = self.stratification(state)[0]
+        result['total'] = result['total'] + result['dynamic_enthalpy']
+        return result
+
+    def gradients(self, state):
+        result = self.mechanical.gradients(state)
+        _, extra = self.stratification(state)
+        for name, value in extra.items():
+            result[name] = result[name] + value
+        return result

@@ -5,7 +5,8 @@ from unittest.mock import patch
 import pytest
 import torch
 sys.path[:0]=[str(Path(__file__).resolve().parents[2]/'validation/temperature_coordinate'),str(Path(__file__).resolve().parents[2]/'validation/ocean_column')]
-from vfs.ocean.temperature.roquet import RoquetFreezingEOS,RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,RoquetWorkspace,convert_jmd95_initialization,TemperatureBoundary
+from vfs.ocean.model import Ocean as RoquetOcean
+from vfs.ocean.temperature.roquet import RoquetFreezingEOS, RoquetMixing, RoquetHeating, RoquetExchange, RoquetWorkspace, convert_jmd95_initialization, TemperatureBoundary
 from vfs.ocean.stratified import TKEState
 from complete_campaign import make
 from test_jmd95_hamiltonian import mesh,case

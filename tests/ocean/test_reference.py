@@ -4,7 +4,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
-from vfs.ocean import Ocean, OceanColumn, OceanDomain, OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn, OceanDomain
 from vfs.ocean.dynamics import MultilayerOceanDynamics
 from vfs.ocean.physics import OceanSurfaceForcing
 from vfs.ocean.io import save_snapshot, load_snapshot

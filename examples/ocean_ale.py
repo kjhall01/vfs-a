@@ -5,7 +5,8 @@ not bounded. Report remap energy changes explicitly; no exact energy claim.
 """
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean, OceanColumn
+from vfs.ocean.reference import Ocean
+from vfs.ocean import OceanColumn
 from vfs.ocean.jmd95 import JMD95Dynamics
 from vfs.ocean.ale import ALEStepper
 

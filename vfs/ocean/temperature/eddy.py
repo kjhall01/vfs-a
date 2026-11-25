@@ -289,9 +289,9 @@ class GMRedi:
         """Geometry shared only within this fixed-h/u GM–Redi call."""
         s = state.ocean
         h, mesh = s.h, s.mesh
-        z = model.ocean.energy.base.height(s)
+        z = model.hamiltonian.base.height(s)
         vertical_ids, vertical_weights = GMRedi._vertical_rows(z)
-        domain = model.ocean.domain
+        domain = model.domain
         active = (
             torch.ones(mesh.nEdges, dtype=torch.bool, device=h.device)
             if domain is None
@@ -406,7 +406,7 @@ class GMRedi:
             s.salt_h + h * delta[..., 1],
             passive,
         )
-        end = EddyState(
+        end = EddyState.from_layers(
             ocean, before.tke_h + h * delta[..., -2], before.eddy_h + h * delta[..., -1]
         )
         if (
@@ -436,7 +436,7 @@ class GMRedi:
         bad = eddy_h < 0
         if bad.any():
             raise LocalEddyEnergyError(name, bad, remaining=eddy_h.detach())
-        end = EddyState(transported.ocean, transported.tke_h, eddy_h)
+        end = EddyState.from_layers(transported.ocean, transported.tke_h, eddy_h)
         # Transported CT/SA/TKE were already checked; exchange changes only e.
         model._check_eddy(end)
         exchange = (mass * (end.eddy_h - transported.eddy_h)).sum()
@@ -474,7 +474,7 @@ class GMRedi:
             CT, SA = initial[donor_ids, 0], initial[donor_ids, 1]
             a, b, c, d = [
                 0.5 * (p.flatten()[i] + p.flatten()[j])
-                for p in model.ocean.energy.base.coefficients(state.ocean)
+                for p in model.hamiltonian.base.coefficients(state.ocean)
             ]
             potential = (a * CT + b) * CT + c * SA + d
             caloric = model.config.cp * (CT - model.config.CT0)
@@ -484,10 +484,10 @@ class GMRedi:
         return gm_transport, gm_inflow, fraction
 
     def apply(self, model, state, dt):
-        from vfs.ocean.temperature.roquet import RoquetOcean
+        from vfs.ocean.model import Ocean
 
-        if not isinstance(model, RoquetOcean):
-            raise TypeError("research GMRedi requires RoquetOcean CT/SA")
+        if not isinstance(model, Ocean):
+            raise TypeError("research GMRedi requires Ocean CT/SA")
         if not isinstance(state, EddyState):
             raise TypeError("GMRedi requires an explicit EddyState reservoir")
         if not math.isfinite(float(dt)) or dt <= 0:

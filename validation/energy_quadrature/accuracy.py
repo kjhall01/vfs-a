@@ -3,7 +3,9 @@ import argparse,json,time,statistics
 from pathlib import Path
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean import Ocean,OceanColumn,OceanState
+from vfs.ocean.reference import Ocean
+from vfs.ocean.state import OceanState
+from vfs.ocean import OceanColumn
 from vfs.ocean.jmd95 import JMD95Dynamics
 
 
