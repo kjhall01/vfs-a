@@ -65,6 +65,15 @@ class OceanDomain(nn.Module):
     def global_ocean(cls, mesh, *, depth: torch.Tensor | None = None) -> "OceanDomain":
         return cls(mesh, torch.ones(int(mesh.nCells), dtype=torch.bool), depth=depth)
 
+    def shelf_geometry(self, nominal, *, merge_fraction=0.25):
+        """Reference wet-layer and open-face geometry for partial-cell operators."""
+        from .partial_cells import WetFaces, reference_thickness
+        if self.depth is None:
+            raise ValueError('partial cells require prescribed bathymetry')
+        depth = torch.where(self.wet_cell, self.depth[:, 0], 0.)
+        h = reference_thickness(depth, nominal, merge_fraction=merge_fraction)
+        return h, WetFaces.from_columns(depth, h, self.mesh.cellsOnEdge)
+
     def check_compatible(self, state: "OceanState") -> None:
         mesh = state._require_mesh()
         if int(mesh.nCells) != self.n_cells or int(mesh.nEdges) != self.n_edges:
