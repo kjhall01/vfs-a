@@ -12,9 +12,9 @@ import torch
 
 @dataclass(frozen=True)
 class SurfaceTiles:
-    """Open water then two ice categories. All fields are CPU float64 tensors.
+    """One stationary surface per cell, or open water then two ice categories.
 
-    Fractions [C,3]; temperature K; albedo [C,3]; velocity [C,3,3] Cartesian.
+    Fractions [cell,tile]; temperature K; albedo [cell,tile]; Cartesian velocity.
     The caller explicitly supplies ice skin temperatures (no hidden heat model).
     """
 
@@ -23,11 +23,14 @@ class SurfaceTiles:
     velocity: torch.Tensor
     albedo: torch.Tensor
 
+    tile_count = 3
+
     def validate(self, mesh):
         ref = mesh.cell_area
+        count = self.tile_count
         for name in ("fraction", "temperature", "albedo", "velocity"):
             x = getattr(self, name)
-            shape = (len(ref), 3, 3) if name == "velocity" else (len(ref), 3)
+            shape = (len(ref), count, 3) if name == "velocity" else (len(ref), count)
             if (
                 x.shape != shape
                 or x.dtype != ref.dtype
@@ -53,7 +56,7 @@ class SurfaceTiles:
 class Exchange:
     """Immutable record of integrated amounts; tensors must not be mutated.
 
-    vapor/sensible [C,3] kg/m2 and J/m2; stress [C,3,3] N s/m2;
+    vapor/sensible [cell,tile] kg/m2 and J/m2; stress [cell,tile,xyz] N s/m2;
     rain/snow [C] kg/m2. Energy terms [C] J/m2 use the atmospheric mixture
     reference. Water impulse is [C,3] kg m/s/m2. Stress work is positive into
     air and is finalized by the recipient's finite midpoint mechanical work.
@@ -85,11 +88,14 @@ class Exchange:
             or self.start_seconds < 0
         ):
             raise ValueError("invalid exchange interval")
+        if self.vapor.ndim != 2 or self.vapor.shape[1] not in (1, 3):
+            raise ValueError("invalid exchange tile count")
+        count = self.vapor.shape[1]
         for name, shape in (
-            ("vapor", (c, 3)),
-            ("sensible", (c, 3)),
-            ("stress", (c, 3, 3)),
-            ("vapor_velocity", (c, 3, 3)),
+            ("vapor", (c, count)),
+            ("sensible", (c, count)),
+            ("stress", (c, count, 3)),
+            ("vapor_velocity", (c, count, 3)),
             ("precipitation_velocity", (c, 3)),
             *((k, (c,)) for k in ("rain", "snow", "sw_surface", "lw_surface", "toa")),
         ):
@@ -128,7 +134,7 @@ class Exchange:
         if self.surface_thermal is not None:
             x = self.surface_thermal
             if (
-                x.shape != (c, 3)
+                x.shape != (c, count)
                 or x.dtype != ref.dtype
                 or x.device != ref.device
                 or not torch.isfinite(x).all()
@@ -174,6 +180,8 @@ class Exchange:
         if not math.isfinite(dt) or dt <= 0 or not float(dt).is_integer():
             raise ValueError("positive integer exchange interval required")
         f = out["tile_fluxes"]
+        if any(f[key].shape != tiles.fraction.shape for key in ("flux_q", "flux_t", "flux_u", "flux_v")):
+            raise ValueError("fluxes and surface tiles must have the same shape")
         vapor, sensible = dt * f["flux_q"], dt * f["flux_t"]
         rain, snow = dt * out["lprec"], dt * out["fprec"]
         if (rain < 0).any() or (snow < 0).any():
@@ -232,7 +240,8 @@ class Exchange:
         thermal = thermal - sensible - vapor * hv
         # Rain drains through ice. Snow is intercepted by each tile.
         thermal = thermal + snow[:, None] * tiles.fraction * hi[:, None]
-        thermal = thermal + torch.stack((rain * hl, zero, zero), -1)
+        rain_heat = torch.cat(((rain * hl)[:, None], torch.zeros_like(thermal[:, 1:])), -1)
+        thermal = thermal + rain_heat
         return cls(
             int(dt),
             state.time_seconds,

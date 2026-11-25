@@ -1,6 +1,6 @@
 """Reciprocal receiver for the research SnowOceanIce Hamiltonian.
 
-Same mesh, all wet. No independent evaporation, wind drag, or radiation law.
+Shared mesh with closed coasts when a domain is supplied. No independent evaporation, wind drag, or radiation law.
 Water/momentum are applied first; one local first-law thermal solve realizes
 exactly the shared surface energy. Upstream atmospheric imbalance is untouched.
 """
@@ -31,6 +31,9 @@ class SurfaceReport:
     thermal_increment: torch.Tensor  # J/m2 first-law thermal solve
     ocean_impulse: torch.Tensor
     ice_impulse: torch.Tensor
+    runoff_received: torch.Tensor | None = None
+    runoff_gravity_heat: torch.Tensor | None = None
+    support_impulse: torch.Tensor | None = None  # generalized edge impulse
 
 
 class OceanIceReceiver:
@@ -38,6 +41,19 @@ class OceanIceReceiver:
         self.snow = snow
         self.H = snow.hamiltonian
         self.wind = KineticWindMap(self.H.model.ocean.mesh)
+
+    def check_geometry(self, adapter, atmosphere, state):
+        domain = self.H.model.ocean.domain
+        land = atmosphere.surface["land"]
+        if domain is None and land.any():
+            raise ValueError("an all-wet ocean cannot receive land surface fluxes")
+        if domain is not None and not torch.equal(~land, domain.wet_cell):
+            raise ValueError("atmosphere and ocean coastline differ")
+        ocean = state.coupled.ocean.ocean
+        if ocean.mesh is not adapter.model.mesh:
+            raise ValueError("shared exchange currently requires the identical mesh object")
+        if ocean.column.gravity != adapter.model.dynamics.kernel.gravity:
+            raise ValueError("component gravity must match")
 
     def tiles(self, state, ice_temperature):
         """Explicit CT+273.15 SST approximation; caller supplies ice skin K.
@@ -47,8 +63,6 @@ class OceanIceReceiver:
         """
         self.snow.check(state)
         s, ice = state.coupled.ocean.ocean, state.coupled.ice
-        if self.H.model.ocean.domain is not None:
-            raise ValueError("first shared exchange requires an all-wet mesh")
         if ice_temperature.shape != ice.area.shape:
             raise ValueError("ice skin temperature must match categories")
         hi, hs = self.snow.depths(state)
@@ -67,7 +81,7 @@ class OceanIceReceiver:
         tiles.validate(s.mesh)
         return tiles
 
-    def prepare(self, initial, exchange, tiles):
+    def prepare(self, initial, exchange, tiles, *, runoff=None):
         """Mass and reciprocal impulses; finalize common finite stress work.
 
         No state is mutated. Rain passes through ice; snow is intercepted by
@@ -92,8 +106,6 @@ class OceanIceReceiver:
             raise ValueError("exchange acts on an absent tile")
         if not torch.equal(tiles.fraction[:, 1:], ice.area):
             raise ValueError("tile fractions must match recipient at interval start")
-        if self.H.model.ocean.domain is not None:
-            raise ValueError("first shared exchange requires all-wet mesh")
         A = mesh.cell_area[:, None]
         rho = H.slab.parameters.density
         snowfall = exchange.snow[:, None] * ice.area
@@ -116,6 +128,8 @@ class OceanIceReceiver:
         dm = (
             exchange.rain + exchange.snow * tiles.fraction[:, 0] - exchange.vapor[:, 0]
         )[:, None]
+        if runoff is not None:
+            dm = dm + runoff[:, None]
         h = torch.cat((s.h[:, :1] + dm / s.column.rho0, s.h[:, 1:]), -1)
         if (h[:, :1] < self.snow.phase.min_liquid).any():
             raise ValueError("exchange exhausts liquid top layer; reduce dt")
@@ -146,6 +160,9 @@ class OceanIceReceiver:
             self.wind.transpose((-A * x)[:, None])
             for x in (exchange.stress[:, 0], exchange.stress[:, 1:].sum(1))
         )
+        domain = H.model.ocean.domain
+        if domain is not None:
+            Iw, Ii, Jw, Ji = (domain.apply_edge(v) for v in (Iw, Ii, Jw, Ji))
         mechanical = H.model.energy.base.mechanical
         M0, M1 = mechanical.metric(s)[:, :1], mechanical.metric(trial)[:, :1]
         N0, N1 = H.metric(old), H.metric(candidate.coupled)
@@ -185,17 +202,20 @@ class OceanIceReceiver:
         )
         return candidate, exchange, (Iw + Jw, Ii + Ji, residual)
 
-    def finish(self, initial, candidate, exchange, impulses, *, storage_change=None):
+    def finish(self, initial, candidate, exchange, impulses, *, storage_change=None, runoff=None, runoff_energy=None):
         H = self.H
         s = candidate.coupled.ocean.ocean
         A = s.mesh.cell_area
         before, provisional = H.terms(initial.coupled), H.terms(candidate.coupled)
         change = sum(provisional[k] - before[k] for k in before) / A
         storage = torch.zeros_like(change) if storage_change is None else storage_change
-        thermal = exchange.surface_energy - change - storage
+        target = exchange.surface_energy
+        if runoff_energy is not None:
+            target = target + runoff_energy
+        thermal = target - change - storage
         mass = H.model.energy.mass_area(s) * s.h[:, :1]
         specific = torch.cat(
-            ((A * thermal)[:, None] / mass, torch.zeros_like(s.h[:, 1:])), 1
+            ((A * thermal)[:, None] / safe(mass), torch.zeros_like(s.h[:, 1:])), 1
         )
         end, _, _ = RoquetWorkspace(H.model.ocean, s).heat(
             s, s, specific, allow_cooling=True
@@ -211,10 +231,10 @@ class OceanIceReceiver:
         error = (
             sum(after[k] - before[k] for k in before) / A
             + storage
-            - exchange.surface_energy
+            - target
         )
         scale = (
-            sum(v.abs() for v in before.values()) / A + exchange.surface_energy.abs()
+            sum(v.abs() for v in before.values()) / A + target.abs()
         )
         if (
             not torch.isfinite(error).all()
@@ -229,5 +249,7 @@ class OceanIceReceiver:
             + (H.mass(result.coupled) - H.mass(initial.coupled))[:, 0]
             + exchange.water
         )
+        if runoff is not None:
+            water = water - runoff
         Iw, Ii, momentum = impulses
         return result, SurfaceReport(error, water, momentum, thermal, Iw, Ii)

@@ -17,17 +17,10 @@ def exchange_step(
     ):
         raise ValueError("positive integer exchange interval required")
     dt = int(dt)
-    if atmosphere.surface["land"].any():
-        raise ValueError("shared exchange supports all-wet surfaces only")
     if adapter.energy_mode != "conservative":
         raise ValueError("shared exchange requires conservative atmosphere")
     adapter.check(atmosphere)
-    ocean = surface.coupled.ocean.ocean
-    mesh = adapter.model.mesh
-    if ocean.mesh is not mesh:
-        raise ValueError("shared exchange currently requires the identical mesh object")
-    if ocean.column.gravity != adapter.model.dynamics.kernel.gravity:
-        raise ValueError("component gravity must match")
+    receiver.check_geometry(adapter, atmosphere, surface)
     tiles = receiver.tiles(surface, ice_temperature)
     start = prepare_surface(atmosphere, tiles)
     columns, geometry = adapter.mapping.columns(

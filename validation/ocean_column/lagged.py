@@ -104,7 +104,9 @@ class LaggedClosure(PathWorkClosure):
         if tke_h.shape!=h.shape or tke_h.dtype!=h.dtype or tke_h.device!=h.device:raise ValueError('TKE must match thickness')
         if not torch.isfinite(tke_h).all() or (tke_h<0).any():raise ValueError('TKE must be finite and nonnegative')
         area=energy.mass_area(state);mass=area*h
-        if (area<=0).any():raise ValueError('coupled research solver supports fully wet columns only')
+        # Inactive columns have no physical mass or flux. Give their isolated
+        # linear systems an identity diagonal while retaining zero budget weight.
+        solve_mass = mass if ocean.domain is None else torch.where(area > 0, mass, 1.)
         k0=tke_h/h
         zero=h.new_zeros(h.shape[0],1)
         div=lambda f:torch.cat((f,zero),-1)-torch.cat((zero,f),-1)
@@ -150,7 +152,8 @@ class LaggedClosure(PathWorkClosure):
                 g=.5*(km[:,:-1]+km[:,1:])/layer_spacing
                 eg=edge_measure*.5*(ek[:,:-1]+ek[:,1:])/(.5*(he[:,:-1]+he[:,1:]))
             if ocean.domain is not None:eg=eg*ocean.domain.active_edge[:,None]
-            u=diffuse(state.u_e,metric,eg,dt)
+            solve_metric = metric if ocean.domain is None else torch.where(ocean.domain.active_edge[:,None], metric, 1.)
+            u=diffuse(state.u_e,solve_metric,eg,dt)
             es=dt*eg*(u[:,1:]-u[:,:-1]).square();ez=torch.zeros_like(u[:,:1])
             shear=allocate(.5*(torch.cat((es,ez),-1)+torch.cat((ez,es),-1)))
             production=shear+allocate(.5*metric*(u-state.u_e).square())
@@ -163,7 +166,7 @@ class LaggedClosure(PathWorkClosure):
             else:gk=g
             conductance=area*gk/self.sigma_k
             diss=dt*mass*self.c_epsilon*root/self.mixing_length
-            diag=mass+add(dt*conductance)+diss
+            diag=solve_mass+add(dt*conductance)+diss
             return u,production,g,conductance,diss,diag,-dt*conductance
 
         def finish_transport(u, transport, work):
@@ -224,14 +227,14 @@ class LaggedClosure(PathWorkClosure):
             fixed_k=Factor(a+b.clamp_min(0)/denom,off).solve(mass*k0+p+(-b).clamp_min(0))
             if not torch.isfinite(fixed_k).all() or (fixed_k<0).any():raise FloatingPointError('invalid coefficient predictor')
         u,production,scalar_g,g,diss,diagonal,off=coefficients(fixed_k)
-        factor=Factor(mass+add(dt*g) if self.funding=='split' else diagonal,off)
+        factor=Factor(solve_mass+add(dt*g) if self.funding=='split' else diagonal,off)
         transported=factor.solve(mass*k0+production)
         for attempt in range(self.max_reductions+2):
             work,transport,endpoint=scalar_trial(u,scalar_g,scalar_scale)
             if self.funding=='split':
                 # Ordered split: transport produced TKE first, then pay the
                 # actual local buoyancy work and dissipate the remainder.
-                final=(mass*transported-work)/(mass+diss)
+                final=(mass*transported-work)/(solve_mass+diss)
             else:final=factor.solve(mass*k0+production-work)
             if not torch.isfinite(final).all():raise FloatingPointError('nonfinite lagged TKE')
             bad=final<0
@@ -266,12 +269,14 @@ class LaggedClosure(PathWorkClosure):
         tflux=dt*g*(transport_k[:,1:]-transport_k[:,:-1])
         actual_residual=mass*(final-k0)-production+work+diss*final-div(tflux)
         budget_scale=mass*self.budget_atol+self.budget_rtol*(mass*k0+production+work.abs())
+        if ocean.domain is not None:
+            budget_scale = torch.where(area > 0, budget_scale, 1.)
         budget_error=(actual_residual.abs()/budget_scale).max()
         if not torch.isfinite(budget_error) or budget_error>1:raise FloatingPointError('lagged local budget failed')
         heat=diss*final
-        if workbuf:end,thermal_residual,final_physical=workbuf.heat(mixed,after,heat/mass)
+        if workbuf:end,thermal_residual,final_physical=workbuf.heat(mixed,after,heat/solve_mass)
         else:
-            end,thermal_residual=apply_heat(ocean,mixed,heat/mass)
+            end,thermal_residual=apply_heat(ocean,mixed,heat/solve_mass)
             final_physical=ocean.check_state(end)
         psi2,ref2=parts(final_physical)
         local_ke=allocate(.5*metric*(end.u_e-state.u_e)*(end.u_e+state.u_e))

@@ -1,5 +1,21 @@
 # Pass 4 — physical-field workflow
 
+## Land column exchange with PyAM21
+
+The [mixed grassland and slab-ocean experiment](../workflows/coupled/LAND_COLUMNS.md)
+ports the archived four-layer land column and couples it to the same finite
+surface exchange used by VFS. On 32 cells (9 land), CPU float64, a radiation-off
+24-hour experiment at physics dt 2400 s and atmosphere dt 800 s gave precipitation
+1.2459, vapor to air 1.0039, runoff 30.5423 and storage change −30.3003 kg/m²
+of land. The deliberately wet initialization supplied most of the runoff.
+Maximum cell surface discrepancies were 6.67e-12 kg/m² and 8.33e-7 J/m².
+The complete model's numerical energy change was −80.88257 J/m²; an independent
+measurement across atmospheric dynamics gave −80.88257 J/m². With only column
+physics at the same interval the model residual was −5.75e-7 J/m².
+Tests also exercise synthetic fresh and cached radiation, a binding evaporation
+supply, nonzero wind stress and area-weighted delivery. GPU execution, real
+optical tables and coastal dynamics remain unqualified.
+
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
 
 ## Local GM funding on the mature 4,096-cell ocean
@@ -1657,3 +1673,18 @@ The installed-wheel qualification covered 168 passing tests, including native
 CPU Inductor and coupled restart replay. Seven tests were skipped in the
 device suite. Both frozen fixture comparisons passed (142 corrected Gibbs
 quantities and 93 dry helper quantities).
+
+## Land-water surface potential and runoff dissipation
+
+A CPU float64 installed-wheel experiment used 32 cells, 11 land cells at
+1,000 m, wet outlets at 0 m, initial soil water 135 kg/m², and 12 intervals
+of 600 s with 200 s atmospheric dynamics and radiation disabled. Delivered
+runoff was 10.315342 kg/m² globally and downhill heating was 101090.353 J/m²
+globally (9800 J/kg delivered). The maximum local surface energy residual
+was 7.36e-7 J/m² and the maximum water residual was 6.22e-12 kg/m².
+The global numerical energy residual including dynamics was -4.556769 J/m²,
+of which the independently measured dynamics change was -4.556772 J/m².
+This is an intentionally wet drainage test. Nine installed-wheel land and
+surface-exchange cases passed, including mixed terrain with prescribed
+radiation. Both portable fixture comparisons passed (142 moist and 93 dry).
+GPU and long integrations with terrain have not been tested.

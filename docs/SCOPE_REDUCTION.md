@@ -13,7 +13,7 @@ This is scope reduction, not a kernel rewrite or scientific verification campaig
 | Removed scope | APIs / modules | Retained alternative or boundary |
 | --- | --- | --- |
 | Ocean dycore and drivers | `vfs.ocean`, `vfs.ocean_model`, `vfs.ocean_diagnostics`; associated root exports | No ocean replacement in this package |
-| Land, ice and surface processes | `vfs.land`, `vfs.ice`, `vfs.surface` | Atmospheric terrain, boundary data and solar forcing remain; they are not surface-process solvers |
+| Original land, ice and surface processes | Archived land implementation, `vfs.ice`, `vfs.surface` | Atmospheric terrain, boundary data and solar forcing remain; they are not surface-process solvers |
 | Coupling | `vfs.coupling`, its surface/ARK orchestration and root exports | Atmospheric explicit/IMEX integrators remain in their existing owners |
 | Coupled component graph | `vfs.core.graph`, including its atmospheric adapters/observers | Use existing `VFSModel`/`HeldSuarezModel`, direct initializers and I/O; this is an intentional graph-API removal, not a drop-in configuration conversion |
 | Learned pressure/damping/transport | `vfs.atmosphere.pgf_correction`, `LearnedAdaptiveDivergenceDamping`, `MthetaMUSCLActivatorMLP`, `DryHydrostaticLearnedSoftMUSCLMthetaTransportDynamics`, learned recipe/feature constant | Ordinary strategies/recipes remain; `learned_potential` now raises an explicit removal error |
@@ -113,3 +113,7 @@ No GPU, long-run or full backward qualification is claimed.
 
 These are follow-up readability tasks. No deep inheritance rewrite, new registry,
 broad internal move or scientific verification campaign is bundled here.
+
+The [grassland column](../workflows/coupled/LAND_COLUMNS.md) subsequently restored
+a small tensor-only `vfs.land` package. The atmospheric package retains its
+independent import boundary.

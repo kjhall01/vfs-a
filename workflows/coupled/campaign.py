@@ -44,6 +44,9 @@ from roquet import RoquetOcean, RoquetMixing
 from eddy import GMRedi
 from eddy_energy import EddyMixingLength, EddyDissipation
 from backscatter import EddyBackscatter
+from vfs.land import LandState
+from vfs.ocean.domain import OceanDomain
+from workflows.coupled.coast import CoastalReceiver
 from vfs.ocean import OceanColumn
 
 DAY = 86400
@@ -345,6 +348,9 @@ def accumulate_ocean(report, addition):
         report[key] += addition[key]
     for key in OCEAN_PEAKS:
         report[key] = max(report[key], addition[key])
+    for key in ("runoff_kg_m2", "runoff_gravity_heat_J_m2"):
+        if key in addition:
+            report[key] = report.get(key, 0.) + addition[key]
 
 
 def load_mesh(config, path):
@@ -382,8 +388,20 @@ def load_mesh(config, path):
     return effective, xyz, metadata
 
 
+def island_height(mesh):
+    radius = ((mesh.cell_xyz[:, 0] - 0.65) / 0.35).clamp_min(0.)
+    return 1000. * radius.square()
+
+
+def load_geography(path):
+    if path is None:
+        return None
+    with np.load(path, allow_pickle=False) as archive:
+        return {k: archive[k] for k in ("land", "height_m", "depth_m")}
+
+
 def build(
-    config, source, radiation_data, *, smoke_no_radiation=False, generator_xyz=None
+    config, source, radiation_data, *, smoke_no_radiation=False, generator_xyz=None, geography=None, island=False
 ):
     config.validate()
     device = resolve_device(config.device)
@@ -411,6 +429,18 @@ def build(
             zenith_spec="diurnally_varying",
         ),
     )
+    if island and geography is not None:
+        raise ValueError("choose either island or supplied geography")
+    height = None
+    if island:
+        # Generate terrain after any mesh relaxation.
+        height = island_height
+    elif geography is not None:
+        mask, height, depth = (np.asarray(geography[k]) for k in ("land", "height_m", "depth_m"))
+        if (mask.dtype != np.bool_ or any(v.shape != (config.cells,) for v in (mask, height, depth))
+                or not mask.any() or mask.all() or not np.isfinite(height).all() or not np.isfinite(depth).all()
+                or (height[~mask] != 0).any() or (height[mask] < 0).any() or (depth[~mask] <= 0).any()):
+            raise ValueError("invalid coastal geometry: use mesh-ordered land mask, nonnegative terrain and positive wet depths")
     adapter, air = example(
         source,
         cells=config.cells,
@@ -421,6 +451,7 @@ def build(
         radiation_step=config.radiation_dt,
         start=(config.start_year, 1, 1, 0, 0, 0),
         namelist_overrides=nml,
+        surface_height_m=height,
         device=device,
         dtype=dtype,
         mesh_options=dict(
@@ -432,13 +463,23 @@ def build(
     )
     torch.set_num_threads(config.threads)
     mesh = adapter.model.mesh
+    domain = None
+    column_options = dict(total_depth=config.ocean_depth_m)
+    if height is not None:
+        land = adapter.model.column.phi_s > 0 if island else torch.as_tensor(mask, device=device)
+        depths = torch.full_like(mesh.cell_area, config.ocean_depth_m)
+        if not island:
+            depths[~land] = torch.as_tensor(depth[~mask], dtype=dtype, device=device)
+        domain = OceanDomain(mesh, ~land, depth=depths).to(device=device, dtype=dtype)
+        column_options = dict(total_depth=depths, rest_thickness=rest_thickness(config))
     with initialization_dtype(torch.float64):
         column = OceanColumn(
-            config.ocean_levels, total_depth=config.ocean_depth_m, gravity=9.8
+            config.ocean_levels, gravity=9.8, **column_options
         ).to(device=device, dtype=dtype)
     model = RoquetOcean(
         mesh,
         column,
+        domain=domain,
         closure=RoquetMixing(config.mixing_length_m, substeps=config.mixing_substeps,
                             budget_rtol=mixing_budget_rtol(dtype)),
         backscatter=(
@@ -454,22 +495,26 @@ def build(
     )
     dz = rest_thickness(config).to(mesh.cell_area)
     h = dz[None].expand(mesh.nCells, -1).clone()
-    z = dz.cumsum(0) - dz / 2
+    if domain is not None:
+        h = (h / dz.sum()) * depths[:, None]
+    z = h.cumsum(-1) - h / 2
     sinlat = mesh.cell_xyz[:, 2]
     sst = (28 - 37 * sinlat.square()).clamp_min(-0.054 * 34.0)
     deep = torch.minimum(sst, torch.full_like(sst, 2.0))
-    ct = deep[:, None] + (sst - deep)[:, None] * torch.exp(-(z - z[0])[None] / 250.0)
+    ct = deep[:, None] + (sst - deep)[:, None] * torch.exp(-(z - z[:, :1]) / 250.0)
     ocean = model.state(
         u_e=h.new_zeros(mesh.nEdges, config.ocean_levels),
         h=h,
         conservative_temperature=ct,
         absolute_salinity=torch.full_like(h, 34.0),
         tracer=torch.ones_like(h)[..., None],
-        tke=1e-4,
+        tke=1e-4 if domain is None else 1e-4 * domain.wet_cell[:, None],
         eddy_energy=config.eddy_initial_energy_J_kg,
     )
     # Smooth polar ice cap, with no prescribed velocity or ongoing restoring.
     cover = ((sinlat.abs() - 0.90) / 0.08).clamp(0, 0.7)
+    if domain is not None:
+        cover = domain.apply_cell(cover)
     area = cover[:, None] * cover.new_tensor([0.8, 0.2])
     ice = CategoryIce(
         area, area * area.new_tensor([0.3, 1.0]), area.new_zeros(mesh.nEdges, 1)
@@ -478,6 +523,15 @@ def build(
     bare = SnowState(RidgingState(ocean, ice), torch.zeros_like(area))
     sea = owner.initialize(bare, config.ice_temperature_K)
     receiver = ThermalIceReceiver(owner)
+    if domain is not None:
+        receiver = CoastalReceiver(owner, adapter, land)
+        air = replace(air, surface={**air.surface, "land": land})
+        soil = receiver.land_surface.column.initialize(air.surface["t_surf"][land])
+        sea = replace(sea, land=soil)
+        digest = hashlib.sha256()
+        for field in (land, depths):
+            digest.update(field.detach().cpu().numpy().tobytes())
+        adapter.geography_hash = digest.hexdigest()
     # Equilibrate the liquidus and latent/sensible storage without external heat.
     sea, _, _ = owner.phase_step(sea, 1, torch.zeros_like(area[:, :1]))
     configure_compilation(adapter, receiver, enabled=config.compile)
@@ -615,6 +669,9 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
                           details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
                                    "ale_changed_columns": r["ale_changed_columns"]})
         accumulate_ocean(ocean_report, r)
+    if sr.runoff_received is not None:
+        ocean_report.update(runoff_kg_m2=float((sr.runoff_received * A).sum() / A.sum()),
+                            runoff_gravity_heat_J_m2=float((sr.runoff_gravity_heat * A).sum() / A.sum()))
     return (
         evolved,
         water,
@@ -639,19 +696,26 @@ def inventories(adapter, air, receiver, sea):
     A = adapter.model.mesh.cell_area
     s = sea.coupled.ocean.ocean
     air_diag = adapter.model.diagnostics(air.atmosphere)
+    wet_area = A
+    land_energy = land_water = 0.
+    if sea.land is not None:
+        l = receiver.land_surface
+        wet_area = A * l.wet
+        land_energy = (A[l.land] * l.column.energy(sea.land)).sum()
+        land_water = (A[l.land] * sea.land.water()).sum()
     return dict(
-        energy=float((air_diag["energy"] + receiver.snow.total_energy(sea)) / A.sum()),
+        energy=float((land_energy + air_diag["energy"] + receiver.snow.total_energy(sea)) / A.sum()),
         water=float(
             (
-                air_diag["species"].sum()
+                land_water + air_diag["species"].sum()
                 + (
-                    A
+                    wet_area
                     * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(sea.coupled)[:, 0])
                 ).sum()
             )
             / A.sum()
         ),
-        salt=float((A[:, None] * s.salt_h).sum() / A.sum()),
+        salt=float((wet_area[:, None] * s.salt_h).sum() / A.sum()),
     )
 
 
@@ -662,7 +726,15 @@ def diagnostics(adapter, air, receiver, sea, ledger):
     T = receiver.snow.temperature(sea)
     present = ice.area > 0
     A = adapter.model.mesh.cell_area
+    wet = slice(None) if sea.land is None else receiver.land_surface.wet
+    land_diag = {}
+    if sea.land is not None:
+        l = receiver.land_surface
+        land_diag = dict(land_water_kg_m2_global=float((A[l.land] * sea.land.water()).sum() / A.sum()),
+                         runoff_kg_m2=ledger.get("runoff_kg_m2", 0.),
+                         runoff_gravity_heat_J_m2=ledger.get("runoff_gravity_heat_J_m2", 0.))
     return dict(
+        **land_diag,
         seconds=air.time_seconds,
         day=air.time_seconds / DAY,
         energy_minus_toa_J_m2=current["energy"]
@@ -679,8 +751,8 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         water_residual_kg_m2=current["water"] - ledger["initial"]["water"],
         salt_relative=(current["salt"] - ledger["initial"]["salt"])
         / ledger["initial"]["salt"],
-        sst_min_K=float(s.temperature()[:, 0].min() + 273.15),
-        sst_max_K=float(s.temperature()[:, 0].max() + 273.15),
+        sst_min_K=float(s.temperature()[wet, 0].min() + 273.15),
+        sst_max_K=float(s.temperature()[wet, 0].max() + 273.15),
         ice_min_K=float(T[present].min()) if present.any() else None,
         ice_max_K=float(T[present].max()) if present.any() else None,
         ice_mass_kg=float((A[:, None] * receiver.H.mass(sea.coupled)).sum()),
@@ -689,9 +761,9 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
         max_ocean_speed_m_s=float(s.u_e.abs().max()),
         max_ice_speed_m_s=float(ice.velocity.abs().max()),
-        min_ocean_thickness_m=float(s.h.min()),
-        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().min()),
-        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy().max()),
+        min_ocean_thickness_m=float(s.h[wet].min()),
+        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet].min()),
+        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet].max()),
         **{k: ledger[k] for k in OCEAN_SUMS + OCEAN_PEAKS},
         **{k: ledger.get(k, 0.0) for k in VAPOR_SUMS + VAPOR_PEAKS},
         **{
@@ -708,6 +780,9 @@ def energy_trace_measure(adapter, air, receiver, sea):
     atm = float(adapter.model.diagnostics(air.atmosphere)["energy"] / A)
     ocean = float(receiver.H.model.total_energy(sea.coupled.ocean) / A)
     sea_total = float(receiver.snow.total_energy(sea) / A)
+    if sea.land is not None:
+        land = receiver.land_surface
+        inv["land_energy"] = float((land.mesh.cell_area[land.land] * land.column.energy(sea.land)).sum() / A)
     return dict(inv, atmosphere_energy=atm, ocean_energy=ocean,
                 ice_snow_energy=sea_total - ocean)
 
@@ -722,16 +797,17 @@ def energy_trace_extrema(adapter, air, receiver, sea):
     va, ia = peak(air.atmosphere.u_e)
     vo, io = peak(ocean.u_e)
     vi, ii = peak(sea.coupled.ice.velocity)
-    e = sea.coupled.ocean.specific_eddy_energy()
+    wet = slice(None) if sea.land is None else receiver.land_surface.wet
+    e = sea.coupled.ocean.specific_eddy_energy()[wet]
     return dict(max_air_speed_m_s=va, max_air_edge=ia // air.atmosphere.u_e.shape[-1],
                 max_air_level=ia % air.atmosphere.u_e.shape[-1],
                 max_ocean_speed_m_s=vo, max_ocean_edge=io // ocean.u_e.shape[-1],
                 max_ocean_level=io % ocean.u_e.shape[-1],
                 max_ice_speed_m_s=vi, max_ice_flat_index=ii,
-                min_ocean_thickness_m=float(ocean.h.min()),
+                min_ocean_thickness_m=float(ocean.h[wet].min()),
                 max_eddy_energy_J_kg=float(e.max()), min_eddy_energy_J_kg=float(e.min()),
-                sst_min_K=float(ocean.temperature()[:, 0].min() + 273.15),
-                sst_max_K=float(ocean.temperature()[:, 0].max() + 273.15))
+                sst_min_K=float(ocean.temperature()[wet, 0].min() + 273.15),
+                sst_max_K=float(ocean.temperature()[wet, 0].max() + 273.15))
 
 
 def source_hashes():
@@ -764,6 +840,8 @@ def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
         compilation=adapter.compilation_manifest,
         execution=runtime_manifest(adapter.model.mesh.cell_area.device, adapter.model.mesh.cell_area.dtype),
     )
+    if hasattr(adapter, "geography_hash"):
+        payload["geography_hash"] = adapter.geography_hash
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
@@ -771,6 +849,7 @@ def pack(adapter, air, receiver, sea, identity, ledger):
     receiver.snow.check(sea)
     s = sea.coupled.ocean.ocean
     return dict(
+        **({"land": {k: v.clone() for k, v in vars(sea.land).items()}} if sea.land is not None else {}),
         schema=1,
         fingerprint=identity,
         air=adapter.pack(air),
@@ -802,6 +881,12 @@ def unpack(payload, adapter, receiver, template, identity):
     sea = ThermalIceState(
         RidgingState(ocean, CategoryIce(**p["ice"])), p["snow_mass"], p["cold_content"]
     )
+    if template.land is not None:
+        land = LandState(**p["land"])
+        receiver.land_surface.column.check(land)
+        if land.skin.shape != template.land.skin.shape:
+            raise ValueError("restart land geometry mismatch")
+        sea = replace(sea, land=land)
     receiver.snow.check(sea)
     return air, sea, p["ledger"]
 
@@ -924,6 +1009,15 @@ def snapshot(path, adapter, air, receiver, sea):
         ),
         "snow_mass": (("cell", "category"), array(sea.snow_mass), {"units": "kg m-2"}),
     }
+    if sea.land is not None:
+        l = receiver.land_surface
+        data["land_mask"] = (("cell",), array(l.land).astype("int8"))
+        data["surface_height_m"] = (("cell",), array(adapter.model.column.phi_s / s.column.gravity))
+        data["ocean_depth_m"] = (("cell",), array(receiver.H.model.ocean.domain.depth[:, 0] * l.wet))
+        data["land_cell_index"] = (("land_cell",), array(l.land.nonzero()[:, 0]))
+        for name, field in vars(sea.land).items():
+            dims = ("land_cell", "soil_layer") if field.ndim == 2 else ("land_cell",)
+            data["land_" + name] = (dims, array(field))
     for k in ("vapor", "liquid", "ice"):
         data["air_" + k] = (
             ("cell", "air_interface"),
@@ -934,7 +1028,7 @@ def snapshot(path, adapter, air, receiver, sea):
     ds = xr.Dataset(
         data,
         attrs=dict(
-            description="VFS coupled aquaplanet instantaneous state", calendar="julian"
+            description="VFS coupled instantaneous state", calendar="julian"
         ),
     )
     ds = ds.expand_dims(time=[air.time_seconds])
@@ -982,6 +1076,9 @@ def main(argv=None):
         required=True,
         help="pinned PyAM21 checkout containing the physics namelist",
     )
+    coast = parser.add_mutually_exclusive_group()
+    coast.add_argument("--island", action="store_true", help="idealized island and flat-bottom active ocean")
+    coast.add_argument("--geography", type=Path, help="mesh-ordered .npz arrays land, height_m and depth_m")
     parser.add_argument("--radiation-data", type=Path)
     parser.add_argument(
         "--mesh",
@@ -1095,12 +1192,13 @@ def main(argv=None):
             logger.info("Mesh %s; SHA256 %s", args.mesh, mesh_info["sha256"])
         if config.compile:
             logger.info("Enabling regional torch.compile with Inductor; first kernel calls can take several minutes")
+        geography = load_geography(args.geography)
         adapter, air, receiver, sea = build(
             config,
             args.source,
             args.radiation_data,
             smoke_no_radiation=args.smoke_no_radiation,
-            generator_xyz=generators,
+            generator_xyz=generators, island=args.island, geography=geography,
         )
         hashes = source_hashes()
         identity = fingerprint(
@@ -1139,6 +1237,7 @@ def main(argv=None):
                 source_sha256=hashes,
                 radiation=adapter.radiation_manifest,
                 mesh=mesh_info,
+                geography_sha256=getattr(adapter, "geography_hash", None),
                 configuration=asdict(config),
                 radiation_enabled=not args.smoke_no_radiation,
                 compilation=adapter.compilation_manifest,

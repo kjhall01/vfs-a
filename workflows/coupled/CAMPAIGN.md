@@ -1,5 +1,7 @@
 # One-year coupled aquaplanet
 
+The [coastal campaign guide](../../handoff/COASTAL_CAMPAIGN.md) covers island runs, prescribed coastlines and the paired A100 benchmark.
+
 The campaign advances the actual VFS moist atmosphere with PyAM21 physics,
 Roquet ocean dynamics/TKE mixing, GM–Redi, mesoscale energy feedback/decay,
 funded backscatter with a budgeted biharmonic sink, adaptive thermal ALE,

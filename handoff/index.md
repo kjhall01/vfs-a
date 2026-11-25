@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [land-column experiment](../workflows/coupled/LAND_COLUMNS.md) couples the archived grassland soil and snow equations to PyAM21, with conservative runoff delivery to stationary ocean slabs.
+
 The [reduced thermal ice phase Hamiltonian](../verification/ocean/ice-phase-energy/README.md) gives the exchange energy, paired CPU checks and a reproducible accelerator benchmark.
 
 [Quadratic GM funding](../docs/PASS4_RESULTS.md#local-gm-funding-on-the-mature-4096-cell-ocean)
