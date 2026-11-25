@@ -120,7 +120,7 @@ python -I workflows/coupled/campaign.py \
 ```
 
 Use the same flags and a new output directory on resume, adding
-`--resume gpu-2day/restarts/restart_00172800.pt --stop-after-days 14` to advance
+`--resume gpu-2day/restarts/restart_00172800.nc --stop-after-days 14` to advance
 to absolute model day 14. Scheduler wall limits still apply. Choose a restart
 cadence in the YAML appropriate to those limits before starting a long run;
 an abrupt scheduler kill cannot run Python's last-good exception handler.
@@ -207,7 +207,7 @@ retaining the same budgets, checks and active physical processes.
 ## Diagnosing an endpoint/tendency rejection
 
 For `PyAM21 endpoint and tendencies disagree beyond roundoff`, keep the failed
-segment's `last_good_restart.pt`, `manifest.json` and `configuration.json`.
+segment's `last_good_restart.nc` (legacy `.pt` is also accepted), `manifest.json` and `configuration.json`.
 The message alone does not distinguish a physics inconsistency from accumulated
 roundoff. Do not disable the check or change precision to continue this state.
 

@@ -1,5 +1,27 @@
 # Pass 4 — physical-field workflow
 
+## NetCDF4 Earth campaign I/O
+
+The CPU float64 shelf run used 4,096 cells, 98,766 active ocean layers, the
+40 m depth floor, four threads and the benchmark schedule with radiation off.
+A run on `d342be9` wrote a PyTorch checkpoint at 2,400 s and continued to
+4,800 s. Two continuations on the NetCDF implementation reproduced the final
+state and budget diagnostics. One started with NetCDF mesh and geography and
+resumed its own NetCDF restart using the original NumPy inputs. The other
+read the 2,400 s PyTorch restart with its original manifest and NetCDF inputs.
+All 76 state and ledger leaves compared bit for bit, excluding the intentionally
+changed outer source fingerprint. The 4,800 s checkpoint occupied 11,673,866
+bytes in NetCDF4 and 25,485,724 bytes in PyTorch format.
+
+Rebuilding the 40 m geography offline from the original GMT relief and Natural
+Earth polygons matched every saved input field and the source metadata.
+Synthetic radiation tests exercised an optics update followed by disk save,
+reload, and an identical next step on both host and native radiation grids.
+A separate storage round trip preserved the entire state of a 936,000 s
+archived SeaEsfRad run, including all 28 radiation cache and clock leaves.
+The full-grid continuation was tested on CPU. GPU I/O timings and a long
+radiation-on campaign were outside this comparison.
+
 ## Prognostic wet layers on the Earth shelves
 
 The [Earth runner](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active

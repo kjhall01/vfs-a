@@ -1,5 +1,9 @@
 # Current package documentation
 
+The [Earth I/O guide](../workflows/coupled/EARTH_SHELF.md#existing-inputs-and-netcdf-output)
+covers NetCDF4 snapshots, complete restarts, diagnostics, and conversion of
+existing ordered mesh and geography files.
+
 The [coupled Earth presets](../workflows/coupled/EARTH_SHELF.md) now advance
 bathymetry-dependent wet layer counts throughout the ocean. The pilot guide
 includes a 40 m bathymetry build and the one-day Derecho command. Both the

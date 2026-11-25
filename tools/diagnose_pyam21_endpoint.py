@@ -1,7 +1,7 @@
 """Replay one unchanged campaign interval and capture a PyAM21 endpoint mismatch.
 
 Run on the original device/environment using the failed segment's configuration,
-manifest and last_good_restart.pt. This tool lives outside the campaign's hashed
+manifest and last-good restart. This tool lives outside the campaign's hashed
 source directories. It neither bypasses restart identity nor changes a solver
 check. A captured failure is diagnostic evidence, never a successful model step.
 """
@@ -146,9 +146,11 @@ def main(argv=None):
     manifest = json.loads((args.failed_run / "manifest.json").read_text())
     if not manifest["radiation_enabled"]:
         parser.error("this diagnostic requires the original real-radiation campaign")
-    restart = args.failed_run / "last_good_restart.pt"
+    restart = args.failed_run / "last_good_restart.nc"
+    if not restart.exists():
+        restart = args.failed_run / "last_good_restart.pt"
     if not restart.is_file():
-        parser.error("failed run has no last_good_restart.pt")
+        parser.error("failed run has no last-good checkpoint (.nc or .pt)")
     if args.output.exists() and any(args.output.iterdir()):
         parser.error("output must be new/empty")
     # Fail before costly model construction if fetching this tool also changed

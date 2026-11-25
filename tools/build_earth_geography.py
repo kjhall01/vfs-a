@@ -3,9 +3,9 @@
 
 import argparse
 import hashlib
-import io
 import json
 from pathlib import Path
+import sys
 from tempfile import NamedTemporaryFile
 from urllib.request import urlretrieve
 
@@ -14,6 +14,9 @@ from netCDF4 import Dataset
 from scipy.spatial import cKDTree
 from shapely import contains_xy
 from shapely.geometry import shape
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from workflows.coupled.grid_io import read_mesh, write_geography
 
 
 RELIEF = (
@@ -62,19 +65,13 @@ def land_pixels(lon, lat, coastline):
 
 
 def build(mesh, relief, coastline, min_depth):
+    xyz, mesh_sha256 = read_mesh(mesh)
+    return build_on_mesh(xyz, mesh_sha256, relief, coastline, min_depth)
+
+
+def build_on_mesh(xyz, mesh_sha256, relief, coastline, min_depth):
     if not np.isfinite(min_depth) or min_depth <= 0:
         raise ValueError("Minimum wet depth must be positive and finite.")
-    raw = mesh.read_bytes()
-    xyz = np.load(io.BytesIO(raw), allow_pickle=False)
-    if (
-        xyz.ndim != 2
-        or xyz.shape[1] != 3
-        or len(xyz) < 16
-        or xyz.dtype.kind != "f"
-        or not np.isfinite(xyz).all()
-        or not np.allclose(np.linalg.norm(xyz, axis=1), 1.0, atol=1e-6, rtol=0)
-    ):
-        raise ValueError("Expected a mesh .npy file with N >= 16 unit XYZ generators.")
     with Dataset(relief) as grid:
         lon, lat = grid["lon"][:].data, grid["lat"][:].data
         z = grid["z"][:]
@@ -112,7 +109,7 @@ def build(mesh, relief, coastline, min_depth):
         land, 0.0, area_sum(np.maximum(-z, 0.0) * wet) / np.where(land, 1.0, wet_area)
     )
     metadata = dict(
-        mesh_sha256=hashlib.sha256(raw).hexdigest(),
+        mesh_sha256=mesh_sha256,
         relief=title,
         coastline="Natural Earth 1:50m land polygons",
         method="Area-weighted pixel-centre Voronoi binning; majority land; retain disconnected wet basins; land and ocean conditional means with relief clipped at sea level within each class.",
@@ -137,13 +134,13 @@ def main():
         "--mesh",
         type=Path,
         required=True,
-        help="Saved VFS unit-sphere generators (.npy)",
+        help="Saved VFS unit-sphere generators (.nc or .npy)",
     )
     parser.add_argument(
         "--output",
         type=Path,
         required=True,
-        help="Destination geography archive (.npz)",
+        help="Destination geography archive (.nc or legacy .npz)",
     )
     parser.add_argument(
         "--cache-dir",
@@ -168,21 +165,15 @@ def main():
     )
     args = parser.parse_args()
     cache = args.cache_dir or args.output.parent / "earth_sources"
-    result = build(
-        args.mesh,
+    xyz, identity = read_mesh(args.mesh)
+    result = build_on_mesh(
+        xyz, identity,
         source_file(args.relief, cache, RELIEF),
         source_file(args.coastline, cache, COASTLINE),
         args.min_wet_depth_m,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with NamedTemporaryFile(dir=args.output.parent, delete=False) as tmp:
-        partial = Path(tmp.name)
-    try:
-        with partial.open("wb") as f:
-            np.savez_compressed(f, **result)
-        partial.replace(args.output)
-    finally:
-        partial.unlink(missing_ok=True)
+    write_geography(args.output, result, xyz, identity)
     land = result["land"]
     print(f"Wrote {args.output} ({land.sum()} land, {(~land).sum()} wet cells)")
 

@@ -67,10 +67,62 @@ to the checkout. For the benchmark schedule, pass
 
 | Input | Default | Environment override |
 |---|---|---|
-| Voronoi generators | `input-data/mesh_4096_exact_3000.npy` | `VFS_MESH` |
-| Geography archive | `input-data/earth_4096_geography.npz` | `VFS_GEOGRAPHY` |
+| Voronoi generators | `input-data/mesh_4096_exact_3000.nc` (also accepts `.npy`) | `VFS_MESH` |
+| Geography archive | `input-data/earth_4096_geography.nc` (also accepts `.npz`) | `VFS_GEOGRAPHY` |
 | SeaEsfRad tables | `input-data/sea_esf` | `PYAM21_RADIATION_DATA` |
 | PyAM21 source | `../PyAM21` | `PYAM21_SOURCE` |
+
+### Existing inputs and NetCDF output
+
+You can keep using your original `.npy` generators and `.npz` geography.
+The launcher prefers the NetCDF files when both versions of a default input
+exist. To convert a matched pair once, from the checkout:
+
+```bash
+python tools/convert_earth_inputs.py \
+    --mesh input-data/mesh_4096_exact_3000.npy \
+    --mesh-output /glade/work/khall/mesh_4096_exact_3000.nc \
+    --geography /glade/work/khall/earth_4096_geography_40m.npz \
+    --geography-output /glade/work/khall/earth_4096_geography_40m.nc
+```
+
+This preserves generator order, mesh identity, bathymetry floor, raw depths and
+land fractions. A VFS `VoronoiMesh.save` operator cache can also supply its
+ordered centers. The campaign builds the configured operators from those centers.
+
+A new run writes snapshots and complete restarts as separate NetCDF4 datasets.
+Both carry native mesh connectivity, cell and edge positions, hybrid pressure
+coefficients, nominal and per-column reference thickness, and the number of
+active ocean layers. `land_cell_index` maps compact land fields back to mesh
+cells. `soil_layer` is the soil midpoint in metres below ground. Geometry
+coordinates have no time axis. Instantaneous pressure and wet ocean midpoint
+depth in snapshots follow the evolving state.
+
+```python
+from pathlib import Path
+import xarray as xr
+
+run = Path("/glade/work/khall/earth-shelf-40m-day1")
+with xr.open_dataset(run / "snapshots/state_00000000.nc") as ds:
+    wet_temperature = ds.ocean_temperature.where(ds.ocean_layer_depth.notnull())
+    shelf = (ds.ocean_depth_m > 0) & (ds.ocean_depth_m <= 40)
+    print(wet_temperature.isel(time=0, ocean_level=0).where(shelf, drop=True).load())
+
+with xr.open_dataset(run / "diagnostics.nc") as diag:
+    print(diag.numerical_energy_residual_J_m2.to_series())
+```
+
+To continue a one-day segment, pass the same inputs and configuration with
+`--resume /glade/work/khall/earth-shelf-40m-day1/restarts/restart_00086400.nc`,
+a new output directory and the new end day. The restart holds native prognostic
+inventories, the coupled clock, budget ledgers, and PyAM21 physics and radiation
+memory. Use xarray directly for inspection.
+
+To continue a legacy `.pt` from the immediately preceding `main` (`d342be9`),
+pass both `--resume /path/to/old-run/restarts/restart_00086400.pt` and
+`--resume-compatible-manifest /path/to/old-run/manifest.json`. This checks the
+original fingerprint and the audited source transition. The next restart is
+NetCDF. Earlier revisions remain subject to their own source-compatibility checks.
 
 ### Generate the mesh-matched geography
 
@@ -83,7 +135,7 @@ Supply the same mesh file to the generator and the campaign.
 python tools/build_earth_geography.py \
     --mesh input-data/mesh_4096_exact_3000.npy \
     --min-wet-depth-m 40 \
-    --output /glade/work/khall/earth_4096_geography_40m.npz
+    --output /glade/work/khall/earth_4096_geography_40m.nc
 ```
 
 Use this archive explicitly for a fresh 40 m shelf pilot with 600 s atmospheric
@@ -94,7 +146,7 @@ dynamics, 1,200 s ocean SSPRK3, five mixing substeps, two GM/Redi substeps, and
 python -u tools/run_earth_shelf.py --device cuda:0 \
     --config workflows/coupled/earth_shelf_4096_benchmark.yaml \
     --mesh input-data/mesh_4096_exact_3000.npy \
-    --geography /glade/work/khall/earth_4096_geography_40m.npz \
+    --geography /glade/work/khall/earth_4096_geography_40m.nc \
     --stop-after-days 1 --output /glade/work/khall/earth-shelf-40m-day1
 ```
 

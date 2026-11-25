@@ -76,7 +76,7 @@ def main():
     if args.steps < 1 or args.threads < 1:
         parser.error("steps and threads must be positive")
     manifest = json.loads(args.manifest.read_text())
-    payload = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
+    payload = c.read_checkpoint(args.checkpoint)
     if payload.get("schema") != 1 or payload["fingerprint"] != manifest["fingerprint"]:
         parser.error("checkpoint and campaign manifest must match")
     config = c.CampaignConfig(**manifest["configuration"])

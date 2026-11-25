@@ -220,11 +220,14 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
     torch.testing.assert_close(after / after.sum(-1, keepdim=True), ref / ref.sum(-1, keepdim=True))
     c.snapshot(tmp_path / "active.nc", adapter, air, receiver, sea)
     with xr.open_dataset(tmp_path / "active.nc", decode_times=False) as ds:
-        np.testing.assert_array_equal(ds.ocean_active_layer_count[0], (active & domain.wet_cell[:, None]).sum(-1))
+        np.testing.assert_array_equal(ds.ocean_active_layer_count, (active & domain.wet_cell[:, None]).sum(-1))
+        wet = (active & domain.wet_cell[:, None]).cpu().numpy()
+        np.testing.assert_array_equal(ds.ocean_layer_depth.notnull()[0], wet)
+        np.testing.assert_array_equal(ds.ocean_reference_thickness > 0, wet)
     identity = c.fingerprint(cfg, adapter, {}, False)
-    path = tmp_path / "active.pt"
-    c.checkpoint(path, c.pack(adapter, air, receiver, sea, identity, {}))
-    restored_air, restored_sea, _ = c.unpack(torch.load(path, weights_only=True), adapter, receiver, sea, identity)
+    path = tmp_path / "restart.nc"
+    c.save_restart(path, adapter, air, receiver, sea, identity, {})
+    restored_air, restored_sea, _ = c.unpack(c.read_checkpoint(path), adapter, receiver, sea, identity)
     a, s, r = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
     b, t, replay = c.advance(adapter, restored_air, receiver, restored_sea, cfg.physics_dt, cfg)
     check_state(s)
