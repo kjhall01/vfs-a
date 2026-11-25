@@ -53,6 +53,23 @@ repetitions. The pooled medians were **11.17 s** on the reference and
 9.49–11.43 s). The packed endpoint and report matched across all 67 tensors
 and 34 scalar entries.
 
+The same replay with CPU Inductor enabled gave pooled medians of **9.32 s**
+on the reference and **9.89 s** on the candidate. The two compiled runs
+matched for all 67 tensors and 34 scalar entries. These CPU measurements
+exclude first-call compilation and do not establish A100 throughput.
+
+A follow-up kept both compiled workers resident on the same four cores after
+the test suite finished. Each advanced the same loaded interval six times.
+Only one worker advanced at a time, and the first worker alternated within
+each pair. Excluding one warmup per worker, medians were **9.57 s** on
+the reference and **9.54 s** on the candidate. The initial compiled
+slowdown did not repeat under paired timing.
+
+The portable suite against a clean installed wheel completed with 1,661
+passes and 14 skips using PyTorch 2.14.1+cpu. Two separately enabled native
+Inductor checks passed, along with 142 moist and 93 dry portable fixture
+comparisons.
+
 ## Compare on a GPU
 
 Use two checkouts on the same GPU with the same absolute input paths.

@@ -15,7 +15,11 @@ from pathlib import Path
 import numpy as np
 import torch
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.ocean.reference import Ocean
+# Frozen verification runs install the earlier layered-ocean wheel.
+if importlib.util.find_spec("vfs.ocean.reference") is None:
+    from vfs.ocean.model import Ocean
+else:
+    from vfs.ocean.reference import Ocean
 from vfs.ocean.state import OceanState
 from vfs.ocean import OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
