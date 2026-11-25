@@ -212,11 +212,11 @@ def test_zero_vapor_correction_preserves_original_native_energy_target(model, un
     # New corrections remain ordinary explicit state across pack/unpack.
     replay = adapter.unpack(adapter.pack(end))
     same_tree(adapter.pack(end), adapter.pack(replay))
-    # An actual negative endpoint or a mismatched report still rejects first.
+    # A consistent negative endpoint is repairable. A mismatched tendency still rejects.
     out["endpoint_tracers"][0, 0, 0] = -1e-8
     out["rdt"][0, 0, 0] = (-1e-8 - c["tracers"][0, 0, 0]) / dt
-    with pytest.raises(ValueError, match="inadmissible finite column update"):
-        apply_output(adapter, state, out, dt)
+    repaired, report = apply_output(adapter, state, out, dt)
+    energy_close(adapter, state, repaired, report)
     out["rdt"][0, 0, 0] = 0
     with pytest.raises(ValueError, match="endpoint and tendencies disagree"):
         apply_output(adapter, state, out, dt)
@@ -951,3 +951,48 @@ def test_inadmissible_column_detail_identifies_field_and_location_without_clippi
     detail = _inadmissible_column_detail(tb, q, rates, eps, tol)
     assert "field=temperature_K cell=0 level=1" in detail
     assert "no endpoint violation" in _inadmissible_column_detail(t, q, rates, eps, tol)
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
+def test_negative_vapor_funded_by_same_column_vapor(dtype):
+    from pyam21.constants import HLV
+    T = torch.full((2, 4), 255., dtype=dtype)
+    q = torch.zeros(2, 4, 4, dtype=dtype)
+    q[..., 0] = torch.tensor([-.001, .0003, -.002, .01], dtype=dtype)
+    q[1, :, 0] = .02
+    dp = T.new_tensor([100., 200., 300., 400.]).expand_as(T)
+    out = dict(tdt=torch.zeros_like(T), rdt=torch.zeros_like(q))
+    new_T, new_q, corrected, ledger = restore_positive_vapor(T, q, out, 1200, dp=dp)
+    assert (new_q[..., 0] > 0).all()
+    assert torch.equal(new_q[1], q[1]) and torch.equal(new_T[1], T[1])
+    assert ledger["recipient_count"] == 2
+    change = new_q - q
+    residual = (dp * change[..., :3].sum(-1)).sum(-1)
+    assert residual.abs().max() < 8 * torch.finfo(dtype).eps
+    proxy = CP_AIR * (new_T - T) + HLV * change[..., 0]
+    assert proxy.abs().max() < torch.finfo(dtype).eps * T.max() * CP_AIR
+    q[0, :, 0] = -.001
+    with pytest.raises(ValueError, match="insufficient column water"):
+        restore_positive_vapor(T, q, out, 1200, dp=dp)
+
+
+def test_column_redistribution_preserves_native_energy_and_water(model):
+    adapter, state = initial(model)
+    col, geom = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    dt = 1200
+    out = empty(col)
+    q = col["tracers"].clone()
+    # A vertically conservative but locally overdrawn transport in a dry layer.
+    dp = geom["phalf"].diff()
+    removal = q[0, 0, 0].item() + 3e-5
+    q[0, 0, 0] -= removal
+    q[0, 1, 0] += removal * dp[0, 0] / dp[0, 1]
+    out.update(endpoint_temperature=col["T"], endpoint_tracers=q,
+               rdt=(q - col["tracers"]) / dt)
+    target = exchanges(adapter, state, dt, col, geom, out)["target"]
+    end, report = apply_output(adapter, state, out, dt)
+    torch.testing.assert_close(report.energy_transfer["target_layer_increment"], target,
+                               rtol=0, atol=0)
+    assert report.vapor_correction["indices"].tolist() == [[0, 0], [0, 1]]
+    assert report.water_flux_residual.abs().max() < 1e-12
+    assert report.dry_air_residual.abs().max() < 1e-10
+    energy_close(adapter, state, end, report)

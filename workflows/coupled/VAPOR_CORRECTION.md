@@ -1,21 +1,24 @@
 # Positive vapor at the PyAM21 boundary
 
-The conservative VFS adapter now handles an exact-zero vapor endpoint by
-evaporating/sublimating a tiny amount of local cloud condensate. No PyAM21
-checkout or package change is required. The nominal vapor target is
-`1e-12 kg/kg`, declared in `workflows/pyam21/vapor.py`. Positive vapor endpoints
-are unchanged, and negative or nonfinite outputs still reject. The operation
-requires enough condensate in the same layer and preserves total water to
-floating-point roundoff.
+A nonpositive physics endpoint first draws on liquid and ice in its layer.
+When that is insufficient, the adapter draws vapor from the nearest funded
+layers in the same column, weighting transfers by layer pressure thickness.
+Donors retain positive vapor. A finite column with insufficient available
+water still rejects. Temperature adjustments account for the AM2 latent
+energy of the transfer. The native endpoint solve uses the original upstream
+energy target. Precipitation, surface exchange and radiation fluxes are retained.
 
-The correction cools the column in AM2's thermal/latent convention. VFS then
-uses its existing native energy solve with the **original upstream energy
-target**, so the phase transfer does not add external energy or erase an AM2
-energy defect. Both endpoint and tendency reports are updated. The sparse
-`PhysicsReport.vapor_correction` ledger retains the original affected rows.
-See [the energy derivation](../pyam21/ENERGY.md#exact-zero-vapor-at-the-physics-boundary).
+The sparse report records donors, recipients, actual layer transfers and column
+water residual. The existing campaign counters measure recipient events and
+the global area-weighted vapor credited. Positive columns require no repair.
 
-## Continue the failed run
+For the 1,200 s day-12 checkpoint from the pre-cleanup Earth campaign, use the
+original configuration, mesh, geography, radiation tables, PyAM2.1 and runtime.
+Supply a new output directory with `--resume /path/to/last_good_restart.nc`
+and `--resume-compatible-manifest /path/to/manifest.json`. The verifier pins
+the source inventories from both sides of PR #122 and the target of this change.
+
+## Historical exact-zero-only transitions
 
 For a checkpoint from the merged ocean performance stack, update VFS on the campaign machine.
 

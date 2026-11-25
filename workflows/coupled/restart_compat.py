@@ -79,6 +79,14 @@ CLEANUP_ORIGINAL_VERIFIER = "1542d7834224de0041d83339ac9e881836c90492fafd921b596
 CLEANUP_TARGET = "996c37939a2c848e11a732faa54203fdf387bad8515511c97ca964ad1fd5e322"
 
 
+# Both permitted origins have the same campaign physics before vapor repair.
+COLUMN_VAPOR_TARGET = "79486890e847cdf214472eb6f8ac954735d206c0ea378de19f0932152070088e"
+COLUMN_VAPOR_ORIGINS = {
+    (CLEANUP_ORIGIN, CLEANUP_ORIGINAL_VERIFIER),
+    (CLEANUP_TARGET, "e6b31c07fe75bd37a6ec00b7b937982a5c350b99bad95d71a1301291ebe96468"),
+}
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -165,6 +173,10 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    if _without_verifier_digest(current_hashes) == COLUMN_VAPOR_TARGET:
+        if (_without_verifier_digest(old_hashes), old_hashes.get(verifier)) in COLUMN_VAPOR_ORIGINS:
+            return {"numerical_change": "same_column_vapor_redistribution"}
+        raise ValueError("column vapor restart origin differs from the audited revisions")
     if _without_verifier_digest(current_hashes) == CLEANUP_TARGET:
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
         if origin == (CLEANUP_ORIGIN, CLEANUP_ORIGINAL_VERIFIER):
