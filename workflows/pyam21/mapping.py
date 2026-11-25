@@ -62,7 +62,7 @@ def species_endpoint(contents, dp, amount, endpoint_fraction):
 
 
 class ColumnMap:
-    def __init__(self, model, *, legacy=False):
+    def __init__(self, model):
         self.model = model
         mesh = model.mesh
         xyz = mesh.cell_xyz
@@ -76,34 +76,14 @@ class ColumnMap:
             / radius[:, None]
         )
         self.north = torch.linalg.cross(xyz, self.east)
-        self.wind = None if legacy else KineticWindMap(mesh)
-        # Retain the historical diagnostic map only for explicit legacy mode.
-        self.coefficients = self.wind.coefficients if self.wind is not None else (
-            (
-                mesh.cell_rec_w1[..., None] * mesh.cell_rec_basis1[:, None, :]
-                + mesh.cell_rec_w2[..., None] * mesh.cell_rec_basis2[:, None, :]
-            )
-            * mesh.edgeSignOnCell[..., None]
-            * mesh.valid_edges_on_cell[..., None]
-        )
+        self.wind = KineticWindMap(mesh)
+        self.coefficients = self.wind.coefficients
 
     def vector(self, wind):
-        if self.wind is None:
-            return self.model.mesh.cell_wind_vector(wind)
         return self.wind.vector(wind)
 
     def transpose(self, covector):
-        """Euclidean transpose of native wind -> cell Cartesian vector."""
-        if self.wind is not None:
-            return self.wind.transpose(covector)
-        mesh = self.model.mesh
-        value = torch.einsum("cem,clm->cel", self.coefficients, covector)
-        return torch.zeros(
-            mesh.edge_xyz.shape[0],
-            covector.shape[1],
-            dtype=value.dtype,
-            device=value.device,
-        ).index_add(0, mesh.safe_edges_on_cell.flatten(), value.flatten(0, 1))
+        return self.wind.transpose(covector)
 
     def metric(self, state):
         mesh = state.mesh

@@ -8,12 +8,12 @@ sys.path[:0]=[str(Path(__file__).resolve().parents[2]/'validation/temperature_co
 from resolution_mesh import setup
 from vfs.ocean.stratified import OceanSurfaceHeating,OceanSurfaceExchange,OceanSurfaceFluxes,TKEOcean,OceanBoundaryStress
 from vfs.ocean.stratified.tke_model import TKEState
-from model import TemperatureOcean
-from surface import FastSurfaceHeating,FastSurfaceExchange,TemperatureBoundary,TemperatureFacade
-from path import TemperaturePathMixing
-from physics import TemperatureMixing
-from system import TemperatureSystem
-from fast_thermo import Caloric
+from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.surface import FastSurfaceHeating,FastSurfaceExchange,TemperatureBoundary,TemperatureFacade
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.physics import TemperatureMixing
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.mixing.fast_thermo import Caloric
 
 @pytest.fixture
 def inputs():
@@ -88,7 +88,7 @@ def test_native_remap_matches_supported(inputs):
 
 
 def test_guarded_path_retry_is_explicit(inputs):
-    from path import GuardedTemperaturePathMixing,TemperaturePath
+    from vfs.ocean.temperature.path import GuardedTemperaturePathMixing,TemperaturePath
     o,e,s,k,f=inputs;original=TemperaturePath.path_work;calls=[]
     def fail_once(self,closure,*args,**kwargs):
         calls.append(closure.quadrature_order)

@@ -8,7 +8,7 @@ from test_jmd95_hamiltonian import mesh,case
 from vfs.ocean.stratified import StratifiedOcean
 from vfs.ocean.stratified import transport
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'validation/temperature_coordinate'))
-from model import TemperatureOcean
+from vfs.ocean.temperature.model import TemperatureOcean
 
 @pytest.mark.parametrize('coast',[False,True])
 def test_derivatives_work_and_chain_rule(mesh,coast):

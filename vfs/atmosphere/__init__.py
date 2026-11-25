@@ -9,10 +9,10 @@ from .bounded_moist import BoundedGibbs
 
 from .model import MoistAtmosphere
 
-from .steppers import BoundedSSPRK3, CenteredIMEX, DrySSPRK3, DryIMEX
+from .steppers import BoundedSSPRK3, DrySSPRK3
 
 __all__ = [
-    "BoundedSSPRK3", "CenteredIMEX", "DrySSPRK3", "DryIMEX",
+    "BoundedSSPRK3", "DrySSPRK3",
     "MoistAtmosphere",
     "GRAVITY",
     "OMEGA",

@@ -130,8 +130,8 @@ class AM2Adapter:
         energy_mode="conservative",
     ):
         self.model = model
-        if energy_mode not in ("conservative", "legacy"):
-            raise ValueError("energy_mode must be conservative or legacy")
+        if energy_mode != "conservative":
+            raise ValueError("energy_mode must be conservative")
         self.energy_mode = energy_mode
         ref = model.mesh.cell_area
         from workflows.coupled.device import validate_precision
@@ -140,7 +140,7 @@ class AM2Adapter:
             raise ValueError(
                 "configure the host kernel gravity to PyAM21 GRAV=9.8 before initializing state"
             )
-        self.mapping = ColumnMap(model, legacy=energy_mode == "legacy")
+        self.mapping = ColumnMap(model)
         self.start = set_date(*start)
         self.radiation = radiation
         if radiation is not None and (
@@ -161,7 +161,7 @@ class AM2Adapter:
         ).to(device=ref.device, dtype=ref.dtype)
         moist = self.physics.moist
         if (
-            energy_mode == "conservative" and moist.ras is not None
+            moist.ras is not None
             and moist.strat is not None and not moist.c.use_tau
         ):
             self.physics.moist = _CloudStageMoistProcesses(moist.c, moist.ras, moist.strat)
@@ -456,7 +456,7 @@ class AM2Adapter:
         dp, mass = p.diff(), interface_pressure_mass(p.diff())
         T1, R1 = column["T"] + dt * out["tdt"], column["tracers"] + dt * out["rdt"]
         eps = torch.finfo(T1.dtype).eps
-        if self.energy_mode == "conservative" and "endpoint_tracers" in out:
+        if "endpoint_tracers" in out:
             Tend, Rend = out["endpoint_temperature"], out["endpoint_tracers"]
             for actual, expected in ((Tend, T1), (Rend, R1)):
                 if (
@@ -519,8 +519,7 @@ class AM2Adapter:
         if (
             not all(torch.isfinite(out[k]).all() for k in ("tdt", "rdt", "udt", "vdt"))
             or (T1 <= 0).any()
-            or ((R1[..., 0] < 0) if self.energy_mode == "conservative"
-                else (R1[..., 0] <= 0)).any()
+            or (R1[..., 0] < 0).any()
             or (R1[..., 1:3] < -condensate_tolerance).any()
             or (R1[..., :3].sum(-1) >= 1).any()
             or (R1[..., 3] < -128 * eps).any()
@@ -528,36 +527,25 @@ class AM2Adapter:
         ):
             detail = _inadmissible_column_detail(
                 T1, R1, out, eps, condensate_tolerance,
-                allow_zero_vapor=self.energy_mode == "conservative",
+                allow_zero_vapor=True,
             )
             raise ValueError(
                 "PyAM21 returned an inadmissible finite column update; no clipping"
                 f"; dt={dt} seconds; {detail}"
             )
         upstream_out = out
-        vapor_correction = None
-        if self.energy_mode == "conservative":
-            T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt)
-            if vapor_correction is not None:
-                cell, level = vapor_correction["indices"].unbind(-1)
-                layer_mass = dp[cell, level] / g
-                vapor_correction.update(
-                    vapor_added_kg_m2=layer_mass * vapor_correction["vapor_added"],
-                    water_residual_kg_m2=layer_mass * vapor_correction["water_residual"],
-                    am2_energy_residual_J_m2=layer_mass * vapor_correction["am2_energy_residual"],
-                )
-        qw = s.water_content / mass[..., None]
-        amount = (
-            dt * dp[..., None] * out["rdt"][..., :3]
-            if self.energy_mode == "legacy"
-            else dp[..., None] * (R1[..., :3] - column["tracers"][..., :3])
-        )
-        if self.energy_mode == "legacy":
-            dw = species_increment(qw, amount)
-            water = s.water_content + dw
-        else:
-            water = species_endpoint(s.water_content, dp, amount, R1[..., :3])
-            dw = water - s.water_content
+        T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt)
+        if vapor_correction is not None:
+            cell, level = vapor_correction["indices"].unbind(-1)
+            layer_mass = dp[cell, level] / g
+            vapor_correction.update(
+                vapor_added_kg_m2=layer_mass * vapor_correction["vapor_added"],
+                water_residual_kg_m2=layer_mass * vapor_correction["water_residual"],
+                am2_energy_residual_J_m2=layer_mass * vapor_correction["am2_energy_residual"],
+            )
+        amount = dp[..., None] * (R1[..., :3] - column["tracers"][..., :3])
+        water = species_endpoint(s.water_content, dp, amount, R1[..., :3])
+        dw = water - s.water_content
         # Physics tendencies are interpreted as species amount sources on the
         # old carrier. Their sum changes ps, preserving column dry-air mass.
         ps = s.ps + amount.sum((1, 2))[:, None]
@@ -570,11 +558,7 @@ class AM2Adapter:
         # Map only the temperature increment. Never overwrite the original CP
         # profile with a lossy full-level round trip.
         Told = model.physical_fields(s)["temperature"]
-        heat_increment = (
-            dt * dp * out["tdt"]
-            if self.energy_mode == "legacy"
-            else dp * (T1 - column["T"])
-        )
+        heat_increment = dp * (T1 - column["T"])
         Tnew = Told + distribute(heat_increment) / mass
         if (
             not torch.isfinite(Tnew).all()
@@ -588,11 +572,7 @@ class AM2Adapter:
         entropy = torch.where(unchanged, s.entropy_content, entropy)
         # Cloud and clear fractions use complementary available stores for
         # increments, preserving [0,1] without clipping sharp boundaries.
-        dc = (
-            dt * dp * out["rdt"][..., 3]
-            if self.energy_mode == "legacy"
-            else dp * (R1[..., 3] - column["tracers"][..., 3])
-        )
+        dc = dp * (R1[..., 3] - column["tracers"][..., 3])
         cloud = state.cloud_fraction
         positive = species_increment(1 - cloud, -dc.clamp_min(0))
         negative = species_increment(cloud, dc.clamp_max(0))
@@ -610,22 +590,14 @@ class AM2Adapter:
         # energy target (including its defects); the native solve pays for
         # the altered phase partition using the actual VFS mixture enthalpy.
         budget = exchanges(self, state, dt, column, geom, upstream_out, water_boundary)
-        carrier_impulse = (
-            (metric1 - metric0) * s.u_e
-            if self.energy_mode == "legacy"
-            else budget["mass_impulse"]
-        )
+        carrier_impulse = budget["mass_impulse"]
         u1 = (
-            s.u_e + impulse / metric1
-            if self.energy_mode == "legacy"
-            else s.u_e
+            s.u_e
             + (impulse + carrier_impulse - (metric1 - metric0) * s.u_e) / metric1
         )
         end = replace(trial, u_e=u1)
-        transfer = None
-        if self.energy_mode == "conservative":
-            end, transfer = transfer_energy(self, s, end, budget["target"])
-            transfer["target_layer_increment"] = budget["target"]
+        end, transfer = transfer_energy(self, s, end, budget["target"])
+        transfer["target_layer_increment"] = budget["target"]
         result = PhysicsState(end, cloud1, mem, surf, rad, state.time_seconds + dt)
         self.check(result)
         actual_water = (water - s.water_content).sum(1) / g
@@ -663,23 +635,13 @@ class AM2Adapter:
             / g
             * (thermo.enthalpy(T1, mix_fixed1) - thermo.enthalpy(column["T"], mix0))
         ).sum(-1)
-        am2_proxy_change = (
-            dp
-            / g
-            * (
-                am2_constants.CP_AIR * dt * out["tdt"]
-                + am2_constants.HLV * dt * out["rdt"][..., 0]
-                - am2_constants.HLF * dt * out["rdt"][..., 2]
-            )
-        ).sum(-1)
         declared_heat = dt * (
             out["flux_t"]
             + am2_constants.HLV * out["flux_q"]
             + am2_constants.HLF * out["fprec"]
             + radiation_heat
         )
-        if self.energy_mode == "conservative":
-            am2_proxy_change = budget["am2_thermal"]
+        am2_proxy_change = budget["am2_thermal"]
         delta_H = mapping.energy(end) - mapping.energy(s)
         native_ke = model.dynamics.kernel.cell_kinetic_energy
         ke0 = (dp / g * native_ke(model.dynamics.transport_state(s))).sum(-1)

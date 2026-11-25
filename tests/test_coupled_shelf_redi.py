@@ -10,7 +10,7 @@ pytest.importorskip("pyam21")
 from test_coupled_campaign import config, source, synthetic
 from test_pyam21_workflow import same_tree
 from workflows.coupled import campaign as c
-from workflows.coupled.shelf_redi import CoupledShelfRedi
+from vfs.ocean.temperature.shelf_redi import CoupledShelfRedi
 
 
 @torch.no_grad()
@@ -78,7 +78,7 @@ def test_mesh_order_check(tmp_path):
 @torch.no_grad()
 def test_shelf_resolved_and_gm_transport_share_physical_openings(config, source):
     from vfs.ocean.transport import divergence
-    from workflows.coupled.shelf_transport import ShelfTemperatureOcean
+    from vfs.ocean.temperature.shelf_transport import ShelfTemperatureOcean
 
     cfg = replace(config, shelf_redi=True, ocean_levels=6)
     land = np.arange(cfg.cells) == 0

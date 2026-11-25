@@ -90,8 +90,7 @@ by PyAM21's moist stage, checked against the tendency reconstruction at a
 phase exchanges. This avoids a subtraction roundoff negative when the upstream
 state has exhausted a condensate exactly. Source amounts are `dp*(q1-q0)`.
 Remaining amounts are mapped with normalized nonnegative donor weights; signed
-upstream endpoint roundoff is never clipped. The original temperature/tendency
-mapping remains unchanged in legacy mode. The mass-source placement still follows
+upstream endpoint roundoff is never clipped. The mass-source placement still follows
 the declared hybrid-column convention, not a resolved vertical mass-source remap.
 
 ## Solve the native enthalpy constraints
@@ -160,8 +159,7 @@ source, for which two Newton maps retain the constraint's implicit derivative.
 ## Scope and next interface
 
 CPU float64 tests and short radiation-free integrations qualify the transfer and
-its budgets. They do not establish full radiation or climate skill. The legacy
-mode is retained for reproducibility, and restart fingerprints distinguish modes.
+its budgets. They do not establish full radiation or climate skill.
 Saturation, convection and microphysical rates still use AM2's constants and
 parameterizations. Conserving the host energy does not establish that those
 closures are in thermodynamic equilibrium with the host mixture or retune them.

@@ -1,16 +1,18 @@
 """Interleaved baseline/fast mixing on identical inputs, installed-wheel only."""
+from vfs.ocean.mixing import fast_thermo as fast_thermo_source
+from vfs.ocean.mixing import lagged as lagged_source
 import argparse,json,time,statistics,hashlib
 from pathlib import Path
 import torch
 from resolution_mesh import setup,difference
-from lagged import SubcycledLaggedClosure
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
 from vfs.ocean.stratified import TKEOcean
 
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--cells',type=int,default=1024);p.add_argument('--layers',type=int,default=64);p.add_argument('--repeats',type=int,default=3);p.add_argument('--patch',action='store_true');p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     torch.set_num_threads(1)
-    result=dict(cells=a.cells,layers=a.layers,patch=a.patch,dt=300,substeps=4,torch=torch.__version__,threads=1,source_hashes={n:hashlib.sha256(Path(__file__).with_name(n).read_bytes()).hexdigest() for n in ('lagged.py','fast_thermo.py','benchmark_fast.py')},samples=[],warmup_excluded=True)
+    result=dict(cells=a.cells,layers=a.layers,patch=a.patch,dt=300,substeps=4,torch=torch.__version__,threads=1,source_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(lagged_source.__file__), Path(fast_thermo_source.__file__), Path(__file__).with_name('benchmark_fast.py'))},samples=[],warmup_excluded=True)
     def save():a.output.write_text(json.dumps(result,indent=2)+'\n')
     with torch.no_grad():
         ocean,s,k=setup(a.cells,a.layers,a.patch)

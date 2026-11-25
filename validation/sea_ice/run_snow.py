@@ -1,5 +1,11 @@
 """Moving ocean/ice snow accumulation then melt, with boundary mass/energy ledgers."""
 
+from vfs.ice import category_phase as category_phase_source
+from vfs.ice import ice as ice_source
+from vfs.ice import ice_drag as ice_drag_source
+from vfs.ice import ocean_ice as ocean_ice_source
+from vfs.ice import ridging as ridging_source
+from vfs.ice import snow as snow_source
 import argparse
 import csv
 import hashlib
@@ -16,7 +22,7 @@ sys.path[:0] = [
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
 from run_coupled import initial_case
-from snow import SnowOceanIce, SnowParameters
+from vfs.ice.snow import SnowOceanIce, SnowParameters
 
 
 def run(args):
@@ -137,18 +143,14 @@ def run(args):
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in [
                 Path(__file__),
-                *[
-                    Path(__file__).with_name(n + ".py")
-                    for n in (
-                        "snow",
-                        "run_coupled",
-                        "ocean_ice",
-                        "category_phase",
-                        "ice_drag",
-                        "ridging",
-                        "ice",
-                    )
-                ],
+                Path(snow_source.__file__),
+                Path(__file__).with_name('run_coupled.py'),
+                Path(ocean_ice_source.__file__),
+                Path(category_phase_source.__file__),
+                Path(ice_drag_source.__file__),
+                Path(ridging_source.__file__),
+                Path(ice_source.__file__),
+
             ]
         },
     )

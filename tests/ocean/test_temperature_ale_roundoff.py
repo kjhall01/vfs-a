@@ -1,13 +1,9 @@
 """Cold, weakly stratified ALE columns at the entropy acceptance boundary."""
-from pathlib import Path
-import sys
 import pytest
 import torch
 
-sys.path[:0] = [str(Path(__file__).resolve().parents[2] / 'validation' / name)
-               for name in ('temperature_coordinate', 'ocean_column')]
-from roquet import RoquetOcean
-from ale import entropy_content
+from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.temperature.ale import entropy_content
 from vfs import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified.energy_columns import column_terms
@@ -76,7 +72,8 @@ def test_cold_ale_accepts_the_stored_state_and_conserves_columns(threads, seed, 
 
 
 def test_unsolved_projection_still_rejects_with_column_diagnostics(monkeypatch):
-    import ale
+    from vfs.ocean.temperature import ale
+
     model, initial, target = cold_columns()
     def no_step(displacement, *args, settled=None):
         return torch.zeros_like(displacement), torch.zeros(displacement.shape[0], dtype=torch.bool)

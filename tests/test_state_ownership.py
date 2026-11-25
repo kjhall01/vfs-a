@@ -4,9 +4,9 @@ import pytest
 import torch
 
 from vfs import DryAtmosphere, State
-from vfs.core.state import PrognosticFields
+from vfs.atmosphere.state import PrognosticFields
 from vfs.field import Field
-from test_conservative_imex import setup
+from dry_states import setup
 
 
 @pytest.fixture
@@ -101,17 +101,13 @@ def test_diagnostics_and_step_do_not_mutate_inputs_or_cache_fields(dry):
     assert not any(id(x) in {id(t) for t in refs} for x in model.buffers())
 
 
-@pytest.mark.parametrize('implicit', [False, True])
-def test_retained_dry_model_delegation_and_module_ownership(dry, implicit):
-    from vfs import DryAtmosphere, DrySSPRK3, DryIMEX
-    from vfs.core.integrators import ssprk3
-    from vfs.imex import DryPEIMEXARK, IMEXSolverConfig
+def test_retained_dry_model_delegation_and_module_ownership(dry):
+    from vfs import DryAtmosphere, DrySSPRK3
+    from vfs.integrators.explicit import ssprk3
 
     _, state = dry
-    cfg = IMEXSolverConfig( preconditioner='hydrostatic_schur')
-    model = DryAtmosphere(state.mesh, state.column, stepper=DryIMEX(cfg) if implicit else DrySSPRK3())
-    expected = (DryPEIMEXARK(model.dynamics, cfg).step(state, 1.) if implicit
-                else ssprk3(model.dynamics, state, 1.))
+    model = DryAtmosphere(state.mesh, state.column, stepper=DrySSPRK3())
+    expected = ssprk3(model.dynamics, state, 1.)
     modules = list(model.named_modules(remove_duplicate=False))
     assert [n for n, _ in modules] == ['', 'mesh', 'column', 'dynamics']
     assert len({id(m) for _, m in modules}) == len(modules)
@@ -126,17 +122,10 @@ def test_retained_dry_model_delegation_and_module_ownership(dry, implicit):
     assert not list(model.parameters())
     with pytest.raises(AttributeError, match='replaced'):
         model.dynamics = model.dynamics
-    if implicit:
-        solver = model.stepper.solver
-        model(state, 1.)
-        assert model.stepper.solver is solver
-        solver.dynamics = object()
-        with pytest.raises(ValueError, match='binding'):
-            model(state, 1.)
 
 
 def test_explicit_entropy_transport_view_shares_tensors_and_gradients():
-    from test_moist_imex import setup as moist_setup
+    from moist_states import setup as moist_setup
     from vfs.atmosphere.scalar_transport import ScalarTransportState
     dynamics, state, _ = moist_setup()
     state.entropy_content.requires_grad_()
@@ -148,5 +137,5 @@ def test_explicit_entropy_transport_view_shares_tensors_and_gradients():
     assert view.u_e is state.u_e and view.ps is state.ps
     assert view.mesh is state.mesh and view.column is state.column
     derivative = torch.autograd.grad(view.specific_scalar().sum(), state.entropy_content)[0]
-    from vfs.core.state import interface_mass
+    from vfs.atmosphere.state import interface_mass
     torch.testing.assert_close(derivative, 1 / interface_mass(view.layer_dp()), rtol=0, atol=0)

@@ -1,15 +1,12 @@
 """Run from an installed package: python examples/moist_atmosphere.py.
 
 Small illustrative cloudy flow, not a balanced atmospheric benchmark.
-The ARK4 variant uses smooth, positive composition: it cannot bound the sharp
-cloud edge used by the default explicit example.
 """
 
 import argparse
 import torch
 from vfs import (
     MoistAtmosphere,
-    CenteredIMEX,
     VoronoiMesh,
     CharneyPhillipsColumn,
     make_hybrid_coefficients,
@@ -44,25 +41,19 @@ def initialize(*, stepper=None, smooth_composition=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--imex", action="store_true", help="centered ARK4; no species bounds")
-    args = parser.parse_args()
-    steps, dt = (1, 1.) if args.imex else (10, 30.)
+    parser.parse_args()
+    steps, dt = 10, 30.
     torch.set_num_threads(1)
     torch.set_default_dtype(torch.float64)
     # Opt out of gradient recording only for this forward example.
     with torch.no_grad():
-        model, state = initialize(
-            stepper=CenteredIMEX() if args.imex else None,
-            smooth_composition=args.imex,
-        )
+        model, state = initialize()
         before = model.diagnostics(state)
         for _ in range(steps):
             state = model.step(state, dt=dt)
         after = model.diagnostics(state)
-        if args.imex:
-            print("Solver:", model.stepper.solver.last_step_info)
         fields = model.physical_fields(state)
-        print("Stepper:", "centered ARK4 (not bounded)" if args.imex else "bounded SSPRK3")
+        print("Stepper:", "bounded SSPRK3")
         print("Simulated seconds:", steps * dt)
         print(
             "Relative mass change:",

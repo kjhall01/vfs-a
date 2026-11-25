@@ -6,10 +6,12 @@
 | `vfs.geometry.regrid`, `vfs.geometry.remap` | Field remapping and mesh transfers |
 | `vfs.field` | Tensor fields with placement metadata |
 | `vfs.atmosphere` | Dry/moist states, pressure columns, thermodynamics and dynamics |
-| `vfs.atmosphere.imex` | Atmospheric wave splits and implicit stage solvers |
+| `vfs.ocean.temperature` | Coupled CT/SA dynamics, shelf transport, Roquet EOS, GM/Redi and eddy energy |
+| `vfs.ocean.mixing` | Column closure and thermodynamic work calculations |
+| `vfs.ice` | Moving ice, ice drag, category thermodynamics, ridging and snow |
 | `vfs.ocean` | Layer geometry, wet domains, temperature-content states and configurable dynamics |
 | `vfs.ocean.stratified` | Entropy-state JMD95 ocean, matched transport and adaptive thermal ALE |
-| `vfs.integrators` | Explicit Runge–Kutta formulas, tableaus and Krylov iteration |
+| `vfs.integrators` | Explicit Runge–Kutta formulas |
 | `vfs.io` | Output schedules, metadata and file mechanics |
 | Component `io` and `regrid` modules | Physical field interpretation and component snapshots |
 | `vfs.data` | External elevation data acquisition and caching |

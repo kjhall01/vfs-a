@@ -215,7 +215,7 @@ def test_float32_full_physics_radiation_and_restart(source, config, tmp_path, de
 
 @torch.no_grad()
 def test_float32_budget_policy_still_rejects_unfunded_numerical_increment(source, config):
-    from lagged import Factor
+    from vfs.ocean.mixing.lagged import Factor
     selected = replace(config, dtype="float32")
     adapter, air, receiver, sea = c.build(selected, source, None, smoke_no_radiation=True)
     original = Factor.solve

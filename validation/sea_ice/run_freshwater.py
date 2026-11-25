@@ -1,5 +1,6 @@
 """Idealized moving ocean/ice freshwater forcing with complete boundary ledgers."""
 
+from vfs.ice import ice as ice_source
 import argparse
 import csv
 import hashlib
@@ -16,8 +17,8 @@ sys.path[:0] = [
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
 from run_coupled import initial_case
-from snow import SnowOceanIce
-from freshwater import FreshwaterBoundary, FreshwaterFluxes
+from vfs.ice.snow import SnowOceanIce
+from vfs.ice.freshwater import FreshwaterBoundary, FreshwaterFluxes
 
 
 def run(args):
@@ -138,7 +139,7 @@ def run(args):
         threads=1,
         source_sha256={
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in Path(__file__).parent.glob("*.py")
+            for p in (*Path(__file__).parent.glob("*.py"), *Path(ice_source.__file__).parent.glob("*.py"))
         },
     )
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

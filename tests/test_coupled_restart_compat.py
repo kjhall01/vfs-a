@@ -206,3 +206,17 @@ def test_vapor_restart_rejects_unreviewed_sources(revision, path):
         module.verify_compatible_source_delta({**before, path: "unknown"}, after)
     with pytest.raises(ValueError, match="audited"):
         module.verify_compatible_source_delta(before, {k: v for k, v in after.items() if k != path})
+
+
+def test_package_cleanup_restart_requires_both_source_inventories(monkeypatch):
+    # Synthetic manifests exercise the verifier independently of installed versions.
+    old = {module.VERIFIER: module.CLEANUP_ORIGINAL_VERIFIER, "old.py": "a"}
+    new = {module.VERIFIER: "current", "new.py": "a"}
+    monkeypatch.setattr(module, "CLEANUP_ORIGIN", module._without_verifier_digest(old))
+    monkeypatch.setattr(module, "CLEANUP_TARGET", module._without_verifier_digest(new))
+    assert module.verify_compatible_source_delta(old, new)["numerical_change"] == "none"
+    for before, after in (({**old, "old.py": "other"}, new),
+                          ({**old, module.VERIFIER: "unknown"}, new),
+                          (old, {**new, "new.py": "other"})):
+        with pytest.raises(ValueError):
+            module.verify_compatible_source_delta(before, after)

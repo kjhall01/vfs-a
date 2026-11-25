@@ -10,10 +10,10 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation/temperature_coordinate"),
     str(Path(__file__).resolve().parents[2] / "validation/ocean_column"),
 ]
-from eddy_energy import EddyState
-from eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyState
+from vfs.ocean.temperature.eddy import GMRedi
 from eddy_campaign import make
-from roquet import (
+from vfs.ocean.temperature.roquet import (
     RoquetOcean,
     RoquetMixing,
     RoquetHeating,

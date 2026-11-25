@@ -5,7 +5,6 @@ import torch
 from test_linear_column import load
 from test_path_work import path,exchange
 from test_budget_diagnostic import diag
-sys.modules.setdefault('path_work',path)
 consistent=load('consistent')
 
 @pytest.mark.parametrize('budget_acceleration',[False,True])

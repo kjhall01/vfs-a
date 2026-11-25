@@ -77,13 +77,6 @@ def _normalize_rows(xyz: np.ndarray) -> np.ndarray:
     return xyz / np.clip(norms, 1e-15, None)
 
 
-def _spherical_triangle_area(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
-    """Spherical excess area of a unit-sphere triangle (van Oosterom & Strackee)."""
-    triple = float(np.dot(a, np.cross(b, c)))
-    denom = 1.0 + float(np.dot(a, b)) + float(np.dot(b, c)) + float(np.dot(c, a))
-    return 2.0 * math.atan2(abs(triple), denom)
-
-
 def _spherical_polygon_moment(vertices: np.ndarray) -> np.ndarray:
     """Exact integral of x dA for a convex minor-arc unit-sphere polygon.
 
@@ -112,12 +105,6 @@ def _spherical_polygon_moment(vertices: np.ndarray) -> np.ndarray:
     if np.linalg.norm(moment) <= 1e-15:
         raise ValueError('Degenerate spherical polygon')
     return moment
-
-
-def _spherical_polygon_centroid(vertices: np.ndarray) -> np.ndarray:
-    """Direction of the exact area first moment (uniform-density chordal CVT)."""
-    moment = _spherical_polygon_moment(vertices)
-    return moment / np.linalg.norm(moment)
 
 
 def _spherical_circumcenter(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> np.ndarray:
@@ -2078,44 +2065,6 @@ def _rebuild_derived_buffers(mesh: VoronoiMesh) -> None:
 
     # Rebuild cell-centered vector reconstruction.
     _build_cell_wind_weights(mesh)
-
-
-def _dim_names(arr: torch.Tensor, name: str) -> tuple:
-    """Assign human-readable netCDF dimension names."""
-    s = tuple(arr.shape)
-
-    if arr.ndim == 0:
-        return ()
-
-    d0 = (
-        "cell" if s[0] == mesh.nCells
-        else "edge" if s[0] == mesh.nEdges
-        else "vertex" if s[0] == mesh.nVertices
-        else f"d0_{name}"
-    )
-
-    if arr.ndim == 1:
-        return (d0,)
-
-    if arr.ndim != 2:
-        return tuple(f"d{i}_{name}" for i in range(arr.ndim))
-
-    s1 = s[1]
-    if s1 == 3:
-        d1 = "three"
-    elif s1 == 2:
-        d1 = "two"
-    elif s1 == mesh.maxEdges:
-        d1 = "max_edges"
-    elif name in ("tan_stencil", "tan_weights"):
-        d1 = "tan_stencil_size"
-    elif name in ("rotation_stencil", "rotation_weights"):
-        d1 = "rotation_stencil_size"
-    else:
-        d1 = f"d1_{name}"
-
-    return (d0, d1)
-
 
 
 def _save_mesh(mesh: VoronoiMesh, path) -> None:

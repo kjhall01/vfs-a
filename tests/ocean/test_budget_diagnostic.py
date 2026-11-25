@@ -4,7 +4,6 @@ from types import SimpleNamespace
 import torch
 from test_linear_column import load,harness
 from test_path_work import path,exchange
-sys.modules.setdefault('path_work',path)
 sys.modules.setdefault('run',harness)
 diag=load('diagnose_budget')
 

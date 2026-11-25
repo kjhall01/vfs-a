@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 import torch
 sys.path[:0]=[str(Path(__file__).resolve().parents[2]/'validation/temperature_coordinate'),str(Path(__file__).resolve().parents[2]/'validation/ocean_column')]
-from roquet import RoquetFreezingEOS,RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,RoquetWorkspace,convert_jmd95_initialization,TemperatureBoundary
+from vfs.ocean.temperature.roquet import RoquetFreezingEOS,RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,RoquetWorkspace,convert_jmd95_initialization,TemperatureBoundary
 from vfs.ocean.stratified import TKEState
 from complete_campaign import make
 from test_jmd95_hamiltonian import mesh,case
@@ -95,7 +95,7 @@ def test_mixing_cold_unstable_and_strong_contrast(setup,seed,profile):
 
 def test_complete_path_and_backward(setup):
     m,state,f=setup;s=state.ocean;q=s.temp_h.clone().requires_grad_();state=TKEState(s.with_tensors(s.u_e,s.h,q,s.salt_h,s.tracer_h),state.tke_h)
-    with patch('vfs.ocean.jmd95_energy.jmd95_partials',side_effect=AssertionError('JMD95')),patch('fast_thermo.Caloric.inverse',side_effect=AssertionError('iterative inverse')):
+    with patch('vfs.ocean.jmd95_energy.jmd95_partials',side_effect=AssertionError('JMD95')),patch('vfs.ocean.mixing.fast_thermo.Caloric.inverse',side_effect=AssertionError('iterative inverse')):
         end,r=m.step_with_report(state,1.,**f)
         final,rr=m.remap_with_report(end,end.ocean.h.sum(-1,keepdim=True).expand_as(end.ocean.h)/4)
     external=r.boundary.surface_work+r.heating.external_heat+r.exchange.external_energy

@@ -2,7 +2,7 @@
 
 import math
 import torch
-from .steppers import BoundedSSPRK3, CenteredIMEX
+from .steppers import BoundedSSPRK3
 from .moist_conservative import MoistConservativeDynamics, MoistState
 from .moist_cp import interface_pressure_mass
 from .moist_budgets import inventories
@@ -32,11 +32,11 @@ class MoistAtmosphere(torch.nn.Module):
         self.dynamics = MoistConservativeDynamics()
         if stepper is None:
             stepper = BoundedSSPRK3()
-        if type(stepper) not in (BoundedSSPRK3, CenteredIMEX):
-            raise TypeError("stepper must be BoundedSSPRK3 or CenteredIMEX")
+        if type(stepper) is not BoundedSSPRK3:
+            raise TypeError("stepper must be BoundedSSPRK3")
         stepper._bind(self.dynamics)
         self.stepper = stepper
-        self.transport = stepper.transport if isinstance(stepper, BoundedSSPRK3) else None
+        self.transport = stepper.transport
 
     def __setattr__(self, name, value):
         # Fixed ownership: replacing a component could leave a collaborator stale.
@@ -220,8 +220,7 @@ class MoistAtmosphere(torch.nn.Module):
     def forward(self, state, dt):
         """Advance by dt seconds using the configured existing algorithm.
 
-        Bounded SSPRK3 retains each Euler species ledger. Centered IMEX has no
-        bounded transport guarantee. Tendencies are separate numerical APIs.
+        Bounded SSPRK3 retains each Euler species ledger. Tendencies are separate numerical APIs.
         """
         self._check_state(state)
         if not isinstance(dt, (int, float)) or not math.isfinite(dt) or dt <= 0:

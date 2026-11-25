@@ -7,9 +7,9 @@ import pytest
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "validation/temperature_coordinate"))
-from eddy import GMRedi, LocalEddyEnergyError
+from vfs.ocean.temperature.eddy import GMRedi, LocalEddyEnergyError
 from eddy_campaign import make
-from eddy_energy import EddyMixingLength
+from vfs.ocean.temperature.eddy_energy import EddyMixingLength
 from vfs.ocean.transport import divergence
 
 
@@ -123,7 +123,8 @@ def test_quadratic_funding_preserves_single_and_adjacent_layer_updates(front, la
 
 
 def test_rejected_quadratic_proposal_replays_the_original_halvings(front, monkeypatch):
-    import eddy
+    from vfs.ocean.temperature import eddy
+
     model, state = front
     energy = state.eddy_h.clone()
     energy[13, 6] = 1e-8 * state.ocean.h[13, 6]

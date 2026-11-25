@@ -6,18 +6,10 @@ exactly the shared surface energy. Upstream atmospheric imbalance is untouched.
 """
 
 from dataclasses import dataclass, replace
-from pathlib import Path
-import sys
 import torch
 
-# Research dependencies are explicitly loaded, never installed into vfs.
-ROOT = Path(__file__).resolve().parents[2]
-for directory in ("sea_ice", "temperature_coordinate", "ocean_column"):
-    path = str(ROOT / "validation" / directory)
-    if path not in sys.path:
-        sys.path.insert(0, path)
-from roquet import RoquetWorkspace
-from ocean_ice import safe
+from vfs.ocean.temperature.roquet import RoquetWorkspace
+from vfs.ice.ocean_ice import safe
 from vfs.ocean.energy import ConstantDensityEnergy
 from workflows.exchange import SurfaceTiles
 from workflows.momentum import KineticWindMap

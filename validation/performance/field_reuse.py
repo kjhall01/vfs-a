@@ -35,7 +35,8 @@ def main():
         original_kernel = jmd.jmd95_partials
         jmd.jmd95_partials = torch.compile(original_kernel,fullgraph=True)
         sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
-        import fast_thermo
+        from vfs.ocean.mixing import fast_thermo
+
         fast_thermo.jmd95_partials = jmd.jmd95_partials
         fast_thermo.temperature_partial = torch.compile(fast_thermo.temperature_partial,fullgraph=True)
     if a.compile_gibbs and not a.compile_thermo:
@@ -43,7 +44,8 @@ def main():
         original_gibbs = SurfaceGibbs._values
         SurfaceGibbs._values = torch.compile(original_gibbs,fullgraph=True,dynamic=True)
         sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
-        import fast_thermo
+        from vfs.ocean.mixing import fast_thermo
+
         fast_thermo.Caloric.evaluate = torch.compile(fast_thermo.Caloric.evaluate,fullgraph=True,dynamic=True)
     config['compile_gibbs'] = a.compile_gibbs
     config['compile_thermo'] = a.compile_thermo

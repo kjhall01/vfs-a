@@ -2,7 +2,7 @@
 import torch
 from vfs import DryAtmosphere, State, VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.atmosphere.held_suarez import HeldSuarezForcing
-from vfs.core.integrators import ssprk3
+from vfs.integrators.explicit import ssprk3
 
 
 def main():

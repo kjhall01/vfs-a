@@ -11,9 +11,9 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ridging import CategoryIce, RidgingState, CompressionRidging
-from ice import IceOceanState, SeaIceState
-from roquet import RoquetOcean
+from vfs.ice.ridging import CategoryIce, RidgingState, CompressionRidging
+from vfs.ice.ice import IceOceanState, SeaIceState
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 

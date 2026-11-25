@@ -8,8 +8,8 @@ import argparse,json,sys,linecache
 from dataclasses import replace
 from pathlib import Path
 import torch
-from path_work import PathWorkClosure
-from coupled import CoupledClosure
+from vfs.ocean.mixing.path_work import PathWorkClosure
+from vfs.ocean.mixing.coupled import CoupledClosure
 from run import run
 
 

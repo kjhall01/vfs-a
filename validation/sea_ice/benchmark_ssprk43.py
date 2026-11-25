@@ -19,10 +19,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT)] + [str(ROOT / "validation" / p) for p in (
     "sea_ice", "temperature_coordinate", "ocean_column"
 )]
-from ocean_ice import OceanIce
-from ridging import CategoryIce, RidgingState
-from roquet import RoquetOcean
-from snow import SnowState
+from vfs.ice.ocean_ice import OceanIce
+from vfs.ice.ridging import CategoryIce, RidgingState
+from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ice.snow import SnowState
 from workflows.coupled.ice_temperature import ThermalSnowOceanIce
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn

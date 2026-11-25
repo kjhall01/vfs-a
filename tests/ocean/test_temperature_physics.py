@@ -7,10 +7,10 @@ import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'validation/ocean_column'))
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'validation/temperature_coordinate'))
 from resolution_mesh import setup
-from model import TemperatureOcean
-from physics import TemperatureMixing,heat
-from lagged import SubcycledLaggedClosure
-from fast_thermo import Caloric
+from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.physics import TemperatureMixing,heat
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
+from vfs.ocean.mixing.fast_thermo import Caloric
 
 @pytest.fixture
 def column():

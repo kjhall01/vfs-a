@@ -10,9 +10,9 @@ from pathlib import Path
 import torch
 from vfs import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
-from vfs.core.state import State
-from vfs.core.integrators import ssprk3
+from vfs.atmosphere.column import CharneyPhillipsColumn, make_hybrid_coefficients
+from vfs.atmosphere.state import State
+from vfs.integrators.explicit import ssprk3
 
 
 def clean(value):

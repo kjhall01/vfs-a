@@ -15,9 +15,11 @@ REMOVED = (
     'atmosphere.dry_transport', 'atmosphere.recipes', 'atmosphere.operators',
     'transport', 'forcing', 'split_explicit', 'process', 'external_scm', 'physics',
     'diagnostics', 'core.registry',
-    'integrators.imex.ark2', 'integrators.imex.higher_order',
+    'imex', 'atmosphere.imex', 'integrators.imex', 'integrators.krylov',
+    'integrators.tableau', 'core.state', 'core.integrators', 'core.io', 'model',
+    'initial_conditions', 'geometry.column', 'boundary', 'earth', 'era5', 'moisture',
     'integrators.imex.legacy_pressure',
-    'ocean_model', 'ocean_diagnostics', 'land.model', 'ice', 'surface',
+    'ocean_model', 'ocean_diagnostics', 'land.model', 'surface',
     'coupling', 'core.graph', 'geometry.mesh.kernels',
     'atmosphere.pgf_correction', 'transport.neural_reconstruction',
     'transport.shadow_replay', 'transport.reversible_advection',
@@ -79,10 +81,7 @@ def test_retained_source_has_no_imports_from_removed_modules():
                                for n in REMOVED), (path, node.lineno, target)
 
 
-def test_only_ark4_and_bounded_explicit_are_public_moist_choices():
-    from vfs import imex, atmosphere
-    for module, names in ((imex, ("ARK2_TABLEAU", "ARK3_TABLEAU", "DryPEIMEXARK2", "PressureCorrectionCG")),
-                          (atmosphere, ("CenteredSSPRK3",))):
-        for name in names:
-            assert not hasattr(module, name)
-    assert imex.ARK4_TABLEAU.order == 4
+def test_retired_implicit_stepper_exports():
+    import vfs
+    assert not hasattr(vfs, "DryIMEX")
+    assert not hasattr(vfs, "CenteredIMEX")

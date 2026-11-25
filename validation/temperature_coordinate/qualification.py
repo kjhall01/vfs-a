@@ -6,7 +6,7 @@ import numpy as np
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean
-from model import TemperatureOcean
+from vfs.ocean.temperature.model import TemperatureOcean
 ROOT=Path(__file__).resolve().parents[2]
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);sys.modules[name]=m;spec.loader.exec_module(m);return m

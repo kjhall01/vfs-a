@@ -1753,3 +1753,44 @@ This is an intentionally wet drainage test. Nine installed-wheel land and
 surface-exchange cases passed, including mixed terrain with prescribed
 radiation. Both portable fixture comparisons passed (142 moist and 93 dry).
 GPU and long integrations with terrain have not been tested.
+
+## Campaign package cleanup
+
+The reference checkout is [64b56ef](https://github.com/kjhall01/vfs-a/tree/64b56ef845873b25e9911b4abc2bff303873ac8a). The production ocean and ice implementations formerly imported from three validation directories now live in the wheel. The coupled campaign and its profiler import them directly. The Roquet implementation still uses its linear and temperature-coordinate base classes. The entropy-coordinate JMD95 ocean remains available for independent verification.
+
+| Use | Maintained entry point |
+| --- | --- |
+| Earth with coasts, active partial columns and land, or full-depth coupled aquaplanet | `workflows/coupled/campaign.py` with the corresponding preset |
+| Forced moist atmosphere with PyAM2.1 | `workflows/pyam21/run_column.py` and the prescribed-SST dynamics example `run_aquaplanet.py` |
+| Forced temperature/salinity ocean | `vfs.ocean.temperature.roquet.RoquetOcean` and `validation/temperature_coordinate/roquet_campaign.py` |
+| Ice, ridging, drag and snow | `vfs.ice` modules |
+| Ocean mixing and eddy closures | `vfs.ocean.mixing` and `vfs.ocean.temperature` modules |
+| Dry JW and Held–Suarez | `vfs.DryAtmosphere` and `vfs.atmosphere.initial_conditions` |
+
+Atmospheric IMEX, its ARK tableau, wave solves, Krylov code and atmospheric state restriction were retired. Geometric mesh transfers and the PyAM2.1 implicit surface exchange remain. Both atmospheric model defaults still use their original SSPRK3 paths. The PyAM2.1 adapter accepts the conservative energy mapping, including its original vapor correction. Explicit requests for the retired mapping raise an error. Legacy checkpoint readers and scientific file formats remain available.
+
+For older scripts, import atmospheric state, column, moisture, ERA5, boundary and initial-condition helpers from their modules under `vfs.atmosphere`. The short public model imports still work. Explicit integrators live in `vfs.integrators.explicit`, shared file operations in `vfs.io`, and atmospheric snapshot code in `vfs.atmosphere.io`. Five historical column matrix launchers (coupled, consistent, lagged, linear and path-work) are preserved in the reference checkout. The individual column experiments, numerical controls and archived outputs remain available.
+
+The [paired CPU comparison](../verification/coupled/cleanup/compare.py) exercises 808 tensors with byte equality at float64, including prognostic fields, energy and water ledgers, restart payloads, and dry/moist energy derivatives. It checks scalar and container data as well. The coupled cases use small grids and prescribed test radiation. The dry and moist comparisons check each formulation against its own reference.
+
+| Capture | Identical tensors |
+| --- | ---: |
+| Dry dynamics | 33 |
+| Moist dynamics and bounded transport | 134 |
+| Forced PyAM2.1 atmosphere | 85 |
+| Forced Roquet ocean | 62 |
+| Coupled aquaplanet | 102 |
+| Coastal Earth with ice, runoff and restart | 224 |
+| Active shelf columns, 40-level ocean, ALE, GM/Redi and restart | 168 |
+
+Run the same driver and interpreter for both trees, with PyAM2.1 and the test dependencies installed.
+
+```bash
+git worktree add --detach ../vfs-before-cleanup 64b56ef845873b25e9911b4abc2bff303873ac8a
+python verification/coupled/cleanup/compare.py --checkout ../vfs-before-cleanup --save /tmp/vfs-before-cleanup.pt
+python verification/coupled/cleanup/compare.py --checkout . --compare /tmp/vfs-before-cleanup.pt
+```
+
+An independent CLI replay resumed the reference checkout's 120-second NetCDF checkpoint and matched its uninterrupted 180-second control for every saved state tensor and ledger value. Resume a pre-cleanup campaign with `--resume <checkpoint.nc> --resume-compatible-manifest <original-manifest.json>`. The bridge pins both source inventories and preserves configuration, runtime, geometry and radiation identity checks. GPU runs, production-table radiation, throughput and long trajectories were outside the comparison.
+
+The outside-checkout installed wheel passed 1,656 tests in portable mode with 14 skips. The native CPU Inductor radiation and restart test also passed when enabled separately. Frozen moist and dry portable fixtures passed 142 and 93 tensor comparisons. The historical cross-platform exact fixture differs by up to 4.45e-15 m/s in the initial wind on this host on both revisions. The same-host comparisons above use byte equality.

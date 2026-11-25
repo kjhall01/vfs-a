@@ -1,5 +1,7 @@
 # Forced-column campaign
 
+The historical matrix-launch commands below use the [pre-cleanup source tree](https://github.com/kjhall01/vfs-a/tree/64b56ef845873b25e9911b4abc2bff303873ac8a/validation/ocean_column).
+
 Run against an installed VFS wheel (CPU float64):
 
 ```sh

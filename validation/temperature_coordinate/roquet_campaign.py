@@ -3,6 +3,7 @@
 GSW is used only when --wave matches the previous JMD95 initial buoyancy;
 ordinary warm/cold/contrast cases initialize native CT/SA without GSW.
 """
+from vfs.ocean.temperature import roquet as roquet_source
 import argparse,json,math,statistics,sys,time,hashlib
 from pathlib import Path
 import numpy as np
@@ -11,7 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import TKEState,OceanSurfaceFluxes
-from roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,TemperatureBoundary,convert_jmd95_initialization
+from vfs.ocean.temperature.roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,TemperatureBoundary,convert_jmd95_initialization
 
 
 def model(mesh,column,substeps,physics=True):
@@ -62,7 +63,7 @@ def main():
     if a.wave:
         limit=.3*float(m.ocean.mesh.dc_edge.min())/meta['fast_speed'];a.steps=math.ceil(meta['period_s']/limit);a.dt=meta['period_s']/a.steps
     s=initial.ocean;area=m.energy.mass_area(s);mass=(area*s.h).sum();before=m.total_energy(initial)
-    report=dict(config={**vars(a),'output':str(a.output)},metadata=meta,torch=torch.__version__,source_sha256={n:hashlib.sha256(Path(__file__).with_name(n).read_bytes()).hexdigest() for n in ('roquet.py','roquet_campaign.py')},status='running',samples=[])
+    report=dict(config={**vars(a),'output':str(a.output)},metadata=meta,torch=torch.__version__,source_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(roquet_source.__file__), Path(__file__).with_name('roquet_campaign.py'))},status='running',samples=[])
     def save():a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
     def advance(state):
         out,r=m.step_with_report(state,a.dt,**f)

@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 import torch
-from vfs import VoronoiMesh, MoistAtmosphere, DryIMEX
+from vfs import VoronoiMesh, MoistAtmosphere
 from vfs.ocean import OceanState, OceanColumn
 from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.geometry.mesh.grid import _save_mesh as save_mesh_netcdf, _load_mesh as load_mesh_netcdf
@@ -72,12 +72,12 @@ def test_mesh_cache_roundtrip(tmp_path):
                                rtol=16*eps,atol=16*eps*float(expected.abs().max()))
 
 
-def test_atmospheric_work_and_imex():
+def test_atmospheric_work_and_explicit_step():
     from vfs import make_hybrid_coefficients, CharneyPhillipsColumn, DryAtmosphere
     from vfs.atmosphere.initial_conditions.jablonski_williamson import JWInitialConditions
     m=grid();A,B=make_hybrid_coefficients(3,p_top=5000.)
     col=JWInitialConditions.make_column_for_mode(m,3,A,B,mode='constant_ps_surface_phi',phi_full_mode='direct_u_gl2_adjoint')
-    dry=DryAtmosphere(m,col,stepper=DryIMEX())
+    dry=DryAtmosphere(m,col)
     s=JWInitialConditions(m,col,mode='constant_ps_surface_phi').make_state(dry.dynamics,perturb=False)
     r=dry.dynamics.rotation_work_terms(s)
     assert float(r['work_relative'])<1e-12
@@ -88,11 +88,6 @@ def test_atmospheric_work_and_imex():
     rhs=moist.dynamics.tendency(s)
     assert torch.isfinite(rhs.u_e).all()
     out=moist(s,1.);assert torch.isfinite(out.water_content).all()
-    from vfs import CenteredIMEX
-    m3=grid();col3=CharneyPhillipsColumn(3,A,B,phi_full_mode='direct_u_gl2_adjoint')
-    implicit=MoistAtmosphere(m3,col3,stepper=CenteredIMEX())
-    s3=implicit.state_from_fields(temperature=280.,surface_pressure=100000.,normal_wind=1.,vapor=.01)
-    out3=implicit(s3,1.);assert torch.isfinite(out3.water_content).all()
 
 
 

@@ -4,6 +4,7 @@ Use separate processes/wheels for before/after; never profile during timing.
 The Linux line profiler samples RSS at Python boundaries, not inside ATen.
 """
 
+from vfs.ocean.temperature import model as model_source
 import argparse
 import dataclasses
 import gc
@@ -23,8 +24,8 @@ sys.path[:0] = [
 import torch
 from eddy_performance import wave
 from eddy_campaign import make
-from eddy_energy import EddyState
-from roquet import RoquetOcean
+from vfs.ocean.temperature.eddy_energy import EddyState
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.ocean import OceanDomain
 from vfs.ocean.transport import HorizontalTransport
 import vfs
@@ -227,7 +228,7 @@ def main():
                 root / "ocean/transport.py",
                 root / "ocean/stratified/transport.py",
                 root / "ocean/stratified/equations.py",
-                Path(__file__).with_name("model.py"),
+                Path(model_source.__file__),
             ]
         },
     )

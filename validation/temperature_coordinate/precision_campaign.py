@@ -8,10 +8,10 @@ from dataclasses import fields
 from pathlib import Path
 import torch
 from complete_campaign import make
-from model import TemperatureOcean
-from system import TemperatureSystem
-from path import TemperaturePathMixing
-from surface import FastSurfaceHeating,FastSurfaceExchange,TemperatureBoundary
+from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.surface import FastSurfaceHeating,FastSurfaceExchange,TemperatureBoundary
 from vfs.ocean import OceanState
 from vfs.ocean.stratified import StratifiedOcean,TKEState,OceanSurfaceFluxes
 

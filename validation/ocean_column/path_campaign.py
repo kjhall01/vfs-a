@@ -1,10 +1,12 @@
 """Compare unchanged finite-work and path-work research closures."""
+from vfs.ocean.mixing import coupled as coupled_source
+from vfs.ocean.mixing import path_work as path_work_source
 import argparse,json,hashlib
 from pathlib import Path
 import torch
 from run import run
-from coupled import CoupledClosure
-from path_work import PathWorkClosure
+from vfs.ocean.mixing.coupled import CoupledClosure
+from vfs.ocean.mixing.path_work import PathWorkClosure
 
 
 def main():
@@ -16,7 +18,7 @@ def main():
     closure=PathWorkClosure(2.,quadrature_order=a.order,**kwargs) if a.method=='path' else CoupledClosure(2.,**kwargs)
     r=run(a.layers,a.dt,a.hours,a.scenario,closure=closure)
     r.update(method=a.method,path_order=a.order,cautious=a.cautious,torch=torch.__version__,
-        source_hashes={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ('path_work.py','coupled.py','run.py')})
+        source_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(path_work_source.__file__), Path(coupled_source.__file__), Path(__file__).with_name('run.py'))})
     a.output.write_text(json.dumps(r,indent=2)+'\n')
     print(json.dumps({k:r[k] for k in ('method','path_order','layers','dt_s','status','completed_hours','failure','wall_s','energy_error_J_kg','limiter')}),flush=True)
 

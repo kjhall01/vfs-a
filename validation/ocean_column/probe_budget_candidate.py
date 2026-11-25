@@ -7,7 +7,7 @@ import argparse,json
 from pathlib import Path
 import torch
 from diagnose_budget import Observer,ledger,serial
-from path_work import PathWorkClosure
+from vfs.ocean.mixing.path_work import PathWorkClosure
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()

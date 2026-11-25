@@ -5,14 +5,14 @@ from unittest.mock import patch
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from resolution_mesh import setup
-from lagged import SubcycledLaggedClosure
-from physics import TemperatureMixing
-from path import TemperaturePathMixing
-from system import TemperatureSystem
-from surface import FastSurfaceExchange,FastSurfaceHeating,TemperatureBoundary
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
+from vfs.ocean.temperature.physics import TemperatureMixing
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.temperature.surface import FastSurfaceExchange,FastSurfaceHeating,TemperatureBoundary
 from vfs.ocean.stratified import TKEOcean,TKEState,OceanBoundaryStress,OceanSurfaceHeating,OceanSurfaceExchange,OceanSurfaceFluxes,AdaptiveThermalRemapper
 from vfs.ocean.stratified import equations
-from fast_thermo import Caloric
+from vfs.ocean.mixing.fast_thermo import Caloric
 from collections import Counter
 
 

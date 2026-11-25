@@ -64,7 +64,7 @@ class LinearColumnOcean(StratifiedOcean):
 
 
 # Local research import; this module is never installed into the VFS package.
-from coupled import CoupledClosure
+from vfs.ocean.mixing.coupled import CoupledClosure
 
 class ExactLinearWorkClosure(CoupledClosure):
     """Analytic interface work eliminates subtraction/inversion noise from B.

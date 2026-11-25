@@ -10,9 +10,9 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation/temperature_coordinate"),
     str(Path(__file__).resolve().parents[2] / "validation/ocean_column"),
 ]
-from roquet import RoquetOcean
-from eddy import GMRedi
-from eddy_energy import EddyState
+from vfs.ocean.temperature.roquet import RoquetOcean
+from vfs.ocean.temperature.eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyState
 from vfs.ocean.stratified import TKEState
 from test_jmd95_hamiltonian import mesh, case
 

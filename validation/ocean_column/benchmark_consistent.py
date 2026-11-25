@@ -3,7 +3,7 @@ import argparse,json,time,statistics
 from pathlib import Path
 import torch
 from run import ColumnMetric
-from path_work import PathWorkClosure
+from vfs.ocean.mixing.path_work import PathWorkClosure
 from consistent import ConsistentPathClosure
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean,OceanBoundaryStress

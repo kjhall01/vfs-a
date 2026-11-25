@@ -2,7 +2,7 @@
 
 Run the baseline installed wheel with --save /tmp/vfs-readability-before.pt,
 then the changed wheel with --compare that file. --original selects the
-pre-refactor ARK4 constructor. Capture detaches only copies for serialization;
+pre-refactor bounded transport constructor. Capture detaches only copies for serialization;
 all diagnostic gradients are evaluated on the original connected graph.
 """
 import argparse
@@ -11,8 +11,7 @@ from pathlib import Path
 import torch
 from vfs import State, MoistState, VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.atmosphere import DryHydrostaticConservativeDynamics, MoistConservativeDynamics, BoundedGibbs
-from vfs.core.integrators import ssprk3
-from vfs.imex import DryPEIMEXARK, MoistPEIMEXARK, IMEXSolverConfig
+from vfs import ssprk3
 
 DRY = ('u_e', 'mtheta_i', 'ps')
 MOIST = ('u_e', 'ps', 'entropy_content', 'water_content')
@@ -83,31 +82,6 @@ def capture(original=False):
             values['bounded_rhs'], values['ledger'] = clean(bounded.evaluate(state, 1.))
             values['euler'], values['euler_ledger'] = clean(bounded.euler_with_info(state, 1.))
             values['explicit'], values['stage_ledgers'] = clean(bounded.step_with_info(state, 1.))
-        for pre in (('none', 'hydrostatic_schur', 'multilevel_hydrostatic_schur') if name == 'dry'
-                    else ('none', 'hydrostatic_schur')):
-            cfg = IMEXSolverConfig(**({"implicit_operator": "gravity_wave"} if original else {}), preconditioner=pre,
-                                   rtol=1e-11, max_iterations=100)
-            factory = DryPEIMEXARK if name == 'dry' else MoistPEIMEXARK
-            kwargs = {'method': 'ark4'} if original else {}
-            solver = factory(dynamics, cfg, **kwargs)
-            stages = []
-            real = dynamics.tendency
-            def record(s):
-                stages.append(clean(s))
-                return real(s)
-            # Dry captures its callable on construction; moist reads dynamics.
-            if name == 'dry':
-                solver._tendency = record
-            else:
-                dynamics.tendency = record
-            try:
-                out, info = solver.step_with_info(state, 600.)
-            finally:
-                if name == 'moist':
-                    del dynamics.tendency
-            assert info.converged
-            values['ark4_'+pre] = dict(state=clean(out), stages=stages, info=clean(info))
-            print(name, pre, info.total_iterations, [i.relative_residual for i in info.stages])
         result[name] = values
     return result
 

@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "ocean_column"))
-from roquet import RoquetEnergy, RoquetFreezingEOS
+from vfs.ocean.temperature.roquet import RoquetEnergy, RoquetFreezingEOS
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean.continuity_momentum import (
     reconstruct_cell_velocity,

@@ -3,6 +3,7 @@
 Requires an installed VFS; no data downloads. Timing is CPU float64, one thread.
 The optional JMD95 comparison changes physics, not just implementation.
 """
+from vfs.ocean.temperature import linear as linear_source
 import argparse
 import hashlib
 import json
@@ -13,10 +14,10 @@ import time
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from complete_campaign import make
-from linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
-from system import TemperatureSystem
-from path import TemperaturePathMixing
-from surface import FastSurfaceHeating,FastSurfaceExchange
+from vfs.ocean.temperature.linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.surface import FastSurfaceHeating,FastSurfaceExchange
 from vfs.ocean.stratified import TKEState
 
 
@@ -34,7 +35,7 @@ def main():
     candidates=[('linear',linear)]
     if a.compare_jmd95:
         candidates.insert(0,('compiled_jmd95',TemperatureSystem(o,closure=TemperaturePathMixing(2.,substeps=a.mixing_substeps),boundary=TemperatureBoundary(.0025),heating=FastSurfaceHeating(.6,(.5,20.)),exchange=FastSurfaceExchange())))
-    results=dict(config={**vars(a),'output':str(a.output)},torch=torch.__version__,dtype='float64',threads=1,geometry='Fibonacci Voronoi, zero Lloyd iterations, compatible rotation',source_sha256={n:hashlib.sha256(Path(__file__).with_name(n).read_bytes()).hexdigest() for n in ('linear.py','linear_campaign.py')},cases={})
+    results=dict(config={**vars(a),'output':str(a.output)},torch=torch.__version__,dtype='float64',threads=1,geometry='Fibonacci Voronoi, zero Lloyd iterations, compatible rotation',source_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(linear_source.__file__), Path(__file__).with_name('linear_campaign.py'))},cases={})
     with torch.no_grad():
         for name,model in candidates:
             initial=TKEState(s,s.h*k);area=model.energy.mass_area(s);mass=(area*s.h).sum();energy=model.total_energy(initial)

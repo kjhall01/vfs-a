@@ -1,5 +1,7 @@
 # Refreshed end-TKE budget acceptance
 
+The historical matrix-launch commands below use the [pre-cleanup source tree](https://github.com/kjhall01/vfs-a/tree/64b56ef845873b25e9911b4abc2bff303873ac8a/validation/ocean_column).
+
 `ConsistentPathClosure` is an opt-in research closure using JMD95 conservative-
 path work, positive coupled iteration and a fresh nonlinear budget check. It
 remains outside the installed package. Supported ocean defaults, physical

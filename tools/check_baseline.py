@@ -21,16 +21,19 @@ def imports(reference=None):
         sys.path.insert(0, str(reference / "vfs_verified_source"))
         sys.path.insert(0, str(reference / "vfs_energy_audit/bounded_gibbs"))
         from bounded_pairing import BoundedGibbs
+        from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
+        from vfs.initial_conditions.jablonski_williamson import JWInitialConditions
+        from vfs.core.integrators import ssprk3
     else:
         from vfs.atmosphere import BoundedGibbs
+        from vfs.atmosphere.column import CharneyPhillipsColumn, make_hybrid_coefficients
+        from vfs.atmosphere.initial_conditions.jablonski_williamson import JWInitialConditions
+        from vfs.integrators.explicit import ssprk3
     from vfs.atmosphere import MoistConservativeDynamics, MoistState
     from vfs.atmosphere import (
         DryHydrostaticConservativeDynamics,
     )
     from vfs.geometry.mesh import VoronoiMesh
-    from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
-    from vfs.initial_conditions.jablonski_williamson import JWInitialConditions
-    from vfs.core.integrators import ssprk3
 
     return locals()
 

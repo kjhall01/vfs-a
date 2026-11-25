@@ -18,8 +18,8 @@ from torch import nn
 from vfs import State, VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.atmosphere.held_suarez import HeldSuarezForcing
-from vfs.core.state import interface_mass
-from vfs.core.integrators import ssprk3
+from vfs.atmosphere.state import interface_mass
+from vfs.integrators.explicit import ssprk3
 
 ARCHIVE_COMMIT = "849ccb829c7555ab8ecd1c11f0ae45993538f8ed"
 ARCHIVE_PATH = "vfs/physics.py"

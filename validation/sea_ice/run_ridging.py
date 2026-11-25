@@ -1,5 +1,6 @@
 """Isolated compression stress/redistribution on a spherical mesh, not a coupled run."""
 
+from vfs.ice import ridging as ridging_source
 import argparse
 import csv
 import hashlib
@@ -14,8 +15,8 @@ sys.path[:0] = [
     str(ROOT / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ridging import CategoryIce, RidgingState, CompressionRidging
-from roquet import RoquetOcean, RoquetWorkspace
+from vfs.ice.ridging import CategoryIce, RidgingState, CompressionRidging
+from vfs.ocean.temperature.roquet import RoquetOcean, RoquetWorkspace
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 
@@ -160,7 +161,7 @@ def run(args, dt):
         dtype="float64",
         source_sha256={
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in [Path(__file__), Path(__file__).with_name("ridging.py")]
+            for p in [Path(__file__), Path(ridging_source.__file__)]
         },
     )
     (destination / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

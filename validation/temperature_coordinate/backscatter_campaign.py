@@ -14,9 +14,9 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parent),
     str(Path(__file__).resolve().parents[1] / "ocean_column"),
 ]
-from backscatter import EddyBackscatter
-from eddy import GMRedi
-from eddy_energy import EddyDissipation
+from vfs.ocean.temperature.backscatter import EddyBackscatter
+from vfs.ocean.temperature.eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyDissipation
 from eddy_feedback_campaign import channel
 from eddy_performance import wave
 

@@ -1,5 +1,7 @@
 # Semi-implicit ocean mixing research
 
+The historical matrix-launch commands below use the [pre-cleanup source tree](https://github.com/kjhall01/vfs-a/tree/64b56ef845873b25e9911b4abc2bff303873ac8a/validation/ocean_column).
+
 `LaggedClosure` predicts transport coefficients, then holds them fixed during a
 budgeted mixing update. `SubcycledLaggedClosure` composes a prescribed number of
 these updates inside one outer forcing/dynamics timestep. This is a different

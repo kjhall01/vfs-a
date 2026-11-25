@@ -28,7 +28,6 @@ import vfs
 from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMeshHierarchy
 from vfs.geometry import LatLonGrid
-from vfs.imex import DryPEIMEXARK, MoistPEIMEXARK
 assert DryHydrostaticConservativeDynamics().recipe_name == "conservative_diagonal"
 assert LatLonGrid is not None
 try:

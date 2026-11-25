@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from workflows.coupled import campaign
 from workflows.coupled.device import execution_context, resolve_device, synchronize
 from workflows.coupled.ice_temperature import ThermalPhase
-from category_phase import CategoryThermodynamics
+from vfs.ice.category_phase import CategoryThermodynamics
 
 
 def main():

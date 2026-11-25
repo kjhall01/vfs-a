@@ -9,9 +9,9 @@ import xarray as xr
 from vfs import State, VoronoiMesh, CharneyPhillipsColumn, make_hybrid_coefficients
 from vfs.geometry.regrid import LatLonGrid, MeshToLatLonKNN
 from vfs.data.topography import build_topographic_column, earth_surface_pressure_from_phi_s
-from vfs.earth import earth_like_dry_initial_state
+from vfs.atmosphere.earth import earth_like_dry_initial_state
 from vfs.field import Field
-from vfs.boundary import synthetic_earth_boundary, write_boundary_netcdf, load_native_boundary_field
+from vfs.atmosphere.boundary import synthetic_earth_boundary, write_boundary_netcdf, load_native_boundary_field
 
 
 def capture():

@@ -51,8 +51,6 @@ python -I examples/moist_atmosphere.py
 python -I examples/bounded_moist.py
 python -I examples/held_suarez.py
 python -I examples/dry_atmosphere.py
-python -I examples/dry_atmosphere.py --imex
-python -I examples/moist_atmosphere.py --imex
 python -I examples/ocean_stratified.py
 ```
 
