@@ -2,7 +2,9 @@
 
 The [coupled Earth presets](../workflows/coupled/EARTH_SHELF.md) now advance
 bathymetry-dependent wet layer counts throughout the ocean. The pilot guide
-includes a 40 m bathymetry build and the one-day Derecho command.
+includes a 40 m bathymetry build and the one-day Derecho command. Both the
+Earth launcher and the direct campaign script load VFS and the ocean physics
+from their checkout when an older wheel is installed.
 
 The [Earth shelf pilot](../workflows/coupled/EARTH_SHELF.md) initializes surface
 pressure over land from the prescribed moist atmospheric profile. Start at day

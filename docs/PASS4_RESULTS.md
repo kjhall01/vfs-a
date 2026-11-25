@@ -18,7 +18,9 @@ a proposed rezone would require cooling an isothermal, single-layer column.
 The infeasible rezone is held locally. Other columns remap, with conserved
 edge-integrated momentum and column-integrated salt, passive tracers, TKE and
 EKE. A separate check verifies that changing the land placeholder thickness
-leaves backscatter and its local eddy-energy tendency unchanged.
+leaves backscatter and its local eddy-energy tendency unchanged. A subprocess
+test starts the campaign with older VFS and ocean-helper modules earlier on
+`PYTHONPATH` and verifies that the checkout takes precedence.
 
 ## Hydrostatic initialization over Earth terrain
 

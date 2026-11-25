@@ -2,8 +2,11 @@
 
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 from types import SimpleNamespace
 from unittest.mock import patch
 import pytest
@@ -58,6 +61,30 @@ def synthetic(nml, model, data_dir, **options):
         "synthetic-campaign-test",
         {"synthetic": True, "namelist": nml},
     )
+
+
+def test_campaign_script_prefers_checkout_over_older_install(tmp_path):
+    import vfs
+
+    # Build a checkout layout even when pytest itself runs against a staged wheel.
+    checkout = tmp_path / "checkout"
+    shutil.copytree(c.ROOT / "workflows", checkout / "workflows")
+    (checkout / "vfs").symlink_to(Path(vfs.__file__).resolve().parent, target_is_directory=True)
+    (checkout / "validation").symlink_to(c.ROOT / "validation", target_is_directory=True)
+    stale = tmp_path / "old-install"
+    (stale / "vfs").mkdir(parents=True)
+    for path in (stale / "vfs/__init__.py", stale / "roquet.py"):
+        path.write_text("raise RuntimeError('imported a stale campaign dependency')")
+
+    # Existing validation entries can also sit behind an old helper on PYTHONPATH.
+    paths = [stale, checkout, checkout / "validation/temperature_coordinate"]
+    if os.environ.get("PYTHONPATH"):
+        paths.append(os.environ["PYTHONPATH"])
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join(map(str, paths)))
+    result = subprocess.run([sys.executable, str(checkout / "workflows/coupled/campaign.py"), "--help"],
+                            cwd=tmp_path, env=env, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
+    assert "--preflight" in result.stdout
 
 
 def test_radiation_off_needs_only_bomex_namelist(source, config):

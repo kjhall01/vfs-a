@@ -18,8 +18,12 @@ import torch
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
+# Keep the campaign, VFS, and its unqualified research imports on the same
+# checkout even when an older wheel or another checkout is on the search path.
+sys.path[:0] = [str(ROOT)] + [
+    str(ROOT / "validation" / directory)
+    for directory in ("ocean_column", "temperature_coordinate", "sea_ice")
+]
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
 from workflows.coupled.driver import exchange_step
