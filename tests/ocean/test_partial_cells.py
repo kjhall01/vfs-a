@@ -217,3 +217,57 @@ def test_one_layer_and_missing_neighbors():
         torch.empty_like(closed.opening), closed, tensor([2]), 1025.0
     )
     assert u.numel() == 0 and dke.item() == 0
+
+
+@pytest.mark.parametrize(
+    "gradient",
+    [
+        0.0,
+        pytest.param(
+            0.003,
+            marks=pytest.mark.xfail(
+                strict=True,
+                raises=AssertionError,
+                reason="Hamiltonian pressure and transport still alias stratification across a merged shelf layer",
+            ),
+        ),
+    ],
+)
+def test_hydrostatic_rest_on_merged_shelf(gradient, monkeypatch):
+    from types import SimpleNamespace
+    from vfs.ocean.partial_cell_dynamics import pressure_transport
+
+    root = Path(__file__).resolve().parents[2] / "validation"
+    for name in ("ocean_column", "temperature_coordinate"):
+        monkeypatch.syspath_prepend(str(root / name))
+    from roquet import RoquetEnergy, RoquetFreezingEOS
+
+    depth = tensor([603, 2500])
+    h = reference_thickness(depth, tensor([50] * 50))
+    z = h.flip([1]).cumsum(1).flip([1]) - depth[:, None] - 0.5 * h
+    t, s = 12 + gradient * z, torch.full_like(z, 35)
+    area = tensor([1e10, 1e10])
+    physical = SimpleNamespace(
+        h=h,
+        temperature=lambda: t,
+        salinity=lambda: s,
+        column=SimpleNamespace(total_depth_like=lambda _: depth[:, None]),
+        mesh=SimpleNamespace(cell_area=area),
+    )
+    energy = RoquetEnergy(RoquetFreezingEOS(), gravity=9.8, rho0=1025.0)
+    _, g = energy.stratification(physical)
+    faces = WetFaces.from_columns(depth, h, torch.tensor([[0, 1]]))
+    rhs = pressure_transport(
+        faces,
+        torch.zeros_like(faces.opening),
+        tensor([1e5]),
+        tensor([1e5]),
+        area,
+        energy.rho0,
+        t,
+        s,
+        g["h"],
+        g["temp_h"],
+        g["salt_h"],
+    )
+    assert rhs.velocity.abs().max().item() < 1e-16

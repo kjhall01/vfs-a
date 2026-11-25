@@ -1,4 +1,4 @@
-"""Run isolated active-layer Redi steps and a thickness-changing ALE on a coastal mesh."""
+"""Exercise native moving-face transport, GM/Redi and ALE on a coastal mesh."""
 
 import argparse
 import sys
@@ -20,6 +20,7 @@ from vfs.ocean.partial_cells import (
     remap_active_contents,
     remap_roquet,
 )
+from vfs.ocean.shelf_state import ShelfState
 from vfs.ocean.partial_cell_eddy import ShelfRedi, advance_gm_roquet
 
 
@@ -156,6 +157,55 @@ def main():
         )
         return torch.stack((hs, eos.cp * ht, h * psi, he), -1)
 
+    # Compose moving-face transport, GM, Redi and ALE on the returned state.
+    # Keep the independent operator audits below for comparison.
+    velocity = 0.02 * torch.sin(faces.left.to(h.dtype))
+    native = ShelfState(
+        h,
+        ht,
+        hs,
+        0.1 * h,
+        he,
+        velocity,
+        reconstruct_cell_velocity(mesh, h, faces, velocity),
+    )
+
+    def totals(state):
+        return torch.stack(
+            [(area[:, None] * field).sum() for field in (state.h, state.salt_h)]
+        )
+
+    def specific_budget(state):
+        inv = inventory(state.temp_h, state.salt_h, state.eddy_h, state.h)
+        surface = state.h.sum(1) - depth
+        current = WetFaces.from_columns(depth, state.h, edges)
+        # Keep thermal and mechanical changes separate to retain precision.
+        return (
+            energy.rho0 * area[:, None, None] * inv[..., 1:],
+            energy.rho0 * area[:, None] * state.tke_h,
+            0.5 * energy.rho0 * energy.gravity * area * surface.square(),
+            current.kinetic_energy(state.velocity, dual, energy.rho0).sum(),
+        )
+
+    before = specific_budget(native)
+    starting = totals(native)
+    for _ in range(4):
+        native = native.transport(mesh, depth, 120.0, energy.rho0)
+        native = native.mesoscale(mesh, depth, energy, 100.0, 100.0, 120.0)
+        target = native.h.clone()
+        transfer = 0.01 * target[:, :2].amin(1)
+        target[:, 0] += transfer
+        target[:, 1] -= transfer
+        native = native.rezone(mesh, depth, target, energy)
+    torch.testing.assert_close(totals(native), starting, rtol=1e-13, atol=0)
+    drift = (
+        sum((b - a).sum() for a, b in zip(before, specific_budget(native))) / area.sum()
+    )
+    print(f"Composed unforced transport/GM/Redi/ALE energy change {drift:.6g} J/m²")
+    print(
+        "Four composed transport/GM/Redi/ALE steps conserved water and salt.",
+        flush=True,
+    )
     initial = inventory(ht, hs, he, h)
     for step in range(4):
         b = -energy.gravity / energy.rho0 * eos.anomaly(ht / denom, hs / denom, 0.0)
