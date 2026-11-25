@@ -59,9 +59,16 @@ Terrain enters the atmosphere through surface geopotential and a height-adjusted
 initial pressure. The zero-wind, latitude-dependent initialization undergoes
 adjustment. The supplied geography has a 600 m minimum wet-column depth.
 
-With the earlier Redi-only configuration on the supplied 4,096-cell geography, a CPU float64 two-hour radiation-off run
-completed 60 GM/Redi updates and one ALE remap. The maximum local GM/Redi
-energy residual was 4.0e-12 J/m². Whole-system numerical energy changed by
-−202.1 J/m². A separate preflight replayed bitwise. Prescribed-radiation tests
-exercise the coupled radiation interface; a real-table run on the chosen
-device is the next qualification.
+The 4,096-cell Earth benchmark preset completed six simulated hours on CPU
+in float64 with radiation disabled, including 36 GM/Redi updates and four ALE
+remaps. Water residual was 4.66e-10 kg/m², relative salt change 1.61e-16,
+and peak local GM/Redi energy residual 8.92e-12 J/m². The whole-system
+numerical energy residual was −426.66 J/m² (previous Redi-only configuration
+with the same timestep schedule and inputs, −427.11 J/m²). A separate
+one-interval preflight reproduced the coupled restart bitwise.
+
+At rest on the same grid with constant salinity of 35 g/kg, constant CT of
+12 °C gives a maximum resolved ocean acceleration of 5.12e-17 m/s². For
+CT = 12 + 0.001 z °C, with z in meters positive upward, the maximum is
+4.73e-9 m/s² and the 99th percentile among open velocity slots is 1.95e-9 m/s².
+These measurements exclude ice loading and external forcing.
