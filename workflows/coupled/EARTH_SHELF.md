@@ -53,6 +53,24 @@ to the checkout. For the benchmark schedule, pass
 | SeaEsfRad tables | `input-data/sea_esf` | `PYAM21_RADIATION_DATA` |
 | PyAM21 source | `../PyAM21` | `PYAM21_SOURCE` |
 
+### Generate the mesh-matched geography
+
+From the checkout, use a Python environment with NumPy, SciPy, netCDF4 and
+Shapely 2. The script downloads and verifies the GMT SRTM15 relief grid and
+Natural Earth land polygons, then caches them beside the output archive.
+Supply the same mesh file to the generator and the campaign.
+
+```bash
+python tools/build_earth_geography.py \
+    --mesh input-data/mesh_4096_exact_3000.npy \
+    --output /glade/work/khall/earth_4096_geography.npz
+```
+
+Pass that output to the runner with `--geography`, or set `VFS_GEOGRAPHY`.
+To use existing source files offline, pass `--relief /path/to/earth_relief_10m_p.grd`
+and `--coastline /path/to/ne_50m_land.geojson`. The archive includes the
+unfloored wet depth and the fractional land area alongside the campaign fields.
+
 The geography supplies land mask, grid-mean terrain and wet-column depth in
 matching mesh order. The loader verifies its embedded mesh digest when present.
 Terrain enters the atmosphere through surface geopotential and a height-adjusted
