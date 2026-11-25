@@ -7,6 +7,7 @@ Coefficients: Roquet et al. (2015), Table 3, Freezing; JPO-D-15-0080.1.
 from dataclasses import dataclass
 import math
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from vfs.ocean.energy import ConstantDensityEnergy
 from vfs.ocean.jmd95_energy import JMD95Energy
 from vfs.ocean.stratified import StratifiedOcean,TKEState,OceanSurfaceHeating
@@ -130,10 +131,10 @@ class RoquetWorkspace:
         # the TOTAL increment. This includes cross terms from both interfaces.
         h=physical.h;zero=torch.zeros_like(h[:,:1])
         div=lambda x:torch.cat((x,zero),-1)-torch.cat((zero,x),-1)
-        dt=div(fh)/(h*self.reference.cp_theta)
+        dt=div(fh)/(nonzero_divisor(h)*self.reference.cp_theta)
         a,b=self.conjugates(physical.temperature()+.5*dt,None)
         work=self.ocean.energy.mass_area(physical)*((a[:,:-1]-a[:,1:])*fh+(b[:,:-1]-b[:,1:])*fs)
-        fraction=h[:,:-1]/(h[:,:-1]+h[:,1:])
+        fraction=h[:,:-1]/nonzero_divisor(h[:,:-1]+h[:,1:])
         return torch.cat((fraction*work,zero),-1)+torch.cat((zero,(1-fraction)*work),-1)
 
     def heat(self,state,physical,heat,*,allow_cooling=False):
@@ -228,7 +229,7 @@ class RoquetOcean(TemperatureSystem):
                 raise ValueError(
                     "eddy reservoir must match h and be finite/nonnegative"
                 )
-            wet = (self.energy.mass_area(state.ocean) > 0).expand_as(h)
+            wet = (self.energy.mass_area(state.ocean) > 0) & (h > 0)
             if (e[~wet] != 0).any():
                 raise ValueError("dry eddy reservoir must be zero")
 

@@ -7,6 +7,7 @@ or momentum derivative. Its conjugate per unit mass is exactly one.
 
 from dataclasses import dataclass
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from vfs.ocean.stratified import TKEState
 
 
@@ -15,7 +16,7 @@ class EddyState(TKEState):
     eddy_h: torch.Tensor  # cell × layer, h*e [m³/s²]; e [J/kg]
 
     def specific_eddy_energy(self):
-        return self.eddy_h / self.ocean.h
+        return self.eddy_h / nonzero_divisor(self.ocean.h)
 
 
 class RoquetHamiltonian:
@@ -213,7 +214,7 @@ class EddyDissipation:
         s = state.ocean
         # This existing algebraic quadratic solve includes cp*CT AND the exact
         # Roquet potential-energy change; adding removed/(h*cp) would not close H.
-        heated, _, _ = RoquetWorkspace(model.ocean, s).heat(s, s, removed / s.h)
+        heated, _, _ = RoquetWorkspace(model.ocean, s).heat(s, s, removed / nonzero_divisor(s.h))
         end = EddyState(heated, state.tke_h, remaining)
         model._check_eddy(end)  # other fields validated by the matched heat solve
         H = model.hamiltonian

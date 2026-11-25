@@ -2,6 +2,7 @@
 from dataclasses import dataclass, replace
 import math
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from .model import StratifiedOcean
 from .equations import EntropyState
 from .tke import TKEClosure
@@ -17,7 +18,7 @@ class TKEState:
     tke_h: torch.Tensor
 
     def specific_tke(self):
-        return self.tke_h/self.ocean.h
+        return self.tke_h/nonzero_divisor(self.ocean.h)
 
 
 @dataclass(frozen=True)

@@ -202,7 +202,8 @@ class FreshwaterBoundary:
         h = torch.cat((s.h[:, :1] + dh, s.h[:, 1:]), -1)
         if (h[:, :1][wet] < self.snow.phase.min_liquid).any():
             raise ValueError("freshwater exchange exhausts top layer; reduce dt")
-        salinity = s.salt_h / h
+        # Freshwater changes only the surface layer, whose thickness was checked above.
+        salinity = s.salt_h[:, :1] / h[:, :1]
         if ((salinity <= 0) | (salinity >= 42)).any():
             raise ValueError("freshwater exchange leaves salinity domain; reduce dt")
         thermal = torch.cat(

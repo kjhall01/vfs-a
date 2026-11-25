@@ -46,6 +46,7 @@ from eddy_energy import EddyMixingLength, EddyDissipation
 from backscatter import EddyBackscatter
 from vfs.land import LandState
 from vfs.ocean.domain import OceanDomain
+from vfs.ocean.stratified.remap import ThermalProjectionInfeasible
 from workflows.coupled.coast import CoastalReceiver
 from vfs.ocean import OceanColumn
 
@@ -60,6 +61,7 @@ OCEAN_SUMS = (
     "eddy_decay_steps",
     "ale_steps",
     "ale_changed_columns",
+    "ale_deferred_columns",
     "gm_exchange_J_m2",
     "redi_exchange_J_m2",
     "eddy_dissipation_J_m2",
@@ -106,6 +108,7 @@ class CampaignConfig:
     gm_kinetic_fraction: float = 0.5
     redi_diffusivity_m2_s: float = 100.0
     shelf_redi: bool = False
+    partial_cell_layers: bool = False
     redi_positive_transport: bool = True
     eddy_initial_energy_J_kg: float = 0.1
     eddy_substeps: int = 10
@@ -149,6 +152,7 @@ class CampaignConfig:
             "gm_redi",
             "redi_positive_transport",
             "shelf_redi",
+            "partial_cell_layers",
             "eddy_dissipation",
             "backscatter",
             "ale_remap",
@@ -337,8 +341,36 @@ def ale_step(receiver, sea, config):
     s = initial.ocean
     fractions = rest_thickness(config).to(s.h)
     fractions = fractions / fractions.sum()
-    target = s.h.sum(-1, keepdim=True) * fractions[None]
-    ocean, r = model.remap_with_report(initial, target)
+    if s.column.layer_reference is not None:
+        reference = s.column.layer_reference
+        fractions = reference / reference.sum(-1, keepdim=True)
+    target = s.h.sum(-1, keepdim=True) * fractions
+    if s.column.active_layers is None:
+        ocean, r = model.remap_with_report(initial, target)
+    else:
+        domain = model.ocean.domain
+        left, right = s.mesh.cellsOnEdge[domain.active_edge].T
+        # ALE is optional motion of the computational interfaces. A nearly
+        # homogeneous shelf can lack two independent thermal directions for
+        # simultaneously conserving H and maintaining its entropy. Keep that
+        # column and the other ends of its velocity faces at their current
+        # geometry, then retry the remaining target from the original state.
+        requested = domain.wet_cell & (target != s.h).any(-1)
+        deferred = torch.zeros_like(requested)
+        while True:
+            try:
+                ocean, r = model.remap_with_report(initial, torch.where(deferred[:, None], s.h, target))
+                break
+            except ThermalProjectionInfeasible as exc:
+                touching = exc.columns[left] | exc.columns[right]
+                hold = exc.columns.clone()
+                hold[left[touching]] = True
+                hold[right[touching]] = True
+                additional = requested & hold & ~deferred
+                if not additional.any():
+                    raise
+                deferred |= additional
+        report["ale_deferred_columns"] = int(deferred.sum())
     report["ale_steps"] = 1
     report["ale_changed_columns"] = r.changed_columns
     # Keep remap error visible in the numerical ledger, never external forcing.
@@ -442,6 +474,8 @@ def build(
             zenith_spec="diurnally_varying",
         ),
     )
+    if config.partial_cell_layers and not config.shelf_redi:
+        raise ValueError("partial_cell_layers requires shelf_redi")
     if config.shelf_redi and (not config.gm_redi or (geography is None and not island)):
         raise ValueError('shelf_redi requires GM/Redi and coastal geography or an island')
     if island and geography is not None:
@@ -486,7 +520,8 @@ def build(
         if not island:
             depths[~land] = torch.as_tensor(depth[~mask], dtype=dtype, device=device)
         domain = OceanDomain(mesh, ~land, depth=depths).to(device=device, dtype=dtype)
-        column_options = dict(total_depth=depths, rest_thickness=rest_thickness(config))
+        column_options = dict(total_depth=depths, rest_thickness=rest_thickness(config),
+                              partial_cells=config.partial_cell_layers)
     with initialization_dtype(torch.float64):
         column = OceanColumn(
             config.ocean_levels, gravity=9.8, **column_options
@@ -513,7 +548,9 @@ def build(
         model.dynamics = ShelfTemperatureOcean(model.ocean)
     dz = rest_thickness(config).to(mesh.cell_area)
     h = dz[None].expand(mesh.nCells, -1).clone()
-    if domain is not None:
+    if config.partial_cell_layers:
+        h = column.layer_reference.clone()
+    elif domain is not None:
         h = (h / dz.sum()) * depths[:, None]
     z = h.cumsum(-1) - h / 2
     sinlat = mesh.cell_xyz[:, 2]
@@ -685,7 +722,8 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         if trace is not None:
             trace.observe("ale_remap", adapter, evolved, receiver, water,
                           details={"ale_energy_change_J_m2": r["ale_energy_change_J_m2"],
-                                   "ale_changed_columns": r["ale_changed_columns"]})
+                                   "ale_changed_columns": r["ale_changed_columns"],
+                                   "ale_deferred_columns": r["ale_deferred_columns"]})
         accumulate_ocean(ocean_report, r)
     if sr.runoff_received is not None:
         ocean_report.update(runoff_kg_m2=float((sr.runoff_received * A).sum() / A.sum()),
@@ -744,13 +782,14 @@ def diagnostics(adapter, air, receiver, sea, ledger):
     T = receiver.snow.temperature(sea)
     present = ice.area > 0
     A = adapter.model.mesh.cell_area
-    wet = slice(None) if sea.land is None else receiver.land_surface.wet
+    wet = torch.ones_like(A, dtype=torch.bool) if sea.land is None else receiver.land_surface.wet
     land_diag = {}
     if sea.land is not None:
         l = receiver.land_surface
         land_diag = dict(land_water_kg_m2_global=float((A[l.land] * sea.land.water()).sum() / A.sum()),
                          runoff_kg_m2=ledger.get("runoff_kg_m2", 0.),
                          runoff_gravity_heat_J_m2=ledger.get("runoff_gravity_heat_J_m2", 0.))
+    wet_layers = wet[:, None] & (s.h > 0)
     return dict(
         **land_diag,
         seconds=air.time_seconds,
@@ -779,9 +818,9 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
         max_ocean_speed_m_s=float(s.u_e.abs().max()),
         max_ice_speed_m_s=float(ice.velocity.abs().max()),
-        min_ocean_thickness_m=float(s.h[wet].min()),
-        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet].min()),
-        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet].max()),
+        min_ocean_thickness_m=float(s.h[wet_layers].min()),
+        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet_layers].min()),
+        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet_layers].max()),
         **{k: ledger[k] for k in OCEAN_SUMS + OCEAN_PEAKS},
         **{k: ledger.get(k, 0.0) for k in VAPOR_SUMS + VAPOR_PEAKS},
         **{
@@ -815,14 +854,15 @@ def energy_trace_extrema(adapter, air, receiver, sea):
     va, ia = peak(air.atmosphere.u_e)
     vo, io = peak(ocean.u_e)
     vi, ii = peak(sea.coupled.ice.velocity)
-    wet = slice(None) if sea.land is None else receiver.land_surface.wet
-    e = sea.coupled.ocean.specific_eddy_energy()[wet]
+    wet = torch.ones_like(ocean.h[:, 0], dtype=torch.bool) if sea.land is None else receiver.land_surface.wet
+    wet_layers = wet[:, None] & (ocean.h > 0)
+    e = sea.coupled.ocean.specific_eddy_energy()[wet_layers]
     return dict(max_air_speed_m_s=va, max_air_edge=ia // air.atmosphere.u_e.shape[-1],
                 max_air_level=ia % air.atmosphere.u_e.shape[-1],
                 max_ocean_speed_m_s=vo, max_ocean_edge=io // ocean.u_e.shape[-1],
                 max_ocean_level=io % ocean.u_e.shape[-1],
                 max_ice_speed_m_s=vi, max_ice_flat_index=ii,
-                min_ocean_thickness_m=float(ocean.h[wet].min()),
+                min_ocean_thickness_m=float(ocean.h[wet_layers].min()),
                 max_eddy_energy_J_kg=float(e.max()), min_eddy_energy_J_kg=float(e.min()),
                 sst_min_K=float(ocean.temperature()[wet, 0].min() + 273.15),
                 sst_max_K=float(ocean.temperature()[wet, 0].max() + 273.15))
@@ -993,7 +1033,7 @@ def snapshot(path, adapter, air, receiver, sea):
         ),
         "ocean_tke": (
             ("cell", "ocean_level"),
-            array(sea.coupled.ocean.tke_h / s.h),
+            array(sea.coupled.ocean.specific_tke()),
             {"units": "m2 s-2"},
         ),
         "ocean_eddy_energy": (
@@ -1029,6 +1069,9 @@ def snapshot(path, adapter, air, receiver, sea):
     }
     if sea.land is not None:
         l = receiver.land_surface
+        if s.column.layer_reference is not None:
+            active = s.column.active_layers & l.wet[:, None]
+            data["ocean_active_layer_count"] = (("cell",), array(active.sum(-1)).astype("int32"))
         data["land_mask"] = (("cell",), array(l.land).astype("int8"))
         data["surface_height_m"] = (("cell",), array(adapter.model.column.phi_s / s.column.gravity))
         data["ocean_depth_m"] = (("cell",), array(receiver.H.model.ocean.domain.depth[:, 0] * l.wet))
@@ -1219,6 +1262,10 @@ def main(argv=None):
             generator_xyz=generators, island=args.island, geography=geography,
         )
         if config.shelf_redi:
+            if config.partial_cell_layers:
+                ocean_state = sea.coupled.ocean.ocean
+                counts = ocean_state.column.active_layers.sum(-1)[receiver.land_surface.wet]
+                logger.info("Prognostic wet ocean layers per column: %d to %d", counts.min(), counts.max())
             logger.info("Resolved and GM transport use physical wet openings; Redi uses partial-cell geometry")
         hashes = source_hashes()
         identity = fingerprint(
@@ -1229,7 +1276,7 @@ def main(argv=None):
         if config.compile:
             logger.info("Initial diagnostics and first intervals include compilation; later new tensor shapes may compile once too")
         logger.info(
-            "Ocean processes: GM-Redi=%s (Redi %.8g m2/s; %d substeps); eddy decay=%s (%g days); backscatter=%s (nu2=%g m2/s, nu4=%g m4/s); ALE=%s (every coupled interval)",
+            "Ocean processes: GM-Redi=%s (Redi %.8g m2/s; %d substeps); eddy decay=%s (%g days); backscatter=%s (nu2=%g m2/s, nu4=%g m4/s); ALE=%s (every %d s)",
             config.gm_redi,
             config.redi_diffusivity_m2_s,
             config.eddy_substeps,
@@ -1239,6 +1286,7 @@ def main(argv=None):
             config.backscatter_viscosity_m2_s,
             config.biharmonic_viscosity_m4_s,
             config.ale_remap,
+            config.ale_dt or config.physics_dt,
         )
         logger.info(
             "Ocean–ice explicit dynamics integrator=%s",
@@ -1325,7 +1373,7 @@ def main(argv=None):
             air, sea, ledger = unpack(
                 payload, adapter, receiver, sea, expected_restart_identity
             )
-            for key in VAPOR_SUMS + VAPOR_PEAKS:
+            for key in VAPOR_SUMS + VAPOR_PEAKS + ("ale_deferred_columns",):
                 ledger.setdefault(key, 0.0)
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:

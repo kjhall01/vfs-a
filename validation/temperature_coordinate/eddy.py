@@ -11,6 +11,7 @@ Neither momentum backscatter nor reservoir dissipation is supplied.
 from dataclasses import dataclass
 import math
 import torch
+from vfs.ocean.helpers import nonzero_divisor
 from vfs.ocean.transport import divergence
 from eddy_energy import EddyState, EddyMixingLength
 
@@ -390,7 +391,7 @@ class GMRedi:
     def _unpack(self, model, before, values, initial=None):
         s, h = before.ocean, before.ocean.h
         initial = (
-            self._contents(before) / h[..., None]
+            self._contents(before) / nonzero_divisor(h)[..., None]
             if initial is None
             else initial.reshape(*h.shape, -1)
         )
@@ -450,7 +451,7 @@ class GMRedi:
             .index_add(0, i, carrier.clamp_min(0))
             .index_add(0, j, (-carrier).clamp_min(0))
         )
-        fraction = dt * outgoing / volume
+        fraction = dt * outgoing / nonzero_divisor(volume)
         if (fraction > self.cfl).any():
             raise FloatingPointError("GM outflow exceeds CFL; reduce dt")
         # The circulation has zero divergence, so subtracting the EOS reference
@@ -461,7 +462,7 @@ class GMRedi:
         anomaly = initial - reference
         donor = torch.where((carrier >= 0)[:, None], anomaly[i], anomaly[j])
         transfer = dt * carrier[:, None] * donor
-        gm_values = initial + divergence(i, j, transfer, h.numel()) / volume[:, None]
+        gm_values = initial + divergence(i, j, transfer, h.numel()) / nonzero_divisor(volume)[:, None]
         gm_transport = self._unpack(model, state, gm_values, initial)
         if self.gm_energy_scheme == "midpoint":
             mu = model.hamiltonian.midpoint_conjugates(state, gm_transport).reshape_as(initial)
@@ -501,7 +502,7 @@ class GMRedi:
             model, state, part="gm", metrics=metrics, gm_diffusivity=gm_diffusivity
         )
         slope, psi, horizontal, vertical, i, j, carrier, _, _ = geom
-        initial = (self._contents(state) / h[..., None]).reshape(h.numel(), -1)
+        initial = (self._contents(state) / nonzero_divisor(h)[..., None]).reshape(h.numel(), -1)
         # Retry from the same state. Halving an entire closed circulation
         # preserves zero divergence, including its two vertical return paths.
         # Only a local GM energy deficit can initiate funding retries.
@@ -556,11 +557,11 @@ class GMRedi:
         redi_geometry = self._geometry(model, gm, part="redi", metrics=metrics)
         redi_slope = redi_geometry[0]
         operator, measure = redi_geometry[-2:]
-        values = (self._contents(gm) / h[..., None]).reshape_as(initial)
+        values = (self._contents(gm) / nonzero_divisor(h)[..., None]).reshape_as(initial)
         column_values = values.reshape(*h.shape, -1)
         gradient = operator.apply(column_values)
         flux = measure[..., None] * gradient
-        bound = operator.step_bound(measure).flatten() / volume
+        bound = operator.step_bound(measure).flatten() / nonzero_divisor(volume)
         step_number = dt * bound
         if (step_number > self.cfl).any():
             raise FloatingPointError("Redi explicit step exceeds bound; reduce dt")
@@ -575,7 +576,7 @@ class GMRedi:
             limited_fluxes = int((scale < 1).sum())
             flux = torch.cat((flux[..., :1], flux[..., 1:] * scale), -1)
         rate_amount = operator.transpose(-dt * flux).reshape_as(values)
-        final_values = values + rate_amount / volume[:, None]
+        final_values = values + rate_amount / nonzero_divisor(volume)[:, None]
         redi_transport = self._unpack(model, gm, final_values, values)
         mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(
             initial

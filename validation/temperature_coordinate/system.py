@@ -20,7 +20,7 @@ class TemperatureSystem:
         k=state.tke_h;h=state.ocean.h
         if k.shape!=h.shape or k.dtype!=h.dtype or k.device!=h.device or not torch.isfinite(k).all() or (k<0).any():
             raise ValueError('TKE must match h and be finite/nonnegative')
-        wet=(self.energy.mass_area(state.ocean)>0).expand_as(h)
+        wet=(self.energy.mass_area(state.ocean)>0).expand_as(h) & (h > 0)
         if (k[~wet]!=0).any():raise ValueError('dry TKE must be zero')
 
     @staticmethod

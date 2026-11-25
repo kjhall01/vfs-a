@@ -26,6 +26,12 @@ class Ocean:
                  sources=(), stepper=ssprk3):
         if domain is not None and domain.mesh is not mesh:
             raise ValueError("domain must borrow this exact mesh")
+        if column.active_layers is not None:
+            if domain is None:
+                raise ValueError("partial ocean layers require a wet ocean domain")
+            domain.set_active_layers(column.active_layers)
+        elif domain is not None and domain.active_edge_layers is not None:
+            raise ValueError("a layered domain must use the matching partial ocean column")
         self.mesh = mesh
         self.column = column
         self.domain = domain
@@ -66,6 +72,15 @@ class Ocean:
             if value.dtype != state.h.dtype or value.device != state.h.device:
                 raise ValueError("column must match state dtype/device; convert explicitly")
         self.column.validate_thickness(state.h, min_thickness=self.dynamics.min_thickness)
+        if self.column.active_layers is not None:
+            padding = ~self.column.active_layers
+            occupied = (state.temp_h != 0) | (state.salt_h != 0)
+            if state.tracer_h is not None:
+                occupied = occupied | (state.tracer_h != 0).any(-1)
+            if (occupied & padding).any():
+                raise ValueError("nonzero inventory in inactive ocean layer")
+            if self.domain is not None and (state.u_e.masked_select(~self.domain.active_edge_layers) != 0).any():
+                raise ValueError("nonzero velocity on a closed layer face")
 
     def state(self, *, u_e, h, temperature, salinity, tracer=None):
         """Form conservative contents without casting, detaching or regridding."""

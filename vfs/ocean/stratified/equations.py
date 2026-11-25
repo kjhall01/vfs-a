@@ -107,8 +107,8 @@ def validate(model, state, energy, *, physical=None, guess=None):
     """
     if energy.base is not model.dynamics.energy or model.sources:
         raise ValueError('research composition requires the same unforced JMD95 model')
-    salt = state.salt_h/state.h
-    if ((salt <= 0)|(salt >= 42)).any():
+    salt = state.salt_h / torch.where(state.h != 0, state.h, 1.)
+    if ((state.h > 0) & ((salt <= 0)|(salt >= 42))).any():
         raise ValueError('entropy candidate requires 0 < SP < 42; no salt floor')
     if state.tracer_h is not None and (state.tracer_h < 0).any():
         raise ValueError('research passive tracers must be nonnegative')

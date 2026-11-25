@@ -19,6 +19,7 @@ mixing_substeps: 5
 eddy_substeps: 10
 gm_redi: true
 shelf_redi: true
+partial_cell_layers: true
 redi_positive_transport: true
 gm_energy_scheme: quadratic_funded_donor_parcel
 eddy_initial_energy_J_kg: 0.1

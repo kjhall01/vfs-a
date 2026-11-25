@@ -115,3 +115,8 @@ def _netcdf_attrs(attrs: dict[str, Any]) -> dict[str, Any]:
             except TypeError:
                 continue
     return out
+
+
+def nonzero_divisor(value):
+    """Use unit diagonals/denominators in zero-volume padding, without changing wet values."""
+    return torch.where(value == 0, 1., value)
