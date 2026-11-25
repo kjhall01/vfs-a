@@ -10,6 +10,7 @@ import torch
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 from workflows.coupled.device import execution_context, resolve_device
 from workflows.coupled.driver import exchange_step
+from workflows.coupled.grid_io import read_mesh
 from workflows.coupled.land import LandSlabReceiver
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
@@ -40,11 +41,7 @@ def main(argv=None):
     geometry = None
     cells = args.cells
     if args.mesh:
-        xyz = np.load(args.mesh, allow_pickle=False)
-        if (xyz.ndim != 2 or xyz.shape[1] != 3 or len(xyz) < 16 or xyz.dtype.kind != "f"
-                or not np.isfinite(xyz).all() or not np.allclose(np.linalg.norm(xyz, axis=1), 1., rtol=0, atol=1e-6)
-                or len(np.unique(xyz, axis=0)) != len(xyz)):
-            p.error("--mesh requires distinct finite unit vectors")
+        xyz, _ = read_mesh(args.mesh)
         cells = len(xyz)
         geometry = dict(generator_xyz=xyz, lloyd_iters=0, verbose=False)
     height = None

@@ -103,13 +103,12 @@ python -I workflows/coupled/campaign.py \
   --output aquaplanet-mesh-preflight --preflight --verbose
 ```
 
-`--mesh` accepts a NumPy `(N,3)` floating-point array of unit-sphere Cartesian
+`--mesh` accepts an Earth generator NetCDF or a NumPy `(N,3)` floating-point array of unit-sphere Cartesian
 cell generators. It **infers `cells=N` and forces `lloyd_iterations=0`**, overriding
 those two YAML fields. The existing mesh constructor normalizes generator vectors
 and rebuilds the compatible topology/operators; there is no further relaxation.
-The effective settings are saved in `configuration.json`; the input-file SHA256
-is saved in `manifest.json` and bound to restart identity. Moving the unchanged
-file to another path is allowed. Supply the same `--mesh` on every resume.
+The effective settings are saved in `configuration.json`; the generator mesh identity (the original file SHA256 for a converted NumPy mesh)
+is saved in `manifest.json` and bound to restart identity. Moving or losslessly converting the mesh preserves that identity. Supply the same `--mesh` on every resume.
 
 The mesh specifies the horizontal grid. Edit `aquaplanet-local.yaml` to choose
 vertical resolution, depth, timesteps and thread count. The initial defaults are:
@@ -210,8 +209,7 @@ about every 30 wall-clock seconds (after a completed step), snapshot/restart
 writes, scheduled budget summaries, completion, and full exception tracebacks.
 The file is flushed on every log record. `--verbose` also prints these messages
 to the terminal; without it, the terminal retains the final JSON status/error.
-Numerical diagnostics remain in `diagnostics.csv` and machine-readable status
-in `status.json`.
+Numerical diagnostics are available in `diagnostics.nc` and `diagnostics.csv`, and run status in `status.json`.
 
 Startup lists the enabled ocean processes, coefficients and substeps.
 `diagnostics.csv` records actual GM–Redi/decay/ALE call counts, the number of
@@ -238,18 +236,19 @@ tail -f aquaplanet-16384-365d/run.log
 | Output | Schedule | Contents |
 | --- | --- | --- |
 | `snapshots/state_*.nc` | Initial state, every 6 h through day 14 inclusive, daily on days 15–365 | 408 instantaneous native-mesh snapshots for a complete year; atmosphere T/p/water/wind/cloud, ocean CT/SA/layers/wind/TKE/mesoscale energy, ice area/volume/T/wind/cold content and snow |
-| `diagnostics.csv` | Initial state, every 6 h, segment endpoint | Combined full energy minus TOA, separately retained upstream AM2 imbalance, numerical residual, water/salt, component extrema and peak local exchange residuals |
-| `restarts/restart_*.pt` | Initial state, every 5 days, segment endpoint | Atmosphere/cloud/physics/radiation caches and clock, all ocean/ice/snow tensors, cold content, accumulated budget ledgers |
+| `diagnostics.nc`, `diagnostics.csv` | Initial state, every 6 h, segment endpoint | Combined full energy minus TOA, separately retained upstream AM2 imbalance, numerical residual, water/salt, component extrema and peak local exchange residuals |
+| `restarts/restart_*.nc` | Initial state, every 5 days, segment endpoint | Atmosphere/cloud/physics/radiation caches and clock, all ocean/ice/snow tensors, cold content, accumulated budget ledgers |
 | `manifest.json` | Initialization | Actual code, configuration, dependency and radiation-data identity |
 | `run.log` | Startup, progress, output events and termination | Timestamped progress and failure tracebacks; always enabled |
 | `status.json` | Diagnostic output and termination | Completion/failure status, last committed time and metrics |
-| `last_good_restart.pt` | Caught error or interruption | Last complete coupled interval, never a partially applied exchange |
+| `last_good_restart.nc` | Caught error or interruption | Last complete coupled interval, never a partially applied exchange |
 
 Day 14 is written once. Absent ice categories have diagnostic T=273.15 K; mask
-these with `ice_area`. NetCDF writes are atomic. A restart uses tensor/primitive
-payloads with `weights_only=True`, not pickled model objects. It rejects changed
-mesh, physics, runtime, configuration, source or radiation data. Binary output
-files stay in your specified run directory.
+these with `ice_area`. Snapshots and complete restarts are published by atomic replacement.
+Restarts store named arrays, scalars, and a description of the component state.
+The campaign also reads legacy `.pt` checkpoints with `weights_only=True`. The resume check verifies the
+mesh, physics, runtime, configuration, source and radiation data. Binary output
+files stay in your specified run directory. See the [Earth I/O guide](EARTH_SHELF.md#existing-inputs-and-netcdf-output) for the legacy transition and xarray examples.
 
 The momentum-map correction changes the restart identity (standalone adapter
 schema 4). Start a fresh run after pulling it; do not relabel old checkpoints.
@@ -261,7 +260,7 @@ the same configuration and give a **new** output directory:
 python -I workflows/coupled/campaign.py \
   --source /path/to/PyAM21 \
   --radiation-data /path/to/input_data/sea_esf \
-  --resume coupled-aquaplanet-365d/restarts/restart_00432000.pt \
+  --resume coupled-aquaplanet-365d/restarts/restart_00432000.nc \
   --output coupled-aquaplanet-continuation --verbose
 ```
 
@@ -397,7 +396,7 @@ reconstructed from the stored `h*T`. Earlier code could falsely converge at an
 entropy boundary and then reject that same candidate in the final check.
 The tolerances are unchanged; unsuccessful solves report the worst column,
 residual relative to tolerance, and iteration count. Retain `run.log`,
-`configuration.json`, the mesh and `last_good_restart.pt` for diagnosis.
+`configuration.json`, the mesh and `last_good_restart.nc` for diagnosis.
 See the [cold-column regression and checkpoint replay](../../verification/ocean/ale-cold-columns/README.md).
 An additional near-tolerance stall was found in the user's later run. Once an
 actual stored candidate violates entropy, the projection now retains a zero
@@ -411,7 +410,7 @@ For a single-interval diagnostic using the checkpoint's original radiation cache
 python -I validation/coupled_debug/replay_ale.py \
   --source /path/to/PyAM21 --config /path/to/configuration.json \
   --mesh /path/to/mesh_16384_exact.npy \
-  --restart /path/to/last_good_restart.pt --output ale-diagnostic
+  --restart /path/to/last_good_restart.nc --output ale-diagnostic
 ```
 
 This explicitly reconstructs state for diagnosis across source versions. It

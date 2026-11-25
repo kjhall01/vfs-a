@@ -348,9 +348,10 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path, na
     with torch.no_grad():
         air, sea, _ = c.advance(adapter, air, receiver, sea, 60, config)
         p = c.pack(adapter, air, receiver, sea, "id", {"upstream": 1.0})
-        c.checkpoint(tmp_path / "state.pt", p)
+        c.save_restart(tmp_path / "state.nc", adapter, air, receiver, sea, "id", {"upstream": 1.0})
+        same_tree(c.read_checkpoint(tmp_path / "state.nc"), p)
         ra, rs, ledger = c.unpack(
-            torch.load(tmp_path / "state.pt", weights_only=True),
+            c.read_checkpoint(tmp_path / "state.nc"),
             adapter,
             receiver,
             sea,
@@ -396,8 +397,15 @@ def test_cli_resume_and_last_good_on_failure(source, config, tmp_path, capsys):
     assert "Initializing" not in capsys.readouterr().out
     assert "Initializing" in (first / "run.log").read_text()
     assert "Run finished" in (first / "run.log").read_text()
-    restart = first / "restarts/restart_00000120.pt"
+    restart = first / "restarts/restart_00000120.nc"
     assert restart.exists()
+    import csv
+    import xarray as xr
+    with (first / "diagnostics.csv").open() as csv_file, xr.open_dataset(first / "diagnostics.nc", decode_times=False) as ds:
+        rows = list(csv.DictReader(csv_file))
+        assert ds.time.values.tolist() == [int(row["seconds"]) for row in rows]
+        assert ds.numerical_energy_residual_J_m2.values.tolist() == [float(row["numerical_energy_residual_J_m2"]) for row in rows]
+        assert ds.numerical_energy_residual_J_m2.units == "J m-2"
     second = tmp_path / "second"
     assert (
         c.main(
@@ -434,11 +442,11 @@ def test_cli_resume_and_last_good_on_failure(source, config, tmp_path, capsys):
             )
             == 1
         )
-    p = torch.load(failed / "last_good_restart.pt", weights_only=True)
+    p = c.read_checkpoint(failed / "last_good_restart.nc")
     assert p["air"]["time_seconds"] == 60 and p["ledger"]["steps"] == 1
     log = (failed / "run.log").read_text()
     assert "Traceback" in log and "injected failure" in log
-    assert "Saved last_good_restart.pt at second 60" in log
+    assert "Saved last_good_restart.nc at second 60" in log
 
 
 @pytest.mark.parametrize("pre_trace", [False, True])
@@ -463,7 +471,7 @@ def test_cli_resumes_audited_pre_endpoint_checkpoint(source, config, tmp_path, p
     manifest = initial / "manifest.json"
     with patch.object(c, "source_hashes", return_value=endpoint_hashes):
         assert c.main(args + ["--output", str(resumed), "--stop-after-days", str(120 / c.DAY),
-                              "--resume", str(initial / "restarts/restart_00000060.pt"),
+                              "--resume", str(initial / "restarts/restart_00000060.nc"),
                               "--resume-compatible-manifest", str(manifest)]) == 0
     status = json.loads((resumed / "status.json").read_text())
     audit = json.loads((resumed / "compatible_resume_audit.json").read_text())
@@ -487,10 +495,11 @@ def test_cli_resumes_audited_zero_vapor_transition(revision, source, config, tmp
     prior_hashes, fixed_hashes = vapor_sources(revision)
     with patch.object(c, "source_hashes", return_value=prior_hashes):
         assert c.main(args + ["--output", str(initial), "--stop-after-days", str(60 / c.DAY)]) == 0
-    restart = initial / "restarts/restart_00000060.pt"
-    old = torch.load(restart, weights_only=True)
+    restart = initial / "restarts/restart_00000060.nc"
+    old = c.read_checkpoint(restart)
     for key in c.VAPOR_SUMS + c.VAPOR_PEAKS:
         old["ledger"].pop(key)  # historical checkpoints lack these counters
+    restart = restart.with_suffix(".pt")  # Historical payload and container.
     torch.save(old, restart)
     manifest = initial / "manifest.json"
     with patch.object(c, "source_hashes", return_value=fixed_hashes):

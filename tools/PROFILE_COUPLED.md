@@ -142,14 +142,14 @@ the steady-state throughput.
 - `intervals.csv` — simple per-interval cost and optics, GM/Redi,
   mixing-substep, ALE call counts. It highlights expensive radiation events.
 - `sample_diagnostics.json`, `sample_snapshot.nc`,
-  `sample_restart.pt` — **only when `--sample-io`**; individual diagnostics,
+  `sample_restart.nc` — **only when `--sample-io`**; individual diagnostics,
   NetCDF and portable checkpoint costs are measured after the primary timed
   simulation and excluded from its throughput.
 - `failure.json` / `driver_failure.json` — if a stage is rejected, report
   the traceback, exact failed interval and partial per-stage timing; no
   solver exception is caught and repaired.
 
-`sample_restart.pt` is a standard VFS checkpoint using the profiler's
+`sample_restart.nc` is a standard VFS checkpoint using the profiler's
 exact config/source identity, but it is not intended to substitute for
 the original campaign output. Avoid using these performance artifacts to
 resume runs with a modified configuration.
@@ -217,7 +217,7 @@ checkpoint:
 
 ```bash
 # Add to the standard command:
---resume "/path/to/compatible/restarts/restart_00086400.pt"
+--resume "/path/to/compatible/restarts/restart_00086400.nc"
 ```
 
 The checkpoint identity requires the **same** source tree, exact YAML/overrides,

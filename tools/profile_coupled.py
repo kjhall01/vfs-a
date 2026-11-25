@@ -363,8 +363,7 @@ def _sample_io(output, adapter, air, receiver, sea, ledger, identity, timer):
     with timer.section("sample_netcdf_io"):
         campaign.snapshot(output / "sample_snapshot.nc", adapter, air, receiver, sea)
     with timer.section("sample_checkpoint_io"):
-        payload = campaign.pack(adapter, air, receiver, sea, identity, ledger)
-        campaign.checkpoint(output / "sample_restart.pt", payload)
+        campaign.save_restart(output / "sample_restart.nc", adapter, air, receiver, sea, identity, ledger)
     return {k: v["inclusive"]["total_s"] for k, v in timer.results().items()}
 
 
@@ -579,7 +578,7 @@ def main(argv=None):
     parser.add_argument("--source", type=Path, required=True, help="Pinned PyAM21 source")
     coast = parser.add_mutually_exclusive_group()
     coast.add_argument("--island", action="store_true", help="profile an island with active ocean and ice")
-    coast.add_argument("--geography", type=Path, help="mesh-ordered .npz with land, height_m, depth_m")
+    coast.add_argument("--geography", type=Path, help="mesh-ordered .nc or .npz with land, height_m, depth_m")
     parser.add_argument("--mesh", type=Path, help="Exact saved 4096x3 Voronoi generators")
     parser.add_argument("--radiation-data", type=Path,
                         help="Real SeaEsfRad data directory; omit ONLY with --smoke-no-radiation")
@@ -623,8 +622,9 @@ def main(argv=None):
             adapter, air, receiver, sea = c.build(
                 config, args.source, args.radiation_data,
                 smoke_no_radiation=args.smoke_no_radiation,
-                generator_xyz=xyz, island=args.island, geography=c.load_geography(args.geography, mesh_sha256=mesh.get("sha256")),
+                generator_xyz=xyz, island=args.island, geography=c.load_geography(args.geography, mesh_sha256=mesh.get("sha256"), xyz=xyz),
             )
+            adapter.campaign_mesh_sha256 = mesh.get("sha256")
             fingerprint = c.fingerprint(
                 config, adapter, c.source_hashes(),
                 args.smoke_no_radiation, mesh.get("sha256"),
@@ -632,7 +632,7 @@ def main(argv=None):
             init_wall = time.perf_counter() - start
             ledger = None
             if args.resume is not None:
-                payload = torch.load(args.resume, map_location="cpu", weights_only=True)
+                payload = c.read_checkpoint(args.resume)
                 air, sea, ledger = c.unpack(
                     payload, adapter, receiver, sea, fingerprint
                 )

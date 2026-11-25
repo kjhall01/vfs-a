@@ -41,7 +41,11 @@ def main(argv=None):
     if args.compile is not None:
         config = replace(config, compile=args.compile)
     config, xyz, mesh = c.load_mesh(config.validate(), args.mesh)
-    payload = torch.load(args.restart, map_location='cpu', weights_only=True)
+    # The selected historical checkout may predate the NetCDF reader.
+    if args.restart.suffix == ".pt":
+        payload = torch.load(args.restart, map_location="cpu", weights_only=True)
+    else:
+        payload = c.read_checkpoint(args.restart)
     pa = payload['air']
     if 'vfs_radiation_pflux' not in pa['radiation'].get('saved', {}):
         raise ValueError('diagnostic expects a checkpoint with native radiation pressure interfaces')

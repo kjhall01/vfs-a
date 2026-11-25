@@ -98,7 +98,16 @@ def test_coastal_runoff_ice_and_restart(config, source, tmp_path):
     c.snapshot(tmp_path / "coast.nc", adapter, a, receiver, s)
     import xarray as xr
     with xr.open_dataset(tmp_path / "coast.nc", decode_times=False) as ds:
-        np.testing.assert_array_equal(ds.land_mask[0], mask)
+        assert ds.land_mask.dims == ("cell",) and "land_mask" in ds.coords
+        assert ds.land_cell_index.dims == ("land_cell",)
+        assert ds.soil_layer.attrs["positive"] == "down"
+        assert ds.air_pressure.dims == ("time", "cell", "air_interface")
+        assert ds.mesh.attrs["cf_role"] == "mesh_topology"
+        assert ds.ocean_normal_wind.attrs["location"] == "edge"
+        assert ds.ocean_temperature.attrs["location"] == "face"
+        np.testing.assert_array_equal(ds.vertices_on_cell.count("max_vertices"), mesh.nEdgesOnCell)
+        np.testing.assert_array_equal(ds.cells_on_edge, mesh.cellsOnEdge)
+        np.testing.assert_array_equal(ds.land_mask, mask)
         np.testing.assert_array_equal(ds.land_soil_water[0], s.land.soil_water)
 
 

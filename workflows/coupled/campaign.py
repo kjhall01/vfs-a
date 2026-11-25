@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from dataclasses import asdict, dataclass, replace
 import hashlib
-import io
 import json
 import logging
 import math
@@ -26,6 +25,11 @@ sys.path[:0] = [str(ROOT)] + [
 ]
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
+from workflows.coupled.grid_io import read_mesh, read_geography, write_netcdf
+from workflows.coupled.state_io import (
+    FIELDS, append_diagnostics, attach_mesh_attributes, checkpoint, clock_attrs,
+    grid_coordinates, read_checkpoint,
+)
 from workflows.coupled.driver import exchange_step
 from workflows.coupled.schedule import ocean_events, event_due
 from workflows.coupled.ice_temperature import (
@@ -401,33 +405,18 @@ def accumulate_ocean(report, addition):
 def load_mesh(config, path):
     """Load saved unit-sphere generators, without additional relaxation.
 
-    Read/hash the same bytes. File location is provenance only; moving an
-    unchanged mesh file must not invalidate a restart.
+    The mesh identity follows the ordered generators across lossless conversion.
     """
     if path is None:
         return config, None, dict(kind="generated", cells=config.cells)
-    raw = Path(path).read_bytes()
-    xyz = np.load(io.BytesIO(raw), allow_pickle=False)
-    if (
-        not isinstance(xyz, np.ndarray)
-        or xyz.ndim != 2
-        or xyz.shape[1] != 3
-        or len(xyz) < 16
-        or xyz.dtype.kind != "f"
-        or not np.isfinite(xyz).all()
-        or not np.allclose(np.linalg.norm(xyz, axis=1), 1.0, rtol=0, atol=1e-6)
-        or len(np.unique(xyz, axis=0)) != len(xyz)
-    ):
-        raise ValueError(
-            "--mesh requires a .npy array of N>=16 distinct finite floating-point unit 3-vectors"
-        )
+    xyz, mesh_sha256 = read_mesh(path)
     effective = replace(config, cells=len(xyz), lloyd_iterations=0).validate()
     metadata = dict(
         kind="saved_generators",
         cells=len(xyz),
         path=str(Path(path).resolve()),
-        sha256=hashlib.sha256(raw).hexdigest(),
-        bytes=len(raw),
+        sha256=mesh_sha256,
+        bytes=Path(path).stat().st_size,
         additional_lloyd_iterations=0,
     )
     return effective, xyz, metadata
@@ -438,15 +427,13 @@ def island_height(mesh):
     return 1000. * radius.square()
 
 
-def load_geography(path, *, mesh_sha256=None):
+def load_geography(path, *, mesh_sha256=None, xyz=None):
     if path is None:
         return None
-    with np.load(path, allow_pickle=False) as archive:
-        if "metadata" in archive:
-            expected = json.loads(str(archive["metadata"])).get("mesh_sha256")
-            if expected is not None and expected != mesh_sha256:
-                raise ValueError("geography mesh_sha256 differs from the supplied mesh")
-        return {k: archive[k] for k in ("land", "height_m", "depth_m")}
+    fields = read_geography(path, mesh_sha256=mesh_sha256, xyz=xyz)
+    if mesh_sha256 is None and json.loads(str(fields.get("metadata", "{}"))).get("mesh_sha256") is not None:
+        raise ValueError("geography mesh_sha256 requires the matching saved mesh")
+    return {k: fields[k] for k in ("land", "height_m", "depth_m")}
 
 
 def build(
@@ -551,6 +538,7 @@ def build(
         from workflows.coupled.shelf_transport import ShelfTemperatureOcean
         model.dynamics = ShelfTemperatureOcean(model.ocean)
     dz = rest_thickness(config).to(mesh.cell_area)
+    adapter.campaign_ocean_thickness = dz
     h = dz[None].expand(mesh.nCells, -1).clone()
     if config.partial_cell_layers:
         h = column.layer_reference.clone()
@@ -959,18 +947,15 @@ def atomic_json(path, value):
     temp.replace(path)
 
 
-def checkpoint(path, payload):
-    temp = path.with_suffix(path.suffix + ".tmp")
-    # Portable host storage; unpack explicitly restores the selected device.
-    torch.save(copy_tree(payload, device="cpu"), temp)
-    temp.replace(path)
+def save_restart(path, adapter, air, receiver, sea, identity, ledger):
+    checkpoint(path, pack(adapter, air, receiver, sea, identity, ledger),
+               grid=grid_coordinates(adapter, air, receiver, sea), time_attrs=clock_attrs(adapter))
 
 
 def snapshot(path, adapter, air, receiver, sea):
     """Native mesh NetCDF; instantaneous snapshots, never time averages."""
     import xarray as xr
 
-    mesh = adapter.model.mesh
     f = adapter.model.physical_fields(air.atmosphere)
     s = sea.coupled.ocean.ocean
 
@@ -978,26 +963,6 @@ def snapshot(path, adapter, air, receiver, sea):
         return x.detach().cpu().numpy()
 
     data = {
-        "cell_area": (("cell",), array(mesh.cell_area), {"units": "m2"}),
-        "latitude": (
-            ("cell",),
-            array(torch.asin(mesh.cell_xyz[:, 2]) * 180 / math.pi),
-            {"units": "degrees_north"},
-        ),
-        "longitude": (
-            ("cell",),
-            array(
-                torch.atan2(mesh.cell_xyz[:, 1], mesh.cell_xyz[:, 0]) * 180 / math.pi
-            ),
-            {"units": "degrees_east"},
-        ),
-        "cells_on_edge": (
-            ("edge", "pair"),
-            array(mesh.cellsOnEdge),
-            {"start_index": 0},
-        ),
-        "cell_xyz": (("cell", "xyz"), array(mesh.cell_xyz)),
-        "edge_xyz": (("edge", "xyz"), array(mesh.edge_xyz)),
         "air_temperature": (
             ("cell", "air_interface"),
             array(f["temperature"]),
@@ -1018,7 +983,7 @@ def snapshot(path, adapter, air, receiver, sea):
             array(air.atmosphere.u_e),
             {"units": "m s-1"},
         ),
-        "cloud_fraction": (("cell", "air_interface"), array(air.cloud_fraction)),
+        "cloud_fraction": (("cell", "air_interface"), array(air.cloud_fraction), {"units": "1"}),
         "ocean_temperature": (
             ("cell", "ocean_level"),
             array(s.temperature()),
@@ -1045,7 +1010,7 @@ def snapshot(path, adapter, air, receiver, sea):
             array(sea.coupled.ocean.specific_eddy_energy()),
             {"units": "J kg-1", "long_name": "mesoscale eddy energy reservoir"},
         ),
-        "ice_area": (("cell", "category"), array(sea.coupled.ice.area)),
+        "ice_area": (("cell", "category"), array(sea.coupled.ice.area), {"units": "1"}),
         "ice_volume": (
             ("cell", "category"),
             array(sea.coupled.ice.volume),
@@ -1072,41 +1037,25 @@ def snapshot(path, adapter, air, receiver, sea):
         "snow_mass": (("cell", "category"), array(sea.snow_mass), {"units": "kg m-2"}),
     }
     if sea.land is not None:
-        l = receiver.land_surface
-        if s.column.layer_reference is not None:
-            active = s.column.active_layers & l.wet[:, None]
-            data["ocean_active_layer_count"] = (("cell",), array(active.sum(-1)).astype("int32"))
-        data["land_mask"] = (("cell",), array(l.land).astype("int8"))
-        data["surface_height_m"] = (("cell",), array(adapter.model.column.phi_s / s.column.gravity))
-        data["ocean_depth_m"] = (("cell",), array(receiver.H.model.ocean.domain.depth[:, 0] * l.wet))
-        data["land_cell_index"] = (("land_cell",), array(l.land.nonzero()[:, 0]))
         for name, field in vars(sea.land).items():
             dims = ("land_cell", "soil_layer") if field.ndim == 2 else ("land_cell",)
-            data["land_" + name] = (dims, array(field))
+            data["land_" + name] = (dims, array(field), {"units": FIELDS["land_" + name][1]})
     for k in ("vapor", "liquid", "ice"):
         data["air_" + k] = (
             ("cell", "air_interface"),
             array(f[k]),
             {"units": "kg kg-1"},
         )
-    start = adapter.configuration["start"]
-    ds = xr.Dataset(
-        data,
-        attrs=dict(
-            description="VFS coupled instantaneous state", calendar="julian"
-        ),
-    )
-    ds = ds.expand_dims(time=[air.time_seconds])
-    ds.time.attrs.update(
-        units=f"seconds since {start[0]:04d}-01-01 00:00:00", calendar="julian"
-    )
-    temp = path.with_suffix(".nc.tmp")
-    ds.to_netcdf(
-        temp,
-        engine="netcdf4",
-        encoding={k: {"zlib": True, "complevel": 1} for k in ds.data_vars},
-    )
-    temp.replace(path)
+    grid = grid_coordinates(adapter, air, receiver, sea)
+    ds = xr.Dataset(data).expand_dims(time=[air.time_seconds]).assign_coords(grid.coords)
+    ds.attrs.update(grid.attrs, vfs_format="coupled_snapshot_v1", description="VFS coupled instantaneous state")
+    ds.time.attrs.update(clock_attrs(adapter))
+    h = ds.ocean_thickness
+    depth = (h.cumsum("ocean_level") - h / 2).where((h > 0) & (ds.land_mask == 0))
+    depth.attrs.update(long_name="ocean layer midpoint below instantaneous free surface", units="m", positive="down")
+    ds = ds.set_coords("air_pressure").assign_coords(ocean_layer_depth=depth)
+    attach_mesh_attributes(ds)
+    write_netcdf(path, ds)
 
 
 def run_logger(output, verbose):
@@ -1143,12 +1092,12 @@ def main(argv=None):
     )
     coast = parser.add_mutually_exclusive_group()
     coast.add_argument("--island", action="store_true", help="idealized island and flat-bottom active ocean")
-    coast.add_argument("--geography", type=Path, help="mesh-ordered .npz arrays land, height_m and depth_m")
+    coast.add_argument("--geography", type=Path, help="mesh-ordered .nc or .npz with land, height_m and depth_m")
     parser.add_argument("--radiation-data", type=Path)
     parser.add_argument(
         "--mesh",
         type=Path,
-        help="Saved (N,3) .npy unit-sphere generators; infers cells and disables extra Lloyd relaxation",
+        help="Saved .nc or .npy unit-sphere generators; infers cells and disables extra Lloyd relaxation",
     )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", type=Path)
@@ -1257,7 +1206,7 @@ def main(argv=None):
             logger.info("Mesh %s; SHA256 %s", args.mesh, mesh_info["sha256"])
         if config.compile:
             logger.info("Enabling regional torch.compile with Inductor; first kernel calls can take several minutes")
-        geography = load_geography(args.geography, mesh_sha256=mesh_info.get("sha256"))
+        geography = load_geography(args.geography, mesh_sha256=mesh_info.get("sha256"), xyz=generators)
         adapter, air, receiver, sea = build(
             config,
             args.source,
@@ -1265,6 +1214,7 @@ def main(argv=None):
             smoke_no_radiation=args.smoke_no_radiation,
             generator_xyz=generators, island=args.island, geography=geography,
         )
+        adapter.campaign_mesh_sha256 = mesh_info.get("sha256")
         if config.shelf_redi:
             if config.partial_cell_layers:
                 ocean_state = sea.coupled.ocean.ocean
@@ -1330,7 +1280,7 @@ def main(argv=None):
             steps=0,
         )
         if args.resume:
-            payload = torch.load(args.resume, map_location="cpu", weights_only=True)
+            payload = read_checkpoint(args.resume)
             expected_restart_identity = identity
             if args.resume_compatible_manifest:
                 prior = json.loads(args.resume_compatible_manifest.read_text())
@@ -1392,14 +1342,13 @@ def main(argv=None):
             logger.info(
                 "Advancing one complete coupled interval and replaying its restart"
             )
-            payload = pack(adapter, air, receiver, sea, identity, ledger)
-            checkpoint(output / "preflight_restart.pt", payload)
+            save_restart(output / "preflight_restart.nc", adapter, air, receiver, sea, identity, ledger)
             with torch.no_grad():
                 a, s, r = advance(
                     adapter, air, receiver, sea, config.physics_dt, config
                 )
                 ra, rs, _ = unpack(
-                    torch.load(output / "preflight_restart.pt", map_location="cpu", weights_only=True),
+                    read_checkpoint(output / "preflight_restart.nc"),
                     adapter, receiver, sea, identity,
                 )
                 b, t, u = advance(adapter, ra, receiver, rs, config.physics_dt, config)
@@ -1445,9 +1394,9 @@ def main(argv=None):
                 sea,
             )
             logger.info("Wrote initial snapshot at day %.6f", air.time_seconds / DAY)
-        checkpoint(
-            restarts / f"restart_{air.time_seconds:08d}.pt",
-            pack(adapter, air, receiver, sea, identity, ledger),
+        save_restart(
+            restarts / f"restart_{air.time_seconds:08d}.nc",
+            adapter, air, receiver, sea, identity, ledger,
         )
         logger.info("Wrote initial restart at day %.6f", air.time_seconds / DAY)
         last_log = time.perf_counter()
@@ -1457,6 +1406,7 @@ def main(argv=None):
             writer.writeheader()
             writer.writerow(row)
             f.flush()
+            append_diagnostics(output / "diagnostics.nc", row, adapter, identity)
             while air.time_seconds < end:
                 dt = min(config.physics_dt, end - air.time_seconds)
                 candidate, water, report = advance(
@@ -1492,6 +1442,7 @@ def main(argv=None):
                     row = diagnostics(adapter, air, receiver, sea, ledger)
                     writer.writerow(row)
                     f.flush()
+                    append_diagnostics(output / "diagnostics.nc", row, adapter, identity)
                     atomic_json(
                         output / "status.json",
                         dict(
@@ -1508,9 +1459,9 @@ def main(argv=None):
                         row["salt_relative"],
                     )
                 if seconds % (config.restart_days * DAY) == 0 or seconds == end:
-                    checkpoint(
-                        restarts / f"restart_{seconds:08d}.pt",
-                        pack(adapter, air, receiver, sea, identity, ledger),
+                    save_restart(
+                        restarts / f"restart_{seconds:08d}.nc",
+                        adapter, air, receiver, sea, identity, ledger,
                     )
                     logger.info("Wrote restart at day %.6f", seconds / DAY)
                 if time.perf_counter() - last_log >= 30 or seconds == end:
@@ -1553,11 +1504,11 @@ def main(argv=None):
         )
         if identity is not None and ledger is not None:
             try:
-                checkpoint(
-                    output / "last_good_restart.pt",
-                    pack(adapter, air, receiver, sea, identity, ledger),
+                save_restart(
+                    output / "last_good_restart.nc",
+                    adapter, air, receiver, sea, identity, ledger,
                 )
-                logger.info("Saved last_good_restart.pt at second %d", air.time_seconds)
+                logger.info("Saved last_good_restart.nc at second %d", air.time_seconds)
             except Exception as checkpoint_error:
                 status["checkpoint_error"] = str(checkpoint_error)
                 logger.exception("Could not save last-good restart")

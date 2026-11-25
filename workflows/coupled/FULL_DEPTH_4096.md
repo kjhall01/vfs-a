@@ -71,9 +71,9 @@ python -u -I workflows/coupled/campaign.py \
 ```
 
 After examining the diagnostic history, resume to model day 2 from
-`vfs-4096-full-depth-day1/restarts/restart_00086400.pt`, adding:
+`vfs-4096-full-depth-day1/restarts/restart_00086400.nc`, adding:
 ```bash
-  --resume /glade/derecho/scratch/khall/vfs-4096-full-depth-day1/restarts/restart_00086400.pt \
+  --resume /glade/derecho/scratch/khall/vfs-4096-full-depth-day1/restarts/restart_00086400.nc \
   --stop-after-days 2 \
   --output /glade/derecho/scratch/khall/vfs-4096-full-depth-day1-to2
 ```
