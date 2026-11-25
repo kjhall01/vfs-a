@@ -768,9 +768,8 @@ def test_nonzero_wind_zero_physics_and_legacy_restart_separation(model):
     end, _ = apply_output(adapter, state, empty(c))
     for k in ("u_e", "ps", "water_content", "entropy_content"):
         same_tree(getattr(end.atmosphere, k), getattr(state.atmosphere, k))
-    legacy = AM2Adapter(model, nml(), energy_mode="legacy")
-    with pytest.raises(ValueError, match="match"):
-        legacy.unpack(adapter.pack(state))
+    with pytest.raises(ValueError, match="must be conservative"):
+        AM2Adapter(model, nml(), energy_mode="legacy")
 
 
 def test_actual_energy_residual_is_upstream_not_mapping(model):

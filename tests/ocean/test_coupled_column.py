@@ -9,9 +9,7 @@ from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean
 
-path=Path(__file__).resolve().parents[2]/'validation/ocean_column/coupled.py'
-spec=importlib.util.spec_from_file_location('coupled_column_test',path)
-c=importlib.util.module_from_spec(spec);sys.modules[spec.name]=c;spec.loader.exec_module(c)
+from vfs.ocean.mixing import coupled as c
 
 @pytest.fixture(scope='module')
 def ocean():

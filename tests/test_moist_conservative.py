@@ -4,7 +4,7 @@ from vfs.atmosphere.moist_conservative import MoistState,MoistConservativeDynami
 from vfs.atmosphere.bounded_moist import BoundedGibbs
 from vfs.atmosphere.moist_cp import interface_pressure_mass
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.geometry.column import CharneyPhillipsColumn,make_hybrid_coefficients
+from vfs.atmosphere.column import CharneyPhillipsColumn,make_hybrid_coefficients
 
 KEYS=('u_e','ps','entropy_content','water_content')
 @pytest.fixture(scope='module')

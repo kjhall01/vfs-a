@@ -6,12 +6,9 @@ import pytest
 import torch
 
 from test_model_api import model, init
-from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredIMEX
+from vfs import MoistAtmosphere, BoundedSSPRK3
 from vfs.atmosphere import MoistConservativeDynamics, MoistState, BoundedGibbs
 from vfs.atmosphere.bounded_transport import graph
-from vfs.integrators.imex import IMEXSolverConfig, IMEXConvergenceError
-from vfs.integrators.imex.tableau import ARK4_TABLEAU
-from vfs.integrators.imex.moist_ark import MoistPEIMEXARK
 
 KEYS = ("u_e", "ps", "entropy_content", "water_content")
 
@@ -44,31 +41,16 @@ def test_registration_and_state_dict(model):
     assert set(model.state_dict()) == before == {n for n, _ in buffers}
 
 
-@pytest.mark.parametrize(
-    "factory",
-    [
-        BoundedSSPRK3,
-        lambda: CenteredIMEX(method=ARK4_TABLEAU),
-    ],
-)
-def test_delegation_and_hooks(model, factory):
-    m = MoistAtmosphere(model.mesh, model.column, stepper=factory())
+def test_delegation_and_hooks(model):
+    m = MoistAtmosphere(model.mesh, model.column, stepper=BoundedSSPRK3())
     s = init(m, normal_wind=1.0)
-    if isinstance(m.stepper, BoundedSSPRK3):
-        expected = BoundedGibbs(m.dynamics).step(s, 1.0)
-    else:
-        expected = MoistPEIMEXARK(m.dynamics).step(s, 1.0)
+    expected = BoundedGibbs(m.dynamics).step(s, 1.0)
     seen = []
     handle = m.register_forward_hook(lambda module, args, out: seen.append(out))
     equal(m(s, 1.0), expected)
     equal(m.step(s, 1.0), expected)
     assert len(seen) == 2
     handle.remove()
-    if isinstance(m.stepper, CenteredIMEX):
-        solver = m.stepper.solver
-        m(s, 1.0)
-        assert m.stepper.solver is solver
-        assert solver.last_step_info.converged
 
 
 @pytest.mark.parametrize("name", ["mesh", "column", "dynamics", "stepper", "transport"])
@@ -88,10 +70,6 @@ def test_borrowed_references_and_reuse(model):
     model.transport.base = MoistConservativeDynamics()
     with pytest.raises(ValueError, match="transport.base"):
         model(s, 1.0)
-    m = MoistAtmosphere(model.mesh, model.column, stepper=CenteredIMEX())
-    m.stepper.solver.dynamics = MoistConservativeDynamics()
-    with pytest.raises(ValueError, match="solver.dynamics"):
-        m(init(m), 1.0)
 
 
 @pytest.mark.parametrize(
@@ -104,25 +82,6 @@ def test_reject_unsupported_stepper(model, bad):
 
 
 def test_reject_configuration(model):
-    with pytest.raises(ValueError, match="TABLEAU"):
-        CenteredIMEX(method="ark3")
-    with pytest.raises(TypeError, match="stage_validator"):
-        CenteredIMEX(stage_validator=1)
-    with pytest.raises(ValueError, match="supports eager analytic waves"):
-        MoistAtmosphere(
-            model.mesh,
-            model.column,
-            stepper=CenteredIMEX(solver_config=IMEXSolverConfig(preconditioner="multilevel_hydrostatic_schur")),
-        )
-    with pytest.raises(TypeError, match="release_as_heat"):
-        MoistAtmosphere(
-            model.mesh, model.column, stepper=CenteredIMEX(), release_as_heat=False
-        )
-    # There is deliberately no independent transport selector to form bounded IMEX.
-    with pytest.raises(TypeError):
-        MoistAtmosphere(
-            model.mesh, model.column, stepper=CenteredIMEX(), transport="bounded"
-        )
     with pytest.raises(TypeError, match="release_as_heat"):
         MoistAtmosphere(model.mesh, model.column, release_as_heat=False)
 
@@ -186,41 +145,6 @@ def test_checkpoint_roundtrip(model):
     assert restored.mesh is mesh and restored.column is col
     assert restored.transport.base is restored.dynamics
     equal(model(init(model), 1.0), restored(init(restored), 1.0))
-
-
-def test_imex_stage_rejection(model):
-    seen = []
-
-    def guard(state, dt):
-        seen.append(dt)
-        if len(seen) == 2:
-            raise ValueError("deliberate stage rejection")
-
-    m = MoistAtmosphere(
-        model.mesh, model.column, stepper=CenteredIMEX(stage_validator=guard)
-    )
-    s = init(m)
-    before = [getattr(s, k).clone() for k in KEYS]
-    with pytest.raises(ValueError, match="deliberate stage rejection"):
-        m(s, 1.0)
-    assert seen == [1.0, 1.0]
-    for k, value in zip(KEYS, before):
-        assert torch.equal(getattr(s, k), value)
-
-
-def test_imex_solver_failure_propagates(model, monkeypatch):
-    from vfs.atmosphere.imex import moist_ark
-
-    original = moist_ark._gmres
-
-    def fail(*args, **kwargs):
-        result = original(*args, **kwargs)
-        return replace(result, converged=False)
-
-    monkeypatch.setattr(moist_ark, "_gmres", fail)
-    m = MoistAtmosphere(model.mesh, model.column, stepper=CenteredIMEX())
-    with pytest.raises(IMEXConvergenceError):
-        m(init(m, normal_wind=1.0), 1.0)
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA hardware unavailable")

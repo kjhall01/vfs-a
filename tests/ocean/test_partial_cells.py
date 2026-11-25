@@ -70,7 +70,7 @@ def test_budgeted_ale_merge_and_shear():
     with MonkeyPatch.context() as paths:
         for name in ("ocean_column", "temperature_coordinate"):
             paths.syspath_prepend(str(root / name))
-        from roquet import RoquetEnergy, RoquetFreezingEOS
+        from vfs.ocean.temperature.roquet import RoquetEnergy, RoquetFreezingEOS
     depth, target, cells = shelf()
     h = tensor([[8, 12, 2], [11, 10, 9], [0, 0, 0]])
     t = tensor([[17, 9, 4], [14, 8, 5], [0, 0, 0]])
@@ -163,7 +163,7 @@ def test_energy_settlement_has_independent_endpoint_budget(monkeypatch):
     root = Path(__file__).resolve().parents[2] / "validation"
     for name in ("ocean_column", "temperature_coordinate"):
         monkeypatch.syspath_prepend(str(root / name))
-    from roquet import RoquetEnergy, RoquetFreezingEOS
+    from vfs.ocean.temperature.roquet import RoquetEnergy, RoquetFreezingEOS
 
     depth, h, cells = shelf()
     area, length, dc = (
@@ -227,7 +227,7 @@ def test_hydrostatic_rest_on_merged_shelf(gradient, acceleration_limit, monkeypa
     root = Path(__file__).resolve().parents[2] / "validation"
     for name in ("ocean_column", "temperature_coordinate"):
         monkeypatch.syspath_prepend(str(root / name))
-    from roquet import RoquetEnergy, RoquetFreezingEOS
+    from vfs.ocean.temperature.roquet import RoquetEnergy, RoquetFreezingEOS
 
     depth = tensor([603, 2500])
     h = reference_thickness(depth, tensor([50] * 50))
@@ -271,7 +271,7 @@ def test_native_shelf_carries_tracer_and_tke_through_variable_layer_count(
     root = Path(__file__).resolve().parents[2] / "validation"
     for directory in ("ocean_column", "temperature_coordinate"):
         monkeypatch.syspath_prepend(str(root / directory))
-    from roquet import RoquetEnergy, RoquetFreezingEOS
+    from vfs.ocean.temperature.roquet import RoquetEnergy, RoquetFreezingEOS
 
     depth, h, cells = shelf()
     mesh, _ = channel(3, cells.tolist())

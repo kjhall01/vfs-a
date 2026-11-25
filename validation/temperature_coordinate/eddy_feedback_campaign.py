@@ -16,10 +16,10 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parent),
     str(Path(__file__).resolve().parents[1] / "ocean_column"),
 ]
-from eddy import GMRedi
-from eddy_energy import EddyMixingLength, EddyDissipation
+from vfs.ocean.temperature.eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
 from eddy_campaign import make
-from roquet import RoquetOcean
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 

@@ -58,7 +58,8 @@ jobs:
           python -m pip install --no-deps --force-reinstall "${baseline_wheels[0]}"
           python -I tools/capture_readability.py --save structural-before.pt
           python -I tools/capture_atmospheric_integration.py --save atmospheric-before.pt
-          python -I tools/capture_io_ownership.py --save output-before.pt
+          git -C "$GITHUB_WORKSPACE" show 64b56ef845873b25e9911b4abc2bff303873ac8a:tools/capture_io_ownership.py > "$RUNNER_TEMP/capture_old_io.py"
+          python -I "$RUNNER_TEMP/capture_old_io.py" --save output-before.pt
           wheels=("$RUNNER_TEMP"/wheels/*.whl)
           python -m pip install --no-deps --force-reinstall "${wheels[0]}"
           python -I tools/capture_readability.py --compare structural-before.pt | tee structural-comparison.log
@@ -121,8 +122,6 @@ jobs:
           python -I examples/bounded_moist.py
           python -I examples/held_suarez.py
           python -I examples/dry_atmosphere.py
-          python -I examples/dry_atmosphere.py --imex
-          python -I examples/moist_atmosphere.py --imex
       - name: Ocean boundary stress and rotating column checks
         working-directory: ${{ runner.temp }}/vfs-check
         run: |

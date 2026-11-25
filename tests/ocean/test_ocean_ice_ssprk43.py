@@ -13,8 +13,8 @@ sys.path[:0] = [str(ROOT / "validation" / p) for p in (
     "sea_ice", "temperature_coordinate", "ocean_column"
 )]
 
-from explicit_rk import ssprk43_dynamics
-from snow import SnowOceanIce
+from vfs.ice.explicit_rk import ssprk43_dynamics
+from vfs.ice.snow import SnowOceanIce
 from test_ocean_ice_coupling import setup, ridge_mesh
 
 

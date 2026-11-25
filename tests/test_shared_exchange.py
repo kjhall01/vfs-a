@@ -20,10 +20,10 @@ from workflows.pyam21.radiation import (
 )
 from workflows.coupled.ocean_ice import OceanIceReceiver
 from workflows.coupled.driver import exchange_step
-from ocean_ice import OceanIce
-from ridging import CategoryIce, RidgingState
-from snow import SnowOceanIce
-from roquet import RoquetOcean
+from vfs.ice.ocean_ice import OceanIce
+from vfs.ice.ridging import CategoryIce, RidgingState
+from vfs.ice.snow import SnowOceanIce
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.ocean import OceanColumn
 from pyam21.radiation.driver import RadiationDriver, RadiationDriverConfig
 

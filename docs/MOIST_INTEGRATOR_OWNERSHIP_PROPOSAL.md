@@ -26,14 +26,14 @@ No new structural changes or numerical algorithms have been implemented here.
 - [MoistConservativeDynamics.step](../vfs/atmosphere/moist_conservative.py):
   existing centered SSPRK3 using `MoistState.combine`, with adapter validation.
   It has no bounded species ledger or heat-release correction.
-- [Generic explicit functions](../vfs/core/integrators.py): Euler, RK4 and
+- [Generic explicit functions](https://github.com/kjhall01/vfs-a/blob/64b56ef845873b25e9911b4abc2bff303873ac8a/vfs/core/integrators.py): Euler, RK4 and
   SSPRK3 use State arithmetic and transient `_current_tendency_dt` context.
   MoistState has `combine`, not that arithmetic protocol. BoundedGibbs also
   requires an explicit `dt` argument and its direct Euler map. These functions
   are not drop-in moist steppers; do not adapt them in this PR.
-- [MoistPEIMEXARK](../vfs/integrators/imex/moist_ark.py): existing experimental
+- [MoistPEIMEXARK](https://github.com/kjhall01/vfs-a/blob/64b56ef845873b25e9911b4abc2bff303873ac8a/vfs/integrators/imex/moist_ark.py): existing experimental
   centered smooth-mixture ARK2/3/4 (default ARK4). A
-  [MoistPressureWave](../vfs/integrators/imex/moist_wave.py) is frozen at each
+  [MoistPressureWave](https://github.com/kjhall01/vfs-a/blob/64b56ef845873b25e9911b4abc2bff303873ac8a/vfs/integrators/imex/moist_wave.py) is frozen at each
   outer-step anchor; its coefficients are step-local, not persistent model
   buffers. The solver splits the unchanged nonlinear centered RHS into
   `F(y) - L(y-y0)` and `L(y-y0)`, solves stage corrections, and assembles the
@@ -139,7 +139,7 @@ Loading requires matching geometry layout and separately reconstructed numerical
 and stepping configuration.
 
 This proposal is based on source inspection, including
-[existing moist IMEX tests](../tests/test_moist_imex.py), not new runtime results.
+[existing moist IMEX tests](https://github.com/kjhall01/vfs-a/blob/64b56ef845873b25e9911b4abc2bff303873ac8a/tests/test_moist_imex.py), not new runtime results.
 Those tests cover ARK2/3/4, stage guards, conservation, wave blocks and rejected
 solver configurations; they do not establish bounded IMEX support.
 No new ownership tests or installed-wheel validation have completed in this

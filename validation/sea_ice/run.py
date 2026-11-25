@@ -1,5 +1,6 @@
 """Prescribed-air seasonal ice columns; no ocean dynamics or lateral transport."""
 
+from vfs.ice import ice as ice_source
 import argparse
 import csv
 import hashlib
@@ -15,8 +16,8 @@ sys.path[:0] = [
     str(ROOT / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ice import SeaIceState, IceOceanState, SeaIceThermodynamics, ConductiveIceBoundary
-from roquet import RoquetOcean
+from vfs.ice.ice import SeaIceState, IceOceanState, SeaIceThermodynamics, ConductiveIceBoundary
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 
@@ -115,7 +116,7 @@ def main():
         final=rows[-1],
         source_sha256={
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-            for p in [Path(__file__), Path(__file__).with_name("ice.py")]
+            for p in [Path(__file__), Path(ice_source.__file__)]
         },
     )
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

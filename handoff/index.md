@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [campaign package cleanup](../docs/PASS4_RESULTS.md#campaign-package-cleanup) records the maintained import paths, retired experiments and restart comparison.
+
 [Native mesh plotting](../docs/NATIVE_MESH_PLOTTING.md) draws scalar fields from a coupled snapshot or live mesh on a Robinson map or a rotatable 3D globe.
 
 The [Earth I/O guide](../workflows/coupled/EARTH_SHELF.md#existing-inputs-and-netcdf-output)

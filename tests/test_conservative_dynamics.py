@@ -3,8 +3,8 @@ import torch
 from unittest.mock import patch
 from vfs.atmosphere import DryHydrostaticConservativeDynamics
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
-from vfs.core.state import State
+from vfs.atmosphere.column import CharneyPhillipsColumn, make_hybrid_coefficients
+from vfs.atmosphere.state import State
 @pytest.fixture(scope='module')
 def mesh():
     torch.set_default_dtype(torch.float64);torch.set_num_threads(1)

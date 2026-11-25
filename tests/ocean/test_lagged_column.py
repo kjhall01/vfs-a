@@ -5,8 +5,7 @@ import pytest
 from test_linear_column import load
 from test_path_work import path
 from test_coupled_column import ocean,state
-sys.modules.setdefault('path_work',path)
-lag=load('lagged')
+from vfs.ocean.mixing import lagged as lag
 
 def test_factor_multiple_rhs_against_dense():
     d=torch.tensor([[3.,4.,5.],[5.,2.,3.]],dtype=torch.float64);off=d[:,:-1]*0-.2

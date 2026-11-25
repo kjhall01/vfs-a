@@ -92,7 +92,7 @@ def relative_change(a, b):
 
 def moist_invariants(actual, expected):
     from vfs.atmosphere.moist_cp import interface_pressure_mass
-    from vfs.geometry.column import make_hybrid_coefficients
+    from vfs.atmosphere.column import make_hybrid_coefficients
     mesh = vfs.VoronoiMesh(n_cells=64, lloyd_iters=0, verbose=False)
     A, B = make_hybrid_coefficients(6, p_top=5000., sigma_power=1.)
     A, B = torch.as_tensor(A), torch.as_tensor(B)

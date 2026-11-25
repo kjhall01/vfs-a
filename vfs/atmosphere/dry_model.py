@@ -3,7 +3,7 @@ import math
 import torch
 from vfs.atmosphere.state import State, PrognosticFields
 from vfs.atmosphere.conservative import DryHydrostaticConservativeDynamics
-from vfs.atmosphere.steppers import DrySSPRK3, DryIMEX
+from vfs.atmosphere.steppers import DrySSPRK3
 
 
 class DryAtmosphere(torch.nn.Module):
@@ -30,8 +30,8 @@ class DryAtmosphere(torch.nn.Module):
         if type(self.dynamics) is not DryHydrostaticConservativeDynamics:
             raise TypeError("dynamics must be DryHydrostaticConservativeDynamics")
         self.stepper = DrySSPRK3() if stepper is None else stepper
-        if type(self.stepper) not in (DrySSPRK3, DryIMEX):
-            raise TypeError("stepper must be DrySSPRK3 or DryIMEX")
+        if type(self.stepper) is not DrySSPRK3:
+            raise TypeError("stepper must be DrySSPRK3")
         self.stepper._bind(self.dynamics)
 
     def __setattr__(self, name, value):

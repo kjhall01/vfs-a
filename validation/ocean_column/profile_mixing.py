@@ -3,13 +3,16 @@
 Run outside the checkout against an installed wheel. No state advances between
 samples. Exclusive times partition wrapped work; inclusive times overlap.
 """
+from vfs.ocean.mixing import lagged as lagged_source
+from vfs.ocean.mixing import path_work as path_work_source
 import argparse, cProfile, functools, hashlib, json, pstats, statistics, time
 from pathlib import Path
 from contextlib import ExitStack
 from unittest.mock import patch
 import torch
-import lagged
-from path_work import PathWorkClosure
+from vfs.ocean.mixing import lagged
+
+from vfs.ocean.mixing.path_work import PathWorkClosure
 from resolution_mesh import setup
 from vfs.ocean.stratified import TKEOcean, StratifiedOcean
 from vfs.ocean.stratified.thermodynamics import SurfaceGibbs
@@ -62,7 +65,7 @@ def main():
     p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     torch.set_num_threads(1)
     result=dict(cells=a.cells,layers=a.layers,dt=a.dt,threads=1,torch=torch.__version__,dtype='float64',
-        source_hashes={n:hashlib.sha256(Path(__file__).with_name(n).read_bytes()).hexdigest() for n in ('profile_mixing.py','resolution_mesh.py','lagged.py','path_work.py')},
+        source_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(__file__).with_name('profile_mixing.py'), Path(__file__).with_name('resolution_mesh.py'), Path(lagged_source.__file__), Path(path_work_source.__file__))},
         scope='fixed-state vertical mixing versus SSPRK3 dynamics with transported TKE; no ALE or boundary forcing',timings={})
     def save():a.output.write_text(json.dumps(result,indent=2)+'\n')
     with torch.no_grad():

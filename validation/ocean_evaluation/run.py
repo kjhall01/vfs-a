@@ -23,10 +23,10 @@ sys.path[:0] = [
     str(ROOT / "validation/temperature_coordinate"),
     str(ROOT / "validation/ocean_column"),
 ]
-from roquet import RoquetOcean, RoquetMixing, RoquetHeating, TemperatureBoundary
-from eddy import GMRedi
-from eddy_energy import EddyMixingLength, EddyDissipation
-from backscatter import EddyBackscatter
+from vfs.ocean.temperature.roquet import RoquetOcean, RoquetMixing, RoquetHeating, TemperatureBoundary
+from vfs.ocean.temperature.eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
+from vfs.ocean.temperature.backscatter import EddyBackscatter
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 import vfs

@@ -70,14 +70,13 @@ def test_campaign_script_prefers_checkout_over_older_install(tmp_path):
     checkout = tmp_path / "checkout"
     shutil.copytree(c.ROOT / "workflows", checkout / "workflows")
     (checkout / "vfs").symlink_to(Path(vfs.__file__).resolve().parent, target_is_directory=True)
-    (checkout / "validation").symlink_to(c.ROOT / "validation", target_is_directory=True)
     stale = tmp_path / "old-install"
     (stale / "vfs").mkdir(parents=True)
     for path in (stale / "vfs/__init__.py", stale / "roquet.py"):
         path.write_text("raise RuntimeError('imported a stale campaign dependency')")
 
-    # Existing validation entries can also sit behind an old helper on PYTHONPATH.
-    paths = [stale, checkout, checkout / "validation/temperature_coordinate"]
+    # The staged checkout contains only the packaged physics and workflows.
+    paths = [stale, checkout]
     if os.environ.get("PYTHONPATH"):
         paths.append(os.environ["PYTHONPATH"])
     env = dict(os.environ, PYTHONPATH=os.pathsep.join(map(str, paths)))

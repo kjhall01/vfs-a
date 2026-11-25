@@ -9,8 +9,7 @@ is edited. VFS's installed dependencies and defaults are unchanged.
 The default `energy_mode="conservative"` transfers AM2 layer energy into the
 native VFS Hamiltonian, including the enthalpy and momentum carried by exchanged
 water. A local CP entropy solve enforces each layer's transferred energy; any
-imbalance already present in AM2 is retained and reported separately. The previous
-temperature-increment mapping remains available as `energy_mode="legacy"`.
+imbalance already present in AM2 is retained and reported separately.
 See [the energy contract](ENERGY.md) for the derivation and explicit assumptions.
 An exact-zero vapor endpoint is now funded from the same layer's cloud water,
 with a nominal target of `1e-12 kg/kg`. The native energy target is retained,
@@ -132,8 +131,7 @@ heights and Simmons–Burridge full pressures are supplied explicitly.
 
 Returning physics increments never replaces the original CP profile with an
 interpolated round trip. A pressure-weighted temperature increment supplies an
-initial guess for the conservative layer-enthalpy solve; legacy mode retains that
-guess without a solve. Species additions are split equally across adjacent CP nodes; withdrawals
+initial guess for the conservative layer-enthalpy solve. Species additions are split equally across adjacent CP nodes; withdrawals
 use each node's contribution to that layer's species store. This preserves supplied
 amounts without making a clear node negative when a neighboring cloudy node loses
 condensate. Cloud-fraction increases/decreases draw from clear/cloudy contributions.

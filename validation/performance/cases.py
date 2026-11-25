@@ -64,7 +64,7 @@ def make_case(c):
     # The same nonuniform physical profiles used in the mixing resolution study.
     sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
     from resolution_mesh import setup
-    from lagged import SubcycledLaggedClosure
+    from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
     from vfs.ocean.stratified import (TKEOcean,TKEClosure,OceanBoundaryStress,
         OceanSurfaceHeating,OceanSurfaceExchange,OceanSurfaceFluxes,AdaptiveThermalRemapper)
     ocean,resolved,k = setup(c['cells'],layers,quadrature_order=c.get('energy_quadrature',4))

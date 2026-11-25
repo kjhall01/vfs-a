@@ -8,8 +8,8 @@ from pathlib import Path
 import torch
 import gsw
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
-from roquet import RoquetFreezingEOS
-from linear import LinearEOS
+from vfs.ocean.temperature.roquet import RoquetFreezingEOS
+from vfs.ocean.temperature.linear import LinearEOS
 
 
 def evaluate():

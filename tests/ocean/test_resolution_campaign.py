@@ -3,7 +3,6 @@ import sys
 import torch
 from test_linear_column import load
 from test_lagged_column import lag
-sys.modules.setdefault('lagged', lag)
 from test_consistent_column import consistent
 sys.modules.setdefault('consistent', consistent)
 mesh_campaign = load('resolution_mesh')

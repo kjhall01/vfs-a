@@ -33,7 +33,7 @@ Source: [bounded moist](../vfs/atmosphere/bounded_moist.py),
 [Gibbs means](../vfs/atmosphere/gibbs_means.py),
 [shared carrier primitives](../vfs/atmosphere/conservative.py).
 
-The generic [dry SSPRK3](../vfs/core/integrators.py) advances an RHS and uses a
+The generic [dry SSPRK3](https://github.com/kjhall01/vfs-a/blob/64b56ef845873b25e9911b4abc2bff303873ac8a/vfs/core/integrators.py) advances an RHS and uses a
 different arithmetic form for combinations. It cannot replace the bounded
 Euler ledger. Replacing velocity only once per outer step is also insufficient
 for a time-dependent flow. The 1b observer only records stages; turning it into

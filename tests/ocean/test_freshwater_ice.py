@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 import torch
 from test_snow_ice import snowy, ridge_mesh
-from freshwater import FreshwaterBoundary, FreshwaterFluxes, LiquidWater
+from vfs.ice.freshwater import FreshwaterBoundary, FreshwaterFluxes, LiquidWater
 
 
 def forcing(boundary, state, kind="mixed"):

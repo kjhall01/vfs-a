@@ -6,7 +6,7 @@ polynomial and the two-category footprint law used by ThermalPhase.
 """
 import torch
 
-from ocean_ice import safe
+from vfs.ice.ocean_ice import safe
 
 
 class ReducedPhaseEnergy:

@@ -3,13 +3,16 @@
 Only vertical mixing advances. Spherical mesh generation is outside the timer.
 Results contain compact metrics, not enormous state-array uploads.
 """
+from vfs.ocean.mixing import coupled as coupled_source
+from vfs.ocean.mixing import lagged as lagged_source
+from vfs.ocean.mixing import path_work as path_work_source
 import argparse,hashlib,json,time,resource
 from pathlib import Path
 import torch
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean
-from lagged import SubcycledLaggedClosure
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
 from consistent import ConsistentPathClosure
 
 def setup(cells,layers,patch=False,quadrature_order=4):
@@ -52,7 +55,7 @@ def difference(ocean,state,ref):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--cells',type=int,default=128);p.add_argument('--layers',type=int,default=32);p.add_argument('--duration',type=float,default=300.);p.add_argument('--patch',action='store_true');p.add_argument('--methods',nargs='+',default=['coupled16','coupled1','semi4','semi8']);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-    torch.set_num_threads(1);results=dict(cells=a.cells,layers=a.layers,patch=a.patch,duration=a.duration,torch=torch.__version__,threads=1,geometry='Fibonacci Voronoi, zero Lloyd iterations, compatible rotation geometry',profiles='fixed functions of physical depth; no horizontal stepping',source_hashes={n:hashlib.sha256(Path(__file__).with_name(n).read_bytes()).hexdigest() for n in ('resolution_mesh.py','lagged.py','coupled.py','path_work.py')},cases=[])
+    torch.set_num_threads(1);results=dict(cells=a.cells,layers=a.layers,patch=a.patch,duration=a.duration,torch=torch.__version__,threads=1,geometry='Fibonacci Voronoi, zero Lloyd iterations, compatible rotation geometry',profiles='fixed functions of physical depth; no horizontal stepping',source_hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(__file__).with_name('resolution_mesh.py'), Path(lagged_source.__file__), Path(coupled_source.__file__), Path(path_work_source.__file__))},cases=[])
     with torch.no_grad():
         start=time.perf_counter();o,initial,k=setup(a.cells,a.layers,a.patch);results['setup_wall_s']=time.perf_counter()-start
         ref=None

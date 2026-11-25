@@ -12,9 +12,9 @@ import torch
 from vfs.land import LandState
 from .ocean_ice import OceanIceReceiver
 from .ice_phase_energy import ReducedPhaseEnergy
-from snow import SnowState, SnowOceanIce, SnowPhase
-from category_phase import CategoryFootprint, bisect_phase_mass
-from ocean_ice import safe
+from vfs.ice.snow import SnowState, SnowOceanIce, SnowPhase
+from vfs.ice.category_phase import CategoryFootprint, bisect_phase_mass
+from vfs.ice.ocean_ice import safe
 
 
 @dataclass(frozen=True)

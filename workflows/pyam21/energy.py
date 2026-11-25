@@ -141,7 +141,7 @@ def exchanges(adapter, state, dt, column, geometry, out, boundary=None):
         adapter.model.mesh.cell_area[:, None, None] * layer_momentum
     )
     dT, dR = dt * out["tdt"], dt * out["rdt"]
-    if adapter.energy_mode == "conservative" and "endpoint_tracers" in out:
+    if "endpoint_tracers" in out:
         dT = out["endpoint_temperature"] - column["T"]
         dR = out["endpoint_tracers"] - column["tracers"]
     proxy_layer = mass * (CP_AIR * dT + HLV * dR[..., 0] - HLF * dR[..., 2])

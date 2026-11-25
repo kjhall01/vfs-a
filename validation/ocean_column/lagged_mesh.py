@@ -5,7 +5,7 @@ import torch
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean
-from lagged import SubcycledLaggedClosure
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
 from consistent import ConsistentPathClosure
 
 def main():

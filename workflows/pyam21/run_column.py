@@ -205,7 +205,7 @@ def parser():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--verbose", action="store_true")
     p.add_argument(
-        "--energy-mode", choices=("conservative", "legacy"), default="conservative"
+        "--energy-mode", choices=("conservative",), default="conservative"
     )
     args = p.parse_args()
     if (

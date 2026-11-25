@@ -13,7 +13,7 @@ def load(name):
     module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)
     return module
 
-coupled=load('coupled');sys.modules.setdefault('coupled',coupled)
+from vfs.ocean.mixing import coupled
 linear=load('linear_eos');harness=load('run')
 
 def setup(layers=2):

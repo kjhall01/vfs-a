@@ -1,5 +1,7 @@
 # JMD95 conservative-path mixing work
 
+The historical matrix-launch commands below use the [pre-cleanup source tree](https://github.com/kjhall01/vfs-a/tree/64b56ef845873b25e9911b4abc2bff303873ac8a/validation/ocean_column).
+
 Research-only `PathWorkClosure` evaluates buoyancy work from analytic derivatives
 along conservative potential-enthalpy and salinity exchanges. It retains JMD95,
 the surface Gibbs caloric reference, native momentum metric, and the parent

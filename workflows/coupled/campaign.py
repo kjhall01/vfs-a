@@ -17,12 +17,7 @@ import torch
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-# Keep the campaign, VFS, and its unqualified research imports on the same
-# checkout even when an older wheel or another checkout is on the search path.
-sys.path[:0] = [str(ROOT)] + [
-    str(ROOT / "validation" / directory)
-    for directory in ("ocean_column", "temperature_coordinate", "sea_ice")
-]
+sys.path.insert(0, str(ROOT))
 from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
 from workflows.coupled.grid_io import read_mesh, read_geography, write_netcdf
@@ -45,13 +40,13 @@ from workflows.coupled.restart_compat import (
 )
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
-from ocean_ice import OceanIce
-from ridging import CategoryIce, RidgingState
-from snow import SnowState
-from roquet import RoquetOcean, RoquetMixing
-from eddy import GMRedi
-from eddy_energy import EddyMixingLength, EddyDissipation
-from backscatter import EddyBackscatter
+from vfs.ice.ocean_ice import OceanIce
+from vfs.ice.ridging import CategoryIce, RidgingState
+from vfs.ice.snow import SnowState
+from vfs.ocean.temperature.roquet import RoquetOcean, RoquetMixing
+from vfs.ocean.temperature.eddy import GMRedi
+from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
+from vfs.ocean.temperature.backscatter import EddyBackscatter
 from vfs.land import LandState
 from vfs.ocean.domain import OceanDomain
 from vfs.ocean.stratified.remap import ThermalProjectionInfeasible
@@ -273,7 +268,7 @@ def gm_redi_operator(config):
     factory = GMRedi
     options = {}
     if config.shelf_redi:
-        from workflows.coupled.shelf_redi import ShelfGMRedi
+        from vfs.ocean.temperature.shelf_redi import ShelfGMRedi
         factory = ShelfGMRedi
         options["nominal"] = rest_thickness(config)
     return factory(
@@ -535,7 +530,7 @@ def build(
         ),
     )
     if config.shelf_redi:
-        from workflows.coupled.shelf_transport import ShelfTemperatureOcean
+        from vfs.ocean.temperature.shelf_transport import ShelfTemperatureOcean
         model.dynamics = ShelfTemperatureOcean(model.ocean)
     dz = rest_thickness(config).to(mesh.cell_area)
     adapter.campaign_ocean_thickness = dz

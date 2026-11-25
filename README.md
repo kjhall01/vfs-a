@@ -24,7 +24,7 @@ See [contributing](CONTRIBUTING.md) for the complete test environment.
 
 | Model | Main features | Example |
 | --- | --- | --- |
-| `vfs.DryAtmosphere` | Conservative dry dynamics; SSPRK3 or ARK4 IMEX | [Dry atmosphere](examples/dry_atmosphere.py) |
+| `vfs.DryAtmosphere` | Conservative dry dynamics; SSPRK3 | [Dry atmosphere](examples/dry_atmosphere.py) |
 | `vfs.MoistAtmosphere` | Entropy and water contents; bounded SSPRK3 with matched energy work | [Moist atmosphere](examples/moist_atmosphere.py) |
 | `vfs.ocean.stratified.StratifiedOcean` | Active temperature/salinity, JMD95 density, bounded transport, optional energy-closing ALE | [Stratified ocean](examples/ocean_stratified.py) |
 | `vfs.ocean.Ocean` | Configurable layered equations and source objects | [Layered reference](examples/ocean_reference.py), [constant density](examples/ocean_conservative.py), [centered JMD95](examples/ocean_jmd95.py) |
@@ -57,7 +57,6 @@ or timestep recommendations for other resolutions.
 ## Numerical scope
 
 - Moist SSPRK3 requires positive vapor and uses bounded species-amount ledgers.
-  Moist `CenteredIMEX` uses centered transport and does not provide those bounds.
 - `StratifiedOcean` is unforced and unbatched. Its ALE correction checks column
   energy and entropy feasibility and rejects unsuccessful remaps.
 - Semidiscrete energy closure does not imply exact finite-step conservation.

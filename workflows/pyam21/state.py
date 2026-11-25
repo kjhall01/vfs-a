@@ -37,7 +37,7 @@ class PhysicsReport:
     water_flux_residual: torch.Tensor  # [cell] kg/m2, actual increment - dt*(E-P)
     energy_changes: dict  # [cell] J/m2; independent boundary/upstream/transfer ledgers
     edge_impulse: torch.Tensor  # [edge,level], kg m/s, work-adjoint physics impulse
-    carrier_impulse: torch.Tensor  # explicit surface-water impulse; legacy: co-moving
+    carrier_impulse: torch.Tensor  # explicit surface-water impulse
     momentum_residual: torch.Tensor
     column_result: dict  # checked outputs, including any recorded vapor correction
     energy_transfer: dict | None = None  # layer constraints and nonlinear solve report

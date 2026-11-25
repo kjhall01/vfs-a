@@ -5,7 +5,7 @@ from unittest.mock import patch
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from resolution_mesh import setup
-from model import TemperatureOcean
+from vfs.ocean.temperature.model import TemperatureOcean
 from vfs.ocean.stratified import equations
 
 

@@ -18,7 +18,7 @@ from vfs.ocean.state import OceanState
 from vfs.ocean.dynamics import MultilayerOceanDynamics, HydrostaticBoussinesqOceanDynamics
 from vfs.ocean.physics import (OceanSurfaceForcing, OceanSurfaceFluxPhysics,
     OceanEkmanSurfacePhysics, OceanBulkMixedLayerPhysics, CompositeOceanPhysics)
-from vfs.core.integrators import forward_euler, ssprk3, rk4
+from vfs.integrators.explicit import forward_euler, ssprk3, rk4
 
 FIELDS = ('u_e', 'h', 'temp_h', 'salt_h', 'tracer_h')
 

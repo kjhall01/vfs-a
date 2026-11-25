@@ -4,7 +4,7 @@ import torch
 import pytest
 from vfs.ocean import OceanColumn
 from vfs.ocean.stratified import StratifiedOcean,TKEOcean
-path=load('path_work')
+from vfs.ocean.mixing import path_work as path
 
 def exchange(linear_model=False,scale=1.):
     cls=linear.LinearColumnOcean if linear_model else StratifiedOcean

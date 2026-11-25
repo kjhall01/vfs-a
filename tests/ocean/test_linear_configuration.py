@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 import torch
 sys.path[:0]=[str(Path(__file__).resolve().parents[2]/'validation/temperature_coordinate'),str(Path(__file__).resolve().parents[2]/'validation/ocean_column')]
-from linear import LinearEOS,LinearEnergy,LinearCaloric,LinearWorkspace,LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
+from vfs.ocean.temperature.linear import LinearEOS,LinearEnergy,LinearCaloric,LinearWorkspace,LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
 from complete_campaign import make
 from vfs.ocean.stratified import TKEState
 from vfs.ocean.stratified.faces import gibbs_face,temperature_from_entropy
@@ -81,7 +81,7 @@ def test_mixing_budget_and_positivity(setup,seed,unstable):
 
 def test_complete_forced_remap_no_nonlinear_eos(setup):
     model,state,f=setup;s=state.ocean;before=model.total_energy(state)
-    with patch('vfs.ocean.jmd95_energy.jmd95_partials',side_effect=AssertionError('JMD95')),patch('vfs.ocean.stratified.thermodynamics.SurfaceGibbs.evaluate',side_effect=AssertionError('Gibbs')),patch('fast_thermo.Caloric.inverse',side_effect=AssertionError('iterative inverse')):
+    with patch('vfs.ocean.jmd95_energy.jmd95_partials',side_effect=AssertionError('JMD95')),patch('vfs.ocean.stratified.thermodynamics.SurfaceGibbs.evaluate',side_effect=AssertionError('Gibbs')),patch('vfs.ocean.mixing.fast_thermo.Caloric.inverse',side_effect=AssertionError('iterative inverse')):
         end,r=model.step_with_report(state,10.,**f)
         target=end.ocean.h.sum(-1,keepdim=True).expand_as(end.ocean.h)/4
         final,remap=model.remap_with_report(end,target)
@@ -100,7 +100,7 @@ def test_backward_and_configuration_guards(setup):
     end,_=model.step_with_report(state,1.,**f)
     assert torch.isfinite(torch.autograd.grad(end.ocean.temp_h.sum(),q)[0]).all()
     with pytest.raises(ValueError):LinearEOS(cp=-1)
-    from path import TemperaturePathMixing
+    from vfs.ocean.temperature.path import TemperaturePathMixing
     with pytest.raises(TypeError):LinearOcean(s.mesh,s.column,closure=TemperaturePathMixing(2.))
 
 

@@ -39,12 +39,12 @@ from .atmosphere.model import MoistAtmosphere
 from .field import Field
 from vfs.atmosphere.state import PrognosticFields, StateSpec, TracerSpec
 from vfs.atmosphere.dry_model import DryAtmosphere
-from .atmosphere.steppers import BoundedSSPRK3, CenteredIMEX, DrySSPRK3, DryIMEX
+from .atmosphere.steppers import BoundedSSPRK3, DrySSPRK3
 
 __all__ = [
     "State", "MoistState", "PrognosticFields", "StateSpec", "TracerSpec", "Field",
     "DryAtmosphere", "MoistAtmosphere", "DryHydrostaticConservativeDynamics",
-    "MoistConservativeDynamics", "BoundedGibbs", "BoundedSSPRK3", "CenteredIMEX",
-    "DrySSPRK3", "DryIMEX", "VoronoiMesh", "CharneyPhillipsColumn",
+    "MoistConservativeDynamics", "BoundedGibbs", "BoundedSSPRK3",
+    "DrySSPRK3", "VoronoiMesh", "CharneyPhillipsColumn",
     "make_hybrid_coefficients", "ssprk3", "forward_euler", "rk4", "__version__",
 ]

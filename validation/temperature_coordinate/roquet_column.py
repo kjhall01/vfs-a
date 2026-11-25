@@ -9,7 +9,7 @@ import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from matched_eos import build,anomaly,rms
 from roquet_campaign import model
-from roquet import convert_jmd95_initialization
+from vfs.ocean.temperature.roquet import convert_jmd95_initialization
 from analyze_matched import profile_mld
 
 

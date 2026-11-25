@@ -6,7 +6,7 @@ import pytest
 import torch
 from test_gmredi import setup
 from test_jmd95_hamiltonian import mesh
-from backscatter import EddyBackscatter
+from vfs.ocean.temperature.backscatter import EddyBackscatter
 
 
 @pytest.mark.parametrize("coast", [False, True])

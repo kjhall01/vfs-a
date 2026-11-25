@@ -13,10 +13,10 @@ from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 from vfs.ocean.jmd95_energy import jmd95_partials
 from vfs.ocean.stratified import StratifiedOcean,TKEState
-from linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
-from system import TemperatureSystem
-from path import TemperaturePathMixing
-from surface import FastSurfaceHeating,FastSurfaceExchange
+from vfs.ocean.temperature.linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange,TemperatureBoundary
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.surface import FastSurfaceHeating,FastSurfaceExchange
 
 
 def anomaly(model,s):

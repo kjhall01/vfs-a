@@ -4,7 +4,7 @@ from dataclasses import replace
 import torch
 import pytest
 from test_ocean_ice_coupling import setup, ridge_mesh
-from snow import SnowOceanIce, SnowState, SnowParameters
+from vfs.ice.snow import SnowOceanIce, SnowState, SnowParameters
 
 
 def snowy(mesh, coast=False):
@@ -244,7 +244,7 @@ def test_snow_only_melt_preserves_ice_volume_and_footprint(ridge_mesh):
 
 
 def test_snow_phase_energy_derivative(ridge_mesh):
-    from snow import SnowPhase
+    from vfs.ice.snow import SnowPhase
 
     model, state = snowy(ridge_mesh)
     phase = SnowPhase(model.coupled, state.snow_mass)

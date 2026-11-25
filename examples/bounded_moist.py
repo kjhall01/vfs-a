@@ -9,7 +9,7 @@ from vfs.atmosphere import MoistConservativeDynamics, MoistState, BoundedGibbs
 from vfs.atmosphere.moist_cp import interface_pressure_mass
 from vfs.atmosphere.moist_budgets import inventories
 from vfs.geometry.mesh import VoronoiMesh
-from vfs.geometry.column import CharneyPhillipsColumn, make_hybrid_coefficients
+from vfs.atmosphere.column import CharneyPhillipsColumn, make_hybrid_coefficients
 
 
 def initialize():

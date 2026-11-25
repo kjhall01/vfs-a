@@ -1,5 +1,10 @@
 """Small wind/thermal-forced ocean-ice integration with actual ocean dynamics."""
 
+from vfs.ice import category_phase as category_phase_source
+from vfs.ice import ice as ice_source
+from vfs.ice import ice_drag as ice_drag_source
+from vfs.ice import ocean_ice as ocean_ice_source
+from vfs.ice import ridging as ridging_source
 import argparse, csv, hashlib, json, math, sys, time
 from pathlib import Path
 import torch
@@ -9,9 +14,9 @@ sys.path[:0] = [
     str(ROOT / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ocean_ice import OceanIce
-from ridging import CategoryIce, RidgingState
-from roquet import RoquetOcean
+from vfs.ice.ocean_ice import OceanIce
+from vfs.ice.ridging import CategoryIce, RidgingState
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn, OceanDomain
 
@@ -137,11 +142,11 @@ def run(args):
             p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in [
                 Path(__file__),
-                Path(__file__).with_name("ocean_ice.py"),
-                Path(__file__).with_name("category_phase.py"),
-                Path(__file__).with_name("ice_drag.py"),
-                Path(__file__).with_name("ridging.py"),
-                Path(__file__).with_name("ice.py"),
+                Path(ocean_ice_source.__file__),
+                Path(category_phase_source.__file__),
+                Path(ice_drag_source.__file__),
+                Path(ridging_source.__file__),
+                Path(ice_source.__file__),
             ]
         },
     )

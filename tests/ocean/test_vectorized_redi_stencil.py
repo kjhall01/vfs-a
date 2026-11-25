@@ -9,7 +9,7 @@ import torch
 sys.path.insert(
     0, str(Path(__file__).resolve().parents[2] / "validation/temperature_coordinate")
 )
-from eddy import GMRedi, _RediGradient
+from vfs.ocean.temperature.eddy import GMRedi, _RediGradient
 
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.float64])

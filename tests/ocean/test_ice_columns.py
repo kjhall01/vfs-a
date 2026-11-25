@@ -11,7 +11,7 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ice import SeaIceState, IceOceanState, SeaIceThermodynamics, ConductiveIceBoundary
+from vfs.ice.ice import SeaIceState, IceOceanState, SeaIceThermodynamics, ConductiveIceBoundary
 from test_gmredi import setup, mesh
 
 

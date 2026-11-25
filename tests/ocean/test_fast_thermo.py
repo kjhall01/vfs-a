@@ -6,9 +6,8 @@ import pytest
 from test_linear_column import load
 from test_lagged_column import lag
 from test_coupled_column import ocean,state
-sys.modules.setdefault('lagged',lag)
 # Loading by file keeps research helpers outside the installed public package.
-fast=load('fast_thermo');sys.modules.setdefault('fast_thermo',fast)
+from vfs.ocean.mixing import fast_thermo as fast
 from vfs.ocean.jmd95_energy import jmd95_partials
 
 

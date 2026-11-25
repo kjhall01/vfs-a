@@ -6,10 +6,10 @@ from collections import Counter
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from resolution_mesh import setup
-from lagged import SubcycledLaggedClosure
-from fast_thermo import MixingThermodynamics,Caloric
-from model import TemperatureOcean
-from physics import TemperatureMixing,heat
+from vfs.ocean.mixing.lagged import SubcycledLaggedClosure
+from vfs.ocean.mixing.fast_thermo import MixingThermodynamics,Caloric
+from vfs.ocean.temperature.model import TemperatureOcean
+from vfs.ocean.temperature.physics import TemperatureMixing,heat
 from vfs.ocean.stratified import equations
 
 

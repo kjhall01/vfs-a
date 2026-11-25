@@ -1,10 +1,11 @@
 """Matched EOS controls for the SAME research coupled-column solver."""
+from vfs.ocean.mixing import coupled as coupled_source
 import argparse,json,hashlib,platform
 from pathlib import Path
 from functools import partial
 import torch
 from run import run
-from coupled import CoupledClosure
+from vfs.ocean.mixing.coupled import CoupledClosure
 from linear_eos import LinearColumnOcean,ExactLinearWorkClosure
 
 
@@ -22,7 +23,7 @@ def main():
     closure=None if a.solver=='existing' else cls(2.,accelerate=a.solver=='accelerated',relaxation=.7 if a.solver=='accelerated' else .3,max_iterations=80 if a.solver=='accelerated' else 240)
     r=run(a.layers,a.dt,a.hours,'wind',closure=closure,ocean_factory=factory)
     r.update(eos=a.eos,solver=a.solver,exact_work=a.exact_work,python=platform.python_version(),torch=torch.__version__,
-        sources={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ('coupled.py','linear_eos.py','run.py')})
+        sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (Path(coupled_source.__file__), Path(__file__).with_name('linear_eos.py'), Path(__file__).with_name('run.py'))})
     a.output.write_text(json.dumps(r,indent=2)+'\n')
     print(json.dumps({k:r[k] for k in ('eos','solver','dt_s','status','completed_hours','wall_s','failure','energy_error_J_kg','limiter')}),flush=True)
 

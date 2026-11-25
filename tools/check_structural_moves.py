@@ -18,20 +18,17 @@ MOVES = {
     'model': ['atmosphere/dry_model'],
     'geometry/column': ['atmosphere/column'],
     'core/integrators': ['integrators/explicit'],
-    'integrators/imex/tableau': ['integrators/tableau'],
-    'integrators/imex/solvers': ['atmosphere/imex/solvers', 'integrators/krylov'],
-    'geometry/mesh/multilevel': ['geometry/mesh/multilevel', 'atmosphere/imex/transfer'],
+    'geometry/mesh/multilevel': ['geometry/mesh/multilevel'],
     'geometry/regrid': ['geometry/remap'],
     'core/io': ['io', 'atmosphere/io'],
     'data/topography': ['data/elevation', 'atmosphere/topography'],
     'boundary': ['atmosphere/boundary', 'io'],
     **{n: ['atmosphere/'+n] for n in ('earth', 'era5', 'moisture')},
-    **{'integrators/imex/'+n: ['atmosphere/imex/'+n]
-       for n in ('dry_ark', 'moist_ark', 'conservative_wave', 'moist_wave')},
     **{'initial_conditions/'+n: ['atmosphere/initial_conditions/'+n]
        for n in ('analytic_climate', 'held_suarez', 'equilibrium', 'jablonski_williamson')},
 }
 BOUNDARIES = {
+    "model:DryAtmosphere.__init__": "Retired IMEX selection. Dry SSPRK3 ownership and delegation checked separately.",
     'core/state:State.to_latlon': 'Explicit atmospheric adapter; compatibility custom regridders retained.',
     'geometry/regrid:MeshToLatLonKNN.state_to_latlon': 'Split unchanged field calculations into component adapters.',
     'geometry/regrid:_normalise_field_request': 'Defaults owned separately by component output adapters.',
@@ -80,6 +77,8 @@ def run(repo):
             if key in BOUNDARIES:
                 boundary.append({'path':key, 'reason':BOUNDARIES[key]})
                 continue
+            if key == 'geometry/mesh/multilevel:restrict_state':
+                continue  # Retired atmospheric IMEX state transfer.
             current = targets[name]
             normalize = lambda node: ast.dump(Executable().visit(copy.deepcopy(node)), include_attributes=False)
             if normalize(original) != normalize(current): raise AssertionError('Executable AST changed: '+key)

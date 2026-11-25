@@ -5,12 +5,9 @@
 binds once to a model; construct a fresh stepper for each model.
 
 ```python
-from vfs import MoistAtmosphere, BoundedSSPRK3, CenteredIMEX
+from vfs import MoistAtmosphere, BoundedSSPRK3
 
 model = MoistAtmosphere(mesh, column)  # bounded SSPRK3
-# Explicit alternatives, used when constructing a model:
-bounded_stepper = BoundedSSPRK3()
-centered_implicit_stepper = CenteredIMEX()
 ```
 
 | Method | Purpose |
@@ -29,13 +26,6 @@ heat release. `model.transport.step_with_info` exposes its detailed ledgers.
 bounded Euler update. The timestep-dependent transport tendency alone also does
 not replace installing the authoritative integrated water amounts.
 
-`CenteredIMEX` uses ARK4 and centered transport. Each stage is checked for
-admissibility, but there is no bounded-species or SSP guarantee. Configure solves
-with `vfs.imex.IMEXSolverConfig`; inspect
-`model.stepper.solver.last_step_info` for residuals and iteration counts.
-There is no bounded IMEX option. Model calls advance time; they do not return RHS
-values. See [timestep paths](CURRENT_PATHS.md).
-
 ## Geometry, movement and checkpoints
 
 Move the model with `.to(dtype=..., device=...)` before state initialization.
@@ -50,6 +40,6 @@ and settings before `load_state_dict`; a state dict alone is not a restart.
 
 Positive vapor is required; no moisture floor is added. CPU float64 is the
 verified baseline. One-step derivative checks do not establish reliable gradients
-through every limiter switch, IMEX solve or long trajectory. See
+through every limiter switch or long trajectory. See
 [physical-field initialization](PHYSICAL_FIELDS_API.md) and
 [measured gradient limitations](BOUNDED_GRADIENT_LIMITATION.md).

@@ -16,10 +16,10 @@ from workflows.pyam21.setup import example
 from workflows.pyam21.dynamics import advance_dynamics, pressure_velocity
 from workflows.coupled.ocean_ice import OceanIceReceiver
 from workflows.coupled.driver import exchange_step
-from ocean_ice import OceanIce
-from ridging import RidgingState, CategoryIce
-from snow import SnowOceanIce
-from roquet import RoquetOcean
+from vfs.ice.ocean_ice import OceanIce
+from vfs.ice.ridging import RidgingState, CategoryIce
+from vfs.ice.snow import SnowOceanIce
+from vfs.ocean.temperature.roquet import RoquetOcean
 from vfs.ocean import OceanColumn
 
 

@@ -73,6 +73,12 @@ IO_ORIGINAL_SOURCES = "fe39c1ebc41181f1ab8bcd58d9a5fbc76d6d54e5c0e06207fd645ff62
 IO_NETCDF_SOURCES = "5d8e9954b0b7b8dafd5d7a4b846ac68bb5f2e1dcc1fd07ac6b2ae03bd3b577fb"
 
 
+# Package reorganization from 64b56ef. Hash every source except this verifier.
+CLEANUP_ORIGIN = "5d8e9954b0b7b8dafd5d7a4b846ac68bb5f2e1dcc1fd07ac6b2ae03bd3b577fb"
+CLEANUP_ORIGINAL_VERIFIER = "1542d7834224de0041d83339ac9e881836c90492fafd921b5968ca82635e26ca"
+CLEANUP_TARGET = "996c37939a2c848e11a732faa54203fdf387bad8515511c97ca964ad1fd5e322"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -159,6 +165,13 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    if _without_verifier_digest(current_hashes) == CLEANUP_TARGET:
+        origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
+        if origin == (CLEANUP_ORIGIN, CLEANUP_ORIGINAL_VERIFIER):
+            return {"package_cleanup": True, "numerical_change": "none"}
+        if origin == (IO_ORIGINAL_SOURCES, IO_ORIGINAL_VERIFIER) and CLEANUP_ORIGIN == IO_NETCDF_SOURCES:
+            return {"io_format_change": "coupled_netcdf_v1", "package_cleanup": True,
+                    "numerical_change": "none"}
     if (old_hashes.get(verifier) == IO_ORIGINAL_VERIFIER
             and _without_verifier_digest(old_hashes) == IO_ORIGINAL_SOURCES):
         if _without_verifier_digest(current_hashes) != IO_NETCDF_SOURCES:

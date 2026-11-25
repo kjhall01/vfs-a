@@ -8,11 +8,11 @@ from pathlib import Path
 import torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ocean_column'))
 from complete_campaign import make
-from system import TemperatureSystem
-from path import TemperaturePathMixing
-from surface import TemperatureBoundary,FastSurfaceHeating,FastSurfaceExchange
-from linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange
-from roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,convert_jmd95_initialization
+from vfs.ocean.temperature.system import TemperatureSystem
+from vfs.ocean.temperature.path import TemperaturePathMixing
+from vfs.ocean.temperature.surface import TemperatureBoundary,FastSurfaceHeating,FastSurfaceExchange
+from vfs.ocean.temperature.linear import LinearOcean,LinearMixing,LinearHeating,LinearExchange
+from vfs.ocean.temperature.roquet import RoquetOcean,RoquetMixing,RoquetHeating,RoquetExchange,convert_jmd95_initialization
 from vfs.ocean.stratified import TKEState
 
 

@@ -1,11 +1,13 @@
 """Reproduce the cold-column acceptance discrepancy against either source tree.
 
-Run with an installed VFS wheel; --research-root selects only research modules.
+Use --research-root to replay the comparison with the selected checkout.
 The deterministic input builder is shared with the regression test.
 """
 import argparse
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 import torch
 
@@ -16,11 +18,18 @@ parser.add_argument('--seed', type=int, default=10)
 parser.add_argument('--salinity-scale', type=float, default=1.7105959511064084)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
-sys.path[:0] = [str(args.research_root / 'validation' / name)
-               for name in ('temperature_coordinate', 'ocean_column')]
-import ale
-import roquet
-sys.path.insert(0, str(ROOT / 'tests/ocean'))
+checkout = args.research_root.resolve()
+if checkout != ROOT:
+    driver = checkout / "verification/ocean/ale-cold-columns/compare.py"
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join([str(checkout), env.get("PYTHONPATH", "")])
+    subprocess.run([sys.executable, str(driver), "--seed", str(args.seed),
+                    "--salinity-scale", str(args.salinity_scale),
+                    "--output", str(args.output.resolve())], cwd=checkout, env=env, check=True)
+    raise SystemExit(0)
+
+sys.path[:0] = [str(ROOT), str(ROOT / "tests/ocean")]
+from vfs.ocean.temperature import ale, roquet
 from test_temperature_ale_roundoff import cold_columns
 from vfs.ocean.stratified.energy_columns import column_terms
 

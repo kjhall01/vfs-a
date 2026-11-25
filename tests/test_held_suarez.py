@@ -4,9 +4,9 @@ import torch
 from dataclasses import replace
 from vfs import State, DryAtmosphere
 from vfs.atmosphere.held_suarez import HeldSuarezForcing, HeldSuarezConstants
-from vfs.core.state import interface_mass
-from vfs.core.integrators import ssprk3
-from test_conservative_imex import setup
+from vfs.atmosphere.state import interface_mass
+from vfs.integrators.explicit import ssprk3
+from dry_states import setup
 
 
 @pytest.mark.parametrize('overrides', [False, True])

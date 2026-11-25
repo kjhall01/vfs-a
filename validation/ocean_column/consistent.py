@@ -1,6 +1,6 @@
 """Opt-in research solve with refreshed end-TKE budget acceptance."""
 from dataclasses import dataclass
-from path_work import PathWorkClosure
+from vfs.ocean.mixing.path_work import PathWorkClosure
 
 @dataclass(frozen=True)
 class ConsistentPathClosure(PathWorkClosure):

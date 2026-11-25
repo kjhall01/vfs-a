@@ -11,9 +11,9 @@ sys.path[:0] = [
     str(Path(__file__).resolve().parents[2] / "validation" / p)
     for p in ("sea_ice", "temperature_coordinate", "ocean_column")
 ]
-from ocean_ice import OceanIce, vector_transpose
-from category_phase import CategoryThermodynamics
-from ridging import RidgingState, CategoryIce
+from vfs.ice.ocean_ice import OceanIce, vector_transpose
+from vfs.ice.category_phase import CategoryThermodynamics
+from vfs.ice.ridging import RidgingState, CategoryIce
 from test_ice_ridging import case, ridge_mesh
 
 
@@ -353,7 +353,7 @@ def test_coupled_step_backward_smooth_branch(ridge_mesh):
 
 
 def test_configured_backscatter_work(ridge_mesh):
-    from backscatter import EddyBackscatter
+    from vfs.ocean.temperature.backscatter import EddyBackscatter
 
     coupled, state = setup(ridge_mesh)
     coupled.ocean.backscatter = EddyBackscatter(
@@ -369,7 +369,7 @@ def test_configured_backscatter_work(ridge_mesh):
 
 
 def test_existing_mixing_can_follow_coupled_dynamics(ridge_mesh):
-    from roquet import RoquetMixing
+    from vfs.ocean.temperature.roquet import RoquetMixing
 
     coupled, state = setup(ridge_mesh)
     coupled.ocean.closure = RoquetMixing(2.0, substeps=2)

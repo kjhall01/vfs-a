@@ -6,7 +6,7 @@ import pytest
 import torch
 from test_gmredi import setup
 from test_jmd95_hamiltonian import mesh
-from backscatter import EddyBackscatter
+from vfs.ocean.temperature.backscatter import EddyBackscatter
 
 
 @pytest.mark.parametrize("coast", [False, True])
@@ -142,8 +142,8 @@ def test_invalid_parameters_and_state(mesh):
 
 
 def test_composition_with_gmredi_and_decay(mesh):
-    from eddy import GMRedi
-    from eddy_energy import EddyDissipation
+    from vfs.ocean.temperature.eddy import GMRedi
+    from vfs.ocean.temperature.eddy_energy import EddyDissipation
 
     m, state = setup(mesh, True)
     m.backscatter = EddyBackscatter(1e12, 86400.0, 0.25)

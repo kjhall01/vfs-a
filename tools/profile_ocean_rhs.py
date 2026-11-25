@@ -100,6 +100,8 @@ def _profile_line_pass(kwargs, intervals):
     import sys
     import time
     from collections import defaultdict
+    from vfs.ocean.temperature.model import TemperatureOcean
+    from vfs.ocean.temperature.system import TemperatureSystem
     from tools.profile_coupled import synchronize
     from vfs.ocean.stratified import transport
     from vfs.ocean.stratified import equations
@@ -118,8 +120,8 @@ def _profile_line_pass(kwargs, intervals):
             ("local", transport._local_target_fields),
             ("parent", equations.evaluate),
             ("parent", equations.bounded_transport),
-            ("temperature", __import__("model").TemperatureOcean.fields),
-            ("temperature", __import__("system").TemperatureSystem.check),
+            ("temperature", TemperatureOcean.fields),
+            ("temperature", TemperatureSystem.check),
         )
     }
     counts = defaultdict(int)
