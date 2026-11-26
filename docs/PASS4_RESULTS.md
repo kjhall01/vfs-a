@@ -9,8 +9,9 @@ The new adapter funded all three with a global area-mean vapor credit of
 zero in float64, and the largest native layer energy residual was 3.01e-8 J/m².
 Two 600 s atmosphere steps completed from the original checkpoint. A further
 coupled smoke replay from that checkpoint advanced two 1,200 s intervals with
-radiation disabled. The second physics exchange logged both a PyAM21 correction
-and a three-interface native correction. Separate small-grid campaign runs
+radiation disabled in both eager and regionally compiled CPU execution.
+The second physics exchange logged both a PyAM21 and a native correction in
+both runs (three native recipients in eager mode and two with Inductor). Separate small-grid campaign runs
 resumed from each of the three audited parent revisions and matched all 36
 uninterrupted state tensors and all pre-existing ledger entries bit for bit.
 
@@ -30,7 +31,10 @@ rotating order on four CPU threads in float64 eager mode.
 | SSPRK3 | 300 | 12 | −1.86 | 6.24 | 0.00023 | 3.36e-6 |
 
 RMS differences use a 75 s SSPRK3 reference at the same final time, weighting
-edge wind by native kinetic mass and vapor by interface mass. These are short
+edge wind by native kinetic mass and vapor by interface mass. A single
+1,200 s SSPRK(4,3) step completed in four Euler evaluations with a −56.35 J/m²
+change in energy. For this state, spending six evaluations on two SSPRK3
+steps at 600 s reduced that loss to −14.88 J/m². These are short
 forward CPU replays. Accelerator throughput, long-run radiating behavior and
 end-to-end derivatives through limiter activations were not evaluated.
 
