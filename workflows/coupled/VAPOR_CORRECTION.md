@@ -18,6 +18,47 @@ Supply a new output directory with `--resume /path/to/last_good_restart.nc`
 and `--resume-compatible-manifest /path/to/manifest.json`. The verifier pins
 the source inventories from both sides of PR #122 and the target of this change.
 
+## Native atmospheric interfaces
+
+The column physics returns layer means. A positive layer endpoint can still
+leave a drier neighboring Charney–Phillips interface below the bounded
+transport vapor floor after mapping. The adapter checks the mapped vapor
+content against the new interface pressure mass, using the active transport
+operator's floor (normally `1e-14` kg/kg).
+
+An affected interface draws liquid, then ice, at the same node. If that is
+insufficient, the nearest same-column interfaces can donate vapor above
+their own floor. Donor debits use representable amounts. The original native
+layer energy targets still apply to the new mixture. A column with insufficient
+available water raises an error with its cell and interface. The normal path
+returns the mapped water unchanged.
+
+Both full-level PyAM21 vapor repairs and native interface repairs emit
+`WARNING` records. A campaign writes them to `run.log` and also prints them
+with `--verbose`. Native warnings include the model day, context, recipient
+count, first location, minimum incoming vapor fraction and transport floor.
+`interface_vapor_correction_events` counts recipient interfaces and
+`interface_vapor_correction_kg_m2` accumulates global area-mean vapor
+credited to them. The older `vapor_correction_*` fields continue to describe
+the upstream physics-layer repairs. A parcel can participate at both stages.
+
+To resume the day-28 pilot directly from its original checkpoint, keep the
+source of PyAM21, configuration, runtime, mesh, geography and radiation inputs
+from that run. Add these flags to the same campaign command, using a new
+segment directory.
+
+```sh
+--resume OLD_RUN/last_good_restart.nc \
+--resume-compatible-manifest OLD_RUN/manifest.json \
+--output NEW_RUN
+```
+
+The source bridge recognizes the coupled limiters at `f525256`, the Redi
+revision at `a894d0e` and main at `59b11db`. After unpacking, the campaign
+checks the native interfaces before the first dynamics step. A restart repair
+uses zero native energy change in each layer and enters the warning log and
+cumulative ledger at the checkpoint time.
+
 ## Historical exact-zero-only transitions
 
 For a checkpoint from the merged ocean performance stack, update VFS on the campaign machine.

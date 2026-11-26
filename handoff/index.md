@@ -2,6 +2,12 @@
 
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
 
+The [native vapor-floor check](../workflows/coupled/VAPOR_CORRECTION.md#native-atmospheric-interfaces)
+funds low vapor after the physics-to-interface mapping and when resuming older
+coupled checkpoints. Both vapor corrections emit campaign warnings. The
+[checkpoint replay](../docs/PASS4_RESULTS.md#native-vapor-funding-and-atmospheric-timestep-replay)
+includes an atmosphere-only SSPRK3 and SSPRK(4,3) comparison.
+
 The [coupled limiter diagnostics](../docs/PASS4_RESULTS.md#coupled-reservoir-limiters)
 cover GM loop closure, TKE deferrals, supply-limited sea-ice sublimation,
 post-transport backscatter funding and ocean carrier substeps. Checkpoints

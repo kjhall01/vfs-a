@@ -8,6 +8,7 @@ Energy transfer preserves AM2's own imbalance and reports it separately.
 from dataclasses import asdict, replace
 import hashlib
 import json
+import logging
 from pathlib import Path
 import torch
 import pyam21.constants as am2_constants
@@ -20,7 +21,7 @@ from .mapping import ColumnMap, average, distribute, species_increment, species_
 from .state import PhysicsState, PhysicsReport, copy_tree
 from .energy import exchanges, transfer_energy
 from .surface import ColumnTiles, fund_column_evaporation, fund_ice_sublimation, surface_layer, tile_fluxes
-from .vapor import restore_positive_vapor
+from .vapor import fund_interface_vapor, restore_positive_vapor
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
 RAD_FIELDS = ("lw_alarm", "sw_alarm", "saved", "coszen")
@@ -130,6 +131,7 @@ class AM2Adapter:
         energy_mode="conservative",
     ):
         self.model = model
+        self.logger = logging.getLogger(__name__)
         if energy_mode != "conservative":
             raise ValueError("energy_mode must be conservative")
         self.energy_mode = energy_mode
@@ -282,6 +284,35 @@ class AM2Adapter:
         )
         self.check(state)
         return state
+
+    def _fund_interface_vapor(self, water, mass):
+        transport = self.model.transport
+        if transport is None:
+            return water, None
+        return fund_interface_vapor(water, mass, transport.vapor_floor, self.model.dynamics.kernel.gravity)
+
+    def _warn_interface_vapor(self, correction, seconds, context):
+        cell, interface = correction["indices"][0].tolist()
+        self.logger.warning(
+            "Day %.6f: native vapor floor funded during %s; interfaces=%d, "
+            "first cell=%d interface=%d, minimum incoming vapor %.6g, floor %.6g kg/kg",
+            seconds / 86400, context, len(correction["indices"]), cell, interface,
+            correction["minimum_before"], correction["floor"],
+        )
+
+    def fund_restart_vapor(self, state):
+        """Bring an older restart across the same CP floor at fixed native layer energy."""
+        s = state.atmosphere
+        dp = s.column.interface_pressure(s.ps).diff()
+        water, correction = self._fund_interface_vapor(s.water_content, interface_pressure_mass(dp))
+        if correction is None:
+            return state, None
+        end, energy = transfer_energy(self, s, replace(s, water_content=water), torch.zeros_like(dp))
+        result = replace(state, atmosphere=end)
+        self.check(result)
+        correction["layer_energy_residual_J_m2"] = energy["layer_residual"]
+        self._warn_interface_vapor(correction, state.time_seconds, "restart")
+        return result, correction
 
     def column_call(self, state, dt, columns, geometry, *, surface_tiles=None):
         """Call all four upstream stages, retaining their actual exchange outputs.
@@ -555,7 +586,6 @@ class AM2Adapter:
                 vapor_correction["water_residual_kg_m2"] = layer_mass * vapor_correction["water_residual"]
         amount = dp[..., None] * (R1[..., :3] - column["tracers"][..., :3])
         water = species_endpoint(s.water_content, dp, amount, R1[..., :3])
-        dw = water - s.water_content
         # Physics tendencies are interpreted as species amount sources on the
         # old carrier. Their sum changes ps, preserving column dry-air mass.
         ps = s.ps + amount.sum((1, 2))[:, None]
@@ -563,6 +593,8 @@ class AM2Adapter:
         mass1 = interface_pressure_mass(p1.diff())
         if (p1.diff() <= 0).any():
             raise ValueError("physics update exhausts CP carrier; reduce dt")
+        water, interface_correction = self._fund_interface_vapor(water, mass1)
+        dw = water - s.water_content
         q1 = water / mass1[..., None]
         mix1 = torch.cat((1 - q1.sum(-1, keepdim=True), q1), -1)
         # Map only the temperature increment. Never overwrite the original CP
@@ -612,6 +644,18 @@ class AM2Adapter:
         self.check(result)
         actual_water = (water - s.water_content).sum(1) / g
         expected_water = amount.sum(1) / g
+        if interface_correction is not None:
+            changed_cell = interface_correction["changed_indices"][:, 0]
+            expected_water = expected_water.index_add(
+                0, changed_cell, interface_correction["species_change_Pa"] / g
+            )
+            self._warn_interface_vapor(interface_correction, result.time_seconds, "physics exchange")
+        if vapor_correction is not None:
+            self.logger.warning(
+                "Day %.6f: PyAM21 vapor correction funded physics layers=%d",
+                result.time_seconds / 86400,
+                vapor_correction.get("recipient_count", len(vapor_correction["indices"])),
+            )
         dry0 = mass.sum(-1) - s.water_content.sum((1, 2))
         dry1 = mass1.sum(-1) - water.sum((1, 2))
         fluxes = {
@@ -690,4 +734,5 @@ class AM2Adapter:
             out,
             transfer,
             vapor_correction,
+            interface_correction,
         )

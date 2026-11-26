@@ -840,3 +840,28 @@ def test_campaign_exposes_accepted_tke_funding(source, config, mix_dt):
     assert len(collected) == 120 // mix_dt
     for key in ("limited_interfaces", "deferred_columns"):
         assert report["tke_" + key] == sum(float(r[key]) for r in collected) > 0
+
+
+def test_campaign_records_native_vapor_recovery_when_resuming(source, config, tmp_path):
+    from netCDF4 import Dataset
+
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(config)))
+    args = ["--config", str(path), "--source", str(source), "--smoke-no-radiation"]
+    first, second = tmp_path / "first", tmp_path / "second"
+    assert c.main(args + ["--output", str(first), "--stop-after-days", str(60/c.DAY)]) == 0
+    restart = first / "restarts/restart_00000060.nc"
+    # Emulate an old accepted state with positive vapor below the dynamics floor.
+    with Dataset(restart, "r+") as ds:
+        water = ds["air_atmosphere_water_content"]
+        water[0, 0, 2] += water[0, 0, 0] - 1e-20
+        water[0, 0, 0] = 1e-20
+    assert c.main(args + ["--resume", str(restart), "--output", str(second),
+                         "--stop-after-days", str(120/c.DAY)]) == 0
+    assert "WARNING Day" in (second / "run.log").read_text()
+    assert "native vapor floor funded during restart; interfaces=1" in (second / "run.log").read_text()
+    ledger = c.read_checkpoint(second / "restarts/restart_00000120.nc")["ledger"]
+    assert ledger["interface_vapor_correction_events"] >= 1 and ledger["interface_vapor_correction_kg_m2"] > 0
+    with Dataset(second / "diagnostics.nc") as ds:
+        for key in ("interface_vapor_correction_events", "interface_vapor_correction_kg_m2"):
+            assert ds[key][0] > 0 and ds[key][-1] == ledger[key]

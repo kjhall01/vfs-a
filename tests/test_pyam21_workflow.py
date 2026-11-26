@@ -168,7 +168,7 @@ def test_positive_vapor_is_an_exact_noop_and_unfunded_zero_rejects():
 
 
 @pytest.mark.parametrize("undeclared_heat", [0., 2.])
-def test_zero_vapor_correction_preserves_original_native_energy_target(model, undeclared_heat):
+def test_zero_vapor_correction_preserves_original_native_energy_target(model, undeclared_heat, caplog):
     from pyam21.constants import HLS
     adapter, state = initial(model)
     c, geom = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
@@ -186,6 +186,7 @@ def test_zero_vapor_correction_preserves_original_native_energy_target(model, un
     with patch("torch.autograd.grad", side_effect=AssertionError("forward AD")):
         end, report = apply_output(adapter, state, out, dt)
     same_tree(out, original)
+    assert "PyAM21 vapor correction funded physics layers=1" in caplog.text
     correction = report.vapor_correction
     assert correction["indices"].tolist() == [[0, 0]]
     assert abs(float(correction["vapor_added"][0]) / VAPOR_EPSILON - 1) < 1e-8
@@ -996,3 +997,50 @@ def test_column_redistribution_preserves_native_energy_and_water(model):
     assert report.water_flux_residual.abs().max() < 1e-12
     assert report.dry_air_residual.abs().max() < 1e-10
     energy_close(adapter, state, end, report)
+
+
+@pytest.mark.parametrize("dtype", [torch.float64, torch.float32])
+def test_native_floor_uses_representable_donor_amounts(dtype):
+    from workflows.pyam21.vapor import fund_interface_vapor
+    mass = torch.tensor([[1., 3., 2.]], dtype=dtype)
+    # One node can evaporate its liquid; the other needs the nearest wet node.
+    water = torch.tensor([[[1e-16, .001, 0.], [.25, 0., 0.], [0., 0., 0.]]], dtype=dtype)
+    original = water.clone()
+    funded, report = fund_interface_vapor(water, mass, 1e-14, GRAV)
+    assert torch.equal(water, original)
+    assert report["indices"].tolist() == [[0, 0], [0, 2]]
+    assert (funded[..., 0] / mass >= 1e-14).all()
+    assert funded[0, 0, 1] < water[0, 0, 1] and funded[0, 1, 0] < water[0, 1, 0]
+    assert torch.equal(report["species_change_Pa"], (funded - water)[0])
+    torch.testing.assert_close((funded-water).double().sum(), torch.tensor(0., dtype=torch.float64),
+                               rtol=0, atol=8*torch.finfo(dtype).eps*float(report["vapor_added_kg_m2"].sum())*GRAV)
+    same, inactive = fund_interface_vapor(funded, mass, 1e-14, GRAV)
+    assert same is funded and inactive is None
+    with pytest.raises(ValueError, match="cannot fund native vapor floor.*cell=0 interface=0"):
+        fund_interface_vapor(torch.zeros_like(water), mass, 1e-14, GRAV)
+
+
+def test_finite_positive_physics_layer_can_need_native_vapor_funding(model, caplog):
+    adapter, state = initial(model)
+    c, geom = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    out = empty(c)
+    T, q = c["T"].clone(), c["tracers"].clone()
+    q[0, 0, 2] += q[0, 0, 0] - 3e-15
+    q[0, 0, 0] = 3e-15
+    out.update(endpoint_temperature=T, endpoint_tracers=q, rdt=(q-c["tracers"])/60)
+    budget = exchanges(adapter, state, 60, c, geom, out)
+    end, report = apply_output(adapter, state, out)
+    assert report.vapor_correction is None
+    correction = report.interface_vapor_correction
+    assert correction["indices"].tolist() == [[0, 0]]
+    assert "native vapor floor funded during physics exchange; interfaces=1" in caplog.text
+    qv = model.physical_fields(end.atmosphere)["vapor"]
+    assert qv.min() >= model.transport.vapor_floor
+    assert correction["species_change_Pa"][0, 2] == -correction["species_change_Pa"][0, 0]
+    torch.testing.assert_close(report.energy_transfer["target_layer_increment"], budget["target"], rtol=0, atol=0)
+    energy_close(adapter, state, end, report)
+    assert report.water_mapping_residual.abs().max() < 1e-12
+    assert report.water_flux_residual.abs().max() < 1e-12
+    caplog.clear()
+    good, inactive = adapter.fund_restart_vapor(end)
+    assert good is end and inactive is None and not caplog.records

@@ -1,5 +1,39 @@
 # Pass 4 — physical-field workflow
 
+## Native vapor funding and atmospheric timestep replay
+
+The 4,096-cell Earth checkpoint at 2,500,800 s had three native interfaces
+below the configured vapor floor and one outside the transport amount tolerance.
+The new adapter funded all three with a global area-mean vapor credit of
+1.06e-16 kg/m². The largest column sum of the signed water-content changes was
+zero in float64, and the largest native layer energy residual was 3.01e-8 J/m².
+Two 600 s atmosphere steps completed from the original checkpoint. A further
+coupled smoke replay from that checkpoint advanced two 1,200 s intervals with
+radiation disabled. The second physics exchange logged both a PyAM21 correction
+and a three-interface native correction. Separate small-grid campaign runs
+resumed from each of the three audited parent revisions and matched all 36
+uninterrupted state tensors and all pre-existing ledger entries bit for bit.
+
+For the integrator comparison, each atmosphere-only run started from the same
+previously recovered day-28.9444 state and advanced 1,200 s. The experimental
+SSPRK(4,3) used four bounded Euler maps of duration dt/2, with the same convex
+combination for cloud amounts and native prognostics. The production atmosphere
+continues to use SSPRK3. Median wall times cover three warmed measurements in
+rotating order on four CPU threads in float64 eager mode.
+
+| Method | Step (s) | Euler evaluations | ΔH (J/m²) | Wall (s) | Wind RMS difference (m/s) | Vapor RMS difference (kg/kg) |
+|---|---:|---:|---:|---:|---:|---:|
+| SSPRK3 | 600 | 6 | −14.88 | 3.06 | 0.00145 | 6.75e-6 |
+| SSPRK(4,3) | 600 | 8 | −7.54 | 3.93 | 0.00075 | 5.18e-6 |
+| SSPRK3 | 400 | 9 | −4.45 | 4.54 | 0.00046 | 4.67e-6 |
+| SSPRK(4,3) | 400 | 12 | −2.21 | 5.96 | 0.00025 | 3.23e-6 |
+| SSPRK3 | 300 | 12 | −1.86 | 6.24 | 0.00023 | 3.36e-6 |
+
+RMS differences use a 75 s SSPRK3 reference at the same final time, weighting
+edge wind by native kinetic mass and vapor by interface mass. These are short
+forward CPU replays. Accelerator throughput, long-run radiating behavior and
+end-to-end derivatives through limiter activations were not evaluated.
+
 ## Coupled reservoir limiters
 
 Both Earth-shelf presets use a funded GM circulation. When twenty local

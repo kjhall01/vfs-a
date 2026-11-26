@@ -54,7 +54,8 @@ from workflows.coupled.coast import CoastalReceiver
 from vfs.ocean import OceanColumn
 
 DAY = 86400
-VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2")
+VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2",
+              "interface_vapor_correction_events", "interface_vapor_correction_kg_m2")
 VAPOR_PEAKS = ("vapor_correction_proxy_residual_J_m2",)
 REDI_ENERGY_SUMS = (
     "redi_energy_limiting_passes", "redi_energy_limited_rows", "redi_energy_blocked_rows",
@@ -672,6 +673,12 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
     return water, external, ocean_report
 
 
+def interface_vapor_totals(area, correction):
+    cells = correction["indices"][:, 0]
+    return dict(interface_vapor_correction_events=cells.numel(),
+                interface_vapor_correction_kg_m2=float((area[cells] * correction["vapor_added_kg_m2"]).sum() / area.sum()))
+
+
 def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     """Join the independent dynamics advances before the atomic surface exchange."""
     if trace is not None:
@@ -705,6 +712,8 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
         ocean_report["ice_sublimation_limited_tiles"] = int(ar.column_result["ice_sublimation_limited"].sum())
         withheld = ar.column_result["ice_sublimation_withheld"].sum(-1)
         ocean_report["ice_sublimation_withheld_kg_m2"] = float((A * withheld).sum() / A.sum())
+    if ar.interface_vapor_correction is not None:
+        vapor_report.update(interface_vapor_totals(A, ar.interface_vapor_correction))
     if ar.vapor_correction is not None:
         correction = ar.vapor_correction
         cell = correction["indices"][:, 0]
@@ -1242,6 +1251,7 @@ def main(argv=None):
             generator_xyz=generators, island=args.island, geography=geography,
         )
         adapter.campaign_mesh_sha256 = mesh_info.get("sha256")
+        adapter.logger = logger
         if config.shelf_redi:
             if config.partial_cell_layers:
                 ocean_state = sea.coupled.ocean.ocean
@@ -1356,6 +1366,10 @@ def main(argv=None):
             )
             for key in VAPOR_SUMS + VAPOR_PEAKS + REDI_ENERGY_SUMS + REDI_ENERGY_PEAKS + LIMITER_SUMS + ("ale_deferred_columns",):
                 ledger.setdefault(key, 0.0)
+            air, correction = adapter.fund_restart_vapor(air)
+            if correction is not None:
+                for key, value in interface_vapor_totals(adapter.model.mesh.cell_area, correction).items():
+                    ledger[key] += value
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
             raise ValueError("restart is already at or beyond requested end")
