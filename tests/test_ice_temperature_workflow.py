@@ -296,3 +296,69 @@ def test_phase_heat_flux_gradient_uses_reference_at_freezing(model):
         minus, _ = phase.apply(source, 600, heat_flux=heat - 0.05)
     fd = (phase.H.mass(plus) - phase.H.mass(minus)) / 0.1
     torch.testing.assert_close(grad, fd, rtol=2e-8, atol=1e-12)
+
+
+@pytest.mark.parametrize("vanish", [False, True])
+def test_supply_limited_sublimation_in_shared_column(model, vanish):
+    adapter, air = initial(model)
+    p = model.interface_pressure(100000)
+    dry = model.state_from_fields(temperature=205 + 65 * (p / 100000)**0.7,
+                                  surface_pressure=100000, normal_wind=0.4,
+                                  vapor=torch.full_like(p, 1e-5), liquid=torch.zeros_like(p))
+    air = adapter.initialize(dry, sst=torch.full_like(p[:, 0], 272.))
+    receiver, sea = thermal_case(model, temperature=272.)
+    ice = sea.coupled.ice
+    thickness = ice.area.new_tensor([1e-9, 2e-9 if vanish else 1.])
+    ice = replace(ice, volume=ice.area * thickness)
+    mass = receiver.H.slab.parameters.density * ice.volume
+    sea = replace(sea, coupled=replace(sea.coupled, ice=ice),
+                  snow_mass=0.25*mass, cold_content=receiver.snow.heat_capacity*mass*(272.-273.15))
+    A = model.mesh.cell_area
+    out, end, x, ar, sr = exchange_step(adapter, air, receiver, sea, 60)
+    bound = ar.column_result["ice_sublimation_limited"]
+    assert bound[:, 0].all() and bool(bound[:, 1].all()) == vanish
+    assert (ar.column_result["ice_sublimation_withheld"][bound] > 0).all()
+    assert torch.equal(x.vapor[:, 1:][bound], mass[bound])
+    torch.testing.assert_close(x.vapor.sum(-1), 60*ar.fluxes["flux_q"], atol=1e-18, rtol=1e-13)
+    assert (x.snow == 0).all() and (end.coupled.ice.volume[bound] == 0).all()
+    assert (end.snow_mass[bound] == 0).all() and (end.cold_content[bound] == 0).all()
+    if vanish:
+        assert (end.coupled.ice.velocity == 0).all()
+    assert sr.energy_residual.abs().max() < 3e-6
+    assert sr.water_residual.abs().max() < 1e-10
+    opposite = adapter.mapping.transpose((A[:, None]*(x.water_impulse + x.stress.sum(1)))[:, None])
+    scale = (sr.ocean_impulse.abs()+sr.ice_impulse.abs()+opposite.abs()).clamp_min(1)
+    assert ((sr.ocean_impulse+sr.ice_impulse+opposite).abs()/scale).max() < 5e-13
+    assert abs((total_water(adapter,out,receiver,end)-total_water(adapter,air,receiver,sea))/A.sum()) < 1e-9
+    dE = (model.diagnostics(out.atmosphere)["energy"] + receiver.snow.total_energy(end)
+          - (model.diagnostics(air.atmosphere)["energy"] + receiver.snow.total_energy(sea)))
+    assert abs((dE - (A*(x.toa+ar.energy_changes["am2_energy_residual"])).sum())/A.sum()) < 3e-6
+
+
+def test_snow_after_sublimation_reaches_open_water(model):
+    from workflows.exchange import Exchange
+    from workflows.pyam21.surface import prepare_surface
+
+    adapter, air = initial(model)
+    receiver, sea = thermal_case(model)
+    # Freeze out a known, very small stock on both tiles. Supply the same mass
+    # in the column forcing, with simultaneous snowfall from the atmosphere.
+    ice = sea.coupled.ice
+    ice = replace(ice, volume=ice.volume*1e-8)
+    sea = replace(sea, coupled=replace(sea.coupled, ice=ice), cold_content=sea.cold_content*1e-8)
+    tiles = receiver.tiles(sea)
+    air = prepare_surface(air, tiles)
+    col, geo = adapter.mapping.columns(air.atmosphere, air.cloud_fraction)
+    out, *_ = adapter.column_call(air, 60, col, geo, surface_tiles=tiles)
+    out["ice_sublimation_limited"] = torch.ones_like(ice.area, dtype=torch.bool)
+    out["tile_fluxes"]["flux_q"][:, 1:] = tiles.frozen_mass/60.
+    out["fprec"] = torch.full_like(out["fprec"], 1e-5)
+    x = Exchange.from_am2(adapter, air, 60, col, out, tiles)
+    trial, x, context = receiver.prepare(sea, x, tiles)
+    end, report = receiver.finish(sea, trial, x, context)
+    assert torch.all(x.snow_fraction[:, 0] == 1.)
+    assert torch.count_nonzero(end.coupled.ice.volume) == 0
+    assert torch.count_nonzero(end.snow_mass) == 0
+    assert torch.count_nonzero(end.cold_content) == 0
+    assert report.water_residual.abs().max() < 1e-10
+    assert report.energy_residual.abs().max() < 3e-6

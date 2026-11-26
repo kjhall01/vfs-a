@@ -240,7 +240,7 @@ class ThermalSnowOceanIce(SnowOceanIce):
         if any(
             value is not None
             for name, value in options.items()
-            if name not in ("stage_callback", "dynamics_integrator", "apply_mixing")
+            if name not in ("stage_callback", "dynamics_integrator", "apply_mixing", "retry_carrier")
         ):
             raise ValueError(
                 "thermal ice uses shared atmospheric exchange for external forcing"
@@ -293,7 +293,9 @@ class ThermalIceReceiver(OceanIceReceiver):
         # H already includes -Lf*m. Remove that contribution from incoming heat
         # to obtain the sensible-storage forcing: sublimation pays Lv+Lf,
         # while intercepted snowfall supplies its sensible enthalpy.
-        dm = exchange.snow[:, None] * initial.coupled.ice.area - exchange.vapor[:, 1:]
+        ice_footprint = (initial.coupled.ice.area if exchange.snow_fraction is None
+                         else exchange.snow_fraction[:, 1:])
+        dm = exchange.snow[:, None] * ice_footprint - exchange.vapor[:, 1:]
         q = exchange.surface_thermal[:, 1:] + self.H.slab.parameters.latent_heat * dm
         candidate, _, _ = self.snow.surface_heat(initial, candidate, q, exchange.dt)
         storage = (candidate.cold_content - initial.cold_content).sum(-1)

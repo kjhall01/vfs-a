@@ -155,3 +155,20 @@ def test_composition_with_gmredi_and_decay(mesh):
         state, _ = decay.apply(m, state, 10.0)
         assert (state.eddy_h >= 0).all()
         assert len(r.backscatter) == 3
+
+
+def test_backscatter_and_transport_cannot_spend_the_same_energy(mesh):
+    model, state = setup(mesh)
+    dt = 60.
+    op = EddyBackscatter(1e12, dt, 1.)
+    _, unfunded, _ = op.tendency(model, state)
+    layer = torch.unravel_index(unfunded.argmin(), unfunded.shape)
+    available = state.eddy_h.clone()
+    available[layer] = -0.1 * dt * unfunded[layer]
+    assert available[layer] + dt * unfunded[layer] < 0
+    du, de, report = op.tendency(model, state, transported_eddy_h=available, dt=dt)
+    assert (available + dt*de >= 0).all()
+    power = model.hamiltonian.kinetic_power(state, du)
+    mass = model.hamiltonian.mass_area(state.ocean)
+    torch.testing.assert_close(power, -mass*de, rtol=2e-15, atol=1e-12)
+    assert report.kinetic_power > 0

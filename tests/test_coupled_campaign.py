@@ -614,8 +614,9 @@ def test_full_ocean_schedule_calls_backscatter_and_changes_state(source, config)
     actual = c.EddyBackscatter.tendency
     powers = []
 
-    def tracked(op, model, state):
-        du, de, report = actual(op, model, state)
+    def tracked(op, model, state, *, transported_eddy_h, dt):
+        assert transported_eddy_h.shape == state.eddy_h.shape and dt == config.ocean_dt
+        du, de, report = actual(op, model, state, transported_eddy_h=transported_eddy_h, dt=dt)
         powers.append(float(report.kinetic_power))
         return du, de, report
 
@@ -799,3 +800,68 @@ def test_fresh_full_depth_two_substep_preset():
     assert cfg.eddy_dissipation and cfg.backscatter and cfg.ale_remap
     with pytest.raises(ValueError, match="gm_energy_scheme"):
         replace(cfg, gm_energy_scheme="unknown").validate()
+
+
+def test_campaign_warns_and_commits_energy_limited_redi(source, config, tmp_path):
+    # Isolate Redi work with a small stored reservoir and negligible GM flux.
+    cfg = replace(config, eddy_initial_energy_J_kg=1e-11, eddy_substeps=1,
+                  gm_efficiency=1e-20, gm_energy_scheme="funded_donor_parcel", backscatter=False)
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(cfg)))
+    out = tmp_path / "run"
+    assert c.main(["--config", str(path), "--source", str(source), "--smoke-no-radiation",
+                   "--output", str(out), "--stop-after-days", str(120 / c.DAY)]) == 0
+    status = json.loads((out / "status.json").read_text())
+    assert status["status"] == "segment_completed"
+    assert (out / "run.log").read_text().count("local eddy energy limited Redi") == 2
+    ledger = c.read_checkpoint(out / "restarts/restart_00000120.nc")["ledger"]
+    for key in c.REDI_ENERGY_SUMS + c.REDI_ENERGY_PEAKS:
+        assert ledger[key] == status["latest"][key] > 0
+    assert ledger["redi_energy_blocked_rows"] <= ledger["redi_energy_limited_rows"]
+
+
+@pytest.mark.parametrize("mix_dt", [60, 120])
+def test_campaign_exposes_accepted_tke_funding(source, config, mix_dt):
+    cfg = replace(config, physics_dt=120, mixing_dt=mix_dt)
+    adapter, air, receiver, sea = c.build(cfg, source, None, smoke_no_radiation=True)
+    model = receiver.H.model
+    model.closure = replace(model.closure, max_reductions=0, predictor_steps=0)
+    ocean = sea.coupled.ocean
+    ocean = replace(ocean, tke_h=1e-12 * ocean.ocean.h)
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
+    collected = []
+    original = type(model.closure).apply
+    def record(self, *args):
+        end, k, report = original(self, *args)
+        collected.append(report.mixing_limiter)
+        return end, k, report
+    with torch.no_grad(), patch.object(type(model.closure), "apply", record):
+        _, _, report = c._advance_water(adapter, air, receiver, sea, 120, cfg, None)
+    assert len(collected) == 120 // mix_dt
+    for key in ("limited_interfaces", "deferred_columns"):
+        assert report["tke_" + key] == sum(float(r[key]) for r in collected) > 0
+
+
+def test_campaign_records_native_vapor_recovery_when_resuming(source, config, tmp_path):
+    from netCDF4 import Dataset
+
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(config)))
+    args = ["--config", str(path), "--source", str(source), "--smoke-no-radiation"]
+    first, second = tmp_path / "first", tmp_path / "second"
+    assert c.main(args + ["--output", str(first), "--stop-after-days", str(60/c.DAY)]) == 0
+    restart = first / "restarts/restart_00000060.nc"
+    # Emulate an old accepted state with positive vapor below the dynamics floor.
+    with Dataset(restart, "r+") as ds:
+        water = ds["air_atmosphere_water_content"]
+        water[0, 0, 2] += water[0, 0, 0] - 1e-20
+        water[0, 0, 0] = 1e-20
+    assert c.main(args + ["--resume", str(restart), "--output", str(second),
+                         "--stop-after-days", str(120/c.DAY)]) == 0
+    assert "WARNING Day" in (second / "run.log").read_text()
+    assert "native vapor floor funded during restart; interfaces=1" in (second / "run.log").read_text()
+    ledger = c.read_checkpoint(second / "restarts/restart_00000120.nc")["ledger"]
+    assert ledger["interface_vapor_correction_events"] >= 1 and ledger["interface_vapor_correction_kg_m2"] > 0
+    with Dataset(second / "diagnostics.nc") as ds:
+        for key in ("interface_vapor_correction_events", "interface_vapor_correction_kg_m2"):
+            assert ds[key][0] > 0 and ds[key][-1] == ledger[key]

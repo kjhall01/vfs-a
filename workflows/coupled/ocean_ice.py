@@ -69,6 +69,7 @@ class OceanIceReceiver:
             temp,
             torch.stack((vwater, vice, vice), 1),
             torch.cat((torch.full_like(opened, p.water_albedo), alpha), -1),
+            frozen_mass=self.H.slab.parameters.density * ice.volume,
         )
         tiles.validate(s.mesh)
         return tiles
@@ -100,7 +101,9 @@ class OceanIceReceiver:
             raise ValueError("tile fractions must match recipient at interval start")
         A = mesh.cell_area[:, None]
         rho = H.slab.parameters.density
-        snowfall = exchange.snow[:, None] * ice.area
+        footprint = tiles.fraction if exchange.snow_fraction is None else exchange.snow_fraction
+        snowfall = exchange.snow[:, None] * footprint[:, 1:]
+        open_snow = exchange.snow * footprint[:, 0]
         evap = exchange.vapor[:, 1:]
         arriving = snowfall + (-evap).clamp_min(0)
         departing = evap.clamp_min(0)
@@ -118,7 +121,7 @@ class OceanIceReceiver:
         )
         ice1 = replace(ice, volume=remaining / rho, area=ice.area * footprint)
         dm = (
-            exchange.rain + exchange.snow * tiles.fraction[:, 0] - exchange.vapor[:, 0]
+            exchange.rain + open_snow - exchange.vapor[:, 0]
         )[:, None]
         if runoff is not None:
             dm = dm + runoff[:, None]
@@ -138,7 +141,7 @@ class OceanIceReceiver:
         )
         # Both native discretizations use the transpose of the SAME cell wind
         # reconstruction. Cancellation is exact in generalized edge momentum.
-        into_ocean = (exchange.rain + exchange.snow * tiles.fraction[:, 0])[
+        into_ocean = (exchange.rain + open_snow)[
             :, None
         ] * exchange.precipitation_velocity - exchange.vapor[
             :, 0, None
@@ -159,6 +162,16 @@ class OceanIceReceiver:
         mechanical = H.model.energy.base.mechanical
         M0, M1 = mechanical.metric(s)[:, :1], mechanical.metric(trial)[:, :1]
         N0, N1 = H.metric(old), H.metric(candidate.coupled)
+        # Where the last ice disappears, the underlying liquid receives the
+        # remaining edge momentum and the tile stress impulse. Include both
+        # in the receiver reports and compute stress work on its finite mass.
+        vacated = (N0 > 0) & (N1 == 0)
+        if vacated.any():
+            residual_ice = torch.where(vacated, N0 * ice.velocity + Ii, 0.)
+            Iw = Iw + residual_ice
+            Ii = torch.where(vacated, -N0 * ice.velocity, Ii)
+            Jw = Jw + torch.where(vacated, Ji, 0.)
+            Ji = torch.where(vacated, 0., Ji)
         pw, pi = M0 * s.u_e[:, :1] + Iw, N0 * ice.velocity + Ii
         if ((N1 == 0) & ((pi + Ji) != 0)).any():
             raise ValueError("nonzero momentum enters an empty ice edge")

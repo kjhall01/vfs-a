@@ -280,17 +280,19 @@ class RoquetOcean(TemperatureSystem):
         if self.backscatter is not None:
             if dt*self.backscatter.fraction > self.backscatter.timescale:
                 raise ValueError('backscatter source positivity requires dt*fraction <= timescale')
-            def extra(packed):
+            def extra(packed, transported):
                 q = packed.tracer_h
                 physical = packed.with_tensors(packed.u_e, packed.h, packed.temp_h,
                     packed.salt_h, None if q.shape[-1] == 2 else q[..., :-2])
                 stage = EddyState(physical, q[..., -1], q[..., -2])
-                du, de, report = self.backscatter.tendency(self, stage)
+                du, de, report = self.backscatter.tendency(
+                    self, stage, transported_eddy_h=transported.tracer_h[..., -2], dt=dt
+                )
                 reports.append(report)
                 dq = torch.cat((torch.zeros_like(q[..., :-2]), de[..., None],
                                 torch.zeros_like(q[..., -1:])), -1)
                 return du, dq
-            forcing['_extra_tendency'] = extra
+            forcing['_transported_source'] = extra
         end, report = super().step_with_report(self._carry_eddy(state), dt, **forcing)
         if self.backscatter is not None:
             from vfs.ocean.temperature.backscatter import BackscatterStepReport

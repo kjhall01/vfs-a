@@ -159,3 +159,62 @@ def redistribute_column_vapor(temperature, tracers, out, dt, dp, recipients):
         upstream_temperature=temperature[c, k], upstream_tracers=tracers[c, k],
         upstream_tdt=out["tdt"][c, k], upstream_rdt=out["rdt"][c, k],
     )
+
+
+def _withdraw(store, request, reserve):
+    """Debit the representable amount and keep each donor at or above its reserve."""
+    remaining = torch.maximum(store - request, reserve)
+    # A trace request can round away against a much larger donor. Credit the
+    # recipient with the actual debit, including the extra ulp in this case.
+    short = (store - remaining < request) & (remaining > reserve)
+    lower = torch.nextafter(remaining.detach(), torch.zeros_like(remaining))
+    remaining = torch.where(short, torch.maximum(remaining + (lower - remaining.detach()), reserve), remaining)
+    remaining = torch.where((request > 0) & (store > reserve), remaining, store)
+    return remaining, store - remaining
+
+
+def fund_interface_vapor(water, mass, floor, gravity):
+    """Pay the transport vapor floor on native CP nodes after the physics map.
+
+    Water contents and CP masses are pressure amounts (Pa). First evaporate
+    liquid, then sublime ice at the recipient. If needed, move vapor from the
+    nearest interfaces in the same column, keeping donors above the floor.
+    The caller settles the original native layer energy targets for this mixture.
+    """
+    fraction = water[..., 0] / mass
+    indices = (fraction < floor).nonzero()
+    if not indices.numel():
+        return water, None
+    cell, interface = indices.unbind(-1)
+    funded = water.clone()
+    rows = water[cell, interface].clone()
+    # A few relative ulps cover mass normalization and the transport graph's
+    # multiply/divide by area. No absolute epsilon or external water source.
+    bound = mass * floor
+    reserve = bound * (1 + 8 * torch.finfo(mass.dtype).eps)
+    target = reserve[cell, interface]
+    for species in (1, 2):
+        stock = water[cell, interface, species]
+        remainder, debit = _withdraw(stock, (target - rows[:, 0]).clamp_min(0), torch.zeros_like(stock))
+        rows[:, species] = remainder
+        rows[:, 0] = rows[:, 0] + debit
+    funded[cell, interface] = rows
+    # Only nodes whose local condensate was insufficient enter this path.
+    for c, k in indices[rows[:, 0] < target].tolist():
+        for donor in sorted(range(mass.shape[1]), key=lambda j: abs(k - j)):
+            if donor == k:
+                continue
+            stock = funded[c, donor, 0].clone()
+            remaining, debit = _withdraw(stock, reserve[c, k] - funded[c, k, 0], reserve[c, donor])
+            funded[c, donor, 0] = remaining
+            funded[c, k, 0] = funded[c, k, 0] + debit
+            if funded[c, k, 0] >= reserve[c, k]:
+                break
+        if funded[c, k, 0] / mass[c, k] < floor:
+            raise ValueError(f"cannot fund native vapor floor from column water; cell={c} interface={k} "
+                             f"vapor={float(fraction[c, k]):.12g} floor={floor:.12g} kg/kg")
+    touched = (funded != water).any(-1).nonzero()
+    c, k = touched.unbind(-1)
+    return funded, dict(indices=indices, minimum_before=fraction[cell, interface].min().detach(),
+                        floor=floor, vapor_added_kg_m2=(funded[cell, interface, 0] - water[cell, interface, 0]) / gravity,
+                        changed_indices=touched, species_change_Pa=funded[c, k] - water[c, k])

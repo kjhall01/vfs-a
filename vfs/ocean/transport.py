@@ -16,6 +16,10 @@ def divergence(i, j, transfer, nodes):
     return transfer.new_zeros((nodes, *transfer.shape[1:])).index_add(0, i, -transfer).index_add(0, j, transfer)
 
 
+class CarrierOutflowError(FloatingPointError):
+    """The proposed Euler interval exports more volume than the donor can supply."""
+
+
 @dataclass(frozen=True)
 class TransportLedger:
     """Amounts are m3 times concentration; face transfers cover a FULL dt.
@@ -165,7 +169,7 @@ class HorizontalTransport:
             dt_limit = (capacity[worst] / out_rate).item() if out_rate > 0 else float("inf")
             # This is an Euler-stage limit evaluated at this stage state.
             velocity = state.u_e if velocity is None else velocity
-            raise FloatingPointError(
+            raise CarrierOutflowError(
                 'actual carrier outflow exceeds Euler budget; reduce dt; '
                 f'cell={cell} layer={layer} dt={float(dt):.9g}s '
                 f'max_outflow_ratio={float(ratio[worst]):.9g} '

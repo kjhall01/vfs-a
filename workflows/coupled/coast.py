@@ -30,7 +30,8 @@ class CoastalReceiver(ThermalIceReceiver):
         alpha[catchment.land, 0] = albedo
         vel[catchment.land] = 0
         return CoastalTiles(tiles.fraction, temp, vel, alpha, catchment.land,
-                           catchment.cells(rough, 1.), catchment.cells(availability, 1.), catchment.cells(supply, 0.))
+                           catchment.cells(rough, 1.), catchment.cells(availability, 1.), catchment.cells(supply, 0.),
+                           frozen_mass=tiles.frozen_mass)
 
     def prepare(self, initial, exchange, tiles):
         catchment = self.land_surface

@@ -54,13 +54,22 @@ from workflows.coupled.coast import CoastalReceiver
 from vfs.ocean import OceanColumn
 
 DAY = 86400
-VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2")
+VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2",
+              "interface_vapor_correction_events", "interface_vapor_correction_kg_m2")
 VAPOR_PEAKS = ("vapor_correction_proxy_residual_J_m2",)
+REDI_ENERGY_SUMS = (
+    "redi_energy_limiting_passes", "redi_energy_limited_rows", "redi_energy_blocked_rows",
+)
+REDI_ENERGY_PEAKS = ("redi_energy_deficit_max_J_kg",)
+LIMITER_SUMS = ("ocean_carrier_subdivisions", "gm_blocked_interfaces", "tke_limited_interfaces", "tke_deferred_columns",
+                "ice_sublimation_limited_tiles", "ice_sublimation_withheld_kg_m2")
 OCEAN_SUMS = (
+    *LIMITER_SUMS,
     "gmredi_steps",
     "gm_limiting_passes",
     "gm_limited_interfaces",
     "redi_limited_fluxes",
+    *REDI_ENERGY_SUMS,
     "eddy_decay_steps",
     "ale_steps",
     "ale_changed_columns",
@@ -73,6 +82,7 @@ OCEAN_SUMS = (
 OCEAN_PEAKS = (
     "gm_outflow_fraction",
     "redi_step_number",
+    *REDI_ENERGY_PEAKS,
     "gmredi_local_residual_J_m2",
     "eddy_decay_local_residual_J_m2",
     "ale_column_residual_J_m2",
@@ -275,6 +285,7 @@ def gm_redi_operator(config):
         **options,
         kappa_redi=config.redi_diffusivity_m2_s,
         positive_redi=config.redi_positive_transport,
+        fund_redi=True,
         gm_energy_scheme=config.gm_energy_scheme,
         energy_closure=EddyMixingLength(
             config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
@@ -301,7 +312,14 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
             report["gmredi_steps"] += 1
             report["gm_limiting_passes"] += r.gm_limiting_passes
             report["gm_limited_interfaces"] += r.gm_limited_interfaces
+            report["gm_blocked_interfaces"] += r.gm_blocked_interfaces
             report["redi_limited_fluxes"] += r.redi_limited_fluxes
+            report["redi_energy_limiting_passes"] += r.redi_energy_limiting_passes
+            report["redi_energy_limited_rows"] += r.redi_energy_limited_rows
+            report["redi_energy_blocked_rows"] += r.redi_energy_blocked_rows
+            report["redi_energy_deficit_max_J_kg"] = max(
+                report["redi_energy_deficit_max_J_kg"], r.redi_energy_deficit_max_J_kg
+            )
             report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
             report["redi_exchange_J_m2"] += float(
                 r.redi_reservoir_exchange / area.sum()
@@ -599,6 +617,7 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
     A = adapter.model.mesh.cell_area
     mix_dt = config.ocean_dt if config.mixing_dt is None else config.mixing_dt
     meso_dt = config.ocean_dt if config.mesoscale_dt is None else config.mesoscale_dt
+    mixing_reports = []
     for event in ocean_events(dt, config.ocean_dt, mix_dt, meso_dt):
         step_dt = event.dynamics_dt
         ocean_callback = None
@@ -614,14 +633,19 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
         water, r = receiver.snow.step(
             water, step_dt, stage_callback=ocean_callback,
             dynamics_integrator=config.ocean_dynamics_integrator,
-            apply_mixing=inline_mixing,
+            apply_mixing=inline_mixing, retry_carrier=True,
         )
+        ocean_report["ocean_carrier_subdivisions"] += r.carrier_subdivisions
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
         if event.mixing_dt is not None and not inline_mixing:
-            water = receiver.snow.mixing_step(
+            water, mixing = receiver.snow.mixing_step_with_report(
                 water, event.mixing_dt, stage_callback=ocean_callback
             )
+            if mixing is not None:
+                mixing_reports.append(mixing.mixing_limiter)
+        elif r.mixing_limiter is not None:
+            mixing_reports.append(r.mixing_limiter)
         if trace is not None and not trace.ocean_stages:
             trace.observe("ocean_ice_snow_dynamics", adapter, evolved, receiver, water,
                           external=snow_external,
@@ -641,7 +665,18 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
                 trace.observe("gmredi_and_eddy_dissipation", adapter, evolved, receiver,
                               water, details={"substep_seconds": event.mesoscale_dt})
             accumulate_ocean(ocean_report, r)
+    if mixing_reports:
+        # Read both accumulated device counters together after the mixing substeps.
+        counts = torch.stack([torch.stack((r["limited_interfaces"], r["deferred_columns"]))
+                              for r in mixing_reports]).sum(0).tolist()
+        ocean_report["tke_limited_interfaces"], ocean_report["tke_deferred_columns"] = counts
     return water, external, ocean_report
+
+
+def interface_vapor_totals(area, correction):
+    cells = correction["indices"][:, 0]
+    return dict(interface_vapor_correction_events=cells.numel(),
+                interface_vapor_correction_kg_m2=float((area[cells] * correction["vapor_added_kg_m2"]).sum() / area.sum()))
 
 
 def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
@@ -673,6 +708,12 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
     exchange_external = float((A * x.toa).sum() / A.sum())
     exchange_upstream = float((A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum())
     vapor_report = dict.fromkeys(VAPOR_SUMS + VAPOR_PEAKS, 0.0)
+    if "ice_sublimation_limited" in ar.column_result:
+        ocean_report["ice_sublimation_limited_tiles"] = int(ar.column_result["ice_sublimation_limited"].sum())
+        withheld = ar.column_result["ice_sublimation_withheld"].sum(-1)
+        ocean_report["ice_sublimation_withheld_kg_m2"] = float((A * withheld).sum() / A.sum())
+    if ar.interface_vapor_correction is not None:
+        vapor_report.update(interface_vapor_totals(A, ar.interface_vapor_correction))
     if ar.vapor_correction is not None:
         correction = ar.vapor_correction
         cell = correction["indices"][:, 0]
@@ -1210,6 +1251,7 @@ def main(argv=None):
             generator_xyz=generators, island=args.island, geography=geography,
         )
         adapter.campaign_mesh_sha256 = mesh_info.get("sha256")
+        adapter.logger = logger
         if config.shelf_redi:
             if config.partial_cell_layers:
                 ocean_state = sea.coupled.ocean.ocean
@@ -1322,8 +1364,12 @@ def main(argv=None):
             air, sea, ledger = unpack(
                 payload, adapter, receiver, sea, expected_restart_identity
             )
-            for key in VAPOR_SUMS + VAPOR_PEAKS + ("ale_deferred_columns",):
+            for key in VAPOR_SUMS + VAPOR_PEAKS + REDI_ENERGY_SUMS + REDI_ENERGY_PEAKS + LIMITER_SUMS + ("ale_deferred_columns",):
                 ledger.setdefault(key, 0.0)
+            air, correction = adapter.fund_restart_vapor(air)
+            if correction is not None:
+                for key, value in interface_vapor_totals(adapter.model.mesh.cell_area, correction).items():
+                    ledger[key] += value
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
             raise ValueError("restart is already at or beyond requested end")
@@ -1402,6 +1448,7 @@ def main(argv=None):
             writer.writerow(row)
             f.flush()
             append_diagnostics(output / "diagnostics.nc", row, adapter, identity)
+            tke_deferred_last_interval = ledger.get("tke_deferred_last_interval", False)
             while air.time_seconds < end:
                 dt = min(config.physics_dt, end - air.time_seconds)
                 candidate, water, report = advance(
@@ -1422,6 +1469,32 @@ def main(argv=None):
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds
+                if report["ocean_carrier_subdivisions"]:
+                    logger.warning("Day %.6f: subdivided %d ocean-ice dynamics steps for carrier outflow",
+                                   seconds / DAY, report["ocean_carrier_subdivisions"])
+                if report["gm_blocked_interfaces"]:
+                    logger.warning("Day %.6f: closed %d energy-limited GM loops, counted per substep",
+                                   seconds / DAY, report["gm_blocked_interfaces"])
+                if report["tke_deferred_columns"] and tke_deferred_last_interval:
+                    logger.warning("Day %.6f: TKE deferred scalar mixing in consecutive intervals; "
+                                   "%d column deferrals this interval, counted per substep",
+                                   seconds / DAY, report["tke_deferred_columns"])
+                tke_deferred_last_interval = bool(report["tke_deferred_columns"])
+                ledger["tke_deferred_last_interval"] = tke_deferred_last_interval
+                if report["ice_sublimation_limited_tiles"]:
+                    logger.warning("Day %.6f: limited sublimation on %d ice tiles; "
+                                   "%.6g kg/m2 withheld (global mean)",
+                                   seconds / DAY, report["ice_sublimation_limited_tiles"],
+                                   report["ice_sublimation_withheld_kg_m2"])
+                if report["redi_energy_limiting_passes"]:
+                    logger.warning(
+                        "Day %.6f: local eddy energy limited Redi mixing in this interval. "
+                        "%d flux rows reduced (%d fully blocked, counted per substep), "
+                        "%d retries, largest rejected deficit %.6g J/kg",
+                        seconds / DAY, report["redi_energy_limited_rows"],
+                        report["redi_energy_blocked_rows"], report["redi_energy_limiting_passes"],
+                        report["redi_energy_deficit_max_J_kg"],
+                    )
                 if energy_trace is not None:
                     energy_trace.commit(ledger, seconds=seconds, report=report)
                 if seconds in scheduled:

@@ -213,7 +213,7 @@ class Instrument:
             ("step", "ocean_ice_snow_step"),
             ("dynamics_step", "ocean_ice_dynamics"),
             ("tendency", "ocean_ice_rhs"),
-            ("mixing_step", "ocean_vertical_mixing"),
+            ("mixing_step_with_report", "ocean_vertical_mixing"),
             ("phase_step", "ice_phase"),
             ("accumulate", "snow_accumulation"),
         ):

@@ -1,5 +1,148 @@
 # Pass 4 — physical-field workflow
 
+## Native vapor funding and atmospheric timestep replay
+
+The 4,096-cell Earth checkpoint at 2,500,800 s had three native interfaces
+below the configured vapor floor and one outside the transport amount tolerance.
+The new adapter funded all three with a global area-mean vapor credit of
+1.06e-16 kg/m². The largest column sum of the signed water-content changes was
+zero in float64, and the largest native layer energy residual was 3.01e-8 J/m².
+Two 600 s atmosphere steps completed from the original checkpoint. A further
+coupled smoke replay from that checkpoint advanced two 1,200 s intervals with
+radiation disabled in both eager and regionally compiled CPU execution.
+The second physics exchange logged both a PyAM21 and a native correction in
+both runs (three native recipients in eager mode and two with Inductor). Separate small-grid campaign runs
+resumed from each of the three audited parent revisions and matched all 36
+uninterrupted state tensors and all pre-existing ledger entries bit for bit.
+
+For the integrator comparison, each atmosphere-only run started from the same
+previously recovered day-28.9444 state and advanced 1,200 s. The experimental
+SSPRK(4,3) used four bounded Euler maps of duration dt/2, with the same convex
+combination for cloud amounts and native prognostics. The production atmosphere
+continues to use SSPRK3. Median wall times cover three warmed measurements in
+rotating order on four CPU threads in float64 eager mode.
+
+| Method | Step (s) | Euler evaluations | ΔH (J/m²) | Wall (s) | Wind RMS difference (m/s) | Vapor RMS difference (kg/kg) |
+|---|---:|---:|---:|---:|---:|---:|
+| SSPRK3 | 600 | 6 | −14.88 | 3.06 | 0.00145 | 6.75e-6 |
+| SSPRK(4,3) | 600 | 8 | −7.54 | 3.93 | 0.00075 | 5.18e-6 |
+| SSPRK3 | 400 | 9 | −4.45 | 4.54 | 0.00046 | 4.67e-6 |
+| SSPRK(4,3) | 400 | 12 | −2.21 | 5.96 | 0.00025 | 3.23e-6 |
+| SSPRK3 | 300 | 12 | −1.86 | 6.24 | 0.00023 | 3.36e-6 |
+
+RMS differences use a 75 s SSPRK3 reference at the same final time, weighting
+edge wind by native kinetic mass and vapor by interface mass. A single
+1,200 s SSPRK(4,3) step completed in four Euler evaluations with a −56.35 J/m²
+change in energy. For this state, spending six evaluations on two SSPRK3
+steps at 600 s reduced that loss to −14.88 J/m². These are short
+forward CPU replays. Accelerator throughput, long-run radiating behavior and
+end-to-end derivatives through limiter activations were not evaluated.
+
+### Fixed 600 s step in the coupled campaign
+
+The Earth-shelf comparison started both methods from the same adapter-funded
+day-28.9444 checkpoint. Each trajectory used a 600 s atmosphere step and
+four 1,200 s coupling intervals, reaching day 29. The compiled CPU float64
+configuration used four threads and the original ocean, ice, land, mixing and
+ALE schedules. Radiation was disabled. Timing covers the four normal
+`advance` calls, including PyAM21 and surface exchange. Each method received
+a full warmup, then three timed repeats in alternating order.
+
+| Atmosphere method | Median wall time (s) | Coupled numerical energy residual over 4,800 s (J/m²) |
+|---|---:|---:|
+| SSPRK3 | 42.92 | -59.53 |
+| SSPRK(4,3) | 48.21 | -30.35 |
+
+The four-stage method reduced the magnitude of the coupled residual by
+49.0% with a 11.0% reduction in coupled throughput on this CPU.
+The atmosphere-only solver comparison above used eager execution.
+
+## Coupled reservoir limiters
+
+Both Earth-shelf presets use a funded GM circulation. When twenty local
+halvings leave a negative eddy inventory, GM closes the incident nonzero
+streamfunction loops and settles the full tracer and energy update again.
+During this recovery it sums the vertical return transport of the surviving
+loops directly at the crossed native interfaces. This prevents a cumulative
+sum from leaving a spurious vertical flux below a closed shelf loop.
+
+On the 4,096-cell, 40-level shelf grid, a CPU float64 stress test emptied 20
+columns of a day-12 ocean checkpoint and prescribed 100 m²/s GM for 600 s.
+The update closed 42 loops. The maximum local GM energy residual was
+3.58e-12 J/m². The zero-initial-reservoir coupled smoke case that exhausted
+the former twenty-halving limit also completed two exchange intervals.
+
+| Campaign quantity | Interpretation |
+|---|---|
+| `gm_blocked_interfaces` | Nonzero GM loops fully closed, counted once per substep |
+| `tke_limited_interfaces` | Active vertical mixing interfaces with reduced scalar conductance, including those deferred |
+| `tke_deferred_columns` | Column-substeps where the TKE closure deferred scalar mixing |
+| `ice_sublimation_limited_tiles` | Frozen categories whose vapor demand exceeded their starting frozen mass |
+| `ice_sublimation_withheld_kg_m2` | Cumulative global-mean water withheld relative to the tile law evaluated at the accepted air humidity increment |
+| `ocean_carrier_subdivisions` | Accepted ocean–ice dynamics interval subdivisions after a donor-volume CFL rejection |
+
+The campaign writes cumulative counts to CSV, NetCDF diagnostics and restarts.
+Warnings use counts from the accepted interval. TKE warns when two consecutive
+intervals contain column deferrals. The TKE mixing equations are unchanged.
+Backscatter also checks the eddy inventory available after advective transport
+when limiting the stress on adjacent vertices, retaining the paired return of
+kinetic work to the eddy reservoir.
+
+When sublimation exhausts a tile, the adapter prescribes its available vapor
+flux and re-solves the shared bottom-air humidity increment. A second ice
+category can then reach its limit. Frozen mass includes the snow already on the
+category. Snowfall diagnosed later in that interval on an exhausted tile goes
+to the exposed liquid with its precipitation enthalpy and momentum. If the last
+ice vanishes from an edge, its remaining momentum and stress impulse go to the
+liquid. Coupled tests cover one and two depleted categories, deposition on a
+neighboring tile, and snowfall during depletion.
+
+For an ocean carrier outflow rejection, the campaign retries just the coupled
+ocean–ice RK dynamics over two half intervals, down to 1/256 of the requested
+dynamics step. The existing physics, mixing, ALE and radiation schedules keep
+their original elapsed times. The full step failure propagates if recovery
+cannot produce admissible states. A partial-column test with a binding physical
+face outflow bound matched explicit half steps including wind work. Testing
+here covers CPU forward integration. Accelerator and long-run climate behavior
+remain open.
+
+In a paired CPU float64 run on the 4,096-cell Earth shelf, both revisions
+advanced two 2,400 s coupling intervals from the same initialization with
+radiation disabled. All 41 tensors in the final checkpoint matched bit for bit
+with the Redi branch at `a894d0e`, and every pre-existing interval diagnostic
+matched. TKE reduced scalar conductance at 78,003 and 201,070 interfaces
+respectively, counted per mixing substep, with zero column deferrals. In a
+separate depleted-TKE restart test the first interval recorded the deferral
+and the second emitted the consecutive-interval warning after resuming.
+Campaign restarts from `59b11db` and `a894d0e` also matched the uninterrupted
+small-grid controls in all 36 state tensors and pre-existing ledger entries.
+The installed-wheel CPU test suite passed 1,680 tests with 10 skips. The
+portable dry and moist fixtures passed all 93 and 142 comparisons respectively.
+The new limiter branches have not been verified for backward differentiation.
+
+## Locally funded Redi mixing
+
+The coupled campaign scales shared Redi flux rows when the finite tracer update
+would overdraw a layer's eddy reservoir. It retries from the post-GM state,
+using the accepted flux in both tracer transport and the energy ledger.
+The first two retries estimate an affordable fraction of the rejected net cost.
+Further retries close the rows touching any remaining underfunded layers. Each
+retry checks the full rotated stencil, including vertical shelf overlaps.
+Standalone `GMRedi` exposes this behavior through `fund_redi=True`.
+
+A CPU float64 replay on the 4,096-cell Earth shelf grid reproduced the
+unmodified day-12 checkpoint's 600 s GM/Redi update bit for bit. In a
+separate Redi-only stress test on that state, seven adjacent columns started
+with zero stored eddy energy. The original update overdrew nine layers. One
+retry closed 35 of 543,220 rows. The largest rejected deficit was
+1.74e-6 J/kg and the maximum accepted local residual was 4.66e-12 J/m².
+
+A 16-cell coupled test exercised repeated local reductions, emitted a warning
+in each of two accepted intervals, and wrote cumulative counts to its restart.
+A separate resume from main `59b11db` matched 36 checkpoint tensors and every
+pre-existing ledger value in a continuous control. The day-23 failure checkpoint,
+GPU execution and long-run effects on mixing remain unverified.
+
 ## Native mesh plotting
 
 The [plotting utility](NATIVE_MESH_PLOTTING.md) was exercised on a 4,096-cell

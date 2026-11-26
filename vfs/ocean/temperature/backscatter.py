@@ -59,7 +59,7 @@ class EddyBackscatter:
                 "finite viscosities >= 0, timescale > 0 and 0 <= fraction <= 1 required"
             )
 
-    def tendency(self, model, state):
+    def tendency(self, model, state, *, transported_eddy_h=None, dt=None):
         """Return (du/dt, d(h e)/dt, power report); never modify the state."""
         from vfs.ocean.temperature.roquet import RoquetOcean
 
@@ -70,6 +70,16 @@ class EddyBackscatter:
         mesh, base = s.mesh, H.base.mechanical
         mass = H.mass_area(s).expand_as(s.h)
         allowance = mass * state.eddy_h * (self.fraction / self.timescale)
+        if transported_eddy_h is not None:
+            if dt is None or not math.isfinite(dt) or dt <= 0:
+                raise ValueError("post-transport backscatter funding requires positive finite dt")
+            # Advection and backscatter spend the same inventory in an Euler
+            # stage. Tighten the local power bound only where transport matters.
+            # Leave summation room when source and transport tendencies combine.
+            free_power = mass * transported_eddy_h / dt
+            margin = 32 * torch.finfo(s.h.dtype).eps * mass * state.eddy_h / dt
+            allowance = torch.where(free_power <= allowance,
+                                    (free_power - margin).clamp_min(0.), allowance)
         domain = model.ocean.domain
         # Land holds a finite dummy column. Its thickness must not contribute
         # to the vertex viscosity seen by open faces along a partial-cell coast.

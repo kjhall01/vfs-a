@@ -87,6 +87,13 @@ class CoupledShelfRedi:
             (measure * self.rows.weights.abs().sum(1))[:, None], absolute=True
         )[..., 0]
 
+    def row_min(self, layer):
+        """Propagate native allowances through the overlaps and shelf stencil."""
+        shelf = torch.ones_like(layer).flatten().scatter_reduce(
+            0, self.shelf, layer.flatten()[self.native], reduce="amin"
+        )
+        return torch.where(self.rows.weights != 0, shelf[self.rows.owners], 1.).amin(1)
+
     def positive_flux_scale(self, transfer, amounts):
         demand = self.transpose(transfer.abs(), absolute=True)
         ratio = (amounts / torch.where(demand > 0, demand, 1.0)).clamp(max=1.0)
@@ -177,15 +184,28 @@ class _ShelfCirculation:
             1,
         ).to(q.dtype)
 
-    def carriers(self, psi):
+    def carriers(self, psi, *, direct_returns=False):
         faces = self.native.faces
         horizontal = self.length[:, None] * psi.diff(dim=1)
         transport = horizontal[faces.edge, self.native.slot]
         # The discrete cumulative horizontal convergence gives the same
         # closed bolus volume circulation on every receiving column.
-        net = faces.exchange(transport)
         wet = self.h[:, 1:] > 0
-        down = torch.where(wet, net.cumsum(1)[:, :-1], 0.0)
+        if direct_returns:
+            # Sum the return flow of each surviving loop at its own native
+            # interface. A cumulative column sum can leave roundoff flow
+            # below fully closed loops, which an empty layer cannot fund.
+            same_edge = faces.edge[1:] == faces.edge[:-1]
+            flow = (self.length[:, None] * psi)[faces.edge[1:], self.native.slot[1:]]
+            net = self.h.new_zeros(self.h.numel())
+            for owner, sign in ((faces.left, -1), (faces.right, 1)):
+                crosses = same_edge & (owner[1:] != owner[:-1])
+                net = net.index_add(0, owner[:-1][crosses], sign * flow[crosses])
+            net = net.reshape_as(self.h)
+            down = net[:, :-1]
+        else:
+            net = faces.exchange(transport)
+            down = torch.where(wet, net.cumsum(1)[:, :-1], 0.0)
         ids = torch.arange(self.h.numel(), device=net.device).reshape_as(net)
         i = torch.cat((faces.left, ids[:, :-1][wet]))
         j = torch.cat((faces.right, ids[:, 1:][wet]))
@@ -215,8 +235,8 @@ class ShelfGMRedi(GMRedi):
         )[:, 0]
         return self.energy_closure.from_edge_energy(edge_energy)
 
-    def _carriers(self, psi, metrics, h):
-        return metrics.carriers(psi)
+    def _carriers(self, psi, metrics, h, *, direct_returns=False):
+        return metrics.carriers(psi, direct_returns=direct_returns)
 
     def _geometry(self, model, state, *, part="all", metrics=None, gm_diffusivity=None):
         metrics = self._metrics(model, state) if metrics is None else metrics

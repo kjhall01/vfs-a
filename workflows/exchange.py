@@ -5,7 +5,7 @@ precipitation and bottom radiation enter the surface. No component recomputes a
 flux or chooses its own water enthalpy. The producer owns the interval.
 """
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 import math
 import torch
 
@@ -23,6 +23,8 @@ class SurfaceTiles:
     velocity: torch.Tensor
     albedo: torch.Tensor
 
+    frozen_mass: torch.Tensor | None = field(default=None, kw_only=True)  # kg/m² of cell, includes snow
+
     tile_count = 3
 
     def validate(self, mesh):
@@ -38,6 +40,12 @@ class SurfaceTiles:
                 or not torch.isfinite(x).all()
             ):
                 raise ValueError("invalid surface tile " + name)
+        if self.frozen_mass is not None:
+            m = self.frozen_mass
+            if (count != 3 or m.shape != self.fraction[:, 1:].shape or m.dtype != ref.dtype
+                    or m.device != ref.device or not torch.isfinite(m).all() or (m < 0).any()
+                    or ((self.fraction[:, 1:] == 0) & (m != 0)).any()):
+                raise ValueError("invalid frozen tile mass")
         eps = torch.finfo(ref.dtype).eps
         if (self.fraction < 0).any() or (
             (self.fraction.sum(-1) - 1).abs() > 32 * eps
@@ -76,6 +84,8 @@ class Exchange:
     lw_surface: torch.Tensor
     toa: torch.Tensor
     surface_thermal: torch.Tensor | None = None  # [C,3], J/m2; no mechanical work
+
+    snow_fraction: torch.Tensor | None = None  # precipitation footprint after a tile is exhausted
 
     def validate(self, mesh):
         ref = mesh.cell_area
@@ -131,6 +141,12 @@ class Exchange:
             ):
                 raise ValueError("invalid exchange energy ledger")
         eps = torch.finfo(ref.dtype).eps
+        if self.snow_fraction is not None:
+            f = self.snow_fraction
+            if (f.shape != self.vapor.shape or f.device != ref.device or f.dtype != ref.dtype
+                    or not torch.isfinite(f).all() or (f < 0).any()
+                    or ((f.sum(-1) - 1).abs() > 32 * eps).any()):
+                raise ValueError("invalid precipitation tile fractions")
         if self.surface_thermal is not None:
             x = self.surface_thermal
             if (
@@ -183,6 +199,20 @@ class Exchange:
         if any(f[key].shape != tiles.fraction.shape for key in ("flux_q", "flux_t", "flux_u", "flux_v")):
             raise ValueError("fluxes and surface tiles must have the same shape")
         vapor, sensible = dt * f["flux_q"], dt * f["flux_t"]
+        snow_fraction = None
+        if "ice_sublimation_limited" in out:
+            # Install the exact integrated stock used in the column solve. A
+            # rate round-trip can leave a phantom tile with finite stress.
+            vapor = torch.cat((vapor[:, :1], torch.where(
+                out["ice_sublimation_limited"], tiles.frozen_mass, vapor[:, 1:])), -1)
+            # Moist physics diagnoses snowfall after the surface solve. Send
+            # snow on an exhausted category to the newly exposed ocean with
+            # its own solid enthalpy and precipitation momentum.
+            gone = out["ice_sublimation_limited"]
+            ice = tiles.fraction[:, 1:]
+            exposed = torch.where(gone, ice, 0.).sum(-1, keepdim=True)
+            snow_fraction = torch.cat((tiles.fraction[:, :1] + exposed,
+                                       torch.where(gone, 0., ice)), -1)
         rain, snow = dt * out["lprec"], dt * out["fprec"]
         if (rain < 0).any() or (snow < 0).any():
             raise ValueError("precipitation must be nonnegative")
@@ -239,7 +269,8 @@ class Exchange:
             )
         thermal = thermal - sensible - vapor * hv
         # Rain drains through ice. Snow is intercepted by each tile.
-        thermal = thermal + snow[:, None] * tiles.fraction * hi[:, None]
+        footprint = tiles.fraction if snow_fraction is None else snow_fraction
+        thermal = thermal + snow[:, None] * footprint * hi[:, None]
         rain_heat = torch.cat(((rain * hl)[:, None], torch.zeros_like(thermal[:, 1:])), -1)
         thermal = thermal + rain_heat
         return cls(
@@ -257,4 +288,5 @@ class Exchange:
             lw,
             toa,
             thermal,
+            snow_fraction,
         )

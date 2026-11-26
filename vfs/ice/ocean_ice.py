@@ -241,7 +241,10 @@ class OceanIce:
             closure = self.ocean.backscatter
             if dt * closure.fraction > closure.timescale:
                 raise ValueError("backscatter requires dt*fraction <= timescale")
-            extra_u, extra_e, _ = closure.tendency(self.ocean, state.ocean)
+            remaining = state.ocean.eddy_h + dt * base.eddy_h
+            extra_u, extra_e, _ = closure.tendency(
+                self.ocean, state.ocean, transported_eddy_h=remaining, dt=dt
+            )
             b = base.ocean
             base = replace(
                 base,

@@ -42,3 +42,4 @@ class PhysicsReport:
     column_result: dict  # checked outputs, including any recorded vapor correction
     energy_transfer: dict | None = None  # layer constraints and nonlinear solve report
     vapor_correction: dict | None = None  # sparse phase-transfer ledger and raw operands
+    interface_vapor_correction: dict | None = None  # native CP recipient and donor amounts

@@ -63,6 +63,8 @@ class SnowReport:
     snowfall_energy: torch.Tensor  # J, boundary enthalpy plus incorporation work
     melted_snow: torch.Tensor  # kg, transferred to liquid by phase change
     freshwater: tuple | None = None  # optional reports from the two boundary half steps
+    carrier_subdivisions: int = 0
+    mixing_limiter: dict | None = None
 
 
 class SnowPhase(CategoryThermodynamics):
@@ -329,6 +331,10 @@ class SnowOceanIce:
         return end, dt * (p0.wind_power / 6 + p1.wind_power / 6 + 2 * p2.wind_power / 3)
 
     def mixing_step(self, state, dt, *, stage_callback=None):
+        state, _ = self.mixing_step_with_report(state, dt, stage_callback=stage_callback)
+        return state
+
+    def mixing_step_with_report(self, state, dt, *, stage_callback=None):
         """Apply the existing conservative column closure at its own cadence.
 
         The source state already includes the preceding dynamics/ice operations;
@@ -337,9 +343,9 @@ class SnowOceanIce:
         """
         model = self.coupled.ocean
         if model.closure is None:
-            return state
+            return state, None
         original = state.coupled.ocean
-        mixed, k, _ = model.closure.apply(
+        mixed, k, report = model.closure.apply(
             model.ocean, original.ocean, original.tke_h, dt
         )
         if not torch.equal(mixed.h, original.ocean.h):
@@ -352,7 +358,7 @@ class SnowOceanIce:
         )
         if stage_callback is not None:
             stage_callback("vertical_tke_mixing", state, 0.0)
-        return state
+        return state, report
 
     def step(
         self,
@@ -368,6 +374,7 @@ class SnowOceanIce:
         stage_callback=None,
         dynamics_integrator="ssprk3",
         apply_mixing=True,
+        retry_carrier=False,
     ):
         """Full moving ocean/ice/snow step; reports all applied boundary energy."""
         self.check(state)
@@ -411,14 +418,36 @@ class SnowOceanIce:
         state = replace(state, coupled=coupled)
         if stage_callback is not None:
             stage_callback("implicit_drag_half_0", state, 0.0)
-        state, work = self.dynamics_step(
-            state, dt, wind_velocity=wind_velocity, drag=False,
-            integrator=dynamics_integrator,
-        )
+        from vfs.ocean.transport import CarrierOutflowError
+
+        options = dict(wind_velocity=wind_velocity, drag=False, integrator=dynamics_integrator)
+        subdivisions = 0
+        try:
+            state, work = self.dynamics_step(state, dt, **options)
+        except CarrierOutflowError:
+            if not retry_carrier:
+                raise
+            # Each accepted piece advances the complete coupled RK tableau.
+            # No rejected stage contributes to wind work or advances the clock.
+            work = 0.
+            subdivisions = 1
+            pending = [(dt / 2, 1), (dt / 2, 1)]
+            while pending:
+                span, depth = pending.pop()
+                try:
+                    state, piece_work = self.dynamics_step(state, span, **options)
+                except CarrierOutflowError:
+                    if depth >= 8:
+                        raise
+                    pending.extend([(span / 2, depth + 1)] * 2)
+                    subdivisions += 1
+                else:
+                    work = work + piece_work
         if stage_callback is not None:
             stage_callback("coupled_" + dynamics_integrator, state, work)
+        mixing = None
         if apply_mixing:
-            state = self.mixing_step(state, dt, stage_callback=stage_callback)
+            state, mixing = self.mixing_step_with_report(state, dt, stage_callback=stage_callback)
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         if stage_callback is not None:
@@ -443,4 +472,6 @@ class SnowOceanIce:
             ep0 + ep1,
             melt0 + melt1,
             reports,
+            subdivisions,
+            getattr(mixing, "mixing_limiter", None),
         )

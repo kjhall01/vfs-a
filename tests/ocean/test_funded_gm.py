@@ -184,3 +184,71 @@ def test_gm_funding_does_not_mask_an_unfunded_redi_step(front, scheme):
     energy[13, 6] = 1e-9 * state.ocean.h[13, 6]
     with pytest.raises(LocalEddyEnergyError, match="Redi requires unavailable"):
         operator(scheme).apply(model, replace(state, eddy_h=energy), 60.0)
+
+
+@pytest.mark.parametrize("specific_energy", [0., 1e-9, 1e-4])
+def test_redi_can_reduce_only_rows_touching_a_depleted_layer(front, specific_energy):
+    model, state = front
+    energy = state.eddy_h.clone()
+    h = state.ocean.h
+    energy[13, 6] = specific_energy * h[13, 6]
+    state = replace(state, eddy_h=energy)
+    strict = GMRedi(kappa_redi=100., positive_redi=True)
+    funded = GMRedi(kappa_redi=100., positive_redi=True, fund_redi=True)
+    end, report = funded.apply(model, state, 60.)
+
+    if specific_energy == 1e-4:
+        reference, old = strict.apply(model, state, 60.)
+        assert torch.equal(funded._contents(end), strict._contents(reference))
+        for key in ("redi_energy_flux_divergence", "redi_local_energy_residual", "redi_variance_change"):
+            assert torch.equal(getattr(report, key), getattr(old, key))
+        assert report.redi_energy_limiting_passes == report.redi_energy_limited_rows == 0
+        return
+
+    with pytest.raises(LocalEddyEnergyError) as failure:
+        strict.apply(model, state, 60.)
+    bad = failure.value.bad
+    assert bad.nonzero().tolist() == [[13, 6]]
+    geometry = strict._geometry(model, state, part="redi")
+    stencil = geometry[-2]
+    incident = stencil.row_min((~bad).to(h)) == 0
+    assert report.redi_energy_limited_rows == incident.sum()
+    assert report.redi_energy_blocked_rows == (int(incident.sum()) if specific_energy == 0 else 0)
+    assert 0 < report.redi_energy_deficit_max_J_kg
+    assert (end.eddy_h >= 0).all()
+    # Away from the limited rows, temperature still gets its original increment.
+    far = stencil.transpose(incident.to(h)[..., None], absolute=True)[..., 0] == 0
+    full, _ = strict.apply(model, replace(state, eddy_h=1e-4*h), 60.)
+    assert torch.equal(end.ocean.temp_h[far], full.ocean.temp_h[far])
+    assert (end.ocean.temp_h[far] != state.ocean.temp_h[far]).any()
+    mass = model.hamiltonian.mass_area(state.ocean) * h
+    assert ((model.hamiltonian.finite_change(state, end) - report.redi_energy_flux_divergence)
+            / mass).abs().max() < 1e-12
+    assert report.energy_change.abs() / mass.sum() < 1e-12
+    assert (report.redi_variance_change[:2] <= 0).all()
+    with pytest.raises(FloatingPointError, match="Redi explicit step"):
+        GMRedi(kappa_redi=1e20, fund_redi=True).apply(model, state, 60.)
+
+
+@pytest.mark.parametrize("scheme", ["funded_donor_parcel", "quadratic_funded_donor_parcel"])
+def test_empty_layer_can_close_whole_gm_loops(front, scheme):
+    model, state = front
+    e = state.eddy_h.clone()
+    e[13, 6] = 0
+    s = replace(state, eddy_h=e)
+    strict = GMRedi(kappa_gm=100., gm_energy_scheme="donor_parcel")
+    with pytest.raises(LocalEddyEnergyError, match="GM requires unavailable"):
+        strict.apply(model, s, 60)
+    step = GMRedi(kappa_gm=100., gm_energy_scheme=scheme)
+    orig = step._geometry(model, s, part="gm")[1][:, 1:-1]
+    end, r = step.apply(model, s, 60)
+    blocked = (r.streamfunction[:, 1:-1] == 0) & (orig != 0)
+    assert int(blocked.sum()) == r.gm_blocked_interfaces > 0
+    assert ((r.streamfunction[:, 1:-1] == orig) & (orig != 0)).any()
+    assert r.volume_residual.abs().max() < 1e-12*r.horizontal_transport.abs().max()
+    assert (end.eddy_h >= 0).all()
+    area = s.ocean.mesh.cell_area[:, None]
+    assert (r.gm_local_energy_residual/area).abs().max() < 1e-10
+    for name in ("temp_h", "salt_h"):
+        assert torch.allclose((getattr(s.ocean,name)*area).sum(), (getattr(end.ocean,name)*area).sum(),
+                              rtol=2e-15, atol=0.)
