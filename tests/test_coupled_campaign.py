@@ -799,3 +799,21 @@ def test_fresh_full_depth_two_substep_preset():
     assert cfg.eddy_dissipation and cfg.backscatter and cfg.ale_remap
     with pytest.raises(ValueError, match="gm_energy_scheme"):
         replace(cfg, gm_energy_scheme="unknown").validate()
+
+
+def test_campaign_warns_and_commits_energy_limited_redi(source, config, tmp_path):
+    # Isolate Redi work with a small stored reservoir and negligible GM flux.
+    cfg = replace(config, eddy_initial_energy_J_kg=1e-11, eddy_substeps=1,
+                  gm_efficiency=1e-20, gm_energy_scheme="funded_donor_parcel", backscatter=False)
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(c.asdict(cfg)))
+    out = tmp_path / "run"
+    assert c.main(["--config", str(path), "--source", str(source), "--smoke-no-radiation",
+                   "--output", str(out), "--stop-after-days", str(120 / c.DAY)]) == 0
+    status = json.loads((out / "status.json").read_text())
+    assert status["status"] == "segment_completed"
+    assert (out / "run.log").read_text().count("local eddy energy limited Redi") == 2
+    ledger = c.read_checkpoint(out / "restarts/restart_00000120.nc")["ledger"]
+    for key in c.REDI_ENERGY_SUMS + c.REDI_ENERGY_PEAKS:
+        assert ledger[key] == status["latest"][key] > 0
+    assert ledger["redi_energy_blocked_rows"] <= ledger["redi_energy_limited_rows"]

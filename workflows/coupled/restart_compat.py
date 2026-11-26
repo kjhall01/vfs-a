@@ -87,6 +87,11 @@ COLUMN_VAPOR_ORIGINS = {
 }
 
 
+# Coupled Redi energy funding changes only trials that previously failed.
+REDI_ENERGY_TARGET = "a96c4e0e5f7258897b6d81fc3a9165a857d3eebbe66edf5558902438566130d9"
+REDI_PARENT_VERIFIER = "ad3e8c4bf2d7fa6e1857ecc205c37ae06bb7321830a3ab262c7c8c91dec9f8de"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -173,6 +178,11 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    if _without_verifier_digest(current_hashes) == REDI_ENERGY_TARGET:
+        origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
+        if origin == (COLUMN_VAPOR_TARGET, REDI_PARENT_VERIFIER):
+            return {"numerical_change": "locally_funded_redi_v1"}
+        raise ValueError("Redi energy restart origin differs from the audited revision")
     if _without_verifier_digest(current_hashes) == COLUMN_VAPOR_TARGET:
         if (_without_verifier_digest(old_hashes), old_hashes.get(verifier)) in COLUMN_VAPOR_ORIGINS:
             return {"numerical_change": "same_column_vapor_redistribution"}

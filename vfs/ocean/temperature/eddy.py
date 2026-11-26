@@ -42,6 +42,10 @@ class EddyReport:
     redi_limited_fluxes: int = 0  # row/positive-field fluxes reduced, opt-in only
     gm_limiting_passes: int = 0
     gm_limited_interfaces: int = 0
+    redi_energy_limiting_passes: int = 0
+    redi_energy_limited_rows: int = 0
+    redi_energy_blocked_rows: int = 0
+    redi_energy_deficit_max_J_kg: float = 0.0
 
 
 class LocalEddyEnergyError(FloatingPointError):
@@ -150,6 +154,13 @@ class _RediGradient:
         )
         return self.transpose((measure * row_sum)[..., None], absolute=True)[..., 0]
 
+    def row_min(self, layer):
+        """Smallest native layer allowance touched by each rotated flux row."""
+        horizontal = torch.minimum(layer[self.i], layer[self.j])
+        vertical = torch.where(self.weights != 0, layer.flatten()[self.ids], 1.).amin(-1)
+        tilted = torch.minimum(vertical[self.i], vertical[self.j])
+        return torch.minimum(horizontal, torch.where(self.relative != 0, tilted, 1.))
+
     def positive_flux_scale(self, transfer, amounts):
         """Locally fund row fluxes from nonnegative cell/layer inventories.
 
@@ -203,6 +214,8 @@ class GMRedi:
     and halves incident interface streamfunctions if local GM work exceeds
     the eddy reservoir. quadratic_funded_donor_parcel predicts a local dyadic
     scale from the Roquet energy curve and verifies the full trial before Redi.
+    With fund_redi, an unaffordable Redi update reduces incident rotated flux
+    rows and repeats the endpoint settlement from the accepted post-GM state.
     """
 
     energy_schemes = (
@@ -220,6 +233,7 @@ class GMRedi:
         energy_closure=None,
         positive_redi=False,
         gm_energy_scheme="midpoint",
+        fund_redi=False,
     ):
         values = (kappa_gm, kappa_redi, max_slope, min_n2, cfl)
         if not all(math.isfinite(x) for x in values):
@@ -240,6 +254,9 @@ class GMRedi:
         if type(positive_redi) is not bool:
             raise ValueError("positive_redi must be boolean")
         self.positive_redi = positive_redi
+        if type(fund_redi) is not bool:
+            raise ValueError("fund_redi must be boolean")
+        self.fund_redi = fund_redi
         if gm_energy_scheme not in self.energy_schemes:
             raise ValueError("Unknown GM energy scheme: " + str(gm_energy_scheme))
         self.gm_energy_scheme = gm_energy_scheme
@@ -483,6 +500,23 @@ class GMRedi:
         gm_inflow = divergence(i, j, energy_flux, h.numel()).reshape_as(h)
         return gm_transport, gm_inflow, fraction
 
+    def _redi_trial(self, model, gm, dt, operator, flux, values, volume):
+        """Apply one proposed flux and charge its actual finite work locally."""
+        column_values = values.reshape(*gm.ocean.h.shape, -1)
+        rate_amount = operator.transpose(-dt * flux).reshape_as(values)
+        final_values = values + rate_amount / nonzero_divisor(volume)[:, None]
+        redi_transport = self._unpack(model, gm, final_values, values)
+        mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(column_values)
+        # A single conjugate per row defines a conservative energy flux over
+        # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
+        mu_face = operator.face_mean(mu)
+        energy_flux = gm.ocean.column.rho0 * (-dt * (flux * mu_face).sum(-1))
+        redi_inflow = operator.transpose(energy_flux[..., None])[..., 0]
+        end, redi_exchange, redi_residual = self._settle(
+            model, gm, redi_transport, redi_inflow, "Redi"
+        )
+        return end, final_values, redi_exchange, redi_inflow, redi_residual
+
     def apply(self, model, state, dt):
         from vfs.ocean.temperature.roquet import RoquetOcean
 
@@ -495,7 +529,6 @@ class GMRedi:
         model.check(state)
         s, h = state.ocean, state.ocean.h
         volume = (s.mesh.cell_area[:, None] * h).flatten()
-        rho0 = s.column.rho0
         metrics = self._metrics(model, state)
         gm_diffusivity = self._gm_diffusivity(state, metrics)
         geom = self._geometry(
@@ -575,21 +608,43 @@ class GMRedi:
             )
             limited_fluxes = int((scale < 1).sum())
             flux = torch.cat((flux[..., :1], flux[..., 1:] * scale), -1)
-        rate_amount = operator.transpose(-dt * flux).reshape_as(values)
-        final_values = values + rate_amount / nonzero_divisor(volume)[:, None]
-        redi_transport = self._unpack(model, gm, final_values, values)
-        mu = model.hamiltonian.midpoint_conjugates(gm, redi_transport).reshape_as(
-            initial
-        )
-        # A single conjugate per row defines a conservative energy flux over
-        # the SAME rotated stencil; sum(weights)=0. Its remainder is conversion.
-        column_mu = mu.reshape_as(column_values)
-        mu_face = operator.face_mean(column_mu)
-        energy_flux = rho0 * (-dt * (flux * mu_face).sum(-1))
-        redi_inflow = operator.transpose(energy_flux[..., None])[..., 0]
-        end, redi_exchange, redi_residual = self._settle(
-            model, gm, redi_transport, redi_inflow, "Redi"
-        )
+        # Retry only the Redi part, starting from the same accepted GM state.
+        # Scaling a complete row preserves the conservative transpose for every
+        # tracer and the accompanying energy flux, including vertical neighbors.
+        proposed_flux = flux
+        row_scale = None
+        redi_passes = 0
+        peak_deficit = 0.0
+        while True:
+            try:
+                end, final_values, redi_exchange, redi_inflow, redi_residual = self._redi_trial(
+                    model, gm, dt, operator, flux, values, volume
+                )
+                break
+            except LocalEddyEnergyError as exc:
+                if not self.fund_redi or not torch.isfinite(exc.remaining).all():
+                    raise
+                bad = exc.bad
+                remaining = exc.remaining[bad]
+                peak_deficit = max(peak_deficit, float((-remaining / h[bad]).max()))
+                allowance = torch.ones_like(h)
+                if redi_passes < 2:
+                    # Estimate the affordable fraction of this trial's net cost.
+                    # Leave some margin for nonlinear work and neighboring rows.
+                    start = gm.eddy_h.detach()[bad]
+                    allowance[bad] = 0.9 * start / (start - remaining)
+                else:
+                    # If interacting rows still overdraw, close all rows touching
+                    # those layers. Each such pass removes at least one live row.
+                    allowance[bad] = 0.0
+                factor = operator.row_min(allowance)
+                active = flux.ne(0).any(-1)
+                if not ((factor < 1) & active).any():
+                    raise
+                factor = torch.where(active, factor, 1.)
+                row_scale = factor if row_scale is None else row_scale * factor
+                flux = proposed_flux * row_scale[..., None]
+                redi_passes += 1
         H = model.hamiltonian
         mass = H.mass_area(s)
         report = EddyReport(
@@ -625,5 +680,9 @@ class GMRedi:
             limited_fluxes,
             passes,
             0 if factors is None else int((factors < 1).sum()),
+            redi_energy_limiting_passes=redi_passes,
+            redi_energy_limited_rows=0 if row_scale is None else int((row_scale < 1).sum()),
+            redi_energy_blocked_rows=0 if row_scale is None else int((row_scale == 0).sum()),
+            redi_energy_deficit_max_J_kg=peak_deficit,
         )
         return end, report

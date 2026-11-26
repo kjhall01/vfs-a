@@ -87,6 +87,13 @@ class CoupledShelfRedi:
             (measure * self.rows.weights.abs().sum(1))[:, None], absolute=True
         )[..., 0]
 
+    def row_min(self, layer):
+        """Propagate native allowances through the overlaps and shelf stencil."""
+        shelf = torch.ones_like(layer).flatten().scatter_reduce(
+            0, self.shelf, layer.flatten()[self.native], reduce="amin"
+        )
+        return torch.where(self.rows.weights != 0, shelf[self.rows.owners], 1.).amin(1)
+
     def positive_flux_scale(self, transfer, amounts):
         demand = self.transpose(transfer.abs(), absolute=True)
         ratio = (amounts / torch.where(demand > 0, demand, 1.0)).clamp(max=1.0)

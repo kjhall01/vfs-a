@@ -56,11 +56,16 @@ from vfs.ocean import OceanColumn
 DAY = 86400
 VAPOR_SUMS = ("vapor_correction_events", "vapor_correction_kg_m2")
 VAPOR_PEAKS = ("vapor_correction_proxy_residual_J_m2",)
+REDI_ENERGY_SUMS = (
+    "redi_energy_limiting_passes", "redi_energy_limited_rows", "redi_energy_blocked_rows",
+)
+REDI_ENERGY_PEAKS = ("redi_energy_deficit_max_J_kg",)
 OCEAN_SUMS = (
     "gmredi_steps",
     "gm_limiting_passes",
     "gm_limited_interfaces",
     "redi_limited_fluxes",
+    *REDI_ENERGY_SUMS,
     "eddy_decay_steps",
     "ale_steps",
     "ale_changed_columns",
@@ -73,6 +78,7 @@ OCEAN_SUMS = (
 OCEAN_PEAKS = (
     "gm_outflow_fraction",
     "redi_step_number",
+    *REDI_ENERGY_PEAKS,
     "gmredi_local_residual_J_m2",
     "eddy_decay_local_residual_J_m2",
     "ale_column_residual_J_m2",
@@ -275,6 +281,7 @@ def gm_redi_operator(config):
         **options,
         kappa_redi=config.redi_diffusivity_m2_s,
         positive_redi=config.redi_positive_transport,
+        fund_redi=True,
         gm_energy_scheme=config.gm_energy_scheme,
         energy_closure=EddyMixingLength(
             config.gm_length_m, config.gm_efficiency, config.gm_kinetic_fraction
@@ -302,6 +309,12 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
             report["gm_limiting_passes"] += r.gm_limiting_passes
             report["gm_limited_interfaces"] += r.gm_limited_interfaces
             report["redi_limited_fluxes"] += r.redi_limited_fluxes
+            report["redi_energy_limiting_passes"] += r.redi_energy_limiting_passes
+            report["redi_energy_limited_rows"] += r.redi_energy_limited_rows
+            report["redi_energy_blocked_rows"] += r.redi_energy_blocked_rows
+            report["redi_energy_deficit_max_J_kg"] = max(
+                report["redi_energy_deficit_max_J_kg"], r.redi_energy_deficit_max_J_kg
+            )
             report["gm_exchange_J_m2"] += float(r.gm_reservoir_exchange / area.sum())
             report["redi_exchange_J_m2"] += float(
                 r.redi_reservoir_exchange / area.sum()
@@ -1322,7 +1335,7 @@ def main(argv=None):
             air, sea, ledger = unpack(
                 payload, adapter, receiver, sea, expected_restart_identity
             )
-            for key in VAPOR_SUMS + VAPOR_PEAKS + ("ale_deferred_columns",):
+            for key in VAPOR_SUMS + VAPOR_PEAKS + REDI_ENERGY_SUMS + REDI_ENERGY_PEAKS + ("ale_deferred_columns",):
                 ledger.setdefault(key, 0.0)
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
         if air.time_seconds >= end:
@@ -1422,6 +1435,15 @@ def main(argv=None):
                 for k in ("surface_residual", "air_residual", "radiation_residual"):
                     ledger[k] = max(ledger[k], report[k])
                 seconds = air.time_seconds
+                if report["redi_energy_limiting_passes"]:
+                    logger.warning(
+                        "Day %.6f: local eddy energy limited Redi mixing in this interval. "
+                        "%d flux rows reduced (%d fully blocked, counted per substep), "
+                        "%d retries, largest rejected deficit %.6g J/kg",
+                        seconds / DAY, report["redi_energy_limited_rows"],
+                        report["redi_energy_blocked_rows"], report["redi_energy_limiting_passes"],
+                        report["redi_energy_deficit_max_J_kg"],
+                    )
                 if energy_trace is not None:
                     energy_trace.commit(ledger, seconds=seconds, report=report)
                 if seconds in scheduled:

@@ -293,3 +293,41 @@ def test_single_layer_defers_infeasible_ale_at_shared_moving_face(config, source
                      (state.tke_h, remapped.coupled.ocean.tke_h),
                      (state.eddy_h, remapped.coupled.ocean.eddy_h)):
         torch.testing.assert_close(new.sum(-1), old.sum(-1), rtol=2e-14, atol=0.)
+
+
+@torch.no_grad()
+def test_unfunded_partial_shelf_redi_recovers_with_conservative_fluxes(config, source):
+    from vfs.ocean.temperature.eddy import LocalEddyEnergyError
+    from vfs.ocean.temperature.shelf_redi import ShelfGMRedi
+
+    cfg = replace(config, ocean_levels=8, ocean_depth_m=1000., top_layer_m=10.,
+                  shelf_redi=True, partial_cell_layers=True)
+    land = np.arange(cfg.cells) == 3
+    depths = np.resize([8., 40., 11., 900., 1000., 300., 600., 950.], cfg.cells)
+    geo = dict(land=land, depth_m=depths, height_m=300.*land)
+    _, _, receiver, sea = c.build(cfg, source, None, geography=geo, smoke_no_radiation=True)
+    model = receiver.H.model
+    state = sea.coupled.ocean
+    state = replace(state, eddy_h=torch.zeros_like(state.eddy_h))
+    h = state.ocean.h
+    assert c.gm_redi_operator(cfg).fund_redi
+    step = ShelfGMRedi(c.rest_thickness(cfg), kappa_redi=100., positive_redi=True)
+    with pytest.raises(LocalEddyEnergyError, match="Redi requires unavailable"):
+        step.apply(model, state, 600.)
+    step.fund_redi = True
+    end, report = step.apply(model, state, 600.)
+    assert 0 < report.redi_energy_blocked_rows <= report.redi_energy_limited_rows
+    assert report.redi_energy_deficit_max_J_kg > 0
+    assert (end.eddy_h >= 0).all()
+    assert torch.equal(end.ocean.h, h)
+    assert (end.ocean.temp_h != state.ocean.temp_h).any()
+    for field in (end.eddy_h, end.tke_h, end.ocean.salt_h, end.ocean.temp_h):
+        assert not field[h == 0].any()
+    area = state.ocean.mesh.cell_area[:, None]
+    for name in ("temp_h", "salt_h"):
+        before = getattr(state.ocean, name)
+        after = getattr(end.ocean, name)
+        torch.testing.assert_close((after*area).sum(), (before*area).sum(), rtol=2e-15, atol=0.)
+    residual = model.hamiltonian.finite_change(state, end) - report.redi_energy_flux_divergence
+    assert (residual / area).abs().max() < 1e-10
+    assert report.energy_change.abs() / area.sum() < 1e-9

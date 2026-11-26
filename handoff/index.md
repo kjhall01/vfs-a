@@ -2,6 +2,13 @@
 
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
 
+The [Redi energy limiter](../docs/PASS4_RESULTS.md#locally-funded-redi-mixing)
+reduces mixing where its finite work exceeds locally available eddy energy.
+The campaign logs affected intervals and saves retry counts, reduced and blocked
+row counts, and the largest rejected specific-energy deficit. To continue a run
+from main `59b11db`, keep its original inputs and configuration and supply
+`--resume OLD_RUN/last_good_restart.nc --resume-compatible-manifest OLD_RUN/manifest.json --output NEW_RUN`.
+
 The [column vapor repair](../workflows/coupled/VAPOR_CORRECTION.md) documents the transfer, budgets and compatible Earth campaign restart.
 The [campaign package cleanup](../docs/PASS4_RESULTS.md#campaign-package-cleanup) records the maintained import paths, retired experiments and restart comparison.
 

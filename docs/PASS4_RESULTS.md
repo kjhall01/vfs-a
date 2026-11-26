@@ -1,5 +1,28 @@
 # Pass 4 — physical-field workflow
 
+## Locally funded Redi mixing
+
+The coupled campaign scales shared Redi flux rows when the finite tracer update
+would overdraw a layer's eddy reservoir. It retries from the post-GM state,
+using the accepted flux in both tracer transport and the energy ledger.
+The first two retries estimate an affordable fraction of the rejected net cost.
+Further retries close the rows touching any remaining underfunded layers. Each
+retry checks the full rotated stencil, including vertical shelf overlaps.
+Standalone `GMRedi` exposes this behavior through `fund_redi=True`.
+
+A CPU float64 replay on the 4,096-cell Earth shelf grid reproduced the
+unmodified day-12 checkpoint's 600 s GM/Redi update bit for bit. In a
+separate Redi-only stress test on that state, seven adjacent columns started
+with zero stored eddy energy. The original update overdrew nine layers. One
+retry closed 35 of 543,220 rows. The largest rejected deficit was
+1.74e-6 J/kg and the maximum accepted local residual was 4.66e-12 J/m².
+
+A 16-cell coupled test exercised repeated local reductions, emitted a warning
+in each of two accepted intervals, and wrote cumulative counts to its restart.
+A separate resume from main `59b11db` matched 36 checkpoint tensors and every
+pre-existing ledger value in a continuous control. The day-23 failure checkpoint,
+GPU execution and long-run effects on mixing remain unverified.
+
 ## Native mesh plotting
 
 The [plotting utility](NATIVE_MESH_PLOTTING.md) was exercised on a 4,096-cell
