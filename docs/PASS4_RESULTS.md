@@ -1948,3 +1948,7 @@ water residual is zero. The maximum native air energy residual is 5.34eâˆ’8 J/mÂ
 The diagnostic replay used Linux eager execution, saved radiation and the
 reconstructed Mac state. GPU and long-run behavior remain unverified.
 See the [repair and restart guide](../workflows/coupled/VAPOR_CORRECTION.md).
+
+## Extending the Earth pilot through day 395
+
+A small float64 CPU campaign resumed with the source identity from PR #124 and a horizon extended from 30 to 395 days. At equal elapsed time its prognostics, physics memory and cumulative ledger were bitwise equal to an uninterrupted control. The resume tests rejected a shorter horizon and a change to the atmospheric timestep. Two coupled steps with prescribed radiation crossed January 1 of the second model year. The upstream orbital phase at day 395 matched day 30. These are short restart and calendar checks.

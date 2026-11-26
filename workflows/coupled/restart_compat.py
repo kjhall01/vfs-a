@@ -100,6 +100,11 @@ NATIVE_VAPOR_TARGET = "0bb330a01200f82c35e58321bd2bdf54fa42d89f2e82f935b714e54e0
 COUPLED_LIMITERS_VERIFIER = "ad17d1544336c7ed052c32ffa6e044af3d850c98314d174ce2fd2ecdf3ec2952"
 
 
+# Extending the campaign horizon changes only campaign.py and this verifier.
+EXTENDED_HORIZON_TARGET = "8360f64bae59925327942036f22d33495fe5d1df3fa2f749e366ddec27482daa"
+NATIVE_VAPOR_VERIFIER = "2ba588ac1ac86ca9b5df87aac5b09ca9cb4d4eebb6cf27f97cd398ebfde87dc8"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -186,8 +191,11 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
-    if _without_verifier_digest(current_hashes) == NATIVE_VAPOR_TARGET:
+    target = _without_verifier_digest(current_hashes)
+    if target in (NATIVE_VAPOR_TARGET, EXTENDED_HORIZON_TARGET):
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
+        if target == EXTENDED_HORIZON_TARGET and origin == (NATIVE_VAPOR_TARGET, NATIVE_VAPOR_VERIFIER):
+            return {"campaign_horizon_update": True, "numerical_change": "none"}
         if origin in {(COUPLED_LIMITERS_TARGET, COUPLED_LIMITERS_VERIFIER),
                       (REDI_ENERGY_TARGET, REDI_VERIFIER), (COLUMN_VAPOR_TARGET, REDI_PARENT_VERIFIER)}:
             return {"numerical_change": "coupled_reservoir_limiters_and_native_interface_vapor_v1"}

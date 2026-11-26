@@ -144,6 +144,23 @@ pass both `--resume /path/to/old-run/restarts/restart_00086400.pt` and
 original fingerprint and the audited source transition. The next restart is
 NetCDF. Earlier revisions remain subject to their own source-compatibility checks.
 
+### Continue the 30-day Earth pilot through day 395
+
+The [395-day preset](earth_shelf_4096_395d.yaml) uses the pilot's bounded atmospheric SSPRK3 at 600 s and ocean–ice SSPRK(4,3) at 1,200 s. The atmosphere stepper is selected by the coupled dynamics code. The YAML integrator key selects the ocean–ice stepper. Physics runs every 1,200 s, with five mixing substeps and two GM/Redi substeps per 1,200 s. Radiation and ALE run every 4,800 s. The preset uses CPU float64 with compilation and four threads.
+
+From the repository root, set `VFS_MESH`, `VFS_GEOGRAPHY`, `PYAM21_SOURCE` and `PYAM21_RADIATION_DATA` to the paths used for the pilot. Select the segment that **wrote** the day-30 checkpoint. For example:
+
+```bash
+pilot=runs/earth-final-segment
+python -u tools/run_earth_shelf.py \
+  --config workflows/coupled/earth_shelf_4096_395d.yaml \
+  --resume "$pilot/restarts/restart_02592000.nc" \
+  --resume-compatible-manifest "$pilot/manifest.json" \
+  --output runs/earth-day030-to-395
+```
+
+Day 395 is absolute elapsed time, so this advances another 365 simulated days. The manifest check uses the checkpoint's original configuration and records the longer horizon. It also verifies model sources, input identities, runtime, compilation, and numerical settings. If the original run used different settings, copy its `configuration.json` and change only `days` to 395. Use that file as `--config`. To initialize a fresh 395-day run, omit both resume arguments and choose a new output directory. The PyAM21 calendar is Julian and the configured seasonal forcing repeats every 365 simulated days.
+
 ### Generate the mesh-matched geography
 
 From the checkout, use a Python environment with NumPy, SciPy, netCDF4 and

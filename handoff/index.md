@@ -2290,3 +2290,5 @@ pass. CPU float64 only; no GPU or long coupled ocean–ice validation.
 [Paired fresh and day-21 replays](../docs/PASS4_RESULTS.md#roquet-vertical-mixing-from-interface-fluxes)
 show 1.31–1.37× faster Roquet mixing on four CPU threads. The flux-based
 funding check returns identical accepted states and budgets in these cases.
+
+The [395-day Earth shelf instructions](../workflows/coupled/EARTH_SHELF.md#continue-the-30-day-earth-pilot-through-day-395) cover the atmospheric SSPRK3 preset and an audited extension from the completed pilot.
