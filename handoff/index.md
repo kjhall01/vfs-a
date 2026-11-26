@@ -2293,4 +2293,4 @@ pass. CPU float64 only; no GPU or long coupled ocean–ice validation.
 show 1.31–1.37× faster Roquet mixing on four CPU threads. The flux-based
 funding check returns identical accepted states and budgets in these cases.
 
-The [395-day Earth shelf instructions](../workflows/coupled/EARTH_SHELF.md#continue-the-30-day-earth-pilot-through-day-395) cover the atmospheric SSPRK3 preset and an audited extension from the completed pilot.
+The [395-day Earth shelf instructions](../workflows/coupled/EARTH_SHELF.md#continue-the-30-day-earth-pilot-through-day-395) cover the 600 s atmospheric SSPRK(4,3) preset and the audited switch from the completed SSPRK3 pilot.

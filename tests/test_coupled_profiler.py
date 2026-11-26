@@ -128,9 +128,9 @@ def test_cpu_overlap_joins_before_exchange_and_replays_checkpoint(source, config
     dynamics = c.advance_dynamics
     seen = []
 
-    def observe(*args):
+    def observe(*args, **kwargs):
         seen.append((get_ident(), torch.is_grad_enabled()))
-        return dynamics(*args)
+        return dynamics(*args, **kwargs)
 
     with torch.no_grad():
         a1, s1, r1 = c.advance(adapter, air, receiver, sea, config.physics_dt, config)

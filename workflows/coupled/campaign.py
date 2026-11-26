@@ -140,6 +140,7 @@ class CampaignConfig:
     diagnostic_hours: int = 6
     restart_days: int = 5
     overlap_dynamics: bool = False
+    atmosphere_dynamics_integrator: str = "ssprk3"
 
     def validate(self):
         validate_precision(self.device, self.dtype)
@@ -210,6 +211,8 @@ class CampaignConfig:
                 raise ValueError(f"{key} must be finite and nonnegative")
         if self.gm_energy_scheme not in GMRedi.energy_schemes:
             raise ValueError("unknown gm_energy_scheme")
+        if self.atmosphere_dynamics_integrator not in ("ssprk3", "ssprk43"):
+            raise ValueError("atmosphere_dynamics_integrator must be ssprk3 or ssprk43")
         if self.ocean_dynamics_integrator not in ("ssprk3", "ssprk43"):
             raise ValueError("ocean_dynamics_integrator must be ssprk3 or ssprk43")
         if self.gm_kinetic_fraction > 1 or self.backscatter_fraction > 1:
@@ -600,7 +603,8 @@ def _advance_air(adapter, air, receiver, sea, dt, config, trace):
     evolved = air
     for elapsed in range(0, dt, config.atmosphere_dt):
         evolved = advance_dynamics(
-            adapter, evolved, min(config.atmosphere_dt, dt - elapsed)
+            adapter, evolved, min(config.atmosphere_dt, dt - elapsed),
+            integrator=config.atmosphere_dynamics_integrator,
         )
         if trace is not None:
             trace.observe("atmosphere_dynamics", adapter, evolved, receiver, sea,
@@ -914,7 +918,7 @@ def source_hashes():
 def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
     payload = dict(
         schema=1,
-        config=asdict(config),
+        config=config if isinstance(config, dict) else asdict(config),
         atmosphere=adapter.fingerprint,
         source=hashes,
         torch=str(torch.__version__),
@@ -1137,7 +1141,7 @@ def main(argv=None):
     parser.add_argument("--resume", type=Path)
     parser.add_argument(
         "--resume-compatible-manifest", type=Path,
-        help="Resume using the checkpoint manifest. Allows audited source changes and a longer campaign horizon.",
+        help="Resume using the checkpoint manifest. Allows audited source changes, a longer horizon, and a switch from atmospheric ssprk3 to ssprk43.",
     )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
@@ -1278,8 +1282,9 @@ def main(argv=None):
             config.ale_dt or config.physics_dt,
         )
         logger.info(
-            "Ocean–ice explicit dynamics integrator=%s",
-            config.ocean_dynamics_integrator,
+            "Atmosphere dynamics integrator=%s (dt=%d s), ocean–ice integrator=%s (dt=%d s)",
+            config.atmosphere_dynamics_integrator, config.atmosphere_dt,
+            config.ocean_dynamics_integrator, config.ocean_dt,
         )
         logger.info(
             "GM energy scheme=%s; Redi conservative positive-inventory transport=%s; initial eddy energy=%g J/kg",
@@ -1320,13 +1325,18 @@ def main(argv=None):
             if args.resume_compatible_manifest:
                 prior = json.loads(args.resume_compatible_manifest.read_text())
                 # Reconstruct the checkpoint fingerprint using its original horizon.
-                # Only the end day may grow. Physics, mesh and runtime must still match.
+                # Both atmosphere methods start from the same committed native state.
                 saved_config = prior.get("configuration")
                 saved_days = saved_config.get("days") if isinstance(saved_config, dict) else None
                 if type(saved_days) is not int or not 0 < saved_days <= config.days:
                     raise ValueError("compatible restart: prior campaign configuration differs (days)")
-                prior_config = replace(config, days=saved_days)
-                if saved_config != asdict(prior_config):
+                saved_method = saved_config.get("atmosphere_dynamics_integrator", "ssprk3")
+                requested_method = config.atmosphere_dynamics_integrator
+                switch_to_four_stages = saved_method == "ssprk3" and requested_method == "ssprk43"
+                expected_config = {**saved_config, "days": config.days,
+                                   "atmosphere_dynamics_integrator": requested_method}
+                if (expected_config != asdict(config) or
+                        (saved_method != requested_method and not switch_to_four_stages)):
                     raise ValueError("compatible restart: prior campaign configuration differs")
                 if prior.get("mesh", {}).get("sha256") != mesh_info.get("sha256"):
                     raise ValueError("compatible restart: mesh SHA256 differs")
@@ -1342,7 +1352,7 @@ def main(argv=None):
                     prior.get("source_sha256"), hashes
                 )
                 expected_restart_identity = fingerprint(
-                    prior_config, adapter, prior["source_sha256"],
+                    saved_config, adapter, prior["source_sha256"],
                     args.smoke_no_radiation, mesh_info.get("sha256")
                 )
                 if (prior.get("fingerprint") != expected_restart_identity
@@ -1358,6 +1368,13 @@ def main(argv=None):
                     new_fingerprint=identity,
                     **source_delta,
                 )
+                if switch_to_four_stages:
+                    if audit.get("numerical_change") in (None, "none"):
+                        audit["numerical_change"] = "atmospheric_ssprk3_to_ssprk43"
+                    audit["atmosphere_dynamics_integrator"] = {
+                        "prior": saved_method, "current": requested_method,
+                        "from_seconds": payload["air"]["time_seconds"],
+                    }
                 if saved_days != config.days:
                     audit["horizon_days"] = {"prior": saved_days, "current": config.days}
                 atomic_json(output / "compatible_resume_audit.json", audit)

@@ -105,6 +105,10 @@ EXTENDED_HORIZON_TARGET = "8360f64bae59925327942036f22d33495fe5d1df3fa2f749e366d
 NATIVE_VAPOR_VERIFIER = "2ba588ac1ac86ca9b5df87aac5b09ca9cb4d4eebb6cf27f97cd398ebfde87dc8"
 
 
+ATMOSPHERE_SSPRK43_TARGET = "3f5001cc3d9a5c4da76c12458ae19a62d536cec2a4c21399e7b29c82e421a33f"
+EXTENDED_HORIZON_VERIFIER = "f0c46c0fd0e7cba19d18b225ae21757ae4b334bb82cbfba4fe694542db7f49cc"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -192,9 +196,11 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
-    if target in (NATIVE_VAPOR_TARGET, EXTENDED_HORIZON_TARGET):
+    if target in (NATIVE_VAPOR_TARGET, EXTENDED_HORIZON_TARGET, ATMOSPHERE_SSPRK43_TARGET):
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
-        if target == EXTENDED_HORIZON_TARGET and origin == (NATIVE_VAPOR_TARGET, NATIVE_VAPOR_VERIFIER):
+        if target == ATMOSPHERE_SSPRK43_TARGET and origin == (EXTENDED_HORIZON_TARGET, EXTENDED_HORIZON_VERIFIER):
+            return {"atmosphere_integrator_configurable": True}
+        if target in (EXTENDED_HORIZON_TARGET, ATMOSPHERE_SSPRK43_TARGET) and origin == (NATIVE_VAPOR_TARGET, NATIVE_VAPOR_VERIFIER):
             return {"campaign_horizon_update": True, "numerical_change": "none"}
         if origin in {(COUPLED_LIMITERS_TARGET, COUPLED_LIMITERS_VERIFIER),
                       (REDI_ENERGY_TARGET, REDI_VERIFIER), (COLUMN_VAPOR_TARGET, REDI_PARENT_VERIFIER)}:

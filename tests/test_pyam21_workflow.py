@@ -456,7 +456,8 @@ def test_radiation_clock_fluxes_restart_and_failure_rollback(model):
     assert driver.saved is None and driver.lw_alarm == 1
 
 
-def test_cloud_dynamics_retains_core_bitwise_and_conserves_passive_amount(model):
+@pytest.mark.parametrize("integrator", ["ssprk3", "ssprk43"])
+def test_cloud_dynamics_retains_core_bitwise_and_conserves_passive_amount(model, integrator):
     adapter, state = initial(model)
     cloud = (
         torch.sigmoid(model.mesh.cell_xyz[:, 0, None] * 5)
@@ -467,8 +468,18 @@ def test_cloud_dynamics_retains_core_bitwise_and_conserves_passive_amount(model)
     state = replace(
         state, cloud_fraction=cloud, atmosphere=replace(state.atmosphere, u_e=wind)
     )
-    reference = model.step(state.atmosphere, 1)
-    end = advance_dynamics(adapter, state, 1)
+    start = state.atmosphere
+    if integrator == "ssprk3":
+        reference = model.step(start, 1)
+        budgets = [1] * 3
+    else:
+        euler = model.transport.euler
+        third = euler(euler(euler(start, 0.5), 0.5), 0.5)
+        reference = euler(start.combine(third, a=2/3, b=1/3), 0.5)
+        budgets = [0.5] * 4
+    with patch.object(model.transport, "euler_with_info", wraps=model.transport.euler_with_info) as stages:
+        end = advance_dynamics(adapter, state, 1, integrator=integrator)
+    assert [call.args[1] for call in stages.call_args_list] == budgets
     for k in ("u_e", "ps", "water_content", "entropy_content"):
         same_tree(getattr(reference, k), getattr(end.atmosphere, k))
 
@@ -484,7 +495,8 @@ def test_cloud_dynamics_retains_core_bitwise_and_conserves_passive_amount(model)
     assert end.time_seconds == 0
 
 
-def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
+@pytest.mark.parametrize("integrator", ["ssprk3", "ssprk43"])
+def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model, integrator):
     """Same state, same RK arithmetic, no extra graph or transport primitive."""
     from unittest.mock import patch
     import workflows.pyam21.dynamics as dynamics_module
@@ -494,7 +506,7 @@ def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
     # independently call dynamics_module.graph after the authoritative stage.
     with patch.object(dynamics_module, "graph",
                       side_effect=AssertionError("cloud recomputed graph")):
-        optimized = dynamics_module.advance_dynamics(adapter, state, 1)
+        optimized = dynamics_module.advance_dynamics(adapter, state, 1, integrator=integrator)
 
     def baseline_cloud_step(current):
         area = model.mesh.cell_area[:, None]
@@ -503,8 +515,8 @@ def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
         )
         start = current.atmosphere
         initial_cloud_amount = mass(start) * current.cloud_fraction
-        def old_euler(s, amount):
-            end, _ = model.transport.euler_with_info(s, 1)
+        def old_euler(s, amount, dt=1):
+            end, _ = model.transport.euler_with_info(s, dt)
             m, i, j, F = original_graph(model.dynamics, s)
             q = (amount / m).flatten()
             fractions = torch.stack((1 - q, q), -1)
@@ -512,10 +524,17 @@ def test_cloud_dynamics_reuses_exact_moist_carrier_without_second_graph(model):
             from vfs.atmosphere.bounded_transport import bounded_transfer
             amounts, _, _ = bounded_transfer(
                 m.flatten(), m.flatten()[:, None] * fractions,
-                i, j, F, F[:, None] * face,
+                i, j, dt * F, dt * F[:, None] * face,
                 target_mass=mass(end).flatten(),
             )
             return end, amounts[:, 1].reshape_as(m)
+        if integrator == "ssprk43":
+            s, amount = start, initial_cloud_amount
+            for _ in range(3):
+                s, amount = old_euler(s, amount, 0.5)
+            s = start.combine(s, a=2/3, b=1/3)
+            end, amount = old_euler(s, (2/3)*initial_cloud_amount + (1/3)*amount, 0.5)
+            return end, amount / mass(end)
         s1, c1 = old_euler(start, initial_cloud_amount)
         s1e, c1e = old_euler(s1, c1)
         s2 = start.combine(s1e, a=0.75, b=0.25)

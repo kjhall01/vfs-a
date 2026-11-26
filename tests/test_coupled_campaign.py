@@ -92,11 +92,12 @@ def test_radiation_off_needs_only_bomex_namelist(source, config):
     assert adapter.radiation is None
 
 
-def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
+@pytest.mark.parametrize("air_method", ["ssprk3", "ssprk43"])
+def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config, air_method):
     # Full campaign path: ThermalSnowOceanIce must forward the selected
     # integrator to the moving snow/ocean/ice dynamics, without rejecting it
     # as an independent surface forcing option.
-    candidate = replace(config, ocean_dynamics_integrator="ssprk43")
+    candidate = replace(config, ocean_dynamics_integrator="ssprk43", atmosphere_dynamics_integrator=air_method)
     assert candidate.validate() == candidate
     with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
         adapter, air, receiver, sea = c.build(candidate, source, Path("synthetic"))
@@ -416,7 +417,16 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     previous_sources = dict(c.source_hashes())
     previous_sources[VERIFIER] = NATIVE_VAPOR_VERIFIER
     previous_sources["workflows/coupled/campaign.py"] = "200c9497dab13b00f3e7f33e5faf19fcbd30fa611a3912d0630d7c0c303dab9d"
-    with patch.object(c, "source_hashes", return_value=previous_sources):
+    previous_sources["workflows/pyam21/dynamics.py"] = "3db19be53cafe3f86798392c5efb8d8ad46ded1710f0cca2184208aab46459cd"
+    asdict = c.asdict
+
+    def pilot_asdict(obj):
+        fields = asdict(obj)
+        if isinstance(obj, c.CampaignConfig):
+            del fields["atmosphere_dynamics_integrator"]
+        return fields
+
+    with patch.object(c, "source_hashes", return_value=previous_sources), patch.object(c, "asdict", pilot_asdict):
         assert c.main(args + ["--output", str(old), "--stop-after-days", str(60/c.DAY)]) == 0
     resume = ["--resume", str(old / "restarts/restart_00000060.nc"),
               "--resume-compatible-manifest", str(old / "manifest.json")]
@@ -429,6 +439,17 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     audit = json.loads((new/"compatible_resume_audit.json").read_text())
     assert audit["horizon_days"] == {"prior": 30, "current": 395}
     assert audit["numerical_change"] == "none"
+
+    four_stage = tmp_path / "four_stage"
+    path.write_text(yaml.safe_dump(c.asdict(replace(config, days=395, atmosphere_dynamics_integrator="ssprk43"))))
+    with patch.object(c, "advance_dynamics", wraps=c.advance_dynamics) as advance_air:
+        assert c.main(args + ["--output", str(four_stage)] + end + resume) == 0
+    assert [call.kwargs["integrator"] for call in advance_air.call_args_list] == ["ssprk43"] * 4
+    audit = json.loads((four_stage/"compatible_resume_audit.json").read_text())
+    assert audit["atmosphere_dynamics_integrator"] == {"prior": "ssprk3", "current": "ssprk43", "from_seconds": 60}
+    assert audit["numerical_change"] == "atmospheric_ssprk3_to_ssprk43"
+    assert c.main(args + ["--output", str(tmp_path/"strict"), "--resume", str(four_stage/restart),
+                          "--stop-after-days", str(180/c.DAY)]) == 0
 
     for change in ({"days": 29}, {"days": 395, "atmosphere_dt": 12}):
         path.write_text(yaml.safe_dump(c.asdict(replace(config, **change))))
