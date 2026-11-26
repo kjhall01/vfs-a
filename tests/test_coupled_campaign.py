@@ -286,6 +286,9 @@ def test_output_schedule_and_nonleap_year():
         0,
         0,
     )
+    long_run = c.CampaignConfig(days=395).validate()
+    assert c.snapshot_times(long_run.days)[-31:] == list(range(365 * c.DAY, 396 * c.DAY, c.DAY))
+    assert get_date(set_date(2001, 1, 1) + set_time(395 * c.DAY)) == (2002, 1, 31, 0, 0, 0)
     with pytest.raises(ValueError):
         c.CampaignConfig(start_year=2000).validate()
     with pytest.raises(ValueError):
@@ -302,12 +305,29 @@ def test_actual_astronomy_season_and_fixed_solar_configuration(source, config):
     )
     assert june > 0.4 and december < -0.4
     assert astro.period == 365 * c.DAY
+    epoch = set_date(config.start_year, 1, 1)
+    assert astro.orbital_time(epoch + set_time(395*c.DAY)) == pytest.approx(
+        astro.orbital_time(epoch + set_time(30*c.DAY))
+    )
     assert (
         adapter.radiation_manifest["namelist"]["radiation_driver_nml"]["solar_constant"]
         == 1361.0
     )
     with pytest.raises(ValueError, match="radiation-data"):
         c.build(config, source, None)
+
+
+def test_coupled_clock_crosses_new_year(source, config):
+    config = replace(config, days=395)
+    with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
+        adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
+    boundary = 365 * c.DAY
+    air = replace(air, time_seconds=boundary - config.physics_dt)
+    with torch.no_grad():
+        for end in (boundary, boundary + config.physics_dt):
+            air, sea, _ = c.advance(adapter, air, receiver, sea, config.physics_dt, config)
+            assert air.time_seconds == end
+            assert get_date(adapter.start + set_time(end))[:3] == (2002, 1, 1)
 
 
 def test_builder_applies_solar_constant_to_upstream_package(source, config, tmp_path):
@@ -382,6 +402,39 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path, na
             torch.tensor(ds.ocean_eddy_energy.values[0]),
             water.coupled.ocean.specific_eddy_energy(),
         )
+
+
+def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path):
+    from workflows.coupled.restart_compat import NATIVE_VAPOR_VERIFIER, VERIFIER
+
+    path = tmp_path / "config.yaml"
+    args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
+    old = tmp_path / "pilot"
+    new = tmp_path / "continued"
+    control = tmp_path / "control"
+    path.write_text(yaml.safe_dump(c.asdict(replace(config, days=30))))
+    previous_sources = dict(c.source_hashes())
+    previous_sources[VERIFIER] = NATIVE_VAPOR_VERIFIER
+    previous_sources["workflows/coupled/campaign.py"] = "200c9497dab13b00f3e7f33e5faf19fcbd30fa611a3912d0630d7c0c303dab9d"
+    with patch.object(c, "source_hashes", return_value=previous_sources):
+        assert c.main(args + ["--output", str(old), "--stop-after-days", str(60/c.DAY)]) == 0
+    resume = ["--resume", str(old / "restarts/restart_00000060.nc"),
+              "--resume-compatible-manifest", str(old / "manifest.json")]
+    end = ["--stop-after-days", str(120/c.DAY)]
+    path.write_text(yaml.safe_dump(c.asdict(replace(config, days=395))))
+    assert c.main(args + ["--output", str(new)] + end + resume) == 0
+    assert c.main(args + ["--output", str(control)] + end) == 0
+    restart = Path("restarts/restart_00000120.nc")
+    same_tree(c.read_checkpoint(new/restart), c.read_checkpoint(control/restart))
+    audit = json.loads((new/"compatible_resume_audit.json").read_text())
+    assert audit["horizon_days"] == {"prior": 30, "current": 395}
+    assert audit["numerical_change"] == "none"
+
+    for change in ({"days": 29}, {"days": 395, "atmosphere_dt": 12}):
+        path.write_text(yaml.safe_dump(c.asdict(replace(config, **change))))
+        bad = tmp_path / f"rejected-{change['days']}"
+        assert c.main(args + ["--output", str(bad)] + end + resume) != 0
+        assert "configuration differs" in json.loads((bad/"status.json").read_text())["error"]
 
 
 def test_cli_resume_and_last_good_on_failure(source, config, tmp_path, capsys):

@@ -1,4 +1,4 @@
-"""365-day coupled aquaplanet campaign with explicit device and precision."""
+"""Coupled campaigns with seasonal radiation, explicit device and precision."""
 
 import argparse
 import csv
@@ -176,10 +176,8 @@ class CampaignConfig:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
         if self.overlap_dynamics and torch.device(self.device).type != "cpu":
             raise ValueError("overlap_dynamics requires CPU components")
-        if self.start_year % 4 == 0 or self.days > 365:
-            raise ValueError(
-                "campaign requires a non-leap start year and at most 365 days"
-            )
+        if self.start_year % 4 == 0:
+            raise ValueError("campaign requires a non-leap start year")
         if self.cells < 16 or self.atmosphere_levels < 4 or self.ocean_levels < 2:
             raise ValueError("insufficient cells or levels")
         if type(self.lloyd_iterations) is not int or self.lloyd_iterations < 0:
@@ -257,7 +255,7 @@ class CampaignConfig:
 
 
 def snapshot_times(days=365):
-    """0,6h,...,day14,day15,...,day365. Includes day14 exactly once."""
+    """Six-hourly through day 14, then daily through the configured horizon."""
     end = days * DAY
     early = list(range(0, min(14 * DAY, end) + 1, 6 * 3600))
     return early + list(range(15 * DAY, end + 1, DAY))
@@ -1139,7 +1137,7 @@ def main(argv=None):
     parser.add_argument("--resume", type=Path)
     parser.add_argument(
         "--resume-compatible-manifest", type=Path,
-        help="Opt-in audited source-compatible restart bridge; requires prior run manifest.json and --resume",
+        help="Resume using the checkpoint manifest. Allows audited source changes and a longer campaign horizon.",
     )
     parser.add_argument("--device", help="cpu, cuda, cuda:N, or mps (overrides YAML)")
     parser.add_argument("--dtype", choices=("float32", "float64"), help="Floating-point precision; MPS requires float32 (overrides YAML)")
@@ -1321,7 +1319,14 @@ def main(argv=None):
             expected_restart_identity = identity
             if args.resume_compatible_manifest:
                 prior = json.loads(args.resume_compatible_manifest.read_text())
-                if prior.get("configuration") != asdict(config):
+                # Reconstruct the checkpoint fingerprint using its original horizon.
+                # Only the end day may grow. Physics, mesh and runtime must still match.
+                saved_config = prior.get("configuration")
+                saved_days = saved_config.get("days") if isinstance(saved_config, dict) else None
+                if type(saved_days) is not int or not 0 < saved_days <= config.days:
+                    raise ValueError("compatible restart: prior campaign configuration differs (days)")
+                prior_config = replace(config, days=saved_days)
+                if saved_config != asdict(prior_config):
                     raise ValueError("compatible restart: prior campaign configuration differs")
                 if prior.get("mesh", {}).get("sha256") != mesh_info.get("sha256"):
                     raise ValueError("compatible restart: mesh SHA256 differs")
@@ -1337,7 +1342,7 @@ def main(argv=None):
                     prior.get("source_sha256"), hashes
                 )
                 expected_restart_identity = fingerprint(
-                    config, adapter, prior["source_sha256"],
+                    prior_config, adapter, prior["source_sha256"],
                     args.smoke_no_radiation, mesh_info.get("sha256")
                 )
                 if (prior.get("fingerprint") != expected_restart_identity
@@ -1353,6 +1358,8 @@ def main(argv=None):
                     new_fingerprint=identity,
                     **source_delta,
                 )
+                if saved_days != config.days:
+                    audit["horizon_days"] = {"prior": saved_days, "current": config.days}
                 atomic_json(output / "compatible_resume_audit.json", audit)
                 if "modified_instrumentation_files" in source_delta:
                     atomic_json(output / "instrumentation_resume_audit.json", audit)
