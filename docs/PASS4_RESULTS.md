@@ -1,5 +1,9 @@
 # Pass 4 — physical-field workflow
 
+## Coupled climate plots
+
+The plotting functions were exercised on the 4,096-cell Earth pilot restart at second 2,500,800 on CPU in float64. Reconstructed geographic wind components agreed with the model’s cell-vector reconstruction to within 9 × 10⁻¹⁴ m/s. A snapshot-format copy gave the same plotted fields as the restart. Additional checks covered a constant meridional wind transport integral, nonuniform sample times, the wet SST mask and optional precipitation. The installed wheel rendered a section outside the checkout. Both portable atmospheric fixture comparisons passed.
+
 ## Native vapor funding and atmospheric timestep replay
 
 The 4,096-cell Earth checkpoint at 2,500,800 s had three native interfaces
