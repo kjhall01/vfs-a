@@ -1,4 +1,4 @@
-# Day-30 Earth pilot settings. Atmosphere uses bounded SSPRK3.
+# Day-30 Earth pilot settings with the four-stage atmospheric stepper.
 # Supply matching --mesh and --geography.
 days: 395
 cells: 4096
@@ -10,6 +10,7 @@ top_layer_m: 10.0
 lloyd_iterations: 0
 physics_dt: 1200
 atmosphere_dt: 600
+atmosphere_dynamics_integrator: ssprk43
 ocean_dt: 1200
 ocean_dynamics_integrator: ssprk43
 mixing_dt: 1200

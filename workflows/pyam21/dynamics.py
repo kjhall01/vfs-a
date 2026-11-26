@@ -7,16 +7,18 @@ from vfs.atmosphere.bounded_transport import graph, bounded_transfer
 from vfs.atmosphere.moist_cp import interface_pressure_mass
 
 
-def advance_dynamics(adapter, state, dt):
+def advance_dynamics(adapter, state, dt, *, integrator="ssprk3"):
     """Advance dynamics without advancing the physics clock or its memory.
 
-    The authoritative atmospheric Euler maps and their SSP combinations are
-    unchanged. Cloud fraction uses the same carrier and stage endpoints, with
-    cloudy/clear amounts bounded as complementary passive constituents.
+    Advance the native prognostics and the extensive cloud amount with the
+    same bounded Euler maps and Runge–Kutta weights.
     """
     model = adapter.model
     if model.transport is None:
-        raise ValueError("cloud transport currently supports bounded SSPRK3 only")
+        raise ValueError("cloud transport requires bounded moist Euler stages")
+    if integrator not in ("ssprk3", "ssprk43"):
+        raise ValueError("atmosphere dynamics integrator must be ssprk3 or ssprk43")
+    stage_dt = dt / 2 if integrator == "ssprk43" else dt
     adapter.check(state)
     area = model.mesh.cell_area[:, None]
 
@@ -25,11 +27,11 @@ def advance_dynamics(adapter, state, dt):
 
     def euler(s, cloud_amount):
         end, info = model.transport.euler_with_info(
-            s, dt, include_carrier_graph=True
+            s, stage_dt, include_carrier_graph=True
         )
         # Reuse the authoritative bounded-moist carrier graph from this exact
         # Euler evaluation. Rebuilding it duplicates the transport primitives
-        # and graph index materialization three times per SSPRK3 step.
+        # and graph index materialization at every stage.
         m, i, j, F = info["carrier_graph"]
         q = (cloud_amount / m).flatten()
         fractions = torch.stack((1 - q, q), -1)
@@ -39,8 +41,8 @@ def advance_dynamics(adapter, state, dt):
             m.flatten()[:, None] * fractions,
             i,
             j,
-            dt * F,
-            dt * F[:, None] * face,
+            stage_dt * F,
+            stage_dt * F[:, None] * face,
             target_mass=mass(end).flatten(),
         )
         return end, amounts[:, 1].reshape_as(m)
@@ -49,10 +51,18 @@ def advance_dynamics(adapter, state, dt):
     C = mass(initial) * state.cloud_fraction
     s1, c1 = euler(initial, C)
     s1e, c1e = euler(s1, c1)
-    s2, c2 = initial.combine(s1e, a=0.75, b=0.25), 0.75 * C + 0.25 * c1e
-    s2e, c2e = euler(s2, c2)
-    end = initial.combine(s2e, a=1 / 3, b=2 / 3)
-    cloud = ((1 / 3) * C + (2 / 3) * c2e) / mass(end)
+    if integrator == "ssprk43":
+        # Three half Euler steps, a convex blend with the initial amounts,
+        # then one final half Euler step completes the full dt.
+        third, c3 = euler(s1e, c1e)
+        middle = initial.combine(third, a=2 / 3, b=1 / 3)
+        end, cloud_amount = euler(middle, (2 / 3) * C + (1 / 3) * c3)
+    else:
+        s2, c2 = initial.combine(s1e, a=0.75, b=0.25), 0.75 * C + 0.25 * c1e
+        s2e, c2e = euler(s2, c2)
+        end = initial.combine(s2e, a=1 / 3, b=2 / 3)
+        cloud_amount = (1 / 3) * C + (2 / 3) * c2e
+    cloud = cloud_amount / mass(end)
     result = replace(state, atmosphere=end, cloud_fraction=cloud)
     adapter.check(result)
     return result

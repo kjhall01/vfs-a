@@ -146,7 +146,7 @@ NetCDF. Earlier revisions remain subject to their own source-compatibility check
 
 ### Continue the 30-day Earth pilot through day 395
 
-The [395-day preset](earth_shelf_4096_395d.yaml) uses the pilot's bounded atmospheric SSPRK3 at 600 s and ocean–ice SSPRK(4,3) at 1,200 s. The atmosphere stepper is selected by the coupled dynamics code. The YAML integrator key selects the ocean–ice stepper. Physics runs every 1,200 s, with five mixing substeps and two GM/Redi substeps per 1,200 s. Radiation and ALE run every 4,800 s. The preset uses CPU float64 with compilation and four threads.
+The [395-day preset](earth_shelf_4096_395d.yaml) uses four-stage, third-order SSPRK(4,3) for the bounded atmosphere at 600 s. Set `atmosphere_dynamics_integrator: ssprk43` to select it. The ocean–ice stepper is independently set to `ocean_dynamics_integrator: ssprk43` at 1,200 s. Physics runs every 1,200 s, with five mixing substeps and two GM/Redi substeps per 1,200 s. Radiation and ALE run every 4,800 s. The preset uses CPU float64 with compilation and four threads.
 
 From the repository root, set `VFS_MESH`, `VFS_GEOGRAPHY`, `PYAM21_SOURCE` and `PYAM21_RADIATION_DATA` to the paths used for the pilot. Select the segment that **wrote** the day-30 checkpoint. For example:
 
@@ -159,7 +159,7 @@ python -u tools/run_earth_shelf.py \
   --output runs/earth-day030-to-395
 ```
 
-Day 395 is absolute elapsed time, so this advances another 365 simulated days. The manifest check uses the checkpoint's original configuration and records the longer horizon. It also verifies model sources, input identities, runtime, compilation, and numerical settings. If the original run used different settings, copy its `configuration.json` and change only `days` to 395. Use that file as `--config`. To initialize a fresh 395-day run, omit both resume arguments and choose a new output directory. The PyAM21 calendar is Julian and the configured seasonal forcing repeats every 365 simulated days.
+Day 395 is absolute elapsed time, so this advances another 365 simulated days. The manifest check uses the checkpoint's original configuration and records both the longer horizon and the time of the atmospheric integrator switch in `compatible_resume_audit.json`. It also verifies model sources, input identities, runtime, compilation, and numerical settings. If the original run used different settings, copy its `configuration.json` and set `days: 395` and `atmosphere_dynamics_integrator: ssprk43`. Use that file as `--config`. To initialize a fresh 395-day run, omit both resume arguments and choose a new output directory. The PyAM21 calendar is Julian and the configured seasonal forcing repeats every 365 simulated days.
 
 ### Generate the mesh-matched geography
 

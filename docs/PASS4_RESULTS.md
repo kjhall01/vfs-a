@@ -22,8 +22,8 @@ uninterrupted state tensors and all pre-existing ledger entries bit for bit.
 For the integrator comparison, each atmosphere-only run started from the same
 previously recovered day-28.9444 state and advanced 1,200 s. The experimental
 SSPRK(4,3) used four bounded Euler maps of duration dt/2, with the same convex
-combination for cloud amounts and native prognostics. The production atmosphere
-continues to use SSPRK3. Median wall times cover three warmed measurements in
+combination for cloud amounts and native prognostics. At the time of this comparison the campaign
+used SSPRK3. Median wall times cover three warmed measurements in
 rotating order on four CPU threads in float64 eager mode.
 
 | Method | Step (s) | Euler evaluations | ΔH (J/m²) | Wall (s) | Wind RMS difference (m/s) | Vapor RMS difference (kg/kg) |
@@ -59,7 +59,10 @@ a full warmup, then three timed repeats in alternating order.
 
 The four-stage method reduced the magnitude of the coupled residual by
 49.0% with a 11.0% reduction in coupled throughput on this CPU.
-The atmosphere-only solver comparison above used eager execution.
+The atmosphere-only solver comparison above used eager execution. The 395-day
+Earth preset now selects the four-stage method at 600 s. Replaying the same
+1,200 s of atmospheric dynamics through the selectable implementation gave
+−14.8795 J/m² for SSPRK3 and −7.5373 J/m² for SSPRK(4,3).
 
 ## Coupled reservoir limiters
 
