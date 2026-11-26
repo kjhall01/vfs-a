@@ -44,6 +44,6 @@ def configure_compilation(adapter, receiver, *, enabled=False, backend='inductor
             setattr(mesh, name, torch.compile(getattr(mesh, name), **options))
         kernel = adapter.model.dynamics.kernel
         kernel.mixture_gradients = torch.compile(kernel.mixture_gradients, **options)
-        receiver.H.model.compile_thermodynamics(backend=backend)
+        receiver.ocean_ice.ocean.compile_thermodynamics(backend=backend)
     adapter.compilation_manifest = manifest
     return manifest

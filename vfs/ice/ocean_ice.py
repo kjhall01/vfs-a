@@ -41,7 +41,7 @@ class CoupledReport:
     loading_power: torch.Tensor  # W, ocean KE work (opposite ice height work)
 
 
-class OceanIce:
+class OceanIceMechanics:
     """Own an ocean plus optional category-ice mechanics on the same mesh.
 
     State is RidgingState: existing ocean state plus CategoryIce. Ocean surface sources are owned by this wrapper. Existing vertical mixing
@@ -480,3 +480,7 @@ class OceanIce:
         )
         state, _ = phase.apply(state, 0.5 * dt, heat_flux=q1)
         return state, work + 0.5 * dt * (area * (q0 + q1)).sum()
+
+
+# Historical standalone category-mechanics entry point.
+OceanIce = OceanIceMechanics

@@ -71,17 +71,17 @@ def main(argv=None):
             adapter, _, receiver, template = c.build(config, args.source, 'diagnostic-cache', generator_xyz=xyz)
         air = PhysicsState(MoistState(**pa['atmosphere'], mesh=adapter.model.mesh, column=adapter.model.column),
                            pa['cloud_fraction'], pa['memory'], pa['surface'], pa['radiation'], pa['time_seconds'])
-        ocean = template.coupled.ocean.with_layers(template.coupled.ocean.ocean.with_tensors(**payload['ocean']), tke_h=payload['tke_h'], eddy_h=payload['eddy_h'])
-        sea = c.ThermalIceState(c.RidgingState(ocean, c.CategoryIce(**payload['ice'])),
-                               payload['snow_mass'], payload['cold_content'])
+        ocean = template.ocean.with_layers(template.ocean.resolved.with_tensors(**payload['ocean']), tke_h=payload['tke_h'], eddy_h=payload['eddy_h'])
+        sea = c.OceanIceState(ocean, c.SeaIceState(**payload['ice'], snow_mass=payload['snow_mass'],
+                                                     cold_content=payload['cold_content']))
         adapter.check(air)
-        receiver.snow.check(sea)
+        receiver.ocean_ice.check(sea)
         result['compilation'] = adapter.compilation_manifest
         initial = c.inventories(adapter, air, receiver, sea)
         original = c.ale_step
 
         def capture(receiver, water, cfg):
-            state = water.coupled.ocean
+            state = water.ocean
             fractions = c.rest_thickness(cfg).to(state.ocean.h)
             target = state.ocean.h.sum(-1, keepdim=True)*(fractions/fractions.sum())[None]
             c.checkpoint(args.output/'pre_ale.pt', dict(

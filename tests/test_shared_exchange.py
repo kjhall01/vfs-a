@@ -57,14 +57,14 @@ def surface_case(model, cover=True):
 def total_water(adapter, air, receiver, water):
     A = adapter.model.mesh.cell_area
     atmospheric = adapter.model.diagnostics(air.atmosphere)["species"].sum()
-    ocean = water.coupled.ocean.ocean
+    ocean = water.ocean.ocean
     return (
         atmospheric
         + (
             A
             * (
                 ocean.column.rho0 * ocean.h.sum(-1)
-                + receiver.H.mass(water.coupled)[:, 0]
+                + receiver.H.mass(water)[:, 0]
             )
         ).sum()
     )
@@ -87,7 +87,7 @@ def test_combined_first_law_and_reciprocal_impulse(model, cover, radiation):
         water.coupled
     )
     W0 = total_water(adapter, air, receiver, water)
-    salt0 = water.coupled.ocean.ocean.salt_h.clone()
+    salt0 = water.ocean.ocean.salt_h.clone()
     out, sea, x, ar, sr = exchange_step(
         adapter,
         air,
@@ -115,9 +115,9 @@ def test_combined_first_law_and_reciprocal_impulse(model, cover, radiation):
     for k, v in ar.column_result["tile_fluxes"].items():
         torch.testing.assert_close(v.sum(-1), ar.fluxes[k], rtol=1e-12, atol=1e-13)
     assert not torch.equal(
-        sea.coupled.ocean.ocean.temperature(), water.coupled.ocean.ocean.temperature()
+        sea.coupled.ocean.ocean.temperature(), water.ocean.ocean.temperature()
     )
-    assert not torch.equal(sea.coupled.ocean.ocean.u_e, water.coupled.ocean.ocean.u_e)
+    assert not torch.equal(sea.coupled.ocean.ocean.u_e, water.ocean.ocean.u_e)
     assert air.time_seconds == 0 and out.time_seconds == 60
 
 
@@ -140,7 +140,7 @@ def test_cached_longwave_uses_same_bottom_interface(model):
 def test_exchange_rejects_wrong_mesh_and_atomic_failure(model):
     adapter, air = initial(model)
     receiver, water = surface_case(model)
-    before = water.coupled.ocean.ocean.temp_h.clone()
+    before = water.ocean.ocean.temp_h.clone()
     with patch.object(receiver, "finish", side_effect=ValueError("deliberate")):
         with pytest.raises(ValueError, match="deliberate"):
             exchange_step(
@@ -152,7 +152,7 @@ def test_exchange_rejects_wrong_mesh_and_atomic_failure(model):
                 ice_temperature=torch.full_like(water.snow_mass, 270.0),
             )
     assert air.time_seconds == 0
-    torch.testing.assert_close(water.coupled.ocean.ocean.temp_h, before, rtol=0, atol=0)
+    torch.testing.assert_close(water.ocean.ocean.temp_h, before, rtol=0, atol=0)
     tiles = receiver.tiles(water, torch.full_like(water.snow_mass, 270.0))
     with pytest.raises(ValueError, match="fractions"):
         replace(tiles, fraction=tiles.fraction * 0.9).validate(model.mesh)

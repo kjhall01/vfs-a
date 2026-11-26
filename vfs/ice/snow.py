@@ -47,6 +47,18 @@ class SnowState:
     snow_mass: torch.Tensor  # [cell,2], kg/m2 of horizontal cell, subset of solid mass
 
 
+    @property
+    def ocean(self):
+        return self.coupled.ocean
+
+    @property
+    def ice(self):
+        return self.coupled.ice
+
+    def with_surface(self, ocean, ice, snow_mass):
+        return SnowState(RidgingState(ocean, ice), snow_mass)
+
+
 @dataclass(frozen=True)
 class SurfaceFlux:
     heat: torch.Tensor  # [cell,1], net external W/m2
@@ -103,31 +115,25 @@ class SnowPhase(CategoryThermodynamics):
         return replace(ice, area=area), da, dv, thickness
 
 
-class SnowOceanIce:
-    """Compose snow-labelled frozen water with the existing coupled integrator.
+class SnowCoveredIce:
+    """Shared snow, mixing and split-step operations for moving ocean–ice models."""
 
-    Snowfall is kg/m2/s per ice-covered area. Only its covered-area interception
-    enters this model; precipitation on open water belongs to the ocean forcing
-    driver. Snow arrives co-moving with ice, at the zero-layer solid enthalpy
-    datum. The returned boundary ledger includes that mass, latent energy and
-    the mechanical work of incorporation. No atmospheric sensible/impact heat.
-    """
-
-    def __init__(self, coupled, parameters=SnowParameters()):
-        self.coupled = coupled
+    def __init__(self, mechanics, parameters):
+        self.mechanics = mechanics
+        self.ocean = mechanics.ocean
         self.parameters = parameters
-        self.hamiltonian = coupled.hamiltonian
-        self.phase = CategoryThermodynamics(coupled)
+        self.hamiltonian = mechanics.hamiltonian
+        self.phase = CategoryThermodynamics(mechanics)
 
     def check(self, state):
         """Validate ocean, sea ice, and snow at an externally supplied state."""
-        self.coupled.check(state.coupled)
+        self.mechanics.check(state)
         self._check_snow_stores(state)
 
     def _check_snow_stores(self, state):
         """Validate snow only when the same coupled stage is checked below."""
         m = state.snow_mass
-        total = self.hamiltonian.slab.parameters.density * state.coupled.ice.volume
+        total = self.hamiltonian.slab.parameters.density * state.ice.volume
         if (
             m.shape != total.shape
             or m.dtype != total.dtype
@@ -140,22 +146,16 @@ class SnowOceanIce:
                 "snow_mass must be finite [cell,2], matching state, between zero and total solid mass"
             )
 
-    def bare(self, state):
-        """Wrap an existing ice state with no snow; no change to energy or mass."""
-        result = SnowState(state, torch.zeros_like(state.ice.volume))
-        self.check(result)
-        return result
-
     def depths(self, state):
         """Actual ice depth and diagnostic porous snow depth, per covered area."""
-        ice = state.coupled.ice
+        ice = state.ice
         rho = self.hamiltonian.slab.parameters.density
         hi = (ice.volume - state.snow_mass / rho) / safe(ice.area)
         hs = state.snow_mass / (self.parameters.density * safe(ice.area))
         return hi, hs
 
     def field(self, state, value, name, *, nonnegative=False):
-        sample = state.coupled.ice.area[:, :1]
+        sample = state.ice.area[:, :1]
         if (
             value.shape != sample.shape
             or value.dtype != sample.dtype
@@ -169,60 +169,20 @@ class SnowOceanIce:
             )
         return value
 
-    def surface_flux(self, state, air_temperature, shortwave=None):
-        self.check(state)
-        air = self.field(state, air_temperature, "air_temperature")
-        sw = (
-            torch.zeros_like(air)
-            if shortwave is None
-            else self.field(state, shortwave, "shortwave", nonnegative=True)
-        )
-        s = state.coupled.ocean.ocean
-        ice = state.coupled.ice
-        p = self.parameters
-        ip = self.hamiltonian.slab.parameters
-        hi, hs = self.depths(state)
-        fraction = hs / (hs + p.patch_depth)
-        alpha = p.ice_albedo + fraction * (p.albedo - p.ice_albedo)
-        absorbed = (1 - alpha) * sw
-        resistance = hi / ip.conductivity + hs / p.conductivity
-        base = ip.freezing_temperature(s.salinity()[:, :1])
-        surface = (base + resistance * (p.air_conductance * air + absorbed)) / (
-            1 + p.air_conductance * resistance
-        )
-        surface = torch.minimum(
-            surface, torch.zeros_like(surface)
-        )  # physical melting constraint
-        covered = (ice.area * (p.air_conductance * (air - surface) + absorbed)).sum(
-            -1, keepdim=True
-        )
-        wet = self.hamiltonian.model.energy.mass_area(s) > 0
-        open_fraction = wet.to(s.h.dtype) - ice.area.sum(-1, keepdim=True)
-        heat = covered + open_fraction * (
-            p.air_conductance * (air - s.temperature()[:, :1])
-            + (1 - p.water_albedo) * sw
-        )
-        albedo = (ice.area * alpha).sum(
-            -1, keepdim=True
-        ) + open_fraction * p.water_albedo
-        reflected = albedo * sw
-        absorbed_grid = wet.to(s.h.dtype) * sw - reflected
-        return SurfaceFlux(heat, albedo, absorbed_grid, reflected, surface)
-
     def accumulate(self, state, dt, snowfall):
         """Deposit co-moving solid water; return (state, incoming kg, incoming J)."""
-        self.check(state)
+        self.mechanics.check(state)
+        self._check_snow_stores(state)
         if not math.isfinite(dt) or dt <= 0:
             raise ValueError("positive finite dt required")
         rate = self.field(state, snowfall, "snowfall", nonnegative=True)
-        old = state.coupled
+        old = state
         H = self.hamiltonian
         s, ice = old.ocean.ocean, old.ice
         rho = H.slab.parameters.density
         dm = dt * rate * ice.area
         dv = dm / rho
-        end = replace(old, ice=replace(ice, volume=ice.volume + dv))
-        result = SnowState(end, state.snow_mass + dm)
+        result = state.with_surface(old.ocean, replace(ice, volume=ice.volume + dv), state.snow_mass + dm)
         # Exact integral of the declared incoming-mass conjugate along addition
         # at fixed category area and velocity. This is a boundary-work formula,
         # not subtraction of a computed global energy residual.
@@ -251,65 +211,34 @@ class SnowOceanIce:
         )
         area = mesh.cell_area[:, None]
         energy = (area * (latent + potential + variance)).sum() + kinetic
-        self.check(result)
+        self.mechanics.check(result)
+        self._check_snow_stores(result)
         return result, (area * mass_added).sum(), energy
 
-    def phase_step(self, state, dt, heat_flux):
-        self.check(state)
-        phase = (
-            SnowPhase(self.coupled, state.snow_mass)
-            if (state.snow_mass > 0).any()
-            else self.phase
-        )
-        end, report = phase.apply(state.coupled, dt, heat_flux=heat_flux)
-        rho = self.hamiltonian.slab.parameters.density
-        loss = (rho * (state.coupled.ice.volume - end.ice.volume)).clamp_min(0)
-        melt = torch.minimum(loss, state.snow_mass)
-        result = SnowState(end, state.snow_mass - melt)
-        self.check(result)
-        area = end.ocean.ocean.mesh.cell_area[:, None]
-        return result, report.external_heat.sum(), (area * melt).sum()
-
-    def tendency(self, state, dt, **options):
-        # Coupled.tendency performs the complete ocean/ice stage check on the
-        # identical unmodified state. Check the snow store here; do not repeat
-        # the expensive ocean temperature/caloric validation beforehand.
-        self._check_snow_stores(state)
-        rhs, report = self.coupled.tendency(state.coupled, dt, **options)
-        ice = state.coupled.ice
-        mesh = state.coupled.ocean.ocean.mesh
+    def store_tendency(self, state, store, *, transport=True, ridging=True):
+        """Transport a frozen store with its donor category and transfer it during ridging."""
+        ice = state.ice
+        mesh = state.ocean.ocean.mesh
         c0, c1 = mesh.cellsOnEdge.T
-        ds = torch.zeros_like(state.snow_mass)
-        if options.get("transport", True):
+        rate = torch.zeros_like(store)
+        if transport:
             donor = torch.where(
-                ice.velocity >= 0, state.snow_mass[c0], state.snow_mass[c1]
+                ice.velocity >= 0, store[c0], store[c1]
             )
-            ds = -mesh.div(donor * ice.velocity)
-        if options.get("ridging", True):
+            rate = -mesh.div(donor * ice.velocity)
+        if ridging:
             # Same donor fraction as the solid-water transfer; compaction
             # changes footprint only. Snow remains with its frozen carrier.
             compression = (-mesh.div(ice.velocity)).clamp_min(0)
-            ridge = self.coupled.ridge
+            ridge = self.mechanics.ridge
             chi = (
                 ice.area.sum(-1, keepdim=True).pow(ridge.crowding_power)
                 * compression
                 / (compression + ridge.strain_rate)
             )
-            transfer = chi * compression * state.snow_mass[:, :1]
-            ds = ds + torch.cat((-transfer, transfer), -1)
-        return SnowState(rhs, ds), report
-
-    def add(self, state, rhs, dt):
-        return SnowState(
-            self.coupled.add(state.coupled, rhs.coupled, dt),
-            state.snow_mass + dt * rhs.snow_mass,
-        )
-
-    def blend(self, first, second, weight):
-        return SnowState(
-            self.coupled.blend(first.coupled, second.coupled, weight),
-            (1 - weight) * first.snow_mass + weight * second.snow_mass,
-        )
+            transfer = chi * compression * store[:, :1]
+            rate = rate + torch.cat((-transfer, transfer), -1)
+        return rate
 
     def dynamics_step(self, state, dt, *, integrator="ssprk3", **options):
         """Choose the explicit ocean–ice tableau without changing stage physics."""
@@ -335,21 +264,16 @@ class SnowOceanIce:
         this wrapper changes no mixing equations, TKE funding, or energy checks.
         It preserves snow and thermal-ice storage on the returned state.
         """
-        model = self.coupled.ocean
+        model = self.ocean
         if model.closure is None:
             return state
-        original = state.coupled.ocean
+        original = state.ocean
         mixed, k, _ = model.closure.apply(
             model.layers, original.ocean, original.tke_h, dt
         )
         if not torch.equal(mixed.h, original.ocean.h):
             raise ValueError("snow coupling requires fixed-geometry mixing")
-        state = replace(
-            state,
-            coupled=replace(
-                state.coupled, ocean=original.with_layers(mixed, tke_h=k)
-            ),
-        )
+        state = state.with_surface(original.with_layers(mixed, tke_h=k), state.ice, state.snow_mass)
         if stage_callback is not None:
             stage_callback("vertical_tke_mixing", state, 0.0)
         return state
@@ -407,8 +331,7 @@ class SnowOceanIce:
         state, q0, melt0 = self.phase_step(state, 0.5 * dt, flux(state))
         if stage_callback is not None:
             stage_callback("phase_half_0", state, q0)
-        coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
-        state = replace(state, coupled=coupled)
+        state = self.drag_step(state, 0.5 * dt)
         if stage_callback is not None:
             stage_callback("implicit_drag_half_0", state, 0.0)
         state, work = self.dynamics_step(
@@ -419,8 +342,7 @@ class SnowOceanIce:
             stage_callback("coupled_" + dynamics_integrator, state, work)
         if apply_mixing:
             state = self.mixing_step(state, dt, stage_callback=stage_callback)
-        coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
-        state = replace(state, coupled=coupled)
+        state = self.drag_step(state, 0.5 * dt)
         if stage_callback is not None:
             stage_callback("implicit_drag_half_1", state, 0.0)
         state, q1, melt1 = self.phase_step(state, 0.5 * dt, flux(state))
@@ -443,4 +365,107 @@ class SnowOceanIce:
             ep0 + ep1,
             melt0 + melt1,
             reports,
+        )
+
+
+class SnowOceanIce(SnowCoveredIce):
+    """Compose snow-labelled frozen water with the existing coupled integrator.
+
+    Snowfall is kg/m2/s per ice-covered area. Only its covered-area interception
+    enters this model; precipitation on open water belongs to the ocean forcing
+    driver. Snow arrives co-moving with ice, at the zero-layer solid enthalpy
+    datum. The returned boundary ledger includes that mass, latent energy and
+    the mechanical work of incorporation. No atmospheric sensible/impact heat.
+    """
+
+    def __init__(self, coupled, parameters=SnowParameters()):
+        super().__init__(coupled, parameters)
+        self.coupled = coupled
+
+    def drag_step(self, state, dt):
+        coupled, _ = self.mechanics.drag_step(state.coupled, dt)
+        return replace(state, coupled=coupled)
+
+    def bare(self, state):
+        """Wrap an existing ice state with no snow; no change to energy or mass."""
+        result = SnowState(state, torch.zeros_like(state.ice.volume))
+        self.check(result)
+        return result
+
+    def surface_flux(self, state, air_temperature, shortwave=None):
+        self.check(state)
+        air = self.field(state, air_temperature, "air_temperature")
+        sw = (
+            torch.zeros_like(air)
+            if shortwave is None
+            else self.field(state, shortwave, "shortwave", nonnegative=True)
+        )
+        s = state.coupled.ocean.ocean
+        ice = state.coupled.ice
+        p = self.parameters
+        ip = self.hamiltonian.slab.parameters
+        hi, hs = self.depths(state)
+        fraction = hs / (hs + p.patch_depth)
+        alpha = p.ice_albedo + fraction * (p.albedo - p.ice_albedo)
+        absorbed = (1 - alpha) * sw
+        resistance = hi / ip.conductivity + hs / p.conductivity
+        base = ip.freezing_temperature(s.salinity()[:, :1])
+        surface = (base + resistance * (p.air_conductance * air + absorbed)) / (
+            1 + p.air_conductance * resistance
+        )
+        surface = torch.minimum(
+            surface, torch.zeros_like(surface)
+        )  # physical melting constraint
+        covered = (ice.area * (p.air_conductance * (air - surface) + absorbed)).sum(
+            -1, keepdim=True
+        )
+        wet = self.hamiltonian.model.energy.mass_area(s) > 0
+        open_fraction = wet.to(s.h.dtype) - ice.area.sum(-1, keepdim=True)
+        heat = covered + open_fraction * (
+            p.air_conductance * (air - s.temperature()[:, :1])
+            + (1 - p.water_albedo) * sw
+        )
+        albedo = (ice.area * alpha).sum(
+            -1, keepdim=True
+        ) + open_fraction * p.water_albedo
+        reflected = albedo * sw
+        absorbed_grid = wet.to(s.h.dtype) * sw - reflected
+        return SurfaceFlux(heat, albedo, absorbed_grid, reflected, surface)
+
+    def phase_step(self, state, dt, heat_flux):
+        self.check(state)
+        phase = (
+            SnowPhase(self.coupled, state.snow_mass)
+            if (state.snow_mass > 0).any()
+            else self.phase
+        )
+        end, report = phase.apply(state.coupled, dt, heat_flux=heat_flux)
+        rho = self.hamiltonian.slab.parameters.density
+        loss = (rho * (state.coupled.ice.volume - end.ice.volume)).clamp_min(0)
+        melt = torch.minimum(loss, state.snow_mass)
+        result = SnowState(end, state.snow_mass - melt)
+        self.check(result)
+        area = end.ocean.ocean.mesh.cell_area[:, None]
+        return result, report.external_heat.sum(), (area * melt).sum()
+
+    def tendency(self, state, dt, **options):
+        # Coupled.tendency performs the complete ocean/ice stage check on the
+        # identical unmodified state. Check the snow store here; do not repeat
+        # the expensive ocean temperature/caloric validation beforehand.
+        self._check_snow_stores(state)
+        rhs, report = self.coupled.tendency(state.coupled, dt, **options)
+        ds = self.store_tendency(state, state.snow_mass, transport=options.get("transport", True),
+                                 ridging=options.get("ridging", True))
+        return SnowState(rhs, ds), report
+
+    def add(self, state, rhs, dt):
+        return SnowState(
+            self.coupled.add(state.coupled, rhs.coupled, dt),
+            state.snow_mass + dt * rhs.snow_mass,
+        )
+
+    def blend(self, first, second, weight):
+        return SnowState(
+            self.coupled.blend(first.coupled, second.coupled, weight),
+            (1 - weight) * first.snow_mass + weight * second.snow_mass,
         )

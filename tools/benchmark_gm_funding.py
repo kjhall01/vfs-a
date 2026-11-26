@@ -88,7 +88,7 @@ def main():
     with execution_context(device), torch.no_grad():
         _, _, receiver, sea = c.build(config, args.source, None, smoke_no_radiation=True,
                                       generator_xyz=xyz)
-        template = sea.coupled.ocean
+        template = sea.ocean
         values = c.copy_tree(payload["ocean"], device=device)
         state = template.with_layers(template.ocean.with_tensors(**values), tke_h=payload["tke_h"].to(device), eddy_h=payload["eddy_h"].to(device))
         result = benchmark(receiver.H.model, state, config, args.steps)

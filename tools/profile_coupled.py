@@ -190,7 +190,7 @@ class Instrument:
         return self.stack.__exit__(exc_type, exc, tb)
 
     def install(self):
-        a, owner = self.adapter, self.receiver.snow
+        a, owner = self.adapter, self.receiver.ocean_ice
         # Top-level, mutually exclusive stages of campaign.advance().
         for name, label in (
             ("advance_dynamics", "atmosphere_dynamics"),
@@ -218,17 +218,17 @@ class Instrument:
             ("accumulate", "snow_accumulation"),
         ):
             self._method(owner, name, label)
-        self._method(owner.coupled, "drag_step", "reciprocal_ice_drag")
+        self._method(owner.mechanics, "drag_step", "reciprocal_ice_drag")
         self._class_method(
-            type(owner.coupled.ocean.closure), "_apply",
+            type(owner.ocean.closure), "_apply",
             "ocean_mixing_internal_substep"
         )
         self._class_method(c.GMRedi, "apply", "GM_Redi_internal_substep")
         self._class_method(c.EddyDissipation, "apply", "EKE_decay")
-        if owner.coupled.ocean.backscatter is not None:
+        if owner.ocean.backscatter is not None:
             self._class_method(c.EddyBackscatter, "tendency", "ocean_backscatter")
         self._method(
-            owner.coupled.ocean, "remap_with_report", "ALE_conservative_remap"
+            owner.ocean, "remap_with_report", "ALE_conservative_remap"
         )
 
         # Atmospheric AM2 plus actual reciprocal ocean surface settlement.

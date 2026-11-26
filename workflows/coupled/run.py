@@ -70,16 +70,16 @@ def run(args):
         ] + receiver.H.total_energy(water.coupled)
 
     def mass():
-        s = water.coupled.ocean.ocean
+        s = water.ocean.ocean
         return (
             adapter.model.diagnostics(air.atmosphere)["species"].sum()
             + (
-                A * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(water.coupled)[:, 0])
+                A * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(water)[:, 0])
             ).sum()
         )
 
     E0, W0 = energy(), mass()
-    S0 = (A[:, None] * water.coupled.ocean.ocean.salt_h).sum()
+    S0 = (A[:, None] * water.ocean.ocean.salt_h).sum()
     external, upstream = 0.0, 0.0
     rows = []
     start = time.perf_counter()
@@ -92,7 +92,7 @@ def run(args):
                     sub = min(args.dynamics_dt, dt - elapsed)
                     air = advance_dynamics(adapter, air, sub)
                     elapsed += sub
-                water, r = receiver.snow.step(water, dt)
+                water, r = receiver.ocean_ice.step(water, dt)
                 external += float(r.external_energy / A.sum())
             omega = pressure_velocity(adapter, air) if args.dynamics else None
             # Deliberate boundary assumption for this integration experiment.
@@ -105,7 +105,7 @@ def run(args):
             upstream += float(
                 (A * ar.energy_changes["am2_energy_residual"]).sum() / A.sum()
             )
-            s = water.coupled.ocean.ocean
+            s = water.ocean.ocean
             residual = float((energy() - E0) / A.sum()) - external
             row = dict(
                 seconds=air.time_seconds,
@@ -123,7 +123,7 @@ def run(args):
                 ),
                 SST_min_K=float(s.temperature()[:, 0].min() + 273.15),
                 SST_max_K=float(s.temperature()[:, 0].max() + 273.15),
-                ice_kg=float((A[:, None] * receiver.H.mass(water.coupled)).sum()),
+                ice_kg=float((A[:, None] * receiver.H.mass(water)).sum()),
                 snow_kg=float((A[:, None] * water.snow_mass).sum()),
                 max_ocean_speed_m_s=float(s.u_e.abs().max()),
                 max_ice_speed_m_s=float(water.coupled.ice.velocity.abs().max()),

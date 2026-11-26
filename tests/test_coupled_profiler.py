@@ -84,7 +84,7 @@ def test_real_coupled_profile_has_nested_operator_counters(
     assert c.read_checkpoint(tmp_path / "sample_restart.nc")["air"]["time_seconds"] == expected_air.time_seconds
     assert measured_air.time_seconds == expected_air.time_seconds
     assert torch.equal(
-        measured_sea.coupled.ocean.ocean.h, expected_sea.coupled.ocean.ocean.h
+        measured_sea.ocean.resolved.h, expected_sea.ocean.resolved.h
     )
     assert torch.equal(
         measured_air.atmosphere.ps, expected_air.atmosphere.ps

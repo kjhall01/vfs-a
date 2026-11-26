@@ -93,7 +93,7 @@ def test_radiation_off_needs_only_bomex_namelist(source, config):
 
 
 def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
-    # Full campaign path: ThermalSnowOceanIce must forward the selected
+    # Full campaign path: OceanIce must forward the selected
     # integrator to the moving snow/ocean/ice dynamics, without rejecting it
     # as an independent surface forcing option.
     candidate = replace(config, ocean_dynamics_integrator="ssprk43")
@@ -105,9 +105,9 @@ def test_opt_in_ssprk43_survives_thermal_ice_coupled_interval(source, config):
             adapter, air, receiver, sea, candidate.physics_dt, candidate
         )
     assert final_air.time_seconds == candidate.physics_dt
-    receiver.snow.check(final_sea)
+    receiver.ocean_ice.check(final_sea)
     assert report["ale_steps"] == 1
-    assert torch.isfinite(final_sea.coupled.ocean.ocean.h).all()
+    assert torch.isfinite(final_sea.ocean.resolved.h).all()
 
 
 def test_explicit_legacy_cadences_reproduce_default_coupled_step(source, config):
@@ -145,7 +145,7 @@ def test_40_minute_physics_multirate_smoke(source, config):
     assert air.time_seconds == 2400
     assert report["gmredi_steps"] == schedule.eddy_substeps * 2
     assert report["ale_steps"] == 0
-    receiver.snow.check(sea)
+    receiver.ocean_ice.check(sea)
     adapter.check(air)
     assert torch.isfinite(torch.tensor(report["surface_residual"]))
 
@@ -183,7 +183,7 @@ def test_multirate_throughput_paired_small_coupled_case(source, config, capsys):
                 )
                 totals = report
         assert result.time_seconds == 2400
-        receiver.snow.check(water)
+        receiver.ocean_ice.check(water)
         return totals
 
     # Warm up kernels, avoiding first-time initialization effects.
@@ -258,8 +258,8 @@ def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, conf
         air2, sea2, r2 = c.advance(
             adapter, air1, receiver, sea1, scheduled.physics_dt, scheduled
         )
-    receiver.snow.check(sea1)
-    receiver.snow.check(sea2)
+    receiver.ocean_ice.check(sea1)
+    receiver.ocean_ice.check(sea2)
     assert air1.time_seconds == 120 and air2.time_seconds == 240
     assert r1["gmredi_steps"] == r2["gmredi_steps"] == scheduled.eddy_substeps
     assert r1["eddy_decay_steps"] == r2["eddy_decay_steps"] == 1
@@ -270,7 +270,7 @@ def test_multirate_closures_and_ale_through_actual_coupled_campaign(source, conf
             torch.isfinite(torch.tensor(report[key]))
             for key in ("external", "upstream", "surface_residual", "air_residual")
         )
-    assert (sea2.coupled.ocean.ocean.salt_h >= 0).all()
+    assert (sea2.ocean.resolved.salt_h >= 0).all()
 
 
 def test_output_schedule_and_nonleap_year():
@@ -375,12 +375,12 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path, na
         assert ds.time.item() == 120 and ds.time.attrs["calendar"] == "julian"
         assert ds.ice_cold_content.shape == (1, config.cells, 2)
         torch.testing.assert_close(
-            torch.tensor(ds.ice_temperature.values[0]), receiver.snow.temperature(water)
+            torch.tensor(ds.ice_temperature.values[0]), receiver.ocean_ice.temperature(water)
         )
         assert ds.air_temperature.sizes["air_interface"] == config.atmosphere_levels + 1
         torch.testing.assert_close(
             torch.tensor(ds.ocean_eddy_energy.values[0]),
-            water.coupled.ocean.specific_eddy_energy(),
+            water.ocean.specific_eddy_energy(),
         )
 
 
@@ -530,7 +530,7 @@ def test_saved_mesh_loading_and_fingerprint(source, config, tmp_path):
     expected = xyz / np.linalg.norm(xyz, axis=1, keepdims=True)
     np.testing.assert_array_equal(adapter.model.mesh.cell_xyz.numpy(), expected)
     assert adapter.model.mesh.lloyd_diagnostics is None
-    assert sea.coupled.ocean.ocean.mesh is adapter.model.mesh
+    assert sea.ocean.resolved.mesh is adapter.model.mesh
     renamed = tmp_path / "renamed.npy"
     renamed.write_bytes(path.read_bytes())
     again, _, moved = c.load_mesh(config, renamed)
@@ -630,13 +630,13 @@ def test_full_ocean_schedule_calls_backscatter_and_changes_state(source, config)
     assert report["gm_outflow_fraction"] > 0 and report["redi_step_number"] > 0
     assert report["gm_exchange_J_m2"] != 0 and report["redi_exchange_J_m2"] != 0
     assert report["eddy_dissipation_J_m2"] > 0
-    assert not torch.equal(end.coupled.ocean.eddy_h, sea.coupled.ocean.eddy_h)
+    assert not torch.equal(end.ocean.eddy_h, sea.ocean.eddy_h)
     same_tree(initial, c.pack(adapter, air, receiver, sea, "id", {}))
 
 
 def test_mesoscale_and_nontrivial_ale_conserve_combined_ice_energy(source, config):
     _, _, receiver, sea = c.build(config, source, None, smoke_no_radiation=True)
-    original = sea.coupled.ocean
+    original = sea.ocean
     s = original.ocean
     # A deliberately displaced layer interface tests actual ALE, not identity.
     h = s.h.clone()
@@ -650,15 +650,15 @@ def test_mesoscale_and_nontrivial_ale_conserve_combined_ice_energy(source, confi
         tracer_h=h[..., None] * s.tracer_h / s.h[..., None],
     )
     ocean = original.with_layers(physical, tke_h=h * original.tke_h / s.h, eddy_h=h * original.eddy_h / s.h)
-    sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
-    before_energy = receiver.snow.total_energy(sea)
+    sea = replace(sea, ocean=ocean)
+    before_energy = receiver.ocean_ice.total_energy(sea)
     area = s.mesh.cell_area[:, None]
     with torch.no_grad():
         mixed, gm = c.mesoscale_step(receiver, sea, 60, config)
         end, ale = c.ale_step(receiver, mixed, config)
-    final = end.coupled.ocean.ocean
+    final = end.ocean.resolved
     torch.testing.assert_close(
-        receiver.snow.total_energy(end), before_energy, rtol=5e-13, atol=0
+        receiver.ocean_ice.total_energy(end), before_energy, rtol=5e-13, atol=0
     )
     torch.testing.assert_close(final.h.sum(-1), physical.h.sum(-1), rtol=2e-15, atol=0)
     torch.testing.assert_close(
@@ -673,13 +673,13 @@ def test_mesoscale_and_nontrivial_ale_conserve_combined_ice_energy(source, confi
     )
     assert ale["ale_changed_columns"] == config.cells
     assert gm["eddy_dissipation_J_m2"] > 0
-    assert end.coupled.ice is sea.coupled.ice
-    assert end.snow_mass is sea.snow_mass and end.cold_content is sea.cold_content
+    assert end.ice is sea.ice
+    assert end.ice.snow_mass is sea.ice.snow_mass and end.ice.cold_content is sea.ice.cold_content
     # ALE carries the reservoirs conservatively, independently of its heat solve.
     for name in ("eddy_h", "tke_h"):
         torch.testing.assert_close(
-            getattr(end.coupled.ocean, name).sum(-1),
-            getattr(mixed.coupled.ocean, name).sum(-1),
+            getattr(end.ocean, name).sum(-1),
+            getattr(mixed.ocean, name).sum(-1),
             rtol=2e-15,
             atol=0,
         )

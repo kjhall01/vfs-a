@@ -19,11 +19,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT)] + [str(ROOT / "validation" / p) for p in (
     "sea_ice", "temperature_coordinate", "ocean_column"
 )]
-from vfs.ice.ocean_ice import OceanIce
-from vfs.ice.ridging import CategoryIce, RidgingState
+from vfs.ice import OceanIce
 from vfs.ocean.model import Ocean as RoquetOcean
-from vfs.ice.snow import SnowState
-from workflows.coupled.ice_temperature import ThermalSnowOceanIce
 from vfs.geometry.mesh import VoronoiMesh
 from vfs.ocean import OceanColumn
 
@@ -49,16 +46,9 @@ def make_case(cells, layers):
         (mesh.cell_xyz[:, 2].abs() - 0.85) / 0.15
     ).clamp(0, 1)
     cover = ice_fraction[:, None] * torch.tensor([0.8, 0.2])
-    ice = CategoryIce(
-        cover, cover * torch.tensor([0.3, 1.0]),
-        torch.zeros(mesh.nEdges, 1),
-    )
-    snow = ThermalSnowOceanIce(OceanIce(ocean_model))
-    bare = SnowState(
-        RidgingState(ocean, ice),
-        torch.zeros_like(cover),
-    )
-    state = snow.initialize(bare, temperature=265.)
+    snow = OceanIce(ocean_model)
+    state = snow.state(ocean, area=cover, volume=cover * torch.tensor([0.3, 1.0]),
+                       velocity=torch.zeros(mesh.nEdges, 1), temperature=265.)
     snow.check(state)
     return snow, state
 
@@ -124,13 +114,13 @@ def main():
         aa, bb = a["final"], b["final"]
         report["max_state_difference"] = {
             "ocean_height_m": float(
-                (aa.coupled.ocean.ocean.h - bb.coupled.ocean.ocean.h).abs().max()
+                (aa.ocean.resolved.h - bb.ocean.resolved.h).abs().max()
             ),
             "ocean_velocity_m_s": float(
-                (aa.coupled.ocean.ocean.u_e - bb.coupled.ocean.ocean.u_e).abs().max()
+                (aa.ocean.resolved.u_e - bb.ocean.resolved.u_e).abs().max()
             ),
             "ice_volume_m": float(
-                (aa.coupled.ice.volume - bb.coupled.ice.volume).abs().max()
+                (aa.ice.volume - bb.ice.volume).abs().max()
             ),
         }
     message = json.dumps(report, indent=2)

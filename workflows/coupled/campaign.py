@@ -27,11 +27,7 @@ from workflows.coupled.state_io import (
 )
 from workflows.coupled.driver import exchange_step
 from workflows.coupled.schedule import ocean_events, event_due
-from workflows.coupled.ice_temperature import (
-    ThermalIceReceiver,
-    ThermalSnowOceanIce,
-    ThermalIceState,
-)
+from workflows.coupled.ice_temperature import ThermalIceReceiver
 from workflows.pyam21.state import copy_tree
 from workflows.coupled.compilation import configure_compilation
 from workflows.coupled.energy_trace import EnergyTrace
@@ -40,9 +36,7 @@ from workflows.coupled.restart_compat import (
 )
 from workflows.coupled.device import (validate_precision, resolve_device, execution_context,
     runtime_manifest, synchronize, initialization_dtype, mixing_budget_rtol)
-from vfs.ice.ocean_ice import OceanIce
-from vfs.ice.ridging import CategoryIce, RidgingState
-from vfs.ice.snow import SnowState
+from vfs.ice import OceanIce, OceanIceState, SeaIceState
 from vfs.ocean import Ocean
 from vfs.ocean.temperature.roquet import RoquetMixing
 from vfs.ocean.temperature.eddy import GMRedi
@@ -289,10 +283,10 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
     Fixed-h tracer changes do not alter ice loading/KE or its cold content.
     Operators own parameters only: all prognostic energy is in the restart state.
     """
-    model = receiver.H.model
-    area = sea.coupled.ocean.ocean.mesh.cell_area
+    model = receiver.ocean_ice.ocean
+    area = sea.ocean.mesh.cell_area
     report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
-    ocean = sea.coupled.ocean
+    ocean = sea.ocean
     if config.gm_redi:
         eddy = gm_redi_operator(config)
         for substep in range(config.eddy_substeps):
@@ -327,7 +321,7 @@ def mesoscale_step(receiver, sea, dt, config, *, on_event=None):
         report["eddy_decay_local_residual_J_m2"] = float(
             (r.local_energy_residual / area[:, None]).abs().max()
         )
-    return replace(sea, coupled=replace(sea.coupled, ocean=ocean)), report
+    return replace(sea, ocean=ocean), report
 
 
 def ale_step(receiver, sea, config):
@@ -340,8 +334,8 @@ def ale_step(receiver, sea, config):
     report = dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0)
     if not config.ale_remap:
         return sea, report
-    model = receiver.H.model
-    initial = sea.coupled.ocean
+    model = receiver.ocean_ice.ocean
+    initial = sea.ocean
     s = initial.ocean
     fractions = rest_thickness(config).to(s.h)
     fractions = fractions / fractions.sum()
@@ -385,7 +379,7 @@ def ale_step(receiver, sea, config):
     report["ale_column_residual_J_m2"] = float(
         (r.column_energy_residual / s.mesh.cell_area).abs().max()
     )
-    return replace(sea, coupled=replace(sea.coupled, ocean=ocean)), report
+    return replace(sea, ocean=ocean), report
 
 
 def accumulate_ocean(report, addition):
@@ -557,12 +551,9 @@ def build(
     if domain is not None:
         cover = domain.apply_cell(cover)
     area = cover[:, None] * cover.new_tensor([0.8, 0.2])
-    ice = CategoryIce(
-        area, area * area.new_tensor([0.3, 1.0]), area.new_zeros(mesh.nEdges, 1)
-    )
-    owner = ThermalSnowOceanIce(OceanIce(model))
-    bare = SnowState(RidgingState(ocean, ice), torch.zeros_like(area))
-    sea = owner.initialize(bare, config.ice_temperature_K)
+    owner = OceanIce(model)
+    sea = owner.state(ocean, area=area, volume=area * area.new_tensor([0.3, 1.0]),
+                      velocity=area.new_zeros(mesh.nEdges, 1), temperature=config.ice_temperature_K)
     receiver = ThermalIceReceiver(owner)
     if domain is not None:
         receiver = CoastalReceiver(owner, adapter, land)
@@ -610,7 +601,7 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
         # mixing cadence equals ocean_dt. A slower mixing cadence deliberately
         # uses operator splitting after the completed ocean/ice update.
         inline_mixing = mix_dt == config.ocean_dt
-        water, r = receiver.snow.step(
+        water, r = receiver.ocean_ice.step(
             water, step_dt, stage_callback=ocean_callback,
             dynamics_integrator=config.ocean_dynamics_integrator,
             apply_mixing=inline_mixing,
@@ -618,7 +609,7 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
         snow_external = float(r.external_energy / A.sum())
         external += snow_external
         if event.mixing_dt is not None and not inline_mixing:
-            water = receiver.snow.mixing_step(
+            water = receiver.ocean_ice.mixing_step(
                 water, event.mixing_dt, stage_callback=ocean_callback
             )
         if trace is not None and not trace.ocean_stages:
@@ -630,7 +621,7 @@ def _advance_water(adapter, evolved, receiver, sea, dt, config, trace):
             callback = None
             if trace is not None and trace.substeps:
                 def callback(stage, ocean, detail):
-                    intermediate = replace(water, coupled=replace(water.coupled, ocean=ocean))
+                    intermediate = replace(water, ocean=ocean)
                     trace.observe(stage, adapter, evolved, receiver, intermediate,
                                   details=detail)
             water, r = mesoscale_step(
@@ -694,8 +685,8 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
                                    ar.energy_changes["radiation_flux_residual"].abs().max() / dt)})
     # Immediately consume latent excess at the melting constraint, rather than
     # leaving an artificially warm ice-covered top ocean layer until next step.
-    water, _, _ = receiver.snow.phase_step(
-        water, dt, torch.zeros_like(water.snow_mass[:, :1])
+    water, _, _ = receiver.ocean_ice.phase_step(
+        water, dt, torch.zeros_like(water.ice.snow_mass[:, :1])
     )
     if trace is not None:
         trace.observe("post_exchange_ice_phase", adapter, evolved, receiver, water)
@@ -736,7 +727,7 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
 
 def inventories(adapter, air, receiver, sea):
     A = adapter.model.mesh.cell_area
-    s = sea.coupled.ocean.ocean
+    s = sea.ocean
     air_diag = adapter.model.diagnostics(air.atmosphere)
     wet_area = A
     land_energy = land_water = 0.
@@ -746,13 +737,13 @@ def inventories(adapter, air, receiver, sea):
         land_energy = (A[l.land] * l.column.energy(sea.land)).sum()
         land_water = (A[l.land] * sea.land.water()).sum()
     return dict(
-        energy=float((land_energy + air_diag["energy"] + receiver.snow.total_energy(sea)) / A.sum()),
+        energy=float((land_energy + air_diag["energy"] + receiver.ocean_ice.total_energy(sea)) / A.sum()),
         water=float(
             (
                 land_water + air_diag["species"].sum()
                 + (
                     wet_area
-                    * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(sea.coupled)[:, 0])
+                    * (s.column.rho0 * s.h.sum(-1) + receiver.H.mass(sea)[:, 0])
                 ).sum()
             )
             / A.sum()
@@ -763,9 +754,9 @@ def inventories(adapter, air, receiver, sea):
 
 def diagnostics(adapter, air, receiver, sea, ledger):
     current = inventories(adapter, air, receiver, sea)
-    s = sea.coupled.ocean.ocean
-    ice = sea.coupled.ice
-    T = receiver.snow.temperature(sea)
+    s = sea.ocean
+    ice = sea.ice
+    T = receiver.ocean_ice.temperature(sea)
     present = ice.area > 0
     A = adapter.model.mesh.cell_area
     wet = torch.ones_like(A, dtype=torch.bool) if sea.land is None else receiver.land_surface.wet
@@ -798,15 +789,15 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         sst_max_K=float(s.temperature()[wet, 0].max() + 273.15),
         ice_min_K=float(T[present].min()) if present.any() else None,
         ice_max_K=float(T[present].max()) if present.any() else None,
-        ice_mass_kg=float((A[:, None] * receiver.H.mass(sea.coupled)).sum()),
-        snow_mass_kg=float((A[:, None] * sea.snow_mass).sum()),
-        ice_sensible_J_m2=float((A[:, None] * sea.cold_content).sum() / A.sum()),
+        ice_mass_kg=float((A[:, None] * receiver.H.mass(sea)).sum()),
+        snow_mass_kg=float((A[:, None] * sea.ice.snow_mass).sum()),
+        ice_sensible_J_m2=float((A[:, None] * sea.ice.cold_content).sum() / A.sum()),
         max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
         max_ocean_speed_m_s=float(s.u_e.abs().max()),
         max_ice_speed_m_s=float(ice.velocity.abs().max()),
         min_ocean_thickness_m=float(s.h[wet_layers].min()),
-        min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet_layers].min()),
-        max_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet_layers].max()),
+        min_eddy_energy_J_kg=float(sea.ocean.specific_eddy_energy()[wet_layers].min()),
+        max_eddy_energy_J_kg=float(sea.ocean.specific_eddy_energy()[wet_layers].max()),
         **{k: ledger[k] for k in OCEAN_SUMS + OCEAN_PEAKS},
         **{k: ledger.get(k, 0.0) for k in VAPOR_SUMS + VAPOR_PEAKS},
         **{
@@ -821,8 +812,8 @@ def energy_trace_measure(adapter, air, receiver, sea):
     inv = inventories(adapter, air, receiver, sea)
     A = adapter.model.mesh.cell_area.sum()
     atm = float(adapter.model.diagnostics(air.atmosphere)["energy"] / A)
-    ocean = float(receiver.H.model.total_energy(sea.coupled.ocean) / A)
-    sea_total = float(receiver.snow.total_energy(sea) / A)
+    ocean = float(receiver.ocean_ice.ocean.total_energy(sea.ocean) / A)
+    sea_total = float(receiver.ocean_ice.total_energy(sea) / A)
     if sea.land is not None:
         land = receiver.land_surface
         inv["land_energy"] = float((land.mesh.cell_area[land.land] * land.column.energy(sea.land)).sum() / A)
@@ -832,17 +823,17 @@ def energy_trace_measure(adapter, air, receiver, sea):
 
 def energy_trace_extrema(adapter, air, receiver, sea):
     """Global velocity extrema, indices and state-admissibility indicators."""
-    ocean = sea.coupled.ocean.ocean
+    ocean = sea.ocean
     def peak(x):
         f = x.abs().reshape(-1)
         k = int(f.argmax().item())
         return float(f[k]), k
     va, ia = peak(air.atmosphere.u_e)
     vo, io = peak(ocean.u_e)
-    vi, ii = peak(sea.coupled.ice.velocity)
+    vi, ii = peak(sea.ice.velocity)
     wet = torch.ones_like(ocean.h[:, 0], dtype=torch.bool) if sea.land is None else receiver.land_surface.wet
     wet_layers = wet[:, None] & (ocean.h > 0)
-    e = sea.coupled.ocean.specific_eddy_energy()[wet_layers]
+    e = sea.ocean.specific_eddy_energy()[wet_layers]
     return dict(max_air_speed_m_s=va, max_air_edge=ia // air.atmosphere.u_e.shape[-1],
                 max_air_level=ia % air.atmosphere.u_e.shape[-1],
                 max_ocean_speed_m_s=vo, max_ocean_edge=io // ocean.u_e.shape[-1],
@@ -890,8 +881,8 @@ def fingerprint(config, adapter, hashes, smoke_no_radiation, mesh_sha256=None):
 
 
 def pack(adapter, air, receiver, sea, identity, ledger):
-    receiver.snow.check(sea)
-    s = sea.coupled.ocean.ocean
+    receiver.ocean_ice.check(sea)
+    s = sea.ocean
     return dict(
         **({"land": {k: v.clone() for k, v in vars(sea.land).items()}} if sea.land is not None else {}),
         schema=1,
@@ -902,14 +893,14 @@ def pack(adapter, air, receiver, sea, identity, ledger):
             k: getattr(s, k).clone()
             for k in ("u_e", "h", "temp_h", "salt_h", "tracer_h")
         },
-        tke_h=sea.coupled.ocean.tke_h.clone(),
-        eddy_h=sea.coupled.ocean.eddy_h.clone(),
+        tke_h=sea.ocean.tke_h.clone(),
+        eddy_h=sea.ocean.eddy_h.clone(),
         ice={
-            k: getattr(sea.coupled.ice, k).clone()
+            k: getattr(sea.ice, k).clone()
             for k in ("area", "volume", "velocity")
         },
-        snow_mass=sea.snow_mass.clone(),
-        cold_content=sea.cold_content.clone(),
+        snow_mass=sea.ice.snow_mass.clone(),
+        cold_content=sea.ice.cold_content.clone(),
     )
 
 
@@ -918,18 +909,16 @@ def unpack(payload, adapter, receiver, template, identity):
         raise ValueError("campaign restart configuration/source/runtime does not match")
     p = copy_tree(payload, device=adapter.model.mesh.cell_area.device)
     air = adapter.unpack(p["air"])
-    physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
-    ocean = template.coupled.ocean.with_layers(physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"])
-    sea = ThermalIceState(
-        RidgingState(ocean, CategoryIce(**p["ice"])), p["snow_mass"], p["cold_content"]
-    )
+    physical = template.ocean.resolved.with_tensors(**p["ocean"])
+    ocean = template.ocean.with_layers(physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"])
+    sea = OceanIceState(ocean, SeaIceState(**p["ice"], snow_mass=p["snow_mass"], cold_content=p["cold_content"]))
     if template.land is not None:
         land = LandState(**p["land"])
         receiver.land_surface.column.check(land)
         if land.skin.shape != template.land.skin.shape:
             raise ValueError("restart land geometry mismatch")
         sea = replace(sea, land=land)
-    receiver.snow.check(sea)
+    receiver.ocean_ice.check(sea)
     return air, sea, p["ledger"]
 
 
@@ -949,7 +938,7 @@ def snapshot(path, adapter, air, receiver, sea):
     import xarray as xr
 
     f = adapter.model.physical_fields(air.atmosphere)
-    s = sea.coupled.ocean.ocean
+    s = sea.ocean
 
     def array(x):
         return x.detach().cpu().numpy()
@@ -994,23 +983,23 @@ def snapshot(path, adapter, air, receiver, sea):
         ),
         "ocean_tke": (
             ("cell", "ocean_level"),
-            array(sea.coupled.ocean.specific_tke()),
+            array(sea.ocean.specific_tke()),
             {"units": "m2 s-2"},
         ),
         "ocean_eddy_energy": (
             ("cell", "ocean_level"),
-            array(sea.coupled.ocean.specific_eddy_energy()),
+            array(sea.ocean.specific_eddy_energy()),
             {"units": "J kg-1", "long_name": "mesoscale eddy energy reservoir"},
         ),
-        "ice_area": (("cell", "category"), array(sea.coupled.ice.area), {"units": "1"}),
+        "ice_area": (("cell", "category"), array(sea.ice.area), {"units": "1"}),
         "ice_volume": (
             ("cell", "category"),
-            array(sea.coupled.ice.volume),
+            array(sea.ice.volume),
             {"units": "m"},
         ),
         "ice_temperature": (
             ("cell", "category"),
-            array(receiver.snow.temperature(sea)),
+            array(receiver.ocean_ice.temperature(sea)),
             {
                 "units": "K",
                 "comment": "273.15 on absent categories; mask using ice_area",
@@ -1018,15 +1007,15 @@ def snapshot(path, adapter, air, receiver, sea):
         ),
         "ice_cold_content": (
             ("cell", "category"),
-            array(sea.cold_content),
+            array(sea.ice.cold_content),
             {"units": "J m-2"},
         ),
         "ice_normal_wind": (
             ("edge", "ice_level"),
-            array(sea.coupled.ice.velocity),
+            array(sea.ice.velocity),
             {"units": "m s-1"},
         ),
-        "snow_mass": (("cell", "category"), array(sea.snow_mass), {"units": "kg m-2"}),
+        "snow_mass": (("cell", "category"), array(sea.ice.snow_mass), {"units": "kg m-2"}),
     }
     if sea.land is not None:
         for name, field in vars(sea.land).items():
@@ -1209,7 +1198,7 @@ def main(argv=None):
         adapter.campaign_mesh_sha256 = mesh_info.get("sha256")
         if config.shelf_redi:
             if config.partial_cell_layers:
-                ocean_state = sea.coupled.ocean.ocean
+                ocean_state = sea.ocean
                 counts = ocean_state.column.active_layers.sum(-1)[receiver.land_surface.wet]
                 logger.info("Prognostic wet ocean layers per column: %d to %d", counts.min(), counts.max())
             logger.info("Resolved and GM transport use physical wet openings; Redi uses partial-cell geometry")

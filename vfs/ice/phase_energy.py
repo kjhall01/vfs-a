@@ -63,7 +63,7 @@ class ReducedPhaseEnergy:
                                          coefficient / p.density**2)
         self.full_cover_mass = torch.where(self.old_mass > 0, self.old_mass / safe(cover),
                                            p.density * phase.nucleation_thickness)
-        self.cold = phase.initial.cold_content[rows].sum(-1, keepdim=True)
+        self.cold = phase.initial.ice.cold_content[rows].sum(-1, keepdim=True)
         self.latent_heat = p.latent_heat
 
     def value(self, mass):

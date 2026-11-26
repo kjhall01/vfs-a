@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from workflows.coupled import campaign
 from workflows.coupled.device import execution_context, resolve_device, synchronize
-from workflows.coupled.ice_temperature import ThermalPhase
+from vfs.ice.thermal_phase import ThermalPhase
 from vfs.ice.category_phase import CategoryThermodynamics
 
 
@@ -37,8 +37,8 @@ def main():
     device = resolve_device(config.device)
     with execution_context(device), torch.no_grad():
         _, _, receiver, sea = campaign.build(config, args.source, None, smoke_no_radiation=True, generator_xyz=xyz)
-        owner = receiver.snow
-        flux = 150 * sea.coupled.ocean.ocean.mesh.cell_xyz[:, 2:3]
+        owner = receiver.ocean_ice
+        flux = 150 * sea.ocean.mesh.cell_xyz[:, 2:3]
         times = {"reference": [], "reduced": []}
         results = {}
         for i in range(args.repeats + 2):
@@ -55,9 +55,9 @@ def main():
                 results[name] = state
                 if i >= 2:
                     times[name].append(elapsed)
-        a, b = results["reference"].coupled, results["reduced"].coupled
+        a, b = results["reference"], results["reduced"]
         ice_error = (owner.hamiltonian.mass(a) - owner.hamiltonian.mass(b)).abs().max().item()
-        temp_error = (a.ocean.ocean.temperature() - b.ocean.ocean.temperature()).abs().max().item()
+        temp_error = (a.ocean.resolved.temperature() - b.ocean.resolved.temperature()).abs().max().item()
         reference, reduced = median(times["reference"]), median(times["reduced"])
         print(f"{config.cells} cells, {config.ocean_levels} ocean levels, {device}, float64, "
               f"compile={config.compile}, {args.repeats} calls per method")

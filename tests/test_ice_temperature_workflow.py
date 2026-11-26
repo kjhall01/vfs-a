@@ -7,27 +7,21 @@ import torch
 pytest.importorskip("pyam21")
 from test_pyam21_workflow import model, initial, PrescribedRadiationPackage
 from test_shared_exchange import surface_case, total_water
-from workflows.coupled.ice_temperature import (
-    ThermalSnowOceanIce,
-    ThermalIceReceiver,
-    ThermalPhase,
-)
+from workflows.coupled.ice_temperature import ThermalIceReceiver
+from vfs.ice import OceanIce
+from vfs.ice.thermal_phase import ThermalPhase
 from workflows.coupled.driver import exchange_step
 from pyam21.radiation.driver import RadiationDriver, RadiationDriverConfig
 
 
 def thermal_case(model, cover=True, temperature=260.0):
     receiver, bare = surface_case(model, cover)
-    s = bare.coupled.ocean.ocean
+    s = bare.ocean.resolved
     physical = s.with_tensors(s.u_e, s.h, -1.836 * s.h, s.salt_h, s.tracer_h)
-    bare = replace(
-        bare,
-        coupled=replace(
-            bare.coupled, ocean=bare.coupled.ocean.with_layers(physical)
-        ),
-    )
-    owner = ThermalSnowOceanIce(receiver.snow.coupled)
-    return ThermalIceReceiver(owner), owner.initialize(bare, temperature)
+    owner = OceanIce(receiver.ocean_ice.ocean)
+    state = owner.state(bare.ocean.with_layers(physical), area=bare.ice.area, volume=bare.ice.volume,
+                        velocity=bare.ice.velocity, snow_mass=bare.snow_mass, temperature=temperature)
+    return ThermalIceReceiver(owner), state
 
 
 @pytest.mark.parametrize("radiation", [False, True])
@@ -43,10 +37,10 @@ def test_combined_energy_with_prognostic_storage(model, radiation, cover):
     adapter, air = initial(model, radiation=rad)
     receiver, sea = thermal_case(model, cover)
     A = model.mesh.cell_area
-    E0 = model.diagnostics(air.atmosphere)["energy"] + receiver.snow.total_energy(sea)
+    E0 = model.diagnostics(air.atmosphere)["energy"] + receiver.ocean_ice.total_energy(sea)
     W0 = total_water(adapter, air, receiver, sea)
     out, end, x, ar, sr = exchange_step(adapter, air, receiver, sea, 60)
-    E1 = model.diagnostics(out.atmosphere)["energy"] + receiver.snow.total_energy(end)
+    E1 = model.diagnostics(out.atmosphere)["energy"] + receiver.ocean_ice.total_energy(end)
     assert (
         abs(
             float(
@@ -63,10 +57,10 @@ def test_combined_energy_with_prognostic_storage(model, radiation, cover):
     assert abs(float((total_water(adapter, out, receiver, end) - W0) / A.sum())) < 1e-9
     assert sr.energy_residual.abs().max() < 3e-6
     if cover:
-        assert not torch.equal(end.cold_content, sea.cold_content)
-        assert (receiver.snow.temperature(end) <= 273.15).all()
+        assert not torch.equal(end.ice.cold_content, sea.ice.cold_content)
+        assert (receiver.ocean_ice.temperature(end) <= 273.15).all()
     else:
-        assert torch.count_nonzero(end.cold_content) == 0
+        assert torch.count_nonzero(end.ice.cold_content) == 0
     # Tile thermal totals account for the common heat/enthalpy boundary exactly.
     expected = (
         x.sw_surface
@@ -83,36 +77,36 @@ def test_combined_energy_with_prognostic_storage(model, radiation, cover):
 
 def test_conduction_backward_euler_and_snow_insulation(model):
     receiver, sea = thermal_case(model)
-    owner = receiver.snow
+    owner = receiver.ocean_ice
     dt = 3600
-    q = torch.zeros_like(sea.cold_content)
+    q = torch.zeros_like(sea.ice.cold_content)
     end, conducted, excess = owner.surface_heat(sea, sea, q, dt)
     p = owner.hamiltonian.slab.parameters
     C = owner.capacity(sea)
     hi, hs = owner.depths(sea)
-    K = sea.coupled.ice.area / (
+    K = sea.ice.area / (
         hi / p.conductivity + hs / owner.parameters.conductivity
     )
-    base = p.freezing_temperature(sea.coupled.ocean.ocean.salinity()[:, :1])
+    base = p.freezing_temperature(sea.ocean.resolved.salinity()[:, :1])
     expected = (C * (-13.15) + dt * K * base) / (C + dt * K)
     torch.testing.assert_close(
         owner.temperature(end) - 273.15, expected, rtol=1e-12, atol=1e-12
     )
     torch.testing.assert_close(
-        end.cold_content - sea.cold_content, -conducted - excess, rtol=1e-12, atol=1e-8
+        end.ice.cold_content - sea.ice.cold_content, -conducted - excess, rtol=1e-12, atol=1e-8
     )
-    snowy = replace(sea, snow_mass=0.2 * p.density * sea.coupled.ice.volume)
+    snowy = replace(sea, ice=replace(sea.ice, snow_mass=0.2 * p.density * sea.ice.volume))
     insulated, _, _ = owner.surface_heat(snowy, snowy, q, dt)
     assert (owner.temperature(insulated) < owner.temperature(end)).all()
 
 
 def test_surface_melting_complementarity(model):
     receiver, sea = thermal_case(model)
-    q = -sea.cold_content + 1e7
-    end, conducted, excess = receiver.snow.surface_heat(sea, sea, q, 60)
-    assert (end.cold_content == 0).all() and (excess > 0).all()
+    q = -sea.ice.cold_content + 1e7
+    end, conducted, excess = receiver.ocean_ice.surface_heat(sea, sea, q, 60)
+    assert (end.ice.cold_content == 0).all() and (excess > 0).all()
     torch.testing.assert_close(
-        end.cold_content - sea.cold_content,
+        end.ice.cold_content - sea.ice.cold_content,
         q - conducted - excess,
         rtol=1e-12,
         atol=1e-8,
@@ -122,13 +116,13 @@ def test_surface_melting_complementarity(model):
 @pytest.mark.parametrize("heat", [-1000.0, 0.0, 2e6])
 def test_phase_root_includes_cold_content(model, heat):
     receiver, sea = thermal_case(model)
-    owner = receiver.snow
+    owner = receiver.ocean_ice
     A = model.mesh.cell_area
     before = owner.total_energy(sea)
-    end, q, _ = owner.phase_step(sea, 60, torch.full_like(sea.snow_mass[:, :1], heat))
+    end, q, _ = owner.phase_step(sea, 60, torch.full_like(sea.ice.snow_mass[:, :1], heat))
     assert abs(float((owner.total_energy(end) - before - q) / A.sum())) < 3e-6
     if heat > 1e6:
-        assert (end.coupled.ice.volume == 0).all() and (end.cold_content == 0).all()
+        assert (end.ice.volume == 0).all() and (end.ice.cold_content == 0).all()
 
 
 @pytest.mark.parametrize("active", ["none", "mixed", "all"])
@@ -137,14 +131,14 @@ def test_packed_bisection_matches_full_column_brackets(model, active):
     rows = torch.arange(model.mesh.nCells)[:, None]
     # Alternate open water and existing ice. The mixed case includes both
     # new ice and snow-covered ice, with unevenly spaced active columns.
-    old = sea.coupled.ice
+    old = sea.ice
     covered = rows % 2 == 0
     ice = replace(old, area=old.area * covered, volume=old.volume * covered)
-    rho = receiver.snow.hamiltonian.slab.parameters.density
-    sea = replace(sea, coupled=replace(sea.coupled, ice=ice),
-                  cold_content=sea.cold_content * covered, snow_mass=0.1 * rho * ice.volume)
-    phase = ThermalPhase(receiver.snow, sea)
-    initial = sea.coupled
+    rho = receiver.ocean_ice.hamiltonian.slab.parameters.density
+    sea = replace(sea, ice=replace(ice, cold_content=sea.ice.cold_content * covered,
+                                   snow_mass=0.1 * rho * ice.volume))
+    phase = ThermalPhase(receiver.ocean_ice, sea)
+    initial = sea
     old_mass = phase.H.mass(initial)
     desired = torch.where(rows % 4 == 0, old_mass * 0.95, old_mass + 25.0)
     upper = torch.full_like(desired, 2000.0)
@@ -161,23 +155,23 @@ def test_packed_bisection_matches_full_column_brackets(model, active):
 
 def test_phase_analytic_derivative(model):
     receiver, sea = thermal_case(model)
-    phase = ThermalPhase(receiver.snow, sea)
-    m = (phase.H.mass(sea.coupled) * 0.8).requires_grad_()
-    value = phase.root_energy(sea.coupled, m)
+    phase = ThermalPhase(receiver.ocean_ice, sea)
+    m = (phase.H.mass(sea) * 0.8).requires_grad_()
+    value = phase.root_energy(sea, m)
     independent = torch.autograd.grad(value.sum(), m)[0]
-    analytic = phase.derivative(sea.coupled, phase.phase_state(sea.coupled, m), m)
+    analytic = phase.derivative(sea, phase.phase_state(sea, m), m)
     torch.testing.assert_close(independent, analytic, rtol=1e-12, atol=1e-7)
 
 
 def test_transport_and_ridging_preserve_cold_energy(model):
     receiver, sea = thermal_case(model)
-    owner = receiver.snow
+    owner = receiver.ocean_ice
     A = model.mesh.cell_area[:, None]
     end, _ = owner.dynamics_step(sea, 1.0)
     assert (
-        abs(float((A * (end.cold_content - sea.cold_content)).sum() / A.sum())) < 1e-8
+        abs(float((A * (end.ice.cold_content - sea.ice.cold_content)).sum() / A.sum())) < 1e-8
     )
-    assert (end.cold_content <= 0).all()
+    assert (end.ice.cold_content <= 0).all()
     # Uniform specific enthalpy must stay uniform under carrier transport/ridging.
     torch.testing.assert_close(
         owner.temperature(end), owner.temperature(sea), rtol=1e-13, atol=1e-12
@@ -186,12 +180,12 @@ def test_transport_and_ridging_preserve_cold_energy(model):
 
 def test_complete_thermal_step(model):
     receiver, sea = thermal_case(model)
-    initial = receiver.snow.total_energy(sea)
-    end, r = receiver.snow.step(sea, 1.0)
+    initial = receiver.ocean_ice.total_energy(sea)
+    end, r = receiver.ocean_ice.step(sea, 1.0)
     assert (
         abs(
             float(
-                (receiver.snow.total_energy(end) - initial - r.external_energy)
+                (receiver.ocean_ice.total_energy(end) - initial - r.external_energy)
                 / model.mesh.cell_area.sum()
             )
         )
@@ -202,51 +196,51 @@ def test_complete_thermal_step(model):
 def test_bad_temperature_rejects(model):
     receiver, sea = thermal_case(model)
     with pytest.raises(ValueError):
-        receiver.snow.initialize(sea, 274.0)
+        receiver.ocean_ice.state(sea.ocean, area=sea.ice.area, volume=sea.ice.volume,
+                                 velocity=sea.ice.velocity, temperature=274.0)
     with pytest.raises(ValueError):
-        receiver.tiles(sea, torch.full_like(sea.snow_mass, 270.0))
+        receiver.tiles(sea, torch.full_like(sea.ice.snow_mass, 270.0))
 
 
 def test_reduced_phase_energy_on_category_and_liquidus_branches(model):
-    from workflows.coupled.ice_phase_energy import ReducedPhaseEnergy
+    from vfs.ice.phase_energy import ReducedPhaseEnergy
 
     receiver, sea = thermal_case(model)
-    ice = sea.coupled.ice
+    ice = sea.ice
     row = torch.arange(model.mesh.nCells)[:, None]
     # Include open water, thin ice only, and two categories with different
     # snow-loss thresholds. Vary salt, liquid thickness and free surface.
     present = torch.cat((row % 3 != 0, row % 3 == 1), dim=1)
     ice = replace(ice, area=ice.area * present, volume=ice.volume * present)
-    rho_i = receiver.snow.hamiltonian.slab.parameters.density
-    water = sea.coupled.ocean.ocean
+    rho_i = receiver.ocean_ice.hamiltonian.slab.parameters.density
+    water = sea.ocean.resolved
     h = water.h.clone()
     h[:, :1] += 0.3 * row
     h[:, 1:2] -= 0.25 * row
     salt = (row * 2.2).expand_as(h)
     water = water.with_tensors(water.u_e, h, -0.054 * salt * h, salt * h, water.tracer_h)
-    sea = replace(sea, coupled=replace(sea.coupled, ice=ice,
-                  ocean=sea.coupled.ocean.with_layers(water)),
-                  cold_content=sea.cold_content * present,
+    ice = replace(ice, cold_content=sea.ice.cold_content * present,
                   snow_mass=rho_i * ice.volume * ice.volume.new_tensor([0.75, 0.125]))
-    phase = ThermalPhase(receiver.snow, sea)
+    sea = replace(sea, ocean=sea.ocean.with_layers(water), ice=ice)
+    phase = ThermalPhase(receiver.ocean_ice, sea)
     rows = row[:, 0]
-    curve = ReducedPhaseEnergy(phase, sea.coupled, rows)
-    old = phase.H.mass(sea.coupled)
+    curve = ReducedPhaseEnergy(phase, sea, rows)
+    old = phase.H.mass(sea)
     zero = torch.zeros_like(old)
-    datum = phase.root_energy(sea.coupled, zero)
+    datum = phase.root_energy(sea, zero)
     # Cross partial snow melt, bare-ice retreat, growth at fixed thickness,
     # full-cover thickening, and nucleation on previously open water.
     for mass in (zero, old * 0.1, old * 0.5, old * 0.95, old,
                  old * 1.2 + 30, old * 12 + 112):
-        energy = phase.root_energy(sea.coupled, mass)
+        energy = phase.root_energy(sea, mass)
         eps = torch.finfo(mass.dtype).eps
         error = (curve.value(mass) - (energy - datum)).abs()
         assert (error <= 16 * eps * (energy.abs() + datum.abs() + 1)).all()
-        expected = phase.derivative(sea.coupled, phase.phase_state(sea.coupled, mass), mass)
+        expected = phase.derivative(sea, phase.phase_state(sea, mass), mass)
         torch.testing.assert_close(curve.derivative(mass), expected, rtol=5e-13, atol=2e-8)
     # Independent AD check at smooth interior trial masses.
     mass = (old * 0.61 + 17).requires_grad_()
-    derivative, = torch.autograd.grad(phase.root_energy(sea.coupled, mass).sum(), mass)
+    derivative, = torch.autograd.grad(phase.root_energy(sea, mass).sum(), mass)
     torch.testing.assert_close(curve.derivative(mass), derivative, rtol=5e-13, atol=2e-8)
     # A tiny transfer can be below one ulp of absolute column energy.
     tiny = torch.full_like(old, 1e-15)
@@ -256,8 +250,8 @@ def test_reduced_phase_energy_on_category_and_liquidus_branches(model):
 @pytest.mark.parametrize("covered", [False, True])
 def test_reduced_root_and_budgets_at_melt_boundary(model, covered):
     receiver, sea = thermal_case(model, cover=covered)
-    phase = ThermalPhase(receiver.snow, sea)
-    source = sea.coupled
+    phase = ThermalPhase(receiver.ocean_ice, sea)
+    source = sea
     old = phase.H.mass(source)
     zero = torch.zeros_like(old)
     melt = phase.thermal_energy(phase.phase_state(source, zero))
@@ -265,7 +259,7 @@ def test_reduced_root_and_budgets_at_melt_boundary(model, covered):
     upper = torch.full_like(old, 1700.)
     near_upper = torch.nextafter(phase.root_energy(source, upper), melt)
     loads = torch.cat((just_frozen[:4], melt[4:8], near_upper[8:10], melt[10:12] - 3e6, melt[12:] + 1e6))
-    wet = phase.H.model.energy.mass_area(source.ocean.ocean) > 0
+    wet = phase.H.model.energy.mass_area(source.ocean.resolved) > 0
     frozen = wet & (loads < melt)
     with torch.no_grad():
         actual = phase._solve_mass(source, wet, frozen, upper, loads, melt)
@@ -277,7 +271,7 @@ def test_reduced_root_and_budgets_at_melt_boundary(model, covered):
     flux = (loads - phase.thermal_energy(source)) / 600
     with torch.no_grad():
         end, report = phase.apply(source, 600, heat_flux=flux)
-    before, after = receiver.snow.hamiltonian.total_energy(source), receiver.snow.hamiltonian.total_energy(end)
+    before, after = receiver.ocean_ice.hamiltonian.total_energy(source), receiver.ocean_ice.hamiltonian.total_energy(end)
     area = model.mesh.cell_area[:, None]
     cold_delta = (area * (phase.cold(end.ice) - phase.cold(source.ice))).sum()
     assert abs(float((after - before + cold_delta - report.external_heat.sum()) / area.sum())) < 3e-6
@@ -286,9 +280,9 @@ def test_reduced_root_and_budgets_at_melt_boundary(model, covered):
 
 def test_phase_heat_flux_gradient_uses_reference_at_freezing(model):
     receiver, sea = thermal_case(model)
-    phase = ThermalPhase(receiver.snow, sea)
-    source = sea.coupled
-    heat = torch.full_like(sea.snow_mass[:, :1], -150.).requires_grad_()
+    phase = ThermalPhase(receiver.ocean_ice, sea)
+    source = sea
+    heat = torch.full_like(sea.ice.snow_mass[:, :1], -150.).requires_grad_()
     end, _ = phase.apply(source, 600, heat_flux=heat)
     grad, = torch.autograd.grad(phase.H.mass(end).sum(), heat)
     with torch.no_grad():

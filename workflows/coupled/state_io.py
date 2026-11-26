@@ -17,7 +17,7 @@ def grid_coordinates(adapter, air, receiver, sea):
     """Static mesh and column coordinates, independent of output time."""
     mesh = adapter.model.mesh
     air_column = adapter.model.column
-    ocean = sea.coupled.ocean.ocean
+    ocean = sea.ocean
     column = ocean.column
     coords = horizontal_coords(array(mesh.cell_xyz))
     edge_xyz = array(mesh.edge_xyz)

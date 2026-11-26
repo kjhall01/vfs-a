@@ -32,10 +32,10 @@ def test_ocean_rhs_instrument_preserves_coupled_state_and_covers_real_rhs(
         ), field
     for field in ("h", "u_e", "temp_h", "salt_h", "tracer_h"):
         assert torch.equal(
-            getattr(s1.coupled.ocean.ocean, field),
-            getattr(s2.coupled.ocean.ocean, field)
+            getattr(s1.ocean.resolved, field),
+            getattr(s2.ocean.resolved, field)
         ), field
-    assert torch.equal(s1.coupled.ice.area, s2.coupled.ice.area)
+    assert torch.equal(s1.ice.area, s2.ice.area)
     assert r1 == r2
     counts = {k: v["inclusive"]["calls"] for k, v in clock.results().items()}
     for region in (
@@ -115,8 +115,8 @@ def test_nested_temperature_validation_reuse_is_exact(
     config = dc_replace(config, ocean_dynamics_integrator=integrator).validate()
     with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
         adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
-    snow = receiver.snow
-    coupled = snow.coupled
+    snow = receiver.ocean_ice
+    coupled = snow.mechanics
     ridge = coupled.ridge
     core = coupled.ocean.dynamics
     original_fields = core.fields
@@ -189,7 +189,7 @@ def test_nested_temperature_validation_reuse_is_exact(
 def test_public_ridging_still_validates_state(source, config, monkeypatch):
     with patch("workflows.pyam21.radiation.build_radiation", side_effect=synthetic):
         adapter, air, receiver, sea = c.build(config, source, Path("synthetic"))
-    ridge = receiver.snow.coupled.ridge
+    ridge = receiver.ocean_ice.mechanics.ridge
     called = []
     original = ridge.check
 
@@ -200,5 +200,5 @@ def test_public_ridging_still_validates_state(source, config, monkeypatch):
     with monkeypatch.context() as p:
         p.setattr(ridge, "check", checked)
         with torch.no_grad():
-            ridge.tendency(sea.coupled)
+            ridge.tendency(sea)
     assert called == [True]

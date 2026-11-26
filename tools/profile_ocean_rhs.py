@@ -26,11 +26,11 @@ class RHSInstrument(base.Instrument):
 
     def install(self):
         super().install()
-        coupled = self.receiver.snow.coupled
+        coupled = self.receiver.ocean_ice.mechanics
         ocean = coupled.ocean
         core = ocean.dynamics
 
-        # snow.tendency delegates to OceanIce.tendency: isolate the latter.
+        # Time the joint mechanical RHS separately from transported snow and cold content.
         self._method(coupled, "tendency", "rhs_coupled_ocean_ice")
 
         # Temperature-coordinate baroclinic/ocean dynamics, with full Gibbs

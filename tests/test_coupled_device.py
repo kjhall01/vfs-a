@@ -229,8 +229,8 @@ def test_float32_budget_policy_still_rejects_unfunded_numerical_increment(source
 @torch.no_grad()
 def test_float32_drag_ke_loss_matches_tke_and_reciprocal_momentum(source, config):
     _, _, receiver, sea = c.build(replace(config, dtype="float32"), source, None, smoke_no_radiation=True)
-    coupled = receiver.snow.coupled
-    initial = sea.coupled
+    coupled = receiver.ocean_ice.mechanics
+    initial = sea
     active = coupled.ridge.active_edges(initial)
     initial = replace(initial, ice=replace(initial.ice,
         velocity=torch.where(active, 0.05, 0.0).to(initial.ice.velocity)))
@@ -240,9 +240,9 @@ def test_float32_drag_ke_loss_matches_tke_and_reciprocal_momentum(source, config
     assert report.tke_gain.sum() > 0
     assert report.energy_residual.abs() <= 128 * eps * report.tke_gain.sum()
     Mi = coupled.hamiltonian.metric(initial)
-    Mo = coupled.ocean.energy.base.mechanical.metric(initial.ocean.ocean)[:, :1]
+    Mo = coupled.ocean.energy.base.mechanical.metric(initial.ocean.resolved)[:, :1]
     change = Mi * (end.ice.velocity - initial.ice.velocity)
-    change += Mo * (end.ocean.ocean.u_e[:, :1] - initial.ocean.ocean.u_e[:, :1])
+    change += Mo * (end.ocean.resolved.u_e[:, :1] - initial.ocean.resolved.u_e[:, :1])
     assert change.abs().max() <= 32 * eps * (Mi * initial.ice.velocity).abs().max()
 
 

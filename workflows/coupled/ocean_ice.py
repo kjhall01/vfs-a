@@ -29,9 +29,9 @@ class SurfaceReport:
 
 
 class OceanIceReceiver:
-    def __init__(self, snow):
-        self.snow = snow
-        self.H = snow.hamiltonian
+    def __init__(self, ocean_ice):
+        self.ocean_ice = ocean_ice
+        self.H = ocean_ice.hamiltonian
         self.wind = KineticWindMap(self.H.model.mesh)
 
     def check_geometry(self, adapter, atmosphere, state):
@@ -41,7 +41,7 @@ class OceanIceReceiver:
             raise ValueError("an all-wet ocean cannot receive land surface fluxes")
         if domain is not None and not torch.equal(~land, domain.wet_cell):
             raise ValueError("atmosphere and ocean coastline differ")
-        ocean = state.coupled.ocean.ocean
+        ocean = state.ocean.ocean
         if ocean.mesh is not adapter.model.mesh:
             raise ValueError("shared exchange currently requires the identical mesh object")
         if ocean.column.gravity != adapter.model.dynamics.kernel.gravity:
@@ -53,12 +53,12 @@ class OceanIceReceiver:
         Porous snow controls albedo. Ice skin temperature/conduction must be
         provided by a surface model; this receiver does not invent one.
         """
-        self.snow.check(state)
-        s, ice = state.coupled.ocean.ocean, state.coupled.ice
+        self.ocean_ice.check(state)
+        s, ice = state.ocean.ocean, state.ice
         if ice_temperature.shape != ice.area.shape:
             raise ValueError("ice skin temperature must match categories")
-        hi, hs = self.snow.depths(state)
-        p = self.snow.parameters
+        hi, hs = self.ocean_ice.depths(state)
+        p = self.ocean_ice.parameters
         alpha = p.ice_albedo + (p.albedo - p.ice_albedo) * hs / (hs + p.patch_depth)
         opened = 1 - ice.area.sum(-1, keepdim=True)
         temp = torch.cat((s.temperature()[:, :1] + 273.15, ice_temperature), -1)
@@ -80,9 +80,9 @@ class OceanIceReceiver:
         old cover. Deposition on ice joins snow; sublimation consumes snow first.
         Frozen mass is part of category volume, not an additional mass store.
         """
-        self.snow.check(initial)
+        self.ocean_ice.check(initial)
         H = self.H
-        old = initial.coupled
+        old = initial
         s, ice = old.ocean.ocean, old.ice
         mesh = s.mesh
         tiles.validate(mesh)
@@ -123,7 +123,7 @@ class OceanIceReceiver:
         if runoff is not None:
             dm = dm + runoff[:, None]
         h = torch.cat((s.h[:, :1] + dm / s.column.rho0, s.h[:, 1:]), -1)
-        if (h[:, :1] < self.snow.phase.min_liquid).any():
+        if (h[:, :1] < self.ocean_ice.phase.min_liquid).any():
             raise ValueError("exchange exhausts liquid top layer; reduce dt")
         # Freshwater changes only the surface layer, whose thickness was checked above.
         salinity = s.salt_h[:, :1] / h[:, :1]
@@ -131,11 +131,7 @@ class OceanIceReceiver:
             raise ValueError("exchange leaves ocean salinity domain")
         temp_h = torch.cat((h[:, :1] * s.temperature()[:, :1], s.temp_h[:, 1:]), -1)
         trial = s.with_tensors(s.u_e, h, temp_h, s.salt_h, s.tracer_h)
-        candidate = replace(
-            initial,
-            coupled=replace(old, ice=ice1, ocean=old.ocean.with_layers(trial)),
-            snow_mass=snow1,
-        )
+        candidate = initial.with_surface(old.ocean.with_layers(trial), ice1, snow1)
         # Both native discretizations use the transpose of the SAME cell wind
         # reconstruction. Cancellation is exact in generalized edge momentum.
         into_ocean = (exchange.rain + exchange.snow * tiles.fraction[:, 0])[
@@ -158,7 +154,7 @@ class OceanIceReceiver:
             Iw, Ii, Jw, Ji = (domain.apply_edge(v) for v in (Iw, Ii, Jw, Ji))
         mechanical = H.model.energy.base.mechanical
         M0, M1 = mechanical.metric(s)[:, :1], mechanical.metric(trial)[:, :1]
-        N0, N1 = H.metric(old), H.metric(candidate.coupled)
+        N0, N1 = H.metric(old), H.metric(candidate)
         pw, pi = M0 * s.u_e[:, :1] + Iw, N0 * ice.velocity + Ii
         if ((N1 == 0) & ((pi + Ji) != 0)).any():
             raise ValueError("nonzero momentum enters an empty ice edge")
@@ -175,14 +171,7 @@ class OceanIceReceiver:
         trial = trial.with_tensors(
             torch.cat((uw1, s.u_e[:, 1:]), -1), h, temp_h, s.salt_h, s.tracer_h
         )
-        candidate = replace(
-            candidate,
-            coupled=replace(
-                candidate.coupled,
-                ice=replace(ice1, velocity=ui1),
-                ocean=old.ocean.with_layers(trial),
-            ),
-        )
+        candidate = candidate.with_surface(old.ocean.with_layers(trial), replace(ice1, velocity=ui1), snow1)
         residual = (
             M1 * uw1
             - M0 * s.u_e[:, :1]
@@ -197,9 +186,9 @@ class OceanIceReceiver:
 
     def finish(self, initial, candidate, exchange, impulses, *, storage_change=None, runoff=None, runoff_energy=None):
         H = self.H
-        s = candidate.coupled.ocean.ocean
+        s = candidate.ocean.ocean
         A = s.mesh.cell_area
-        before, provisional = H.terms(initial.coupled), H.terms(candidate.coupled)
+        before, provisional = H.terms(initial), H.terms(candidate)
         change = sum(provisional[k] - before[k] for k in before) / A
         storage = torch.zeros_like(change) if storage_change is None else storage_change
         target = exchange.surface_energy
@@ -213,14 +202,9 @@ class OceanIceReceiver:
         end, _, _ = RoquetWorkspace(H.model.layers, s).heat(
             s, s, specific, allow_cooling=True
         )
-        result = replace(
-            candidate,
-            coupled=replace(
-                candidate.coupled, ocean=candidate.coupled.ocean.with_layers(end)
-            ),
-        )
-        self.snow.check(result)
-        after = H.terms(result.coupled)
+        result = candidate.with_surface(candidate.ocean.with_layers(end), candidate.ice, candidate.snow_mass)
+        self.ocean_ice.check(result)
+        after = H.terms(result)
         error = (
             sum(after[k] - before[k] for k in before) / A
             + storage
@@ -236,10 +220,10 @@ class OceanIceReceiver:
             ).any()
         ):
             raise FloatingPointError("shared boundary energy solve failed")
-        s0 = initial.coupled.ocean.ocean
+        s0 = initial.ocean.ocean
         water = (
             s.column.rho0 * (end.h - s0.h).sum(-1)
-            + (H.mass(result.coupled) - H.mass(initial.coupled))[:, 0]
+            + (H.mass(result) - H.mass(initial))[:, 0]
             + exchange.water
         )
         if runoff is not None:

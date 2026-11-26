@@ -93,6 +93,10 @@ DIRECT_OCEAN_TARGET = "6159f0a4cbe73624a514736b8b5706023c2e5bc41d6e5c449da7d63c6
 DIRECT_OCEAN_PARENT_VERIFIER = "ad3e8c4bf2d7fa6e1857ecc205c37ae06bb7321830a3ab262c7c8c91dec9f8de"
 
 
+DIRECT_ICE_TARGET = "82d9edd87227162793717c73d7104e85a928eef171bff36564235f7e01f274fe"
+DIRECT_ICE_PARENT_VERIFIER = "0838b09fd0287ecdc8f384684d8c9ed46f34352b7548343726a3d1800c9050dd"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -179,6 +183,12 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    if _without_verifier_digest(current_hashes) == DIRECT_ICE_TARGET:
+        origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
+        if origin in {(DIRECT_OCEAN_TARGET, DIRECT_ICE_PARENT_VERIFIER),
+                      (COLUMN_VAPOR_TARGET, DIRECT_OCEAN_PARENT_VERIFIER)}:
+            return {"direct_thermal_ice": True, "numerical_change": "none"}
+        raise ValueError("ice refactor restart origin differs from the audited revisions")
     if _without_verifier_digest(current_hashes) == DIRECT_OCEAN_TARGET:
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
         if origin == (COLUMN_VAPOR_TARGET, DIRECT_OCEAN_PARENT_VERIFIER):

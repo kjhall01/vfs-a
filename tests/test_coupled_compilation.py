@@ -95,7 +95,7 @@ def test_full_coupling_capture_radiation_cache_and_bitwise_restart(source, confi
         with pytest.raises(ValueError, match='does not match'):
             c.unpack(saved, a1, r1, sea1, 'other-mode')
         with pytest.raises(ValueError, match='outside'):
-            s = sea1.coupled.ocean.ocean
+            s = sea1.ocean.resolved
             r1.H.model.ocean.reference.evaluate(s.salinity(), s.temperature()*0+100)
 
 

@@ -24,7 +24,7 @@ def test_projected_shelf_redi_coupled_and_restart(config, source):
             cfg, source, Path("synthetic"), geography=geography
         )
     model = receiver.H.model
-    state = sea.coupled.ocean
+    state = sea.ocean
     op = CoupledShelfRedi(model, state, c.rest_thickness(cfg), c.gm_redi_operator(cfg))
     torch.manual_seed(212)
     x = torch.randn_like(state.ocean.h)[..., None]
@@ -89,7 +89,7 @@ def test_shelf_resolved_and_gm_transport_share_physical_openings(config, source)
             cfg, source, Path("synthetic"), geography=geography
         )
     model = receiver.H.model
-    state = sea.coupled.ocean
+    state = sea.ocean
     s = state.ocean
     assert isinstance(model.dynamics, ShelfTemperatureOcean)
     m = s.mesh
@@ -171,16 +171,16 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
         adapter, air, receiver, sea = c.build(cfg, source, Path("synthetic"), geography=geo)
     model = receiver.H.model
     domain = model.ocean.domain
-    initial = sea.coupled.ocean.ocean
+    initial = sea.ocean.resolved
     ref = initial.column.layer_reference
     active = initial.column.active_layers
     torch.testing.assert_close(ref[:3, :2], ref.new_tensor([[8., 0.], [10., 30.], [11., 0.]]))
     torch.testing.assert_close(ref[~land].sum(-1), ref.new_tensor(depths[~land]))
     assert active[4].all() and active[2].sum() == 1
-    assert sea.coupled.ice.volume[~land].sum() > 0
+    assert sea.ice.volume[~land].sum() > 0
 
     def check_state(water):
-        st = water.coupled.ocean
+        st = water.ocean
         for x in (st.ocean.h, st.ocean.temp_h, st.ocean.salt_h, st.ocean.tracer_h, st.tke_h, st.eddy_h):
             assert torch.isfinite(x).all()
             assert torch.count_nonzero(x[~active]) == 0
@@ -196,7 +196,7 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
                                  initial.salt_h, initial.tracer_h)
     # Vary only the land dummy column. It has no physical volume and must
     # contribute neither vertex stress nor eddy energy at adjacent wet faces.
-    moving = sea.coupled.ocean.with_layers(water)
+    moving = sea.ocean.with_layers(water)
     land_factor = torch.where(domain.wet_cell[:, None], 1., 2.).to(water.h)
     dummy = water.with_tensors(water.u_e, water.h*land_factor, water.temp_h*land_factor,
                                water.salt_h*land_factor, water.tracer_h*land_factor[..., None])
@@ -211,12 +211,12 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
     work = sum((grad[k] * getattr(rhs, k)).sum() for k in ('h', 'temp_h', 'salt_h', 'u_e'))
     scale = (grad['u_e'] * rhs.u_e).abs().sum()
     assert work.abs() <= 2e-12 * scale
-    sea = replace(sea, coupled=replace(sea.coupled, ocean=sea.coupled.ocean.with_layers(water)))
+    sea = replace(sea, ocean=sea.ocean.with_layers(water))
     air, sea, report = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
     check_state(sea)
     assert report['ale_steps'] == 1 and report['gmredi_steps'] == cfg.eddy_substeps
     assert report['ale_column_residual_J_m2'] < 1e-3
-    after = sea.coupled.ocean.ocean.h
+    after = sea.ocean.resolved.h
     torch.testing.assert_close(after / after.sum(-1, keepdim=True), ref / ref.sum(-1, keepdim=True))
     c.snapshot(tmp_path / "active.nc", adapter, air, receiver, sea)
     with xr.open_dataset(tmp_path / "active.nc", decode_times=False) as ds:
@@ -247,7 +247,7 @@ def test_single_layer_defers_infeasible_ale_at_shared_moving_face(config, source
     geo = dict(land=land, depth_m=depth, height_m=100. * land)
     _, _, receiver, sea = c.build(cfg, source, None, geography=geo, smoke_no_radiation=True)
     model = receiver.H.model
-    s = sea.coupled.ocean.ocean
+    s = sea.ocean.resolved
     domain = model.ocean.domain
     edge = torch.where((s.mesh.cellsOnEdge == 0).any(-1) & domain.active_edge)[0][0]
     h = s.h.clone()
@@ -274,9 +274,9 @@ def test_single_layer_defers_infeasible_ale_at_shared_moving_face(config, source
     with pytest.raises(ThermalProjectionInfeasible) as failure:
         model.remap_with_report(state, target)
     assert failure.value.columns[0]
-    sea = replace(sea, coupled=replace(sea.coupled, ocean=state))
+    sea = replace(sea, ocean=state)
     remapped, report = c.ale_step(receiver, sea, cfg)
-    end = remapped.coupled.ocean.ocean
+    end = remapped.ocean.resolved
     assert report["ale_changed_columns"] > 0 and report["ale_deferred_columns"] > 0
     assert report["ale_changed_columns"] + report["ale_deferred_columns"] == int(deep.sum())
     assert torch.equal(end.u_e[edge], u[edge])
@@ -290,6 +290,6 @@ def test_single_layer_defers_infeasible_ale_at_shared_moving_face(config, source
     torch.testing.assert_close(momentum1.sum(-1), momentum0.sum(-1), rtol=2e-14, atol=0.)
     for old, new in ((state.ocean.salt_h, end.salt_h),
                      (state.ocean.tracer_h[..., 0], end.tracer_h[..., 0]),
-                     (state.tke_h, remapped.coupled.ocean.tke_h),
-                     (state.eddy_h, remapped.coupled.ocean.eddy_h)):
+                     (state.tke_h, remapped.ocean.tke_h),
+                     (state.eddy_h, remapped.ocean.eddy_h)):
         torch.testing.assert_close(new.sum(-1), old.sum(-1), rtol=2e-14, atol=0.)
