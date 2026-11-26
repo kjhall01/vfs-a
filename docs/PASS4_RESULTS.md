@@ -1807,3 +1807,10 @@ water residual is zero. The maximum native air energy residual is 5.34e−8 J/m�
 The diagnostic replay used Linux eager execution, saved radiation and the
 reconstructed Mac state. GPU and long-run behavior remain unverified.
 See the [repair and restart guide](../workflows/coupled/VAPOR_CORRECTION.md).
+
+## Thermal sea-ice state ownership
+
+The campaign uses the packaged joint ocean–ice stepper and the five-field
+category ice state. The [experimental branch comparison](../verification/ocean/direct-sea-ice/README.md)
+records bytewise stage checks for both SSP schemes, disk restart compatibility,
+installed-wheel tests and a paired mature-shelf replay.

@@ -37,6 +37,7 @@ See [contributing](CONTRIBUTING.md) for the complete test environment.
 | `vfs.DryAtmosphere` | Conservative dry dynamics; SSPRK3 | [Dry atmosphere](examples/dry_atmosphere.py) |
 | `vfs.MoistAtmosphere` | Entropy and water contents; bounded SSPRK3 with matched energy work | [Moist atmosphere](examples/moist_atmosphere.py) |
 | `vfs.ocean.Ocean` | Roquet CT/SA dynamics, bounded transport, optional mixing, surface forcing, EKE and ALE | [Forced ocean](examples/ocean.py), [partial-column Earth campaign](workflows/coupled/EARTH_SHELF.md) |
+| `vfs.ice.OceanIce` | Joint ocean and sea-ice dynamics, drag, phase change, snow and sensible heat | [Thermal sea ice](examples/sea_ice.py) |
 
 The atmosphere uses a hybrid pressure Charney–Phillips column. The ocean uses
 layer thicknesses and layer-centered thermodynamic contents. Both store horizontal

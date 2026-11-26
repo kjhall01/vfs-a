@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [thermal ice branch comparison](../verification/ocean/direct-sea-ice/README.md) covers ice state ownership, joint RK stages, NetCDF replay and CPU throughput.
+
 The [experimental ocean comparison](../verification/ocean/direct-roquet/README.md) covers the direct Roquet constructor, flat state, restart replay, and CPU timings.
 
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
