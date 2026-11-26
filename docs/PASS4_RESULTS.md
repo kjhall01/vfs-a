@@ -38,6 +38,25 @@ steps at 600 s reduced that loss to −14.88 J/m². These are short
 forward CPU replays. Accelerator throughput, long-run radiating behavior and
 end-to-end derivatives through limiter activations were not evaluated.
 
+### Fixed 600 s step in the coupled campaign
+
+The Earth-shelf comparison started both methods from the same adapter-funded
+day-28.9444 checkpoint. Each trajectory used a 600 s atmosphere step and
+four 1,200 s coupling intervals, reaching day 29. The compiled CPU float64
+configuration used four threads and the original ocean, ice, land, mixing and
+ALE schedules. Radiation was disabled. Timing covers the four normal
+`advance` calls, including PyAM21 and surface exchange. Each method received
+a full warmup, then three timed repeats in alternating order.
+
+| Atmosphere method | Median wall time (s) | Coupled numerical energy residual over 4,800 s (J/m²) |
+|---|---:|---:|
+| SSPRK3 | 42.92 | -59.53 |
+| SSPRK(4,3) | 48.21 | -30.35 |
+
+The four-stage method reduced the magnitude of the coupled residual by
+49.0% with a 11.0% reduction in coupled throughput on this CPU.
+The atmosphere-only solver comparison above used eager execution.
+
 ## Coupled reservoir limiters
 
 Both Earth-shelf presets use a funded GM circulation. When twenty local
