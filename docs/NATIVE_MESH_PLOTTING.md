@@ -7,6 +7,8 @@ cell that crosses the map boundary. The plotting code performs no regridding.
 
 ![Bathymetry on the 4,096-cell Earth shelf mesh in a Robinson projection and on a 3D globe](figures/native-mesh-depth.png)
 
+For latitude–pressure sections, zonal means and multi-snapshot averages, see the [running plot list and notebook examples](../vfs_plotting/PLOTS.md).
+
 ## From an Earth campaign snapshot
 
 From the checkout, install the plotting dependencies in your VFS environment

@@ -3,8 +3,10 @@ import numpy as np
 import xarray as xr
 
 from ._geometry import Geometry, as_array, robinson_polygons
+from .climate import open_state, summarize
+from .climate_plots import plot_section, plot_sections, plot_surface, plot_zonal_mean
 
-__all__ = ["plot_field"]
+__all__ = ["open_state", "summarize", "plot_field", "plot_section", "plot_sections", "plot_surface", "plot_zonal_mean"]
 
 
 def _samples(field, mesh, grid):

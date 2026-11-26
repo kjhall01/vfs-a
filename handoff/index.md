@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [climate plot list](../vfs_plotting/PLOTS.md) includes importable functions for coupled snapshot and restart summaries.
+
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
 
 The [native vapor-floor check](../workflows/coupled/VAPOR_CORRECTION.md#native-atmospheric-interfaces)
