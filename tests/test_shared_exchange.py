@@ -411,3 +411,29 @@ def test_shared_precipitation_record_keeps_strict_tolerance():
         _check_shared_flux(
             rain + torch.tensor([1e-7, 0.0]), rain, field="rain", dt=1200
         )
+
+
+def test_ice_supply_second_category_can_bind_after_first_humidity_resolve(model):
+    from workflows.pyam21.surface import fund_ice_sublimation
+    adapter, _ = initial(model)
+    receiver, water = surface_case(model)
+    tiles = receiver.tiles(water, torch.full_like(water.snow_mass, 270.))
+    one = torch.ones_like(tiles.fraction[:, 0])
+    zero = torch.zeros_like(one)
+    fraction = torch.stack([.2*one, .4*one, .4*one], -1)
+    tiles = replace(tiles, fraction=fraction, frozen_mass=torch.stack([.04*one,.14*one],-1))
+    vd = dict(dtmass=one, delta_t=zero, dflux_t=zero, delta_tr=zero[:, None],
+              dflux_tr=zero[:, None], delta_u=zero, delta_v=zero)
+    raw = [dict(flux_q=q*one, dedq_atm=-one, flux_t=zero, flux_u=zero, flux_v=zero,
+                dhdt_atm=zero, dhdt_surf=zero, dedq_surf=zero, dedt_surf=zero,
+                dtaudu_atm=zero, dtaudv_atm=zero) for q in (0.,1.,.6)]
+    sfc = {k: sum(fraction[:, i]*r[k] for i,r in enumerate(raw)) for k in raw[0]}
+    cpl = adapter.physics.couple(vd,sfc,{},update_ocean=False)
+    assert (.4*(.6 - cpl["delta_q"]) < .14).all()
+    cpl, raw, info = fund_ice_sublimation(adapter.physics, vd, {}, sfc, cpl, tiles, 1., raw)
+    assert info["ice_sublimation_limited"].all()
+    from workflows.pyam21.surface import tile_fluxes
+    q = tile_fluxes(raw, tiles, vd, cpl)["flux_q"]
+    torch.testing.assert_close(q[:, 1:], tiles.frozen_mass)
+    torch.testing.assert_close(q.sum(-1), cpl["flux_q"])
+    torch.testing.assert_close(q[:, 0], -.2*cpl["delta_q"])

@@ -2,6 +2,12 @@
 
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.
 
+The [coupled limiter diagnostics](../docs/PASS4_RESULTS.md#coupled-reservoir-limiters)
+cover GM loop closure, TKE deferrals, supply-limited sea-ice sublimation,
+post-transport backscatter funding and ocean carrier substeps. Checkpoints
+from main `59b11db` or the Redi branch at `a894d0e` can resume with their
+original inputs, configuration, checkpoint and compatible manifest.
+
 The [Redi energy limiter](../docs/PASS4_RESULTS.md#locally-funded-redi-mixing)
 reduces mixing where its finite work exceeds locally available eddy energy.
 The campaign logs affected intervals and saves retry counts, reduced and blocked

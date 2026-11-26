@@ -46,6 +46,7 @@ class EddyReport:
     redi_energy_limited_rows: int = 0
     redi_energy_blocked_rows: int = 0
     redi_energy_deficit_max_J_kg: float = 0.0
+    gm_blocked_interfaces: int = 0
 
 
 class LocalEddyEnergyError(FloatingPointError):
@@ -372,16 +373,20 @@ class GMRedi:
         return slope, psi, *self._carriers(psi, metrics, h), operator, measure
 
     @staticmethod
-    def _carriers(psi, metrics, h):
+    def _carriers(psi, metrics, h, *, direct_returns=False):
         """Pair horizontal and vertical bolus fluxes from a shared streamfunction."""
         i, j, ell, ids = metrics[3], metrics[4], metrics[6], metrics[7]
         hi, hj = ids[i].flatten(), ids[j].flatten()
         horizontal = ell * psi.diff(dim=1)
-        hdiv = divergence(hi, hj, horizontal.flatten(), h.numel()).reshape_as(h)
+        if direct_returns:
+            down = divergence(i, j, ell * psi[:, 1:-1], len(h))
+        else:
+            hdiv = divergence(hi, hj, horizontal.flatten(), h.numel()).reshape_as(h)
+            down = hdiv.cumsum(1)[:, :-1]
         vertical = torch.cat(
             (
                 torch.zeros_like(h[:, :1]),
-                hdiv.cumsum(1)[:, :-1],
+                down,
                 torch.zeros_like(h[:, :1]),
             ),
             1,
@@ -542,6 +547,8 @@ class GMRedi:
         proposed = psi
         factors = None
         first_halving = None
+        direct_returns = False
+        blocked = 0
         halvings = 0
         passes = 0
         while True:
@@ -568,23 +575,35 @@ class GMRedi:
                         "funded_donor_parcel", "quadratic_funded_donor_parcel"
                     ):
                         raise
-                    if halvings == 20:
-                        raise LocalEddyEnergyError(
-                            "GM", exc.bad, "exhausted 20 local streamfunction halvings"
-                        ) from exc
+                    if not torch.isfinite(exc.remaining).all():
+                        raise
                     incident = ~self._interface_min(~exc.bad, metrics)
                     if not incident.any():
-                        raise
+                        # An isolated deep layer can see only the cancellation
+                        # error of the cumulative vertical-return construction.
+                        if direct_returns:
+                            raise
+                        halvings = 20
                     if factors is None:
                         factors = torch.ones_like(psi[:, 1:-1])
-                    factors = torch.where(incident, 0.5 * factors, factors)
-                    halvings += 1
+                    if halvings < 20:
+                        factors = torch.where(incident, 0.5 * factors, factors)
+                        halvings += 1
+                    else:
+                        # Close entire loops, including their vertical return flow.
+                        # Re-settle from the original state as neighboring budgets change.
+                        close = incident & (psi[:, 1:-1] != 0)
+                        if direct_returns and not close.any():
+                            raise
+                        direct_returns = True
+                        blocked += int(close.sum())
+                        factors = torch.where(close, 0., factors)
                     if passes == 0 and self.gm_energy_scheme == "quadratic_funded_donor_parcel":
                         first_halving = factors
                         factors = _funded_factors(model, state, transported, exc, metrics)
             passes += 1
             psi = torch.cat((proposed[:, :1], proposed[:, 1:-1] * factors, proposed[:, -1:]), 1)
-            horizontal, vertical, i, j, carrier = self._carriers(psi, metrics, h)
+            horizontal, vertical, i, j, carrier = self._carriers(psi, metrics, h, direct_returns=direct_returns)
 
         # Redi follows the UPDATED density surfaces, not the pre-GM slopes.
         redi_geometry = self._geometry(model, gm, part="redi", metrics=metrics)
@@ -680,6 +699,7 @@ class GMRedi:
             limited_fluxes,
             passes,
             0 if factors is None else int((factors < 1).sum()),
+            gm_blocked_interfaces=blocked,
             redi_energy_limiting_passes=redi_passes,
             redi_energy_limited_rows=0 if row_scale is None else int((row_scale < 1).sum()),
             redi_energy_blocked_rows=0 if row_scale is None else int((row_scale == 0).sum()),

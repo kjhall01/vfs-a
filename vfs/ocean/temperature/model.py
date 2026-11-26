@@ -62,7 +62,7 @@ class TemperatureOcean:
             du = self.ocean.domain.apply_edge(du)
         return du.expand_as(state.u_e)
 
-    def euler(self, state, dt, *, extra_tendency=None):
+    def euler(self, state, dt, *, extra_tendency=None, transported_source=None):
         rhs,report = self.tendency_with_report(state,dt)
         area = state.mesh.cell_area[:,None]
         amounts = report.transport.amounts/area[...,None]
@@ -73,10 +73,10 @@ class TemperatureOcean:
         # The authoritative endpoint is installed; validation does not need
         # the full flux/work report to remain live (autograd retains its graph).
         del rhs, report, amounts
-        if extra_tendency is not None:
+        if extra_tendency is not None or transported_source is not None:
             # Both sources are evaluated on this same Euler input state.
             # Authoritative advective amounts remain the base update.
-            du, dq = extra_tendency(state)
+            du, dq = transported_source(state, end) if transported_source is not None else extra_tendency(state)
             end = end.with_tensors(end.u_e+dt*du, end.h, end.temp_h,
                                    end.salt_h, end.tracer_h+dt*dq)
             if not torch.isfinite(end.tracer_h).all() or (end.tracer_h[..., -2] < 0).any():
@@ -84,14 +84,19 @@ class TemperatureOcean:
         self.fields(end)  # Reject out-of-domain stages; never clip temperature.
         return end
 
-    def step(self, state, dt, *, extra_tendency=None):
-        first = self.euler(state,dt,extra_tendency=extra_tendency)
-        second = self.euler(first,dt,extra_tendency=extra_tendency)
+    def step(self, state, dt, *, extra_tendency=None, transported_source=None):
+        sources = {"extra_tendency": extra_tendency}
+        if transported_source is not None:
+            if extra_tendency is not None:
+                raise ValueError("choose one Euler stage source")
+            sources = {"transported_source": transported_source}
+        first = self.euler(state, dt, **sources)
+        second = self.euler(first, dt, **sources)
         del first
         middle = .75*state+.25*second
         del second
         self.fields(middle)
-        third = self.euler(middle,dt,extra_tendency=extra_tendency)
+        third = self.euler(middle, dt, **sources)
         del middle
         end = (1/3)*state+(2/3)*third
         del third

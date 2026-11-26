@@ -133,3 +133,43 @@ def fund_column_evaporation(physics, vd, surf, sfc, coupled, tiles, dt, raw):
         for key in ("flux_q", "dedq_atm", "dedq_surf", "dedt_surf"):
             raw[0][key] = torch.where(limited, sfc[key], raw[0][key])
     return coupled, raw
+
+
+def fund_ice_sublimation(physics, vd, surf, sfc, coupled, tiles, dt, raw):
+    """Constrain each ice tile's integrated vapor loss in the shared humidity solve.
+
+    The supply is frozen mass per cell area at interval start. Snow diagnosed
+    later by moist physics first becomes available during the next interval.
+    Capping one tile lowers the common air humidity increment and can cause the
+    other tile to bind. At most two solves are needed for two frozen categories.
+    """
+    fraction = tiles.fraction[:, 1:]
+    stock = tiles.frozen_mass
+    q0 = torch.stack([tile["flux_q"] for tile in raw[1:]], -1)
+    dq = torch.stack([tile["dedq_atm"] for tile in raw[1:]], -1)
+    def demand():
+        return dt * (fraction * (q0 + dq * coupled["delta_q"][:, None]))
+
+    binding = demand() > stock
+    if not binding.any():
+        return coupled, raw, {}
+    limited = binding
+    rate = stock / torch.where(fraction > 0, fraction, 1.) / dt
+    keys = ("flux_q", "dedq_atm", "dedq_surf", "dedt_surf")
+    for _ in range(2):
+        for i, tile in enumerate(raw[1:]):
+            raw[i + 1] = {**tile, **{
+                k: torch.where(binding[:, i], rate[:, i] if k == "flux_q" else 0., tile[k])
+                for k in keys
+            }}
+        # raw[0] also carries any previously prescribed land evaporation flux.
+        sfc = {**sfc, **{k: sum(tiles.fraction[:, i] * tile[k] for i, tile in enumerate(raw))
+                         for k in keys}}
+        coupled = physics.couple(vd, sfc, surf, update_ocean=False)
+        requested = demand()
+        binding = (requested > stock) & ~limited
+        if not binding.any():
+            break
+        limited = limited | binding
+    return coupled, raw, dict(ice_sublimation_limited=limited,
+                              ice_sublimation_withheld=torch.where(limited, requested - stock, 0.))

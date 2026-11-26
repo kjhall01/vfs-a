@@ -140,11 +140,11 @@ class ShelfTemperatureOcean(TemperatureOcean):
         p = load.flatten()
         return faces.force(p[faces.right // n] - p[faces.left // n], report.metric)
 
-    def euler(self, state, dt, *, extra_tendency=None):
+    def euler(self, state, dt, *, extra_tendency=None, transported_source=None):
         rhs, report = self.tendency_with_report(state, dt)
         end = report.transport.install(state, velocity=state.u_e + dt * rhs.u_e)
-        if extra_tendency is not None:
-            du, dq = extra_tendency(state)
+        if extra_tendency is not None or transported_source is not None:
+            du, dq = transported_source(state, end) if transported_source is not None else extra_tendency(state)
             end = end.with_tensors(
                 end.u_e + dt * du, end.h, end.temp_h, end.salt_h, end.tracer_h + dt * dq
             )

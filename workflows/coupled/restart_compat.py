@@ -92,6 +92,10 @@ REDI_ENERGY_TARGET = "a96c4e0e5f7258897b6d81fc3a9165a857d3eebbe66edf555890243856
 REDI_PARENT_VERIFIER = "ad3e8c4bf2d7fa6e1857ecc205c37ae06bb7321830a3ab262c7c8c91dec9f8de"
 
 
+COUPLED_LIMITERS_TARGET = "61eb298b44bcbb2eecfaf94a500f6e519f6b3403be6e9775b34e6cf9af32d022"
+REDI_VERIFIER = "a4cc034ea7a6f763a3537c1920e0ba39268e2b779a0cf72f7f7aa8d7038d0c7d"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -178,6 +182,13 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
         return {"endpoint_fix_files": []}
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
+    if _without_verifier_digest(current_hashes) == COUPLED_LIMITERS_TARGET:
+        origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
+        if origin == (REDI_ENERGY_TARGET, REDI_VERIFIER):
+            return {"numerical_change": "coupled_reservoir_limiters_v1"}
+        if origin == (COLUMN_VAPOR_TARGET, REDI_PARENT_VERIFIER):
+            return {"numerical_change": "locally_funded_redi_and_coupled_reservoir_limiters_v1"}
+        raise ValueError("coupled limiter restart origin differs from the audited revisions")
     if _without_verifier_digest(current_hashes) == REDI_ENERGY_TARGET:
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
         if origin == (COLUMN_VAPOR_TARGET, REDI_PARENT_VERIFIER):

@@ -19,7 +19,7 @@ from vfs.atmosphere.moist_cp import interface_pressure_mass
 from .mapping import ColumnMap, average, distribute, species_increment, species_endpoint
 from .state import PhysicsState, PhysicsReport, copy_tree
 from .energy import exchanges, transfer_energy
-from .surface import ColumnTiles, fund_column_evaporation, surface_layer, tile_fluxes
+from .surface import ColumnTiles, fund_column_evaporation, fund_ice_sublimation, surface_layer, tile_fluxes
 from .vapor import restore_positive_vapor
 
 PYAM21_REVISION = "e1bdfcc3b23c05adea80b35af880702bb85718eb"
@@ -351,8 +351,14 @@ class AM2Adapter:
             cpl = p.couple(dn["vd"], sfc, surf, update_ocean=surface_tiles is None)
             if isinstance(surface_tiles, ColumnTiles):
                 cpl, tile_raw = fund_column_evaporation(p, dn["vd"], surf, sfc, cpl, surface_tiles, dt, tile_raw)
+            ice_limits = {}
+            if surface_tiles is not None and surface_tiles.frozen_mass is not None:
+                cpl, tile_raw, ice_limits = fund_ice_sublimation(
+                    p, dn["vd"], surf, sfc, cpl, surface_tiles, dt, tile_raw
+                )
             up = p.up(dt, T, u, v, R, pf, ph, zf, zh, omega, dn, cpl, surf, mem)
             out = {k: up[k] for k in ("udt", "vdt", "tdt", "rdt")}
+            out.update(ice_limits)
             out.update(
                 lprec=up["moist"]["lprec"],
                 fprec=up["moist"]["fprec"],

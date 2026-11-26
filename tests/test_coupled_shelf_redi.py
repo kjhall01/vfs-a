@@ -331,3 +331,63 @@ def test_unfunded_partial_shelf_redi_recovers_with_conservative_fluxes(config, s
     residual = model.hamiltonian.finite_change(state, end) - report.redi_energy_flux_divergence
     assert (residual / area).abs().max() < 1e-10
     assert report.energy_change.abs() / area.sum() < 1e-9
+
+
+@torch.no_grad()
+def test_carrier_retry_matches_two_explicit_ocean_ice_steps(config, source):
+    from vfs.ocean.transport import CarrierOutflowError
+
+    cfg = replace(config, shelf_redi=True, partial_cell_layers=True, ocean_levels=6)
+    _, _, receiver, sea = c.build(cfg, source, None, smoke_no_radiation=True, island=True)
+    model = receiver.H.model
+    s = sea.coupled.ocean.ocean
+    moving = s.with_tensors(model.ocean.domain.apply_layer_edge(torch.full_like(s.u_e, 0.5)),
+                            s.h, s.temp_h, s.salt_h, s.tracer_h)
+    ocean = replace(sea.coupled.ocean, ocean=moving)
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
+    owner = receiver.snow
+    # Make the real donor-volume bound bind without an unphysical current.
+    packed = owner.coupled.packed(ocean)[0]
+    _, tr = model.dynamics.tendency_with_report(packed, 60.)
+    limiter = model.dynamics.limiter
+    limiter.cfl_safety = 0.75 * float(tr.transport.outflow_fraction.max())
+    with pytest.raises(CarrierOutflowError):
+        owner.step(sea, 60.)
+    with patch.object(owner, "dynamics_step", wraps=owner.dynamics_step) as calls:
+        end, report = owner.step(sea, 60., retry_carrier=True)
+    assert report.carrier_subdivisions == 1
+    assert [call.args[1] for call in calls.call_args_list] == [60., 30., 30.]
+    solve = owner.dynamics_step
+    def split(state, dt, **kwargs):
+        mid, w0 = solve(state, dt/2, **kwargs)
+        out, w1 = solve(mid, dt/2, **kwargs)
+        return out, w0+w1
+    with patch.object(owner, "dynamics_step", split):
+        control, control_report = owner.step(sea, 60.)
+    for field in ("temp_h", "salt_h", "u_e", "h"):
+        assert torch.equal(getattr(end.coupled.ocean.ocean, field), getattr(control.coupled.ocean.ocean, field))
+    assert torch.equal(end.cold_content, control.cold_content)
+    assert torch.equal(report.external_energy, control_report.external_energy)
+
+
+@torch.no_grad()
+def test_gm_vertical_return_of_closed_shelf_loops(config, source):
+    cfg = replace(config, ocean_levels=8, ocean_depth_m=1000., shelf_redi=True,
+                  partial_cell_layers=True)
+    depths = np.resize([12., 75., 130., 800., 1000., 300.], cfg.cells)
+    land = np.arange(cfg.cells) == 4
+    _, _, receiver, sea = c.build(cfg, source, None, smoke_no_radiation=True,
+                                  geography=dict(land=land, height_m=300.*land, depth_m=depths))
+    state = sea.coupled.ocean
+    step = c.gm_redi_operator(cfg)
+    metrics = step._metrics(receiver.H.model, state)
+    psi = step._geometry(receiver.H.model, state, part="gm", metrics=metrics)[1]
+    mask = torch.arange(psi.shape[1]) % 3 == 0
+    psi[:, mask] = 0.
+    _, reference, *_ = metrics.carriers(psi)
+    horizontal, down, i,j,carrier = metrics.carriers(psi, direct_returns=True)
+    scale = horizontal.abs().max()
+    assert scale > 0
+    torch.testing.assert_close(down, reference, atol=1e-13 * float(scale), rtol=1e-14)
+    from vfs.ocean.transport import divergence
+    assert divergence(i,j,carrier,state.eddy_h.numel()).abs().max() < 1e-13 * scale

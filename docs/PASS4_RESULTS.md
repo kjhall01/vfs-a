@@ -1,5 +1,68 @@
 # Pass 4 — physical-field workflow
 
+## Coupled reservoir limiters
+
+Both Earth-shelf presets use a funded GM circulation. When twenty local
+halvings leave a negative eddy inventory, GM closes the incident nonzero
+streamfunction loops and settles the full tracer and energy update again.
+During this recovery it sums the vertical return transport of the surviving
+loops directly at the crossed native interfaces. This prevents a cumulative
+sum from leaving a spurious vertical flux below a closed shelf loop.
+
+On the 4,096-cell, 40-level shelf grid, a CPU float64 stress test emptied 20
+columns of a day-12 ocean checkpoint and prescribed 100 m²/s GM for 600 s.
+The update closed 42 loops. The maximum local GM energy residual was
+3.58e-12 J/m². The zero-initial-reservoir coupled smoke case that exhausted
+the former twenty-halving limit also completed two exchange intervals.
+
+| Campaign quantity | Interpretation |
+|---|---|
+| `gm_blocked_interfaces` | Nonzero GM loops fully closed, counted once per substep |
+| `tke_limited_interfaces` | Active vertical mixing interfaces with reduced scalar conductance, including those deferred |
+| `tke_deferred_columns` | Column-substeps where the TKE closure deferred scalar mixing |
+| `ice_sublimation_limited_tiles` | Frozen categories whose vapor demand exceeded their starting frozen mass |
+| `ice_sublimation_withheld_kg_m2` | Cumulative global-mean water withheld relative to the tile law evaluated at the accepted air humidity increment |
+| `ocean_carrier_subdivisions` | Accepted ocean–ice dynamics interval subdivisions after a donor-volume CFL rejection |
+
+The campaign writes cumulative counts to CSV, NetCDF diagnostics and restarts.
+Warnings use counts from the accepted interval. TKE warns when two consecutive
+intervals contain column deferrals. The TKE mixing equations are unchanged.
+Backscatter also checks the eddy inventory available after advective transport
+when limiting the stress on adjacent vertices, retaining the paired return of
+kinetic work to the eddy reservoir.
+
+When sublimation exhausts a tile, the adapter prescribes its available vapor
+flux and re-solves the shared bottom-air humidity increment. A second ice
+category can then reach its limit. Frozen mass includes the snow already on the
+category. Snowfall diagnosed later in that interval on an exhausted tile goes
+to the exposed liquid with its precipitation enthalpy and momentum. If the last
+ice vanishes from an edge, its remaining momentum and stress impulse go to the
+liquid. Coupled tests cover one and two depleted categories, deposition on a
+neighboring tile, and snowfall during depletion.
+
+For an ocean carrier outflow rejection, the campaign retries just the coupled
+ocean–ice RK dynamics over two half intervals, down to 1/256 of the requested
+dynamics step. The existing physics, mixing, ALE and radiation schedules keep
+their original elapsed times. The full step failure propagates if recovery
+cannot produce admissible states. A partial-column test with a binding physical
+face outflow bound matched explicit half steps including wind work. Testing
+here covers CPU forward integration. Accelerator and long-run climate behavior
+remain open.
+
+In a paired CPU float64 run on the 4,096-cell Earth shelf, both revisions
+advanced two 2,400 s coupling intervals from the same initialization with
+radiation disabled. All 41 tensors in the final checkpoint matched bit for bit
+with the Redi branch at `a894d0e`, and every pre-existing interval diagnostic
+matched. TKE reduced scalar conductance at 78,003 and 201,070 interfaces
+respectively, counted per mixing substep, with zero column deferrals. In a
+separate depleted-TKE restart test the first interval recorded the deferral
+and the second emitted the consecutive-interval warning after resuming.
+Campaign restarts from `59b11db` and `a894d0e` also matched the uninterrupted
+small-grid controls in all 36 state tensors and pre-existing ledger entries.
+The installed-wheel CPU test suite passed 1,680 tests with 10 skips. The
+portable dry and moist fixtures passed all 93 and 142 comparisons respectively.
+The new limiter branches have not been verified for backward differentiation.
+
 ## Locally funded Redi mixing
 
 The coupled campaign scales shared Redi flux rows when the finite tracer update

@@ -34,9 +34,14 @@ class TemperatureSystem:
         q=None if original.ocean.tracer_h is None else packed.tracer_h[...,:-1]
         return TKEState(packed.with_tensors(packed.u_e,packed.h,packed.temp_h,packed.salt_h,q),packed.tracer_h[...,-1])
 
-    def step_with_report(self,state,dt,*,surface_stress=None,shortwave=None,surface_heat=None,surface_fluxes=None,_extra_tendency=None):
+    def step_with_report(self,state,dt,*,surface_stress=None,shortwave=None,surface_heat=None,surface_fluxes=None,_extra_tendency=None,_transported_source=None):
         self.check(state)
-        packed=self.dynamics.step(self.pack(state),dt,extra_tendency=_extra_tendency) if _extra_tendency is not None else self.dynamics.step(self.pack(state),dt)
+        sources = {}
+        if _extra_tendency is not None:
+            sources["extra_tendency"] = _extra_tendency
+        if _transported_source is not None:
+            sources["transported_source"] = _transported_source
+        packed = self.dynamics.step(self.pack(state), dt, **sources)
         end=self.unpack(packed,state);transported=end
         exchange=boundary=heating=mixing=None
         if surface_fluxes is not None:

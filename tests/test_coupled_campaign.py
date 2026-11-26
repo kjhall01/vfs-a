@@ -614,8 +614,9 @@ def test_full_ocean_schedule_calls_backscatter_and_changes_state(source, config)
     actual = c.EddyBackscatter.tendency
     powers = []
 
-    def tracked(op, model, state):
-        du, de, report = actual(op, model, state)
+    def tracked(op, model, state, *, transported_eddy_h, dt):
+        assert transported_eddy_h.shape == state.eddy_h.shape and dt == config.ocean_dt
+        du, de, report = actual(op, model, state, transported_eddy_h=transported_eddy_h, dt=dt)
         powers.append(float(report.kinetic_power))
         return du, de, report
 
@@ -817,3 +818,25 @@ def test_campaign_warns_and_commits_energy_limited_redi(source, config, tmp_path
     for key in c.REDI_ENERGY_SUMS + c.REDI_ENERGY_PEAKS:
         assert ledger[key] == status["latest"][key] > 0
     assert ledger["redi_energy_blocked_rows"] <= ledger["redi_energy_limited_rows"]
+
+
+@pytest.mark.parametrize("mix_dt", [60, 120])
+def test_campaign_exposes_accepted_tke_funding(source, config, mix_dt):
+    cfg = replace(config, physics_dt=120, mixing_dt=mix_dt)
+    adapter, air, receiver, sea = c.build(cfg, source, None, smoke_no_radiation=True)
+    model = receiver.H.model
+    model.closure = replace(model.closure, max_reductions=0, predictor_steps=0)
+    ocean = sea.coupled.ocean
+    ocean = replace(ocean, tke_h=1e-12 * ocean.ocean.h)
+    sea = replace(sea, coupled=replace(sea.coupled, ocean=ocean))
+    collected = []
+    original = type(model.closure).apply
+    def record(self, *args):
+        end, k, report = original(self, *args)
+        collected.append(report.mixing_limiter)
+        return end, k, report
+    with torch.no_grad(), patch.object(type(model.closure), "apply", record):
+        _, _, report = c._advance_water(adapter, air, receiver, sea, 120, cfg, None)
+    assert len(collected) == 120 // mix_dt
+    for key in ("limited_interfaces", "deferred_columns"):
+        assert report["tke_" + key] == sum(float(r[key]) for r in collected) > 0

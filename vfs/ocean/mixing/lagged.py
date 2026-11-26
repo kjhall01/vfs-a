@@ -296,7 +296,7 @@ class LaggedClosure(PathWorkClosure):
         if (entropy < -stol).any():raise ValueError('coupled update decreases column entropy')
         report=CoupledReport(trial_evaluations,h.new_zeros(()),budget_error,column.sum(),column,exchange.sum(-1),work,flux,tflux,heat,entropy,actual_residual,reconstruction,
             {'limited_pairs':limited.sum().to(h.dtype),'semi_trials':h.new_tensor(trial_evaluations),
-             'limited_interfaces':limited.sum().to(h.dtype),'deferred_columns':deferred.sum().to(h.dtype),
+             'limited_interfaces':((scalar_scale < 1) & (scalar_g > 0)).sum().to(h.dtype),'deferred_columns':deferred.sum().to(h.dtype),
              'minimum_fraction':scalar_scale.min() if scalar_scale.numel() else h.new_ones(())})
         return end,h*final,report,final_physical
 
