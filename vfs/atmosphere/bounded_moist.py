@@ -52,9 +52,42 @@ class BoundedGibbs:
     Semidiscrete work closure does not imply exact finite-step energy.
     """
 
-    def __init__(self, base, vapor_floor=1e-14, dry_floor=1e-14):
+    def __init__(self, base, vapor_floor=1e-14, dry_floor=1e-14, *, top_momentum_upwind=False):
+        if type(top_momentum_upwind) is not bool:
+            raise TypeError("top_momentum_upwind must be a bool")
         self.base = base
         self.vapor_floor, self.dry_floor = vapor_floor, dry_floor
+        self.top_momentum_upwind = top_momentum_upwind
+
+    def _top_momentum_correction(self, state, transport, velocity_metric, entropy_gradient):
+        """Add the donor-minus-centered impulse at the first interior interface.
+
+        With downward carrier F [kg/s], donor minus centered momentum flux is
+        0.5 * |F| * (u_top - u_below) [N]. The fixed-geometry force pair is
+        (-flux, +flux). Return its lost work [W] to the two columns sharing
+        the edge, at their shared-in-vertical CP interface (index 1).
+        """
+        mesh, u = state.mesh, state.u_e
+        mu = mesh.cell_to_edge(transport["mu"][:, 1:2]).squeeze(-1)
+        carrier = (mesh.dc_edge * mesh.dv_edge) * mu / self.base.kernel.gravity
+        shear = u[:, 0] - u[:, 1]
+        flux = 0.5 * carrier.abs() * shear
+        power = flux * shear
+        c0, c1 = mesh.cellsOnEdge.T
+        half = 0.5 * power
+        column_power = u.new_zeros(mesh.nCells).index_add(0, c0, half).index_add(0, c1, half)
+        wind = torch.cat((
+            (-flux / velocity_metric[:, 0])[:, None],
+            (flux / velocity_metric[:, 1])[:, None],
+            torch.zeros_like(u[:, 2:]),
+        ), dim=-1)
+        gradient = entropy_gradient[:, 1]
+        entropy = torch.cat((
+            torch.zeros_like(entropy_gradient[:, :1]),
+            (column_power / gradient)[:, None],
+            torch.zeros_like(entropy_gradient[:, 2:]),
+        ), dim=-1)
+        return wind, entropy, power
         # Heat allocation closes the work from the actual limited Gibbs flux.
 
     def evaluate(self, s, dt, *, include_carrier_graph=False):
@@ -166,6 +199,13 @@ class BoundedGibbs:
             divergence(i, j, F * face_entropy, mass.numel()).reshape_as(specific_entropy) / area
             + entropy_source.reshape_as(specific_entropy)
         )
+        if self.top_momentum_upwind and s.u_e.shape[-1] > 1:
+            du, ds, power = self._top_momentum_correction(
+                s, transport, velocity_metric, entropy_gradient
+            )
+            wind_rhs = wind_rhs + du
+            entropy_rhs = entropy_rhs + ds
+            info["top_momentum_heat_W"] = power
         if endpoint:
             # The bounded species amounts are the authoritative Euler update.
             water = info["amounts"][:, 1:].reshape_as(s.water_content) / area[..., None]

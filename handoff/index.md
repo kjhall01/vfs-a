@@ -1,5 +1,9 @@
 # Current package documentation
 
+The [experimental first-interface momentum replay](../docs/TOP_MOMENTUM_EXPERIMENT.md)
+compares the opt-in moist donor flux with centered transport without advancing
+the coupled campaign.
+
 The [day-43 cloud-area replay](../docs/PASS4_RESULTS.md#cloud-area-roundoff-in-the-day-43-earth-shelf-exchange)
 documents a verified roundoff adjustment in the PyAM21 adapter. Resume a campaign
 from main `3555b7f` using its checkpoint, original inputs and configuration,
