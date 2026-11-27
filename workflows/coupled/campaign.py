@@ -143,6 +143,7 @@ class CampaignConfig:
     restart_days: int = 5
     overlap_dynamics: bool = False
     atmosphere_dynamics_integrator: str = "ssprk3"
+    ice_ocean_drag: str = "midpoint"
 
     def validate(self):
         validate_precision(self.device, self.dtype)
@@ -214,6 +215,8 @@ class CampaignConfig:
             value = getattr(self, key)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"{key} must be finite and nonnegative")
+        if self.ice_ocean_drag not in ("midpoint", "native_edge"):
+            raise ValueError("ice_ocean_drag must be midpoint or native_edge")
         if self.gm_energy_scheme not in GMRedi.energy_schemes:
             raise ValueError("unknown gm_energy_scheme")
         if self.atmosphere_dynamics_integrator not in ("ssprk3", "ssprk43"):
@@ -587,7 +590,7 @@ def build(
     ice = CategoryIce(
         area, area * area.new_tensor([0.3, 1.0]), area.new_zeros(mesh.nEdges, 1)
     )
-    owner = ThermalSnowOceanIce(OceanIce(model))
+    owner = ThermalSnowOceanIce(OceanIce(model, drag_scheme=config.ice_ocean_drag))
     bare = SnowState(RidgingState(ocean, ice), torch.zeros_like(area))
     sea = owner.initialize(bare, config.ice_temperature_K)
     receiver = ThermalIceReceiver(owner)
@@ -1266,6 +1269,8 @@ def main(argv=None):
         )
         adapter.campaign_mesh_sha256 = mesh_info.get("sha256")
         adapter.logger = logger
+        logger.info("Ice–ocean drag=%s, matched shelf momentum=%s",
+                    config.ice_ocean_drag, config.matched_shelf_momentum)
         if config.shelf_redi:
             if config.partial_cell_layers:
                 ocean_state = sea.coupled.ocean.ocean
@@ -1345,7 +1350,8 @@ def main(argv=None):
                 saved_method = saved_config.get("atmosphere_dynamics_integrator", "ssprk3")
                 requested_method = config.atmosphere_dynamics_integrator
                 switch_to_four_stages = saved_method == "ssprk3" and requested_method == "ssprk43"
-                expected_config = {"matched_shelf_momentum": False, **saved_config, "days": config.days,
+                expected_config = {"matched_shelf_momentum": False, "ice_ocean_drag": "midpoint",
+                                   **saved_config, "days": config.days,
                                    "atmosphere_dynamics_integrator": requested_method}
                 if (expected_config != asdict(config) or
                         (saved_method != requested_method and not switch_to_four_stages)):

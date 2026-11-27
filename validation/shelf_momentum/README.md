@@ -2,6 +2,8 @@
 
 These CPU, float64 replays compare two candidate numerical changes on the 4,096-cell Earth-shelf checkpoints. The atmospheric integrator and the campaign defaults stay as supplied. The experimental operators are installed in a fresh model for each comparison. The shelf experiment uses the campaign's existing native velocity slots.
 
+For a fresh fully coupled run with the two operators, use the [Earth campaign preset and launch commands](../../workflows/coupled/EARTH_SHELF.md#run-the-coupled-shelf-and-native-edge-ice-drag-together). The water-only replays below use the same native-edge drag function.
+
 ## Reproduce
 
 Use the VFS environment with PyTorch, SciPy and netCDF4, and make PyAM21 importable for the water scheduler and ALE scripts. Run from the repository root. Set the three shell variables to your local files.

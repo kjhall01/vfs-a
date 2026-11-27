@@ -157,14 +157,19 @@ def test_shelf_resolved_and_gm_transport_share_physical_openings(config, source)
     assert residual.abs().max() < 5e-14 * carrier.abs().max()
 
 
-@pytest.mark.parametrize("matched", [False, True])
+@pytest.mark.parametrize(("matched", "drag"), [
+    (False, "midpoint"), (True, "midpoint"), (True, "native_edge"),
+])
 @torch.no_grad()
-def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config, source, tmp_path, matched):
+def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(
+    config, source, tmp_path, matched, drag,
+):
     """One-layer, merged-bottom, 40 m and abyssal water share a physical shelf."""
     import xarray as xr
 
     cfg = replace(config, ocean_levels=40, ocean_depth_m=5000., top_layer_m=10.,
-                  shelf_redi=True, partial_cell_layers=True, matched_shelf_momentum=matched, ale_dt=config.physics_dt)
+                  shelf_redi=True, partial_cell_layers=True, matched_shelf_momentum=matched,
+                  ice_ocean_drag=drag, ale_dt=config.physics_dt)
     depths = np.resize([8., 40., 11., 5000., 5600., 300., 600., 2000.], cfg.cells)
     land = np.arange(cfg.cells) == 3
     geo = dict(land=land, depth_m=depths, height_m=300. * land)
@@ -213,7 +218,11 @@ def test_prognostic_partial_columns_through_coupling_ale_and_disk_restart(config
     scale = (grad['u_e'] * rhs.u_e).abs().sum()
     assert work.abs() <= 2e-12 * scale
     sea = replace(sea, coupled=replace(sea.coupled, ocean=replace(sea.coupled.ocean, ocean=water)))
-    air, sea, report = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
+    from vfs.ice import ice_drag
+    solver = ice_drag.edge_drag if drag == "native_edge" else ice_drag.midpoint_drag
+    with patch.object(ice_drag, solver.__name__, wraps=solver) as selected:
+        air, sea, report = c.advance(adapter, air, receiver, sea, cfg.physics_dt, cfg)
+    assert selected.call_count == 2
     check_state(sea)
     assert report['ale_steps'] == 1 and report['gmredi_steps'] == cfg.eddy_substeps
     assert report['ale_column_residual_J_m2'] < 1e-3

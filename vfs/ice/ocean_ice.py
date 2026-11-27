@@ -58,6 +58,7 @@ class OceanIce:
         air_density=1.2,
         packing_friction=1.0,
         ridge=None,
+        drag_scheme="midpoint",
     ):
         if any(
             getattr(ocean, k, None) is not None
@@ -81,6 +82,9 @@ class OceanIce:
         if self.ridge.hamiltonian.model is not ocean:
             raise ValueError("ridge must share ocean")
         self.hamiltonian = self.ridge.hamiltonian
+        if drag_scheme not in ("midpoint", "native_edge"):
+            raise ValueError("drag_scheme must be midpoint or native_edge")
+        self.drag_scheme = drag_scheme
         self.drag_coefficient = drag_coefficient
         self.air_drag_coefficient = air_drag_coefficient
         self.air_density = air_density
@@ -458,10 +462,12 @@ class OceanIce:
         return end, wind
 
     def drag_step(self, state, dt):
-        from vfs.ice.ice_drag import midpoint_drag
+        from vfs.ice.ice_drag import edge_drag, midpoint_drag
 
         if not math.isfinite(dt) or dt <= 0:
             raise ValueError("positive finite dt required")
+        if self.drag_scheme == "native_edge":
+            return edge_drag(self, state, dt)
         return midpoint_drag(self, state, dt)
 
     def step(

@@ -133,6 +133,19 @@ PRE_SHELF_HASHES = {
 }
 
 
+# Source transition for selecting the drag law in coupled runs. Older
+# manifests are compared using their original midpoint setting.
+NATIVE_EDGE_DRAG_TARGET = "55e845087c9a05b11052c9dfd80e52790f02c22d515c201acdca589f80c2db65"
+PRE_DRAG_HASHES = {
+    "vfs/ice/snow.py": "cc04ab01fe1fe66da31e454b91a5bccb90ac4ffe4e18df89323002b8d025e1d7",
+    "validation/shelf_momentum/operators.py": "96d6b36b923365d200b077a6e19671fc73665befd0aae02108b3826ba0a96acc",
+    "vfs/ice/ice_drag.py": "f528f9a7ccf220de3ef5e259aeebcc0a79d105dbea43d439c8a91f6af7e4e146",
+    "vfs/ice/ocean_ice.py": "c23c3388be4610550ef1f8d80dc94d78e818bd812736d1ab2b84ffdf0774a43c",
+    "workflows/coupled/campaign.py": "06e22517e911914389554df9a227ab086ece458b3614c3966460c99101a6b2da",
+    "workflows/coupled/restart_compat.py": "255aeb62e73c2f4ca7d1cac2e5da3bef1381b4cffe2a74842ac40423a1740b01",
+}
+
+
 def pre_shelf_sources(current):
     """Reconstruct the parent source inventory for its existing audited bridges."""
     parent = {key: value for key, value in current.items()
@@ -229,6 +242,12 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == NATIVE_EDGE_DRAG_TARGET:
+        parent = {**current_hashes, **PRE_DRAG_HASHES}
+        if _without_verifier_digest(parent) != CLOSED_SHELF_TARGET:
+            raise ValueError("ice drag restart parent differs from the audited revision")
+        prior = verify_compatible_source_delta(old_hashes, parent)
+        return {**prior, "ice_ocean_drag_configurable": True}
     if target == CLOSED_SHELF_TARGET:
         parent = pre_shelf_sources(current_hashes)
         if _without_verifier_digest(parent) != CLOUD_ROUNDOFF_TARGET:

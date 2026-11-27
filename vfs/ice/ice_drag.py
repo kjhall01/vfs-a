@@ -1,10 +1,10 @@
-"""Implicit midpoint reciprocal drag, with matching positive ocean-TKE work.
+"""Reciprocal ice–ocean drag with kinetic energy loss deposited in ocean TKE.
 
-Newton/CG solves the constitutive exchange, not an energy correction. The same
-midpoint relative velocity supplies both stress and TKE production. No matrices,
-forward AD, mass floors, state clipping, or unmatched ocean/ice stresses.
+The midpoint solver reconstructs the relative velocity in cells. The native
+edge scheme exchanges impulses directly between ice and ocean velocity slots.
 """
 
+import math
 from dataclasses import dataclass, replace
 import torch
 from vfs.ice.ocean_ice import vector_transpose, safe
@@ -129,3 +129,69 @@ def midpoint_drag(coupled, state, dt, tolerance=None):
     return end, DragReport(
         gain, momentum, dki + dko + gain.sum(), relative_residual, iteration
     )
+
+
+def edge_drag(coupled, state, dt, *, normal_only=False):
+    """Exchange equal impulses on each wet edge and deposit lost KE in surface TKE.
+
+    Use the native normal slip. A tangent reconstructed from the neighboring
+    cells supplies the second component of the quadratic speed. Holding the
+    initial direction fixed over one substep gives a rational decay factor.
+    For purely normal flow the scalar quadratic-drag solution is exact.
+    """
+    if not math.isfinite(dt) or dt <= 0:
+        raise ValueError("expected positive drag interval")
+    coupled.check(state)
+    s, ice = state.ocean.ocean, state.ice
+    mesh = s.mesh
+    mi = coupled.hamiltonian.metric(state)
+    mo = coupled.ocean.energy.base.mechanical.metric(s)[:, :1]
+    active = coupled.ridge.active_edges(state) & (mo > 0)
+    mi_safe = torch.where(active, mi, 1.0)
+    mo_safe = torch.where(active, mo, 1.0)
+    slip = torch.where(active, s.u_e[:, :1] - ice.velocity, 0.0)
+    speed = slip.abs()
+    if not normal_only:
+        relative = mesh.cell_wind_vector(slip)[:, 0, :]
+        tangent = (mesh.cell_to_edge(relative) * mesh.edge_tangent).sum(
+            -1, keepdim=True
+        )
+        speed = torch.linalg.vector_norm(
+            torch.cat((slip, tangent), -1), dim=-1, keepdim=True
+        )
+    coverage = ice.area.sum(-1, keepdim=True)
+    edge_area = (mesh.dc_edge * mesh.dv_edge)[:, None]
+    drag = (
+        s.column.rho0
+        * coupled.drag_coefficient
+        * edge_area
+        * mesh.cell_to_edge(coverage)
+    )
+    strength = dt * speed * drag
+    impulse = slip * (strength / (1.0 + strength * (1.0 / mi_safe + 1.0 / mo_safe)))
+    ui = ice.velocity + impulse / mi_safe
+    uo = s.u_e[:, :1] - impulse / mo_safe
+    edge_heat = impulse * (slip + uo - ui) * 0.5
+    # Share each edge's heat in proportion to its participating ice area.
+    side = mesh.edge_side_area * coverage[mesh.cellsOnEdge, 0]
+    denom = side.sum(-1, keepdim=True)
+    share = side / torch.where(denom > 0, denom, 1.0)
+    heat = s.h.new_zeros(mesh.nCells).index_add(
+        0, mesh.cellsOnEdge.flatten(), (share * edge_heat).flatten()
+    )
+    mass = coupled.ocean.energy.mass_area(s)
+    dk = heat[:, None] / torch.where(mass > 0, mass, 1.0)
+    ocean = s.with_tensors(
+        torch.cat((uo, s.u_e[:, 1:]), -1), s.h, s.temp_h, s.salt_h, s.tracer_h
+    )
+    tke = torch.cat((state.ocean.tke_h[:, :1] + dk, state.ocean.tke_h[:, 1:]), -1)
+    end = replace(
+        state,
+        ice=replace(ice, velocity=ui),
+        ocean=replace(state.ocean, ocean=ocean, tke_h=tke),
+    )
+    dpi = mi * (ui - ice.velocity)
+    dpo = mo * (uo - s.u_e[:, :1])
+    dke = (dpi * (ui + ice.velocity) * 0.5 + dpo * (uo + s.u_e[:, :1]) * 0.5).sum()
+    coupled.check(end)
+    return end, DragReport(heat, dpi + dpo, dke + heat.sum(), dke.new_zeros(()), 0)

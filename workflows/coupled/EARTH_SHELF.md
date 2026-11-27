@@ -47,6 +47,35 @@ to `false`. A restart retains the metric recorded in its configuration.
 open face. Use `max_ocean_edge` and `max_ocean_level` to locate its zero-based
 edge and layer in a snapshot or restart.
 
+### Run the coupled shelf and native-edge ice drag together
+
+The [395-day preset](earth_shelf_4096_395d_native_drag.yaml) enables
+`matched_shelf_momentum: true` and `ice_ocean_drag: native_edge`. It uses the
+4,096-cell Earth mesh, 40 ocean levels, seasonal SeaEsfRad radiation, CPU
+float64 and the timesteps of the 395-day Earth pilot. Use the same mesh,
+40 m-floor geography, PyAM21 source and radiation tables as the pilot.
+From the repository root with the coupled environment active:
+
+```bash
+cfg=workflows/coupled/earth_shelf_4096_395d_native_drag.yaml
+export VFS_GEOGRAPHY=input-data/earth_4096_geography_40m.nc
+python -u tools/run_earth_shelf.py --config "$cfg" --preflight --output runs/native-drag-preflight
+python -u tools/run_earth_shelf.py --config "$cfg" --output runs/native-drag-395d
+```
+
+Set `VFS_GEOGRAPHY` to the actual archive path if it differs.
+The preflight runs one coupled interval twice and checks restart equality.
+The second command initializes at day zero. To run the first day alone, add
+`--stop-after-days 1`. Continue that run with the same config and inputs,
+`--resume runs/native-drag-395d/restarts/restart_00086400.nc` and a new output
+directory. Both operators are recorded in the startup log and manifest.
+A checkpoint carries the drag law and shelf metric of the run that wrote it.
+
+The campaign applies native-edge drag for both half steps around ocean–ice
+dynamics. It exchanges equal and opposite impulses and credits the kinetic
+energy loss to surface-ocean TKE. For a paired control using the same shelf
+geometry, set `ice_ocean_drag: midpoint` in a copy of the preset.
+
 Snapshots store `ocean_active_layer_count` for each cell (zero on land).
 Checkpoints retain rectangular tensors. Slots below a wet column's bed have
 exactly zero thickness and zero inventories of heat, salt, tracers, TKE and EKE.

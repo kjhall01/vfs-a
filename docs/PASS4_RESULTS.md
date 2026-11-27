@@ -1,5 +1,22 @@
 # Pass 4 — physical-field workflow
 
+## Coupled campaign with native-edge ice drag and matched shelf momentum
+
+The fresh [395-day Earth preset](../workflows/coupled/earth_shelf_4096_395d_native_drag.yaml)
+selects the native-edge reciprocal drag tested in the day-50 replays. A CPU
+float64 preflight used the 4,096-cell Earth mesh, 40 m-floor bathymetry and
+40 ocean layers, with both momentum options enabled. The native atmosphere,
+PyAM21 column physics, land, snow, sea ice and ocean advanced one 1,200 s
+coupling interval. Replaying the starting checkpoint reproduced the final
+state and interval diagnostics bitwise in both eager and compiled runs.
+SeaEsfRad was disabled for these two preflights. A separate small-grid test exercised both drag half steps,
+prescribed radiation, ALE and the disk restart path.
+
+The focused installed-wheel suite passed 107 tests with seven skips. The
+portable corrected-Gibbs and dry-helper fixtures passed 142 and 93 tensor
+comparisons. These tests cover startup, coupling and restart behavior. The
+395-day preset sets the run horizon.
+
 ## Closed shelf faces
 
 On the 4096-cell Earth mesh, edge 11588 at level 35 can close against the bed
