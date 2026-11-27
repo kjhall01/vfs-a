@@ -84,6 +84,12 @@ class TemperatureOcean:
         self.fields(end)  # Reject out-of-domain stages; never clip temperature.
         return end
 
+    def finish_euler(self, initial, end):
+        return end
+
+    def finish_blend(self, first, second, end, weights):
+        return end
+
     def step(self, state, dt, *, extra_tendency=None, transported_source=None):
         sources = {"extra_tendency": extra_tendency}
         if transported_source is not None:
@@ -93,12 +99,12 @@ class TemperatureOcean:
         first = self.euler(state, dt, **sources)
         second = self.euler(first, dt, **sources)
         del first
-        middle = .75*state+.25*second
+        middle = self.finish_blend(state, second, .75*state+.25*second, (.75, .25))
         del second
         self.fields(middle)
         third = self.euler(middle, dt, **sources)
         del middle
-        end = (1/3)*state+(2/3)*third
+        end = self.finish_blend(state, third, (1/3)*state+(2/3)*third, (1/3, 2/3))
         del third
         self.fields(end)
         return end

@@ -58,6 +58,7 @@ class OceanIce:
         air_density=1.2,
         packing_friction=1.0,
         ridge=None,
+        drag_scheme="midpoint",
     ):
         if any(
             getattr(ocean, k, None) is not None
@@ -81,6 +82,9 @@ class OceanIce:
         if self.ridge.hamiltonian.model is not ocean:
             raise ValueError("ridge must share ocean")
         self.hamiltonian = self.ridge.hamiltonian
+        if drag_scheme not in ("midpoint", "native_edge"):
+            raise ValueError("drag_scheme must be midpoint or native_edge")
+        self.drag_scheme = drag_scheme
         self.drag_coefficient = drag_coefficient
         self.air_drag_coefficient = air_drag_coefficient
         self.air_density = air_density
@@ -406,10 +410,10 @@ class OceanIce:
             wind_power, drag_power, ridge_heat, transport_power, loading_power
         )
 
-    @staticmethod
-    def add(state, rhs, dt):
+    def add(self, state, rhs, dt):
         a, b = state.ocean, rhs.ocean
-        ocean = replace(a, ocean=a.ocean + dt * b.ocean, tke_h=a.tke_h + dt * b.tke_h)
+        end = self.ocean.dynamics.finish_euler(a.ocean, a.ocean + dt * b.ocean)
+        ocean = replace(a, ocean=end, tke_h=a.tke_h + dt * b.tke_h)
         if isinstance(a, EddyState):
             ocean = replace(ocean, eddy_h=a.eddy_h + dt * b.eddy_h)
         return RidgingState(
@@ -421,12 +425,12 @@ class OceanIce:
             ),
         )
 
-    @staticmethod
-    def blend(first, second, weight):
+    def blend(self, first, second, weight):
         a, b = first.ocean, second.ocean
         ocean = replace(
             a,
-            ocean=(1 - weight) * a.ocean + weight * b.ocean,
+            ocean=self.ocean.dynamics.finish_blend(a.ocean, b.ocean,
+                (1 - weight) * a.ocean + weight * b.ocean, (1 - weight, weight)),
             tke_h=(1 - weight) * a.tke_h + weight * b.tke_h,
         )
         if isinstance(a, EddyState):
@@ -458,10 +462,12 @@ class OceanIce:
         return end, wind
 
     def drag_step(self, state, dt):
-        from vfs.ice.ice_drag import midpoint_drag
+        from vfs.ice.ice_drag import edge_drag, midpoint_drag
 
         if not math.isfinite(dt) or dt <= 0:
             raise ValueError("positive finite dt required")
+        if self.drag_scheme == "native_edge":
+            return edge_drag(self, state, dt)
         return midpoint_drag(self, state, dt)
 
     def step(

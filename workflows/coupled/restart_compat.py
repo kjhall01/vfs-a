@@ -116,6 +116,69 @@ PRE_CLOUD_ADAPTER_SHA = "04f1cb0579116bb4710ca188812294da7acaae74d4fb33e7cac683e
 PRE_CLOUD_VERIFIER_SHA = "69f304aaf1706f0cf538a3ce0d0bcc700e6133867da8d40830de4033fdf9a7d7"
 
 
+# The main-branch checkpoint uses the historical shelf metric. The campaign
+# verifies that the saved and requested metric settings agree before this check.
+CLOSED_SHELF_TARGET = "10414cfe5cee8dbc89af83cab14f47568c88d7382eb1cf9cccc9d63be6d117e6"
+PRE_SHELF_HASHES = {
+    "vfs/ice/ocean_ice.py": "ac9a81a713ef90bba5b87bb57b7e247a084fdcdd402d535bc7a9831df40633ab",
+    "vfs/ocean/energy.py": "3f93240575d825cf392874a9a397f92acdfe4390326cee91accbd4ca5c4f0adf",
+    "vfs/ocean/mixing/lagged.py": "0013da6598ff19f89199241d82df17ded7a1fe1a5e83af39798c10f116d7a9e4",
+    "vfs/ocean/stratified/energy_columns.py": "a493ef5aa96107004465ae5eaae9e3a8f70aae343b79de9ad9763b570ca475ef",
+    "vfs/ocean/temperature/ale.py": "4e65a97ddbaee349c3cffe0797e4751f2bb97a7e05b1420ddda13568b9eb83e3",
+    "vfs/ocean/temperature/backscatter.py": "d16857f28dc506f17bc585c9650d03550d52203e63dcafb4b2777fcc1b38fb46",
+    "vfs/ocean/temperature/model.py": "0f3bfbc51594268d64cf2e376f64c14ca35310b43ea1268f5996a1b0ca7fcd5b",
+    "vfs/ocean/temperature/shelf_transport.py": "2f3f2b7b6385c0e6dc40d33b1b912981224c9ee9e6c38d00f7720b0dfbcb3392",
+    "workflows/coupled/campaign.py": "56c0c7b69030f1b4ab6c7918e6fb0bd187993a4b108cd85450925e538040ddf0",
+    "workflows/coupled/restart_compat.py": "9698e118340437353a2dd544867996de4b4f073a0f24db73a10660f27459aa11",
+}
+
+
+# Source transition for selecting the drag law in coupled runs. Older
+# manifests are compared using their original midpoint setting.
+NATIVE_EDGE_DRAG_TARGET = "55e845087c9a05b11052c9dfd80e52790f02c22d515c201acdca589f80c2db65"
+PRE_DRAG_HASHES = {
+    "vfs/ice/snow.py": "cc04ab01fe1fe66da31e454b91a5bccb90ac4ffe4e18df89323002b8d025e1d7",
+    "validation/shelf_momentum/operators.py": "96d6b36b923365d200b077a6e19671fc73665befd0aae02108b3826ba0a96acc",
+    "vfs/ice/ice_drag.py": "f528f9a7ccf220de3ef5e259aeebcc0a79d105dbea43d439c8a91f6af7e4e146",
+    "vfs/ice/ocean_ice.py": "c23c3388be4610550ef1f8d80dc94d78e818bd812736d1ab2b84ffdf0774a43c",
+    "workflows/coupled/campaign.py": "06e22517e911914389554df9a227ab086ece458b3614c3966460c99101a6b2da",
+    "workflows/coupled/restart_compat.py": "255aeb62e73c2f4ca7d1cac2e5da3bef1381b4cffe2a74842ac40423a1740b01",
+}
+
+
+# Only the explicit --resume-compatible-manifest path uses this historical
+# bridge. Ordinary development restarts validate the grid stored in NetCDF.
+CAMPAIGN_CLI_TARGET = "18b9c70f0719045f58d4dde6408e708c84e55e167d5f7496516c4bfe2c62b0ca"
+PRE_CLI_HASHES = {
+    "workflows/coupled/campaign.py": "e4947ff455544edb126089c12d60dfc53da1c04db0b7d089f84613d21f1088f4",
+    "workflows/coupled/restart_compat.py": "16cb8e5a3b0952274a6ad85a7f99c6487d030861798ea085b99f9fd1a6345a9b",
+}
+SURFACE_OUTPUT_TARGET = "becbb1963c0c5a7366b60b2380be2d7d7355ffd2d1affaa1bbe06d175d798f22"
+PRE_OUTPUT_HASHES = {
+    "workflows/coupled/campaign.py": "425885aebe969a21adcf9ae9d8aae380c57b91b61e119141086b95cd2381b299",
+    "workflows/coupled/grid_io.py": "905b78c65a8b130aba4883c0bee3bf67bfbde040f8076b7f018905ffaf9b1cbc",
+    "workflows/coupled/state_io.py": "ab2c568a7ac1f369ef1a77d7e6c28f29f00b64a5d342aa3f5634f27f43619462",
+    "workflows/pyam21/adapter.py": "0b0f63cdb0f1288e5857ac91af433da1c2155d6632f4f14c7a196100afdcdfb0",
+    "workflows/coupled/restart_compat.py": "94bd671c03971c2cf062d76ce6cd524edcc6e778a0abf6dea0290495baab1dd0",
+}
+
+
+def pre_output_sources(current):
+    parent = current.copy()
+    for name in ("workflows/coupled/continuation.py", "workflows/coupled/surface_output.py"):
+        parent.pop(name, None)
+    return {**parent, **PRE_OUTPUT_HASHES}
+
+
+def pre_shelf_sources(current):
+    """Reconstruct the parent source inventory for its existing audited bridges."""
+    parent = {key: value for key, value in current.items()
+              if not key.startswith("validation/shelf_momentum/")
+              and key != "vfs/ocean/temperature/shelf_momentum.py"}
+    parent.update(PRE_SHELF_HASHES)
+    return parent
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -203,6 +266,28 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == CAMPAIGN_CLI_TARGET:
+        parent = {**current_hashes, **PRE_CLI_HASHES}
+        if _without_verifier_digest(parent) != SURFACE_OUTPUT_TARGET:
+            raise ValueError("campaign CLI restart parent differs from the audited revision")
+        return verify_compatible_source_delta(old_hashes, parent)
+    if target == SURFACE_OUTPUT_TARGET:
+        parent = pre_output_sources(current_hashes)
+        if _without_verifier_digest(parent) != NATIVE_EDGE_DRAG_TARGET:
+            raise ValueError("surface output restart parent differs from the audited revision")
+        return verify_compatible_source_delta(old_hashes, parent)
+    if target == NATIVE_EDGE_DRAG_TARGET:
+        parent = {**current_hashes, **PRE_DRAG_HASHES}
+        if _without_verifier_digest(parent) != CLOSED_SHELF_TARGET:
+            raise ValueError("ice drag restart parent differs from the audited revision")
+        prior = verify_compatible_source_delta(old_hashes, parent)
+        return {**prior, "ice_ocean_drag_configurable": True}
+    if target == CLOSED_SHELF_TARGET:
+        parent = pre_shelf_sources(current_hashes)
+        if _without_verifier_digest(parent) != CLOUD_ROUNDOFF_TARGET:
+            raise ValueError('shelf restart parent differs from the audited revision')
+        prior = verify_compatible_source_delta(old_hashes, parent)
+        return {**prior, 'shelf_momentum_configurable': True}
     if target == CLOUD_ROUNDOFF_TARGET:
         parent = {**current_hashes, "workflows/pyam21/adapter.py": PRE_CLOUD_ADAPTER_SHA,
                   verifier: PRE_CLOUD_VERIFIER_SHA}

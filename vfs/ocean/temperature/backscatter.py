@@ -84,9 +84,10 @@ class EddyBackscatter:
         # Land holds a finite dummy column. Its thickness must not contribute
         # to the vertex viscosity seen by open faces along a partial-cell coast.
         thickness = domain.apply_cell(s.h) if s.column.active_layers is not None else s.h
-        he = mesh.cell_to_edge(thickness)
+        he = base.edge_thickness(s, thickness)
         hv = he[mesh.edgesOnVertex].mean(dim=1)
         u = base.velocity(s)
+        wet = (he > 0) if domain is None else (he > 0) & domain.layer_edge_mask(u).bool()
         stress = self.viscosity * hv * mesh.curl(u)
         # Resolve the adjoint into its two endpoint contributions. This is
         # the same incidence/sign convention as mesh.curl_adjoint.
@@ -105,8 +106,7 @@ class EddyBackscatter:
             / mesh.dv_edge[:, None, None]
             / nonzero_divisor(he)[:, None, :]
         )
-        if domain is not None:
-            force_parts = force_parts * domain.layer_edge_mask(u)[:, None, :]
+        force_parts = torch.where(wet[:, None, :], force_parts, 0.)
         metric = base.metric(s)
         # Sum positive incidence powers BEFORE cancellations. Scaling every
         # contributing vertex by <= a cell's ratio bounds its positive debit.
@@ -123,8 +123,7 @@ class EddyBackscatter:
             scale < 1, scale * (1 - 64 * torch.finfo(u.dtype).eps), scale
         )
         force = mesh.curl_adjoint(stress * scale) / nonzero_divisor(he)
-        if domain is not None:
-            force = domain.apply_layer_edge(force)
+        force = torch.where(wet, force, 0.)
         local = H.kinetic_power(state, force)
         safe_mass = torch.where(mass > 0, mass, torch.ones_like(mass))
         reservoir_rhs = -local / safe_mass
@@ -146,10 +145,9 @@ class EddyBackscatter:
         if self.biharmonic_viscosity > 0:
 
             def rotational_laplacian(v):
-                if domain is not None:
-                    v = domain.apply_layer_edge(v)
+                v = torch.where(wet, v, 0.)
                 out = mesh.curl_adjoint(hv * mesh.curl(v)) / nonzero_divisor(he)
-                return out if domain is None else domain.apply_layer_edge(out)
+                return torch.where(wet, out, 0.)
 
             lap_u = rotational_laplacian(u)
             sink = -self.biharmonic_viscosity * rotational_laplacian(lap_u)

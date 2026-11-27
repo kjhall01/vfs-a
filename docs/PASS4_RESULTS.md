@@ -1,5 +1,109 @@
 # Pass 4 — physical-field workflow
 
+## In-place development restart and surface means
+
+A 4,096-cell, 40-layer CPU float64 Earth run resumed an earlier-revision
+NetCDF checkpoint with matched shelf momentum and native-edge drag. It ran
+to 2,400 seconds, then continued in place through 3,600 seconds with a
+one-hour average interval. The first stored mean covered [0, 3,600] s. It
+contained precipitation and evaporation at all 4,096 cells and SST at the
+2,912 wet cells. Diagnostic times were 0, 2,400 and 3,600 s. SeaEsfRad
+was disabled in this check.
+
+A smaller interrupted-window comparison reproduced the uninterrupted
+prognostic state and surface means bitwise across a source fingerprint
+change. Separate tests cover actual snapshot rates, negative vapor flux,
+windows that cut a coupling step, both checkpoint-selection paths,
+deduplication of output after rollback, relocation of mesh and geography
+inputs and rejection of reordered cells or incompatible vertical coordinates.
+The installed-wheel portable fixtures passed 142 moist and 93 dry comparisons.
+
+A fresh 4,096-cell Earth run through `workflows/coupled/campaign.py` used
+explicit mesh, geography and PyAM21 paths. The CPU smoke run overrode the
+preset's compilation and thread count, stopped at 1,200 s, and continued
+from the run directory through 2,400 s with `--restart`. The continuation
+recovered the saved inputs and settings. Radiation was disabled for this test.
+
+See the [launch and output guide](../workflows/coupled/CAMPAIGN.md#outputs-and-restarting).
+
+## Coupled campaign with native-edge ice drag and matched shelf momentum
+
+The fresh [395-day Earth preset](../workflows/coupled/earth_shelf_4096_395d_native_drag.yaml)
+selects the native-edge reciprocal drag tested in the day-50 replays. A CPU
+float64 preflight used the 4,096-cell Earth mesh, 40 m-floor bathymetry and
+40 ocean layers, with both momentum options enabled. The native atmosphere,
+PyAM21 column physics, land, snow, sea ice and ocean advanced one 1,200 s
+coupling interval. Replaying the starting checkpoint reproduced the final
+state and interval diagnostics bitwise in both eager and compiled runs.
+SeaEsfRad was disabled for these two preflights. A separate small-grid test exercised both drag half steps,
+prescribed radiation, ALE and the disk restart path.
+
+The focused installed-wheel suite passed 107 tests with seven skips. The
+portable corrected-Gibbs and dry-helper fixtures passed 142 and 93 tensor
+comparisons. These tests cover startup, coupling and restart behavior. The
+395-day preset sets the run horizon.
+
+## Closed shelf faces
+
+On the 4096-cell Earth mesh, edge 11588 at level 35 can close against the bed
+while both neighboring layers remain wet. Adding 1 m/s to that closed slot
+changed seven other open rotation tendencies in the earlier matched-inertia
+experiment (maximum 7.9440e-7 m/s²). With the opening mask applied before
+circulation and on the returned force, the same perturbation changes zero wet
+tendencies. Its kinetic energy and volume transport are zero.
+
+In a separate 48-cell test, 30 m of opening at 1 m/s and 20 m at 3 m/s merge
+to 50 m at 1.8 m/s. The largest relative edge-momentum discrepancy was
+1.36e-16. Diagnosed ocean heat agreed with the kinetic energy of unresolved
+shear to 5.90e-12 relative. Splitting the merged water returned 1.8 m/s in
+both slots. With a changing free surface, incoming or departing water also
+carries momentum and energy across the aperture boundary. These checks
+isolate the remapping budget from the ordinary RK time-integration residual.
+
+On the fresh 4096-cell ocean replay, the two versions still agree at day 7.5.
+The opening is 0.554 m and carries a genuine −3.132 m/s flow. It is closed
+at the end of the second subsequent 1200 s step (day 7.52778). At days
+7.75, 8.00 and 8.25, the old slot stores −4.217, −5.607 and −6.908 m/s.
+The corrected slot stores exactly zero in all three samples. A second replay
+from the day-7.5 state using the final package reproduced all four saved
+day-8.25 ocean fields bit for bit. The first later six-hour sample with
+positive opening is day 13, with 2.263 m of opening at −0.08868 m/s. The legacy replay
+stored a speed of 12.303 m/s on the same edge at that time. Its archive
+records the stored velocity there but does not include its day-13 aperture.
+
+A forced closure on the 4096-cell mesh used the day-12 checkpoint, preserving
+local concentrations and specific reservoir energies while redistributing thickness across two adjacent layers. A water-scheduler interval and an ALE
+remap reopened edge 11588 to 81.77 m at 0.063046 m/s. Setting its initial
+closed velocity to either 0 or 22.755 m/s gave bitwise identical resulting ocean
+velocity, thickness, CT, SA, TKE and EKE, ice velocity and ice cold content.
+A separate 12-hour water-scheduler run with the real campaign checkpoint
+completed nine calendar-scheduled ALE calls. Both tests omitted atmospheric
+surface forcing. A separate fresh 4096-cell campaign smoke run included the
+native atmosphere, PyAM21, land, ice, snow and ocean with radiation disabled.
+Four 1200 s coupling intervals on CPU in float64 exercised eight GM/Redi
+steps and one ALE remap. All four recorded maxima over closed ocean slots
+were zero. Global water changed by 1.86e-9 kg/m² over those intervals.
+
+The installed wheel passed 1695 tests in portable mode with 14 skipped.
+The corrected-Gibbs and dry-helper portable fixtures passed all 142 and 93
+tensor comparisons, respectively. In a short one-thread CPU timing test
+across the first closure, four four-step blocks ranged from 2.27 to 2.62 s
+per ocean step before the repair and 2.27 to 2.42 s afterwards.
+
+The fresh replay ran from rest through day 15, with a sample every six
+hours. The largest absolute stored velocity over closed slots in all 61
+samples was 0.0 m/s. At day 15, edge 11588, level 35 had
+0.000 m of opening and 0.0000 m/s of velocity. The
+largest wet normal speed was 4.1840 m/s at edge 10846,
+level 37 with 35.425 m of opening. The five-edge Falklands
+patch around edge 6304 had a days 10–15 time-RMS of 0.07276 m/s, compared
+with 0.07313 m/s using the previous matched inertia and 0.43146 m/s using
+the original interpolated inertia. The corrected ocean-only run's full
+Hamiltonian changed by -36.895 J/m² over the 15 days.
+
+These are CPU float64 forward tests. They do not measure GPU throughput,
+backward derivatives or climate-scale stability.
+
 ## Cloud-area roundoff in the day-43 Earth shelf exchange
 
 The Mac campaign rejected cloud fraction 1.0000000000000568 at cell 127,
@@ -210,7 +314,7 @@ radiation-on campaign were outside this comparison.
 
 ## Prognostic wet layers on the Earth shelves
 
-The [Earth runner](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active
+The [Earth campaign](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active
 ocean layers across 2,912 wet columns on the 4,096-cell mesh with a 40 m
 minimum wet depth. The old layout used 116,480. Of the wet columns, 34 have two
 active layers and 750 have all 40. Tensor storage remains rectangular.

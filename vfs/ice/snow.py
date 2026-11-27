@@ -417,7 +417,8 @@ class SnowOceanIce:
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         if stage_callback is not None:
-            stage_callback("implicit_drag_half_0", state, 0.0)
+            drag_label = "native_edge_drag" if self.coupled.drag_scheme == "native_edge" else "implicit_drag"
+            stage_callback(f"{drag_label}_half_0", state, 0.0)
         from vfs.ocean.transport import CarrierOutflowError
 
         options = dict(wind_velocity=wind_velocity, drag=False, integrator=dynamics_integrator)
@@ -451,7 +452,7 @@ class SnowOceanIce:
         coupled, _ = self.coupled.drag_step(state.coupled, 0.5 * dt)
         state = replace(state, coupled=coupled)
         if stage_callback is not None:
-            stage_callback("implicit_drag_half_1", state, 0.0)
+            stage_callback(f"{drag_label}_half_1", state, 0.0)
         state, q1, melt1 = self.phase_step(state, 0.5 * dt, flux(state))
         if stage_callback is not None:
             stage_callback("phase_half_1", state, q1)

@@ -64,6 +64,10 @@ def read_mesh(path):
     if path.suffix != ".nc":
         raise ValueError("expected a generator mesh ending in .nc or .npy")
     with xr.open_dataset(path, engine="netcdf4", decode_cf=False) as ds:
+        if ds.attrs.get("vfs_format") == "coupled_restart_v1":
+            xyz = ds.cell_xyz.values
+            _check_xyz(xyz)
+            return xyz, ds.attrs.get("mesh_sha256") or _generator_hash(xyz)
         # A VFS operator cache also contains the ordered generator positions.
         # Campaign initialization always rebuilds its configured operators.
         if ds.attrs.get("mesh_schema_version") == 2 and ds.cell_xyz.dims == ("cell", "three"):
@@ -109,6 +113,12 @@ def read_geography(path, *, mesh_sha256=None, xyz=None):
             result = {k: data[k] for k in data.files}
     elif path.suffix == ".nc":
         with xr.open_dataset(path, engine="netcdf4", decode_cf=False) as ds:
+            if ds.attrs.get("vfs_format") == "coupled_restart_v1":
+                if xyz is not None and (xyz.shape != ds.cell_xyz.shape or
+                        not np.allclose(xyz, ds.cell_xyz.values, rtol=0, atol=16 * np.finfo(xyz.dtype).eps)):
+                    raise ValueError("restart geography and supplied mesh coordinates differ")
+                return dict(land=ds.land_mask.values.astype(bool), height_m=ds.surface_height_m.values,
+                            depth_m=ds.ocean_depth_m.values)
             if ds.attrs.get("vfs_format") != "surface_geography_v1":
                 raise ValueError("expected a VFS surface geography file")
             if ds.cell_xyz.dims != ("cell", "xyz") or _generator_hash(ds.cell_xyz.values) != ds.attrs["generator_sha256"]:

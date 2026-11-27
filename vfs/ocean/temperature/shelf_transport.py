@@ -84,6 +84,7 @@ class ShelfTemperatureOcean(TemperatureOcean):
 
     def __init__(self, ocean):
         super().__init__(ocean)
+        self.matched_openings = False
         self.limiter = HorizontalTransport(
             ocean.mesh,
             domain=ocean.domain,
@@ -148,5 +149,53 @@ class ShelfTemperatureOcean(TemperatureOcean):
             end = end.with_tensors(
                 end.u_e + dt * du, end.h, end.temp_h, end.salt_h, end.tracer_h + dt * dq
             )
+        end = self.finish_euler(state, end)
         self.fields(end)
         return end
+
+    def _finish_faces(self, end, parents):
+        """Remap only edges that change support. Keep ordinary RK arithmetic elsewhere."""
+        from .shelf_momentum import project_changed_faces
+        from .roquet import roquet_heat
+
+        mechanical = self.ocean.energy.base.mechanical
+        new = mechanical.edge_thickness(end, end.h)
+        wet = new > 0
+        u = torch.where(wet, end.u_e, 0.)
+        # Each Euler or RK donor supplies its own physically supported velocity.
+        # Reconstruct the blend on transitioning edges, including its wet parent.
+        old_widths = [mechanical.edge_thickness(state, state.h) for state, _, _ in parents]
+        changed = torch.stack([((old > 0) != wet).any(1) for old in old_widths]).any(0)
+        edges = torch.where(changed)[0]
+        if edges.numel():
+            mixed = torch.zeros_like(new[edges])
+            shear = torch.zeros_like(mixed)
+            for old, (_, velocity, weight) in zip(old_widths, parents):
+                changed_parent = ((old[edges] > 0) != wet[edges]).any(1, keepdim=True)
+                mapped, heat = project_changed_faces(old[edges], new[edges], velocity[edges])
+                native = torch.where(wet[edges], velocity[edges], 0.)
+                mixed = mixed + weight * torch.where(changed_parent, mapped, native)
+                shear = shear + weight * torch.where(changed_parent, heat, 0.)
+            u = u.index_copy(0, edges, mixed)
+            # Deposit only shear lost by the face projection; ordinary RK
+            # truncation and the work of a moving free surface remain separate.
+            mesh = end.mesh
+            joules = mechanical.rho0 * (mesh.dc_edge[edges] * mesh.dv_edge[edges])[:, None] * shear
+            edge_heat = torch.zeros_like(new).index_copy(0, edges, joules)
+            cell_heat = mechanical.interpolation_transpose(mesh, edge_heat)
+            mass = self.ocean.energy.mass_area(end) * end.h
+            specific = cell_heat / torch.where(mass > 0, mass, 1.)
+            end, _, _ = roquet_heat(self.ocean, end, specific, end)
+        return end.with_tensors(u, end.h, end.temp_h, end.salt_h, end.tracer_h)
+
+    def finish_euler(self, initial, end):
+        if not self.matched_openings:
+            return end
+        # The force impulse is already included on the old wet support.
+        return self._finish_faces(end, [(initial, end.u_e, 1.)])
+
+    def finish_blend(self, first, second, end, weights):
+        if not self.matched_openings:
+            return end
+        return self._finish_faces(end, [(first, first.u_e, weights[0]),
+                                        (second, second.u_e, weights[1])])

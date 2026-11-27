@@ -13,7 +13,7 @@ from .enthalpy_remap import EnthalpyRemapper, EnthalpyRemapReport
 def column_terms(energy, physical):
     """Exact local decomposition of the existing quadrature Hamiltonian.
 
-    K_c=sum_k h_ck * (dK/dh)_ck uses the actual interpolation transpose.
+    The mechanical model partitions the edge kinetic energy between cells.
     Its sum is the original edge kinetic energy, including the coast mask.
     The returned temperature derivative holds thickness, salt and velocity fixed.
     """
@@ -23,7 +23,7 @@ def column_terms(energy, physical):
     z=base.height(physical)[...,None]+h[...,None]*(node-.5)
     psi,pt,_,_=base.parcel_potential(physical.temperature()[...,None],physical.salinity()[...,None],z)
     ref=energy.reference.evaluate(physical.salinity(),physical.temperature())
-    terms=dict(kinetic=(h*base.mechanical.kinetic_thickness_gradient(physical)).sum(-1),
+    terms=dict(kinetic=base.mechanical.column_kinetic_energy(physical),
         free_surface=(.5*base.gravity*mass*physical.column.eta(h).square()).sum(-1),
         dynamic_enthalpy=(mass*h*(psi*weight).sum(-1)).sum(-1),
         reference_thermal=(mass*h*ref['h0']).sum(-1))

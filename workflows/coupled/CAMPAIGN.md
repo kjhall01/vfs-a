@@ -106,7 +106,7 @@ cell generators. It **infers `cells=N` and forces `lloyd_iterations=0`**, overri
 those two YAML fields. The existing mesh constructor normalizes generator vectors
 and rebuilds the compatible topology/operators; there is no further relaxation.
 The effective settings are saved in `configuration.json`; the generator mesh identity (the original file SHA256 for a converted NumPy mesh)
-is saved in `manifest.json` and bound to restart identity. Moving or losslessly converting the mesh preserves that identity. Supply the same `--mesh` on every resume.
+is saved in `manifest.json` and bound to restart identity. Moving or losslessly converting the mesh preserves that identity. An in-place restart recovers the saved inputs. Supply `--mesh` or `--geography` independently to use another copy of the same grid.
 
 The mesh specifies the horizontal grid. Edit `aquaplanet-local.yaml` to choose
 vertical resolution, depth, timesteps and thread count. The initial defaults are:
@@ -138,7 +138,7 @@ python -I workflows/coupled/campaign.py \
 
 This requests the configured 365 days. Append `--stop-after-days 2` for a two-day
 qualification attempt before committing to the year.
-Continue a successfully completed segment with its saved restart and a new output folder. The
+Continue a completed segment in place with `--restart --output aquaplanet-16384-365d`. The
 smaller radiation-off checks do not establish seasonal stability on this mesh.
 
 ## Optional compilation
@@ -158,8 +158,7 @@ python -I workflows/coupled/campaign.py \
 
 After this passes, remove `--preflight`, select a new output directory, and add
 `--stop-after-days 2` for the initial segment. Retain `--compile` on its resume.
-Switching between eager and compiled modes requires a fresh run: the compilation
-policy/backend, effective configuration and source hashes are restart identity.
+The manifest records compilation policy, configuration and source hashes. A development NetCDF restart can change the compilation setting.
 Compiled replay is required to be bitwise within the same supported environment;
 eager/compiled trajectories can differ through floating-point reassociation.
 
@@ -234,6 +233,7 @@ tail -f aquaplanet-16384-365d/run.log
 | Output | Schedule | Contents |
 | --- | --- | --- |
 | `snapshots/state_*.nc` | Initial state, every 6 h through day 14 inclusive, daily on days 15–365 | 408 instantaneous native-mesh snapshots for a complete year; atmosphere T/p/water/wind/cloud, ocean CT/SA/layers/wind/TKE/mesoscale energy, ice area/volume/T/wind/cold content and snow |
+| `averages/surface_*.nc` | Every `average_hours` (default 6) | Duration-weighted precipitation, evaporation and sea surface temperature on the native horizontal grid, with time bounds |
 | `diagnostics.nc`, `diagnostics.csv` | Initial state, every 6 h, segment endpoint | Combined full energy minus TOA, separately retained upstream AM2 imbalance, numerical residual, water/salt, component extrema and peak local exchange residuals |
 | `restarts/restart_*.nc` | Initial state, every 5 days, segment endpoint | Atmosphere/cloud/physics/radiation caches and clock, all ocean/ice/snow tensors, cold content, accumulated budget ledgers |
 | `manifest.json` | Initialization | Actual code, configuration, dependency and radiation-data identity |
@@ -244,15 +244,62 @@ tail -f aquaplanet-16384-365d/run.log
 Day 14 is written once. Absent ice categories have diagnostic T=273.15 K; mask
 these with `ice_area`. Snapshots and complete restarts are published by atomic replacement.
 Restarts store named arrays, scalars, and a description of the component state.
-The campaign also reads legacy `.pt` checkpoints with `weights_only=True`. The resume check verifies the
-mesh, physics, runtime, configuration, source and radiation data. Binary output
-files stay in your specified run directory. See the [Earth I/O guide](EARTH_SHELF.md#existing-inputs-and-netcdf-output) for the legacy transition and xarray examples.
+### Surface fluxes and window means
 
-The momentum-map correction changes the restart identity (standalone adapter
-schema 4). Start a fresh run after pulling it; do not relabel old checkpoints.
+| Field | Units | Definition |
+| --- | --- | --- |
+| `precipitation` | kg m⁻² s⁻¹ | Rain plus snow reaching the surface, positive downward |
+| `evaporation` | kg m⁻² s⁻¹ | Net vapor entering the atmosphere from all tiles, including ice sublimation and negative dew or deposition |
+| `sst` | °C | Top wet ocean layer Conservative Temperature, including beneath ice, with land masked |
 
-For an initial shorter segment, append `--stop-after-days 2`. To continue, keep
-the same configuration and give a **new** output directory:
+Snapshots include SST at the snapshot time. Snapshot fluxes cover the last
+coupling interval, recorded in `surface_flux_time_bounds`. Fresh initialization
+and older checkpoints without a saved flux give missing rates at that instant.
+Multiply either water rate by 86,400 for mm/day of liquid-water equivalent.
+
+`averages/surface_*.nc` contains separate window means of these three fields.
+Use `--average-hours 3` or `average_hours: 3` in YAML to change the interval,
+and use zero for snapshot-only output. Fluxes integrate the accepted exchange
+amounts. SST uses trapezoidal integration between step endpoints. A window
+boundary inside a coupling interval receives a proportional share of the
+water exchange and linearly interpolated SST. Times are the ends of intervals
+and `time_bounds` gives their actual coverage. A segment stop saves the
+unfinished sums in its checkpoint. An older checkpoint starts coverage at
+its own time. Changing the cadence or reaching the configured final day closes the accumulated partial window.
+
+### Continue in the same directory
+
+From the checkout, continue the newest scheduled or last-good checkpoint with
+
+```bash
+python -u workflows/coupled/campaign.py --restart --output aquaplanet-16384-365d --verbose
+```
+
+From inside the run directory, invoke the same script by path and pass just
+`--restart`. The checkpoint's model time determines which file is newest.
+The saved configuration and input paths supply the defaults. Override individual inputs,
+for example `--geography /new/location/geography.nc` or `--mesh /new/location/mesh.npy`.
+Use `--config new.yaml` to supply new settings, including a longer horizon.
+
+Development restarts from NetCDF accept edited code. They check the stored native
+mesh coordinates and connectivity, vertical coordinates, land and bathymetry,
+calendar origin, state array layouts and precision against the requested model.
+A mismatch reports the incompatible field. Source fingerprints are retained in
+the manifests for provenance. If a change alters the Hamiltonian, a budget
+measured across that change can include a jump in its definition.
+
+In-place continuation appends diagnostics and the run log. Earlier metadata
+and output superseded by recovery from a checkpoint are preserved under
+`history/`. A second writer to the same directory is rejected. Caught failures
+can resume from `last_good_restart.nc`; after a system kill the latest
+completed checkpoint supplies the state.
+
+### Continue in a new directory
+
+Use `--resume FILE --output NEW_DIR` for an independent continuation. Pass the
+configuration and inputs for that run. The optional `--resume-compatible-manifest`
+retains the historical source audit. Legacy tensor-only `.pt` files require
+the original fingerprint or a supported audited transition.
 
 ```bash
 python -I workflows/coupled/campaign.py \
@@ -265,7 +312,7 @@ python -I workflows/coupled/campaign.py \
 That example resumes the day-5 restart. Output schedules remain anchored to the
 original January 1 start. New segments include an initial diagnostic and, when
 on the prescribed schedule, a boundary snapshot; deduplicate shared times when
-combining segments. Existing output directories are never overwritten. The last
+combining segments. A forked segment uses a new or empty output directory. The last
 good checkpoint is best-effort on caught errors/SIGINT; an OS kill can only
 recover a previously completed scheduled restart.
 
@@ -415,5 +462,4 @@ This explicitly reconstructs state for diagnosis across source versions. It
 writes the pre-ALE ocean input and a result report, not a production restart.
 It fails if the interval needs a fresh optics call; cached fields are never
 extended past their scheduled refresh. `--compile` is available for comparison.
-Start in a new output directory after updating source; the normal restart
-fingerprint checks intentionally reject checkpoints from the previous code.
+After updating source, use a NetCDF checkpoint with `--restart` or `--resume` to continue on the original grid.
