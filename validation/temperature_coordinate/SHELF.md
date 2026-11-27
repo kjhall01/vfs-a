@@ -18,6 +18,6 @@ optional passives and the turbulent and eddy reservoirs, follow the current
 wet geometry. The runner also audits each isolated budget. Positive TKE is
 required when a local unforced momentum update consumes energy.
 
-The coupled Earth runner shares the wet-opening transport principles and
+The coupled Earth campaign shares the wet-opening transport principles and
 keeps its existing terrain-following storage. See the [coupled shelf
 configuration](../../workflows/coupled/EARTH_SHELF.md).

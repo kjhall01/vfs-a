@@ -1,10 +1,9 @@
 # Coupled campaigns and surface exchange
 
-Use [the Earth runner](EARTH_SHELF.md) for an atmosphere, ocean, sea ice,
-snow and land run with topography and partial ocean columns. Use the
-[aquaplanet campaign](CAMPAIGN.md) for an all-ocean planet. Both use
-[campaign.py](campaign.py) for time integration, diagnostics and NetCDF
-restarts. The Earth runner supplies the Earth preset and locates its inputs.
+Use [campaign.py](campaign.py) to run the [Earth shelf](EARTH_SHELF.md) or
+[aquaplanet](CAMPAIGN.md) configuration. Select the YAML with `--config`
+and pass the input paths explicitly. Command-line options override the
+corresponding model settings in the YAML.
 The [device guide](GPU.md) covers CPU and accelerator configurations.
 
 At each physics interval, [exchange_step](driver.py) applies one

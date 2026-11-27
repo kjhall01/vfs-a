@@ -314,7 +314,7 @@ radiation-on campaign were outside this comparison.
 
 ## Prognostic wet layers on the Earth shelves
 
-The [Earth runner](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active
+The [Earth campaign](../workflows/coupled/EARTH_SHELF.md) stores 98,766 active
 ocean layers across 2,912 wet columns on the 4,096-cell mesh with a 40 m
 minimum wet depth. The old layout used 116,480. Of the wet columns, 34 have two
 active layers and 750 have all 40. Tensor storage remains rectangular.
