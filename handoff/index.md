@@ -2,7 +2,7 @@
 
 Use the [coupled restart and surface-output guide](../workflows/coupled/CAMPAIGN.md#outputs-and-restarting) to continue in place, change input paths or configure precipitation, evaporation and SST averages.
 
-The [coupled Earth setup](../workflows/coupled/EARTH_SHELF.md#run-the-coupled-shelf-and-native-edge-ice-drag-together) includes a 395-day preset for native-edge ice drag with matched wet-face momentum.
+The [coupled Earth setup](../workflows/coupled/EARTH_SHELF.md#run-the-coupled-shelf-and-native-edge-ice-drag-together) uses `workflows/coupled/campaign.py` with the 395-day YAML preset and explicit mesh, geography, PyAM21 and radiation arguments.
 
 The [closed shelf-face results](../docs/PASS4_RESULTS.md#closed-shelf-faces) cover moving openings, momentum on reopening, heat accounting and wet-edge peak diagnostics. See the [Earth-shelf campaign configuration](../workflows/coupled/EARTH_SHELF.md#experimental-shelf-momentum) to enable the experiment.
 
@@ -45,9 +45,9 @@ existing ordered mesh and geography files.
 
 The [coupled Earth presets](../workflows/coupled/EARTH_SHELF.md) now advance
 bathymetry-dependent wet layer counts throughout the ocean. The pilot guide
-includes a 40 m bathymetry build and the one-day pilot command. Both the
-Earth launcher and the direct campaign script load VFS and the ocean physics
-from their checkout when an older wheel is installed.
+includes a 40 m bathymetry build and the one-day pilot command. The
+campaign script loads VFS and ocean physics from its checkout when an older
+wheel is installed.
 
 The [Earth shelf pilot](../workflows/coupled/EARTH_SHELF.md) initializes surface
 pressure over land from the prescribed moist atmospheric profile. Start at day

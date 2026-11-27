@@ -18,6 +18,12 @@ deduplication of output after rollback, relocation of mesh and geography
 inputs and rejection of reordered cells or incompatible vertical coordinates.
 The installed-wheel portable fixtures passed 142 moist and 93 dry comparisons.
 
+A fresh 4,096-cell Earth run through `workflows/coupled/campaign.py` used
+explicit mesh, geography and PyAM21 paths. The CPU smoke run overrode the
+preset's compilation and thread count, stopped at 1,200 s, and continued
+from the run directory through 2,400 s with `--restart`. The continuation
+recovered the saved inputs and settings. Radiation was disabled for this test.
+
 See the [launch and output guide](../workflows/coupled/CAMPAIGN.md#outputs-and-restarting).
 
 ## Coupled campaign with native-edge ice drag and matched shelf momentum

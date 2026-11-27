@@ -1,6 +1,6 @@
 # Coupled Earth shelf pilot
 
-The runner advances the native moist atmosphere and PyAM21 physics, seasonally
+The campaign advances the native moist atmosphere and PyAM21 physics, seasonally
 forced SeaEsfRad radiation, land and runoff, ocean, moving sea ice and snow.
 With `shelf_redi: true`, resolved ocean transport intersects the left and
 right water columns with the staggered velocity layers at every RK stage.
@@ -57,19 +57,27 @@ float64 and the timesteps of the 395-day Earth pilot. Use the same mesh,
 From the repository root with the coupled environment active:
 
 ```bash
-cfg=workflows/coupled/earth_shelf_4096_395d_native_drag.yaml
-export VFS_GEOGRAPHY=input-data/earth_4096_geography_40m.nc
-python -u tools/run_earth_shelf.py --config "$cfg" --preflight --output runs/native-drag-preflight
-python -u tools/run_earth_shelf.py --config "$cfg" --output runs/native-drag-395d
+campaign=(
+  python -u workflows/coupled/campaign.py
+  --config workflows/coupled/earth_shelf_4096_395d_native_drag.yaml
+  --mesh input-data/mesh_4096_exact_3000.nc
+  --geography input-data/earth_4096_geography_40m.nc
+  --source ../PyAM21
+  --radiation-data input-data/sea_esf
+  --verbose
+)
+"${campaign[@]}" --preflight --output runs/native-drag-preflight
+"${campaign[@]}" --output runs/native-drag-395d
 ```
 
-Set `VFS_GEOGRAPHY` to the actual archive path if it differs.
+These Bash/zsh commands pass every input path explicitly. Substitute the paths to
+your files. Ordered mesh generators in `.npy` and geography in `.npz` also work.
 The preflight runs one coupled interval twice and checks restart equality.
 The second command initializes at day zero. To run the first day alone, add
 `--stop-after-days 1`. Continue in the same directory with
 
 ```bash
-python -u tools/run_earth_shelf.py --restart --output runs/native-drag-395d
+python -u workflows/coupled/campaign.py --restart --verbose --output runs/native-drag-395d
 ```
 
 Use `--resume FILE --output NEW_DIR` to fork a separate segment.
@@ -102,10 +110,17 @@ and physics.
 From the repository root, with the coupled environment active and a CUDA device available, run
 
 ```bash
-python -u tools/run_earth_shelf.py --device cuda:0 --preflight \
-    --output runs/earth-shelf-preflight
-python -u tools/run_earth_shelf.py --device cuda:0 --stop-after-days 1 \
-    --output runs/earth-shelf-day1
+campaign=(
+  python -u workflows/coupled/campaign.py
+  --config workflows/coupled/earth_shelf_4096.yaml
+  --mesh input-data/mesh_4096_exact_3000.nc
+  --geography input-data/earth_4096_geography.nc
+  --source ../PyAM21
+  --radiation-data input-data/sea_esf
+  --device cuda:0 --verbose
+)
+"${campaign[@]}" --preflight --output runs/earth-shelf-preflight
+"${campaign[@]}" --stop-after-days 1 --output runs/earth-shelf-day1
 ```
 
 Fresh runs and preflights require a new or empty output directory. The preflight checks one coupled
@@ -114,28 +129,18 @@ The preset has a 30-day horizon, 600 s atmospheric dynamics, 2,400 s physics,
 600 s ocean dynamics, and 7,200 s radiation and ALE. It defaults to CPU
 float64 eager execution. Use the same device and configuration for restart.
 
-The Python launcher supplies defaults to the same `workflows.coupled.campaign`
-entry point. To use scattered inputs, pass `--mesh` and `--geography` as file
-paths and `--source` and `--radiation-data` as directory paths. Explicit flags
-override the environment variables below. Relative paths you supply are
-resolved from your current working directory. Built-in defaults are relative
-to the checkout. For the benchmark schedule, pass
-`--config workflows/coupled/earth_shelf_4096_benchmark.yaml` from the repo root.
-
-| Input | Default | Environment override |
-|---|---|---|
-| Voronoi generators | `input-data/mesh_4096_exact_3000.nc` (also accepts `.npy`) | `VFS_MESH` |
-| Geography archive | `input-data/earth_4096_geography.nc` (also accepts `.npz`) | `VFS_GEOGRAPHY` |
-| SeaEsfRad tables | `input-data/sea_esf` | `PYAM21_RADIATION_DATA` |
-| PyAM21 source | `../PyAM21` | `PYAM21_SOURCE` |
+Select the model settings with `--config`. Explicit argparse options such as
+`--device`, `--threads`, `--no-compile` and `--average-hours` override the
+corresponding YAML settings. Relative input paths resolve from your working
+directory. For the benchmark schedule, select
+`--config workflows/coupled/earth_shelf_4096_benchmark.yaml`.
 
 ### Existing inputs and NetCDF output
 
 See [native mesh plotting](../../docs/NATIVE_MESH_PLOTTING.md) to draw a field on a Robinson map or 3D globe.
 
 You can keep using your original `.npy` generators and `.npz` geography.
-The launcher prefers the NetCDF files when both versions of a default input
-exist. To convert a matched pair once, from the checkout:
+Pass the paths to the files you want to use. To convert a matched pair from the checkout:
 
 ```bash
 python tools/convert_earth_inputs.py \
@@ -206,12 +211,15 @@ NetCDF. Earlier revisions remain subject to their own source-compatibility check
 
 The [395-day preset](earth_shelf_4096_395d.yaml) uses four-stage, third-order SSPRK(4,3) for the bounded atmosphere at 600 s. Set `atmosphere_dynamics_integrator: ssprk43` to select it. The ocean–ice stepper is independently set to `ocean_dynamics_integrator: ssprk43` at 1,200 s. Physics runs every 1,200 s, with five mixing substeps and two GM/Redi substeps per 1,200 s. Radiation and ALE run every 4,800 s. The preset uses CPU float64 with compilation and four threads.
 
-From the repository root, set `VFS_MESH`, `VFS_GEOGRAPHY`, `PYAM21_SOURCE` and `PYAM21_RADIATION_DATA` to the paths used for the pilot. Select the segment that **wrote** the day-30 checkpoint. For example:
+From the repository root, pass the input paths used for the pilot. Select the segment that **wrote** the day-30 checkpoint.
 
 ```bash
 pilot=runs/earth-final-segment
-python -u tools/run_earth_shelf.py \
+python -u workflows/coupled/campaign.py --verbose \
   --config workflows/coupled/earth_shelf_4096_395d.yaml \
+  --mesh input-data/mesh_4096_exact_3000.nc \
+  --geography input-data/earth_4096_geography_40m.nc \
+  --source ../PyAM21 --radiation-data input-data/sea_esf \
   --resume "$pilot/restarts/restart_02592000.nc" \
   --resume-compatible-manifest "$pilot/manifest.json" \
   --output runs/earth-day030-to-395
@@ -235,13 +243,14 @@ python tools/build_earth_geography.py \
 
 Use this archive explicitly for a fresh 40 m shelf pilot with 600 s atmospheric
 dynamics, 1,200 s ocean SSPRK3, five mixing substeps, two GM/Redi substeps, and
-4,800 s radiation and ALE. With the source and radiation paths already set:
+4,800 s radiation and ALE.
 
 ```bash
-python -u tools/run_earth_shelf.py --device cuda:0 \
+python -u workflows/coupled/campaign.py --device cuda:0 --verbose \
     --config workflows/coupled/earth_shelf_4096_benchmark.yaml \
     --mesh input-data/mesh_4096_exact_3000.npy \
     --geography input-data/earth_4096_geography_40m.nc \
+    --source ../PyAM21 --radiation-data input-data/sea_esf \
     --stop-after-days 1 --output runs/earth-shelf-40m-day1
 ```
 

@@ -1145,7 +1145,7 @@ def run_logger(output, verbose):
 
 
 @torch.no_grad()
-def main(argv=None, *, input_defaults=None):
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
@@ -1223,9 +1223,6 @@ def main(argv=None, *, input_defaults=None):
             parser.error(f"--restart requires an existing campaign directory: {output}")
         previous = json.loads((output / "manifest.json").read_text())
         recover_inputs(args, previous)
-    for key, value in (input_defaults or {}).items():
-        if getattr(args, key) is None and not (key == "radiation_data" and args.smoke_no_radiation):
-            setattr(args, key, value)
     if not args.source:
         parser.error("specify --source with the path to PyAM21")
     if args.energy_trace_substeps and not args.energy_trace:

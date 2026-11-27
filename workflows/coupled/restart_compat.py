@@ -148,6 +148,11 @@ PRE_DRAG_HASHES = {
 
 # Only the explicit --resume-compatible-manifest path uses this historical
 # bridge. Ordinary development restarts validate the grid stored in NetCDF.
+CAMPAIGN_CLI_TARGET = "18b9c70f0719045f58d4dde6408e708c84e55e167d5f7496516c4bfe2c62b0ca"
+PRE_CLI_HASHES = {
+    "workflows/coupled/campaign.py": "e4947ff455544edb126089c12d60dfc53da1c04db0b7d089f84613d21f1088f4",
+    "workflows/coupled/restart_compat.py": "16cb8e5a3b0952274a6ad85a7f99c6487d030861798ea085b99f9fd1a6345a9b",
+}
 SURFACE_OUTPUT_TARGET = "becbb1963c0c5a7366b60b2380be2d7d7355ffd2d1affaa1bbe06d175d798f22"
 PRE_OUTPUT_HASHES = {
     "workflows/coupled/campaign.py": "425885aebe969a21adcf9ae9d8aae380c57b91b61e119141086b95cd2381b299",
@@ -261,6 +266,11 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == CAMPAIGN_CLI_TARGET:
+        parent = {**current_hashes, **PRE_CLI_HASHES}
+        if _without_verifier_digest(parent) != SURFACE_OUTPUT_TARGET:
+            raise ValueError("campaign CLI restart parent differs from the audited revision")
+        return verify_compatible_source_delta(old_hashes, parent)
     if target == SURFACE_OUTPUT_TARGET:
         parent = pre_output_sources(current_hashes)
         if _without_verifier_digest(parent) != NATIVE_EDGE_DRAG_TARGET:
