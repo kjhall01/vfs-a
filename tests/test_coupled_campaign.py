@@ -406,7 +406,7 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path, na
 
 
 def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path):
-    from workflows.coupled.restart_compat import NATIVE_VAPOR_VERIFIER, VERIFIER
+    from workflows.coupled.restart_compat import NATIVE_VAPOR_VERIFIER, PRE_CLOUD_ADAPTER_SHA, VERIFIER
 
     path = tmp_path / "config.yaml"
     args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
@@ -415,6 +415,7 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     control = tmp_path / "control"
     path.write_text(yaml.safe_dump(c.asdict(replace(config, days=30))))
     previous_sources = dict(c.source_hashes())
+    previous_sources["workflows/pyam21/adapter.py"] = PRE_CLOUD_ADAPTER_SHA
     previous_sources[VERIFIER] = NATIVE_VAPOR_VERIFIER
     previous_sources["workflows/coupled/campaign.py"] = "200c9497dab13b00f3e7f33e5faf19fcbd30fa611a3912d0630d7c0c303dab9d"
     previous_sources["workflows/pyam21/dynamics.py"] = "3db19be53cafe3f86798392c5efb8d8ad46ded1710f0cca2184208aab46459cd"
@@ -438,7 +439,7 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     same_tree(c.read_checkpoint(new/restart), c.read_checkpoint(control/restart))
     audit = json.loads((new/"compatible_resume_audit.json").read_text())
     assert audit["horizon_days"] == {"prior": 30, "current": 395}
-    assert audit["numerical_change"] == "none"
+    assert audit["numerical_change"] == "pyam21_cloud_area_boundary_roundoff"
 
     four_stage = tmp_path / "four_stage"
     path.write_text(yaml.safe_dump(c.asdict(replace(config, days=395, atmosphere_dynamics_integrator="ssprk43"))))
@@ -447,7 +448,7 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     assert [call.kwargs["integrator"] for call in advance_air.call_args_list] == ["ssprk43"] * 4
     audit = json.loads((four_stage/"compatible_resume_audit.json").read_text())
     assert audit["atmosphere_dynamics_integrator"] == {"prior": "ssprk3", "current": "ssprk43", "from_seconds": 60}
-    assert audit["numerical_change"] == "atmospheric_ssprk3_to_ssprk43"
+    assert audit["cloud_area_boundary_roundoff"] is True
     assert c.main(args + ["--output", str(tmp_path/"strict"), "--resume", str(four_stage/restart),
                           "--stop-after-days", str(180/c.DAY)]) == 0
 

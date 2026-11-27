@@ -109,6 +109,13 @@ ATMOSPHERE_SSPRK43_TARGET = "3f5001cc3d9a5c4da76c12458ae19a62d536cec2a4c21399e7b
 EXTENDED_HORIZON_VERIFIER = "f0c46c0fd0e7cba19d18b225ae21757ae4b334bb82cbfba4fe694542db7f49cc"
 
 
+# One-way bridge from the original SSPRK(4,3) campaign. Only the adapter
+# and this verifier changed, and the checkpoint state layout is identical.
+CLOUD_ROUNDOFF_TARGET = "92b94ebf0c13820e666624855fbde20b3257d01d96708bb4cd34f9d7cc21683f"
+PRE_CLOUD_ADAPTER_SHA = "04f1cb0579116bb4710ca188812294da7acaae74d4fb33e7cac683e121d703f5"
+PRE_CLOUD_VERIFIER_SHA = "69f304aaf1706f0cf538a3ce0d0bcc700e6133867da8d40830de4033fdf9a7d7"
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -196,6 +203,14 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == CLOUD_ROUNDOFF_TARGET:
+        parent = {**current_hashes, "workflows/pyam21/adapter.py": PRE_CLOUD_ADAPTER_SHA,
+                  verifier: PRE_CLOUD_VERIFIER_SHA}
+        prior = verify_compatible_source_delta(old_hashes, parent)
+        prior["cloud_area_boundary_roundoff"] = True
+        if prior.get("numerical_change") in (None, "none"):
+            prior["numerical_change"] = "pyam21_cloud_area_boundary_roundoff"
+        return prior
     if target in (NATIVE_VAPOR_TARGET, EXTENDED_HORIZON_TARGET, ATMOSPHERE_SSPRK43_TARGET):
         origin = (_without_verifier_digest(old_hashes), old_hashes.get(verifier))
         if target == ATMOSPHERE_SSPRK43_TARGET and origin == (EXTENDED_HORIZON_TARGET, EXTENDED_HORIZON_VERIFIER):

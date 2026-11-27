@@ -73,26 +73,48 @@ def _consistent_cloud_stages(initial, rate, endpoint, dt, stages):
     )
 
 
+def _resolve_cloud_roundoff(initial, tracers, out, dt, bad_cloud, cutoff):
+    """Return a copy only for verified RAS/stratiform cancellation at a cloud bound."""
+    cells, levels = bad_cloud.nonzero(as_tuple=True)
+    raw = tracers[cells, levels, 3]
+    stages = {k: v[cells, levels] for k, v in out["cloud_stages"].items()}
+    ras = stages["ras_end"]
+    strat = stages["strat_change"]
+    magnitude = torch.maximum(ras.abs(), strat.abs())
+    spacing = torch.nextafter(magnitude, torch.full_like(magnitude, torch.inf)) - magnitude
+    bounded = raw.clamp(0, 1)
+    # Allow one unit in the last place of the larger operand, provided that
+    # this uncertainty is below StratCloud's smallest resolved cloud fraction.
+    accepted = (
+        ((ras > 0) & (strat < 0) | (ras < 0) & (strat > 0))
+        & ((raw - bounded).abs() <= spacing) & (spacing <= cutoff)
+        & _consistent_cloud_stages(initial[cells, levels], out["rdt"][cells, levels, 3],
+                                   raw, dt, stages)
+    )
+    if not accepted.any():
+        return tracers, None
+    cells, levels = cells[accepted], levels[accepted]
+    adjusted = tracers.clone()
+    adjusted[cells, levels, 3] = bounded[accepted]
+    return adjusted, dict(indices=torch.stack((cells, levels), dim=-1),
+                          raw=raw[accepted], applied=bounded[accepted])
 
-def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol,
-                                *, allow_zero_vapor=False):
-    """Identify the first rejected PyAM21 endpoint without changing acceptance.
 
-    Runs only on the existing failure path. Indices are native [cell, layer]
-    and values are unmodified post-physics endpoint fields. No clipping, floor,
-    threshold change, or state repair is performed.
-    """
+def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol):
+    """Report a rejecting predicate. Finite negative vapor is handled later."""
     for name in ("tdt", "rdt", "udt", "vdt"):
         rate = out[name]
         bad = ~torch.isfinite(rate)
         if bad.any():
             index = tuple(int(i) for i in bad.nonzero()[0])
             return (f"field={name} tendency index={index}"
-                    f" value={float(rate[index]):.12g}")
+                    f" value={float(rate[index]):.17g}")
+    if not torch.isfinite(tracers).all():
+        cell, layer, species = (~torch.isfinite(tracers)).nonzero()[0].tolist()
+        field = ("vapor_mass_fraction", "liquid_mass_fraction", "ice_mass_fraction", "cloud_fraction")[species]
+        return f"field={field} cell={cell} level={layer} value={float(tracers[cell, layer, species])} required=finite"
     checks = (
-        ("temperature_K", temperature, temperature <= 0, 0.0),
-        ("vapor_mass_fraction", tracers[..., 0],
-         tracers[..., 0] < 0 if allow_zero_vapor else tracers[..., 0] <= 0, 0.0),
+        ("temperature_K", temperature, ~torch.isfinite(temperature) | (temperature <= 0), 0.0),
         ("liquid_mass_fraction", tracers[..., 1],
          tracers[..., 1] < -condensate_tol[0], -float(condensate_tol[0])),
         ("ice_mass_fraction", tracers[..., 2],
@@ -108,14 +130,14 @@ def _inadmissible_column_detail(temperature, tracers, out, eps, condensate_tol,
             cell, layer = (int(v) for v in bad.nonzero()[0])
             value = float(values[cell, layer])
             threshold = (
-                f" required_bound={bound:.12g}" if bound is not None
-                else f" allowed_range=[{-128 * eps:.12g},{1 + 128 * eps:.12g}]"
+                f" required_bound={bound:.17g}" if bound is not None
+                else f" allowed_range=[{-128 * eps:.17g},{1 + 128 * eps:.17g}]"
             )
             return (
                 f"field={name} cell={cell} level={layer}"
-                f" value={value:.12g}{threshold}"
+                f" value={value:.17g}{threshold}"
             )
-    return "no endpoint violation located (check reporting tensors)"
+    return None
 
 
 class AM2Adapter:
@@ -553,23 +575,28 @@ class AM2Adapter:
         # or signed condensate roundoff at an exhausted store. Admit and report
         # these unchanged, consistently with VFS's existing condensate policy.
         condensate_tolerance = 32 * eps * R1[..., 1:3].abs().amax((0, 1))
+        cloud_roundoff = None
+        cloud = R1[..., 3]
+        bad_cloud = (cloud < -128 * eps) | (cloud > 1 + 128 * eps)
         if (
             not all(torch.isfinite(out[k]).all() for k in ("tdt", "rdt", "udt", "vdt"))
-            or (T1 <= 0).any()
+            or (~torch.isfinite(T1) | (T1 <= 0)).any()
             or not torch.isfinite(R1).all()
             or (R1[..., 1:3] < -condensate_tolerance).any()
             or (R1[..., :3].sum(-1) >= 1).any()
-            or (R1[..., 3] < -128 * eps).any()
-            or (R1[..., 3] > 1 + 128 * eps).any()
+            or bad_cloud.any()
         ):
-            detail = _inadmissible_column_detail(
-                T1, R1, out, eps, condensate_tolerance,
-                allow_zero_vapor=True,
-            )
-            raise ValueError(
-                "PyAM21 returned an inadmissible finite column update; no clipping"
-                f"; dt={dt} seconds; {detail}"
-            )
+            if (bad_cloud.any() and "endpoint_tracers" in out and "cloud_stages" in out
+                    and isinstance(self.physics.moist, _CloudStageMoistProcesses)):
+                R1, cloud_roundoff = _resolve_cloud_roundoff(
+                    column["tracers"][..., 3], R1, out, dt, bad_cloud, self.physics.moist.strat.c.qmin
+                )
+            detail = _inadmissible_column_detail(T1, R1, out, eps, condensate_tolerance)
+            if detail is not None:
+                raise ValueError(
+                    "PyAM21 returned an inadmissible finite column update; no clipping"
+                    f"; dt={dt} seconds; {detail}"
+                )
         upstream_out = out
         T1, R1, out, vapor_correction = restore_positive_vapor(T1, R1, out, dt, dp=dp)
         if vapor_correction is not None:
@@ -642,6 +669,16 @@ class AM2Adapter:
         transfer["target_layer_increment"] = budget["target"]
         result = PhysicsState(end, cloud1, mem, surf, rad, state.time_seconds + dt)
         self.check(result)
+        if cloud_roundoff is not None:
+            out = dict(out, cloud_area_roundoff=cloud_roundoff, endpoint_tracers=R1)
+            indices = cloud_roundoff["indices"]
+            cell, level = indices[0].tolist()
+            self.logger.warning(
+                "Day %.6f: PyAM21 cloud-area roundoff at a bound; layers=%d, "
+                "first cell=%d level=%d raw=%.17g applied=%.1f",
+                result.time_seconds / 86400, len(indices), cell, level,
+                float(cloud_roundoff["raw"][0]), float(cloud_roundoff["applied"][0]),
+            )
         actual_water = (water - s.water_content).sum(1) / g
         expected_water = amount.sum(1) / g
         if interface_correction is not None:

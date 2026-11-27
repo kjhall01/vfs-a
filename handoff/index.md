@@ -1,5 +1,10 @@
 # Current package documentation
 
+The [day-43 cloud-area replay](../docs/PASS4_RESULTS.md#cloud-area-roundoff-in-the-day-43-earth-shelf-exchange)
+documents a verified roundoff adjustment in the PyAM21 adapter. Resume a campaign
+from main `3555b7f` using its checkpoint, original inputs and configuration,
+`--resume-compatible-manifest OLD_RUN/manifest.json`, and a new output directory.
+
 The [climate plot list](../vfs_plotting/PLOTS.md) includes importable functions for coupled snapshot and restart summaries.
 
 Start with the [repository guide](../README.md) to choose a campaign or standalone component.

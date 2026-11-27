@@ -220,3 +220,17 @@ def test_package_cleanup_restart_requires_both_source_inventories(monkeypatch):
                           (old, {**new, "new.py": "other"})):
         with pytest.raises(ValueError):
             module.verify_compatible_source_delta(before, after)
+
+
+def test_cloud_area_transition_reconstructs_parent_sources(monkeypatch):
+    adapter = "workflows/pyam21/adapter.py"
+    vapor = "workflows/pyam21/vapor.py"
+    current = {module.VERIFIER: "new verifier", adapter: "new adapter", vapor: "original vapor"}
+    monkeypatch.setattr(module, "CLOUD_ROUNDOFF_TARGET", module._without_verifier_digest(current))
+    previous = {**current, adapter: module.PRE_CLOUD_ADAPTER_SHA, module.VERIFIER: module.PRE_CLOUD_VERIFIER_SHA}
+    assert module.verify_compatible_source_delta(previous, current)["cloud_area_boundary_roundoff"]
+    for changed in (adapter, vapor, module.VERIFIER):
+        with pytest.raises(ValueError):
+            module.verify_compatible_source_delta({**previous, changed: "unknown"}, current)
+    with pytest.raises(ValueError):
+        module.verify_compatible_source_delta(previous, {**current, vapor: "other"})
