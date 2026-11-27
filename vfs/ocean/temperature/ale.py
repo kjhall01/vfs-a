@@ -53,6 +53,7 @@ class TemperatureEnthalpyRemapper:
         if domain is not None:
             target_h = torch.where(domain.wet_cell[:, None], target_h, state.h)
         state.column.validate_thickness(target_h, min_thickness=model.dynamics.min_thickness)
+        edge_thickness = energy.base.mechanical.edge_thickness
         partial = state.column.layer_reference is not None
         if not partial:
             _geometry(state.h, target_h)
@@ -71,8 +72,8 @@ class TemperatureEnthalpyRemapper:
             # Retain untouched columns exactly, including land placeholders.
             original = torch.cat(contents,-1)
             mapped = torch.where(changed[:,None,None], mapped, original)
-            old_edge = model.mesh.cell_to_edge(state.h)
-            new_edge = model.mesh.cell_to_edge(target_h)
+            old_edge = edge_thickness(state, state.h)
+            new_edge = edge_thickness(state, target_h)
             if partial:
                 # Only shared velocity levels own momentum. Rezone in cumulative
                 # edge mass fraction: the adjacent deep column can move mass
@@ -97,7 +98,7 @@ class TemperatureEnthalpyRemapper:
         residuals = {k:(getattr(end,k)-getattr(state,k)).sum(-1) for k in ['h']+fields}
         if state.tracer_h is not None:
             residuals['tracer_h'] = (end.tracer_h-state.tracer_h).sum(-2)
-        old_edge, new_edge = model.mesh.cell_to_edge(state.h), model.mesh.cell_to_edge(end.h)
+        old_edge, new_edge = edge_thickness(state, state.h), edge_thickness(end, end.h)
         factor = model.dynamics.rho0*model.mesh.dc_edge*model.mesh.dv_edge
         momentum_error = factor*(new_edge*end.u_e-old_edge*state.u_e).sum(-1)
         if domain is not None:

@@ -23,6 +23,14 @@ class ConstantDensityEnergy:
     def velocity(self, state):
         return state.u_e if self.domain is None else self.domain.apply_layer_edge(state.u_e)
 
+    def edge_thickness(self, state, h):
+        """Thickness carrying edge momentum when rezoning to h."""
+        return state.mesh.cell_to_edge(h)
+
+    def column_kinetic_energy(self, state):
+        """Energy owned by each cell under the native thickness interpolation."""
+        return (state.h * self.kinetic_thickness_gradient(state)).sum(-1)
+
     def metric(self, state):
         """Diagonal kinetic metric M = rho0 A_e I(h), with closed partial-column faces removed."""
         mesh = state.mesh
