@@ -938,6 +938,63 @@ def test_cloud_fraction_cancellation_requires_consistent_process_terms(model):
         apply_output(adapter, state, out, dt)
 
 
+def test_cloud_area_boundary_roundoff_at_day_43(model, caplog):
+    adapter, state = initial(model, cloudy=True)
+    state = replace(state, cloud_fraction=torch.full_like(state.cloud_fraction, 0.31428724515021034))
+    col, _ = adapter.mapping.columns(state.atmosphere, state.cloud_fraction)
+    dt = 1200
+    cell, layer = 3, 2
+    cloud = col["tracers"][..., 3]
+    out = empty(col)
+    out["endpoint_temperature"] = col["T"].clone()
+    endpoint = out["endpoint_tracers"] = col["tracers"].clone()
+    stages = out["cloud_stages"] = dict(
+        turbulent_rate=torch.zeros_like(cloud), ras_rate=torch.zeros_like(cloud),
+        ras_end=cloud.clone(), strat_change=torch.zeros_like(cloud),
+    )
+    idx = cell, layer
+    stages["turbulent_rate"][idx] = -7.211064173575205e-07
+    stages["ras_rate"][idx] = 0.214601213609869
+    stages["ras_end"][idx] = 257.83487824929216
+    stages["strat_change"][idx] = -256.8348782492921
+    rate = out["rdt"][..., 3]
+    rate[idx] = (stages["turbulent_rate"][idx] + stages["ras_rate"][idx]
+                 + stages["strat_change"][idx] * (1.0 / dt))
+    raw = float(stages["ras_end"][idx] + stages["strat_change"][idx])
+    endpoint[cell, layer, 3] = raw
+    end, report = apply_output(adapter, state, out, dt)
+    assert "cloud-area roundoff at a bound; layers=1, first cell=3 level=2" in caplog.text
+    assert raw == 1.0000000000000568 and endpoint[cell, layer, 3] == raw
+    repair = report.column_result["cloud_area_roundoff"]
+    assert repair["indices"].tolist() == [[cell, layer]]
+    assert repair["raw"].item() == raw and repair["applied"].item() == 1.0
+    energy_close(adapter, state, end, report)
+
+    # Independently apply a physically exact overcast endpoint at the same layer.
+    reference = empty(col)
+    reference["rdt"][cell, layer, 3] = (1 - cloud[idx]) / dt
+    reference["endpoint_tracers"] = col["tracers"].clone()
+    reference["endpoint_tracers"][cell, layer, 3] = 1
+    reference["endpoint_temperature"] = col["T"].clone()
+    exact, _ = apply_output(adapter, state, reference, dt)
+    for name in ("ps", "u_e", "entropy_content", "water_content"):
+        assert torch.equal(getattr(end.atmosphere, name), getattr(exact.atmosphere, name))
+    assert torch.equal(end.cloud_fraction, exact.cloud_fraction)
+
+    # A consistent but larger overshoot, or missing stage evidence, still fails.
+    stages["strat_change"][idx] += 1e-9
+    endpoint[cell, layer, 3] = stages["ras_end"][idx] + stages["strat_change"][idx]
+    rate[idx] = (stages["turbulent_rate"][idx] + stages["ras_rate"][idx]
+                 + stages["strat_change"][idx] * (1.0 / dt))
+    with pytest.raises(ValueError, match="field=cloud_fraction cell=3 level=2"):
+        apply_output(adapter, state, out, dt)
+    out.pop("cloud_stages")
+    endpoint[cell, layer, 3] = raw
+    rate[idx] = (raw - cloud[idx]) / dt
+    with pytest.raises(ValueError, match="field=cloud_fraction cell=3 level=2"):
+        apply_output(adapter, state, out, dt)
+
+
 def test_inadmissible_column_detail_identifies_field_and_location_without_clipping():
     from workflows.pyam21.adapter import _inadmissible_column_detail
 
@@ -956,11 +1013,9 @@ def test_inadmissible_column_detail_identifies_field_and_location_without_clippi
     qbad = q.clone()
     qbad[1, 0, 0] = -1e-4
     detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
-    assert "field=vapor_mass_fraction cell=1 level=0" in detail
-    assert "value=-0.0001" in detail
-    qbad[1, 0, 0] = 0
+    assert detail is None  # Finite negative vapor is funded after these checks.
     qbad[1, 0, 2] = -1e-4
-    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol, allow_zero_vapor=True)
+    detail = _inadmissible_column_detail(t, qbad, rates, eps, tol)
     assert "field=ice_mass_fraction cell=1 level=0" in detail
     qbad = q.clone()
     qbad[2, 1, 3] = 1.01
@@ -970,7 +1025,7 @@ def test_inadmissible_column_detail_identifies_field_and_location_without_clippi
     tb[0, 1] = 0
     detail = _inadmissible_column_detail(tb, q, rates, eps, tol)
     assert "field=temperature_K cell=0 level=1" in detail
-    assert "no endpoint violation" in _inadmissible_column_detail(t, q, rates, eps, tol)
+    assert _inadmissible_column_detail(t, q, rates, eps, tol) is None
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
 def test_negative_vapor_funded_by_same_column_vapor(dtype):

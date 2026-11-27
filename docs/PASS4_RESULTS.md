@@ -1,5 +1,32 @@
 # Pass 4 — physical-field workflow
 
+## Cloud-area roundoff in the day-43 Earth shelf exchange
+
+The Mac campaign rejected cloud fraction 1.0000000000000568 at cell 127,
+physics level 30, in the first interval after second 3793200. The original
+reporter named a separate negative vapor value at cell 5. Finite negative
+vapor goes through column water funding after the admissibility check.
+
+A Linux CPU float64 replay rebuilt the geometry from the restart and used
+the saved radiative heating. Multiplying the physics input temperature by
+1 − 8 machine epsilons reproduced the Mac cloud endpoint. In that replay
+the incoming cloud area for RAS was 0.3134219174. The shallowest active plume
+added 257.5219479. RAS returned 257.83487824929216 and stratiform physics
+returned a change of −256.8348782492921. Evaluating RAS alone at 600 s and
+1200 s with the same column inputs gave the same area at this location.
+
+For an endpoint outside the existing tolerance, the adapter checks the
+recorded turbulence, RAS and stratiform operands. For opposite-sign operands
+whose sum lies within one floating-point spacing of a boundary, it applies
+the boundary if that spacing is no larger than the stratiform cloud cutoff.
+The column report records the affected indices and the raw and applied areas.
+The campaign logs a warning. The adjustment operates on cloud area only.
+The reproduced case reached second 3795600 after two coupled intervals.
+A regression compares cloud area and every atmospheric prognostic with an
+independent exact-overcast update. GPU execution and long-run climate impacts
+were not tested in this replay.
+
+
 ## Coupled climate plots
 
 The plotting functions were exercised on the 4,096-cell Earth pilot restart at second 2,500,800 on CPU in float64. Reconstructed geographic wind components agreed with the model’s cell-vector reconstruction to within 9 × 10⁻¹⁴ m/s. A snapshot-format copy gave the same plotted fields as the restart. Additional checks covered a constant meridional wind transport integral, nonuniform sample times, the wet SST mask and optional precipitation. The installed wheel rendered a section outside the checkout. Both portable atmospheric fixture comparisons passed.
