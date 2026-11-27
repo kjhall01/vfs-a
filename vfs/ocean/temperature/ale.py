@@ -64,6 +64,11 @@ class TemperatureEnthalpyRemapper:
         enthalpy_h = state.h*reference.evaluate(physical.salinity(), physical.temperature())['h0']
         if torch.equal(target_h, state.h):
             end = state
+            if partial:
+                wet = edge_thickness(state, state.h) > 0
+                if ((~wet) & (state.u_e != 0)).any():
+                    end = state.with_tensors(torch.where(wet, state.u_e, 0.), state.h,
+                                             state.temp_h, state.salt_h, state.tracer_h)
         else:
             contents = [enthalpy_h[...,None], state.salt_h[...,None]]
             if state.tracer_h is not None:
@@ -84,11 +89,26 @@ class TemperatureEnthalpyRemapper:
                 coordinate = new_edge * ratio
             else:
                 coordinate = new_edge
-            momentum = remap(old_edge, old_edge*state.u_e, coordinate, method=self.method)
+            # A moving surface may leave zero-width bins above the first wet
+            # velocity. Compact face bins for ALE independently of cell layers.
+            momentum = old_edge * state.u_e
+            def has_gap(width):
+                return ((width[:, :-1] == 0) & (width[:, 1:] > 0)).any()
+
+            if partial and (has_gap(old_edge) | has_gap(coordinate)):
+                src = (old_edge == 0).long().argsort(dim=1, stable=True)
+                dst = (coordinate == 0).long().argsort(dim=1, stable=True)
+                packed = remap(old_edge.gather(1, src), momentum.gather(1, src),
+                               coordinate.gather(1, dst), method=self.method)
+                momentum = torch.zeros_like(momentum).scatter(1, dst, packed)
+            else:
+                momentum = remap(old_edge, momentum, coordinate, method=self.method)
             active = (new_edge != old_edge).any(-1)
             if domain is not None:
                 active = active & domain.active_edge
             u = torch.where(active[:,None], momentum/nonzero_divisor(new_edge), state.u_e)
+            if partial:
+                u = torch.where(new_edge > 0, u, 0.)
             den_h = nonzero_divisor(target_h)
             theta = self._temperature(reference,mapped[...,1]/den_h,mapped[...,0]/den_h,physical.temperature())
             temp_h=torch.where(changed[:,None],target_h*theta,state.temp_h)

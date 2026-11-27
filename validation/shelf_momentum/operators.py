@@ -5,11 +5,19 @@ from dataclasses import replace
 
 import torch
 
-from vfs.geometry.mesh.rotation import cell_to_dual
 from vfs.ice.ice_drag import DragReport
-from vfs.ocean.conservative import ConstantDensityDynamics
 from vfs.ocean.energy import ConstantDensityEnergy
-from vfs.ocean.partial_cells import layer_interfaces
+from vfs.ocean.temperature.shelf_momentum import OpeningEnergy, install_opening_momentum
+
+
+def use_openings(model, *, match_ale=True):
+    energy = install_opening_momentum(model)
+    if not match_ale:
+        # Deliberately inconsistent control for validation/shelf_momentum/ale_check.py.
+        energy.edge_thickness = ConstantDensityEnergy.edge_thickness.__get__(energy)
+        energy.column_kinetic_energy = ConstantDensityEnergy.column_kinetic_energy.__get__(energy)
+        model.dynamics.matched_openings = False
+    return energy
 
 
 def edge_drag(coupled, state, dt, *, normal_only=False):
@@ -76,102 +84,3 @@ def edge_drag(coupled, state, dt, *, normal_only=False):
     dke = (dpi * (ui + ice.velocity) * 0.5 + dpo * (uo + s.u_e[:, :1]) * 0.5).sum()
     coupled.check(end)
     return end, DragReport(heat, dpi + dpo, dke + heat.sum(), dke.new_zeros(()), 0)
-
-
-class OpeningEnergy(ConstantDensityEnergy):
-    """KE = sum(rho * dc * dv * open_thickness * u**2 / 2) on native slots."""
-
-    def geometry(self, s, h=None):
-        mesh, domain = s.mesh, self.domain
-        z = layer_interfaces(domain.depth[:, 0], s.h if h is None else h)
-        left, right = mesh.cellsOnEdge.T
-        zl, zr = z[left, :1], z[right, :1]
-        top = torch.maximum(zl, zr)
-        bed = torch.minimum(domain.depth[left], domain.depth[right])
-        middle = mesh.cell_to_edge(z)[:, 1:-1]
-        interior = domain.active_edge_layers[:, 1:]
-        inner = torch.where(interior, middle.clamp(min=top, max=bed), bed)
-        bounds = torch.cat((top, inner, bed), 1)
-        opening = torch.where(
-            domain.active_edge_layers, bounds.diff(dim=1).clamp_min(0), 0.0
-        )
-        return opening, zl, zr, middle, top, bed, interior
-
-    def metric(self, s):
-        return (
-            self.rho0 * (s.mesh.dc_edge * s.mesh.dv_edge)[:, None] * self.geometry(s)[0]
-        )
-
-    def kinetic_thickness_gradient(self, s):
-        opening, zl, zr, middle, top, bed, interior = self.geometry(s)
-        mesh = s.mesh
-        density = (
-            0.5 * self.rho0 * (mesh.dc_edge * mesh.dv_edge)[:, None] * s.u_e.square()
-        )
-        density = torch.where(opening > 0, density, 0.0)
-        # At an internal interface, moving its depth transfers thickness
-        # from one velocity slot to the other. At the fixed bed it moves none.
-        difference = density[:, :-1] - density[:, 1:]
-        above_top = (1 + (middle - top).sign()) * 0.5
-        above_bed = (1 + (bed - torch.maximum(middle, top)).sign()) * 0.5
-        mid_derivative = torch.where(interior, difference * above_top * above_bed, 0.0)
-        top_derivative = -density[:, :1] + torch.where(
-            interior, difference * (1 - above_top) * above_bed, 0.0
-        ).sum(-1, keepdim=True)
-        cell_mid = self.interpolation_transpose(mesh, mid_derivative)
-        left, right = mesh.cellsOnEdge.T
-        left_share = (1 + (zl - zr).sign()) * 0.5
-        cell_top = torch.zeros_like(s.h[:, :1]).index_add(
-            0, left, top_derivative * left_share
-        )
-        cell_top = cell_top.index_add(0, right, top_derivative * (1 - left_share))
-        # z_j = bed - sum_{k>=j} h_k. The padded entries are fixed at zero.
-        result = -torch.cat((cell_top, cell_mid), 1).cumsum(1)
-        return torch.where(s.column.active_layers, result, 0.0)
-
-
-class MatchedOpeningEnergy(OpeningEnergy):
-    def edge_thickness(self, state, h):
-        return self.geometry(state, h)[0]
-
-    def column_kinetic_energy(self, state):
-        edge_ke = 0.5 * self.metric(state) * state.u_e.square()
-        return self.interpolation_transpose(state.mesh, edge_ke).sum(-1)
-
-
-class OpeningRotation(ConstantDensityDynamics):
-    def rotation_acceleration(self, s):
-        """Use the same skew PV operator, with the open transport in each slot."""
-        mesh = s.mesh
-        u = self.energy.velocity(s)
-        dual = cell_to_dual(mesh, self.domain.apply_cell(s.h))
-        pv = (
-            mesh.curl(u) + self.rotation_rate * mesh.coriolis_unit_vertex[:, None]
-        ) / torch.where(dual > 0, dual, 1.0)
-        v0, v1 = mesh.verticesOnEdge.T
-        qe = 0.5 * (pv[v0] + pv[v1])
-        ids = mesh.safe_rotation_stencil
-        flux = self.energy.geometry(s)[0] * u
-        coeff = (
-            -0.5 * (qe[:, None, :] + qe[ids]) * mesh.rotation_weights_masked[..., None]
-        )
-        return self.domain.apply_layer_edge((coeff * flux[ids]).sum(1))
-
-
-def use_openings(model, *, match_ale=True):
-    """Install the candidate in one new model instance used by the experiment."""
-    native = model.ocean.base.dynamics
-    old = native.mechanical
-    rotation = OpeningRotation(
-        domain=old.domain,
-        gravity=old.gravity,
-        rho0=old.rho0,
-        omega=old.rotation_rate,
-        min_thickness=old.min_thickness,
-    )
-    kind = MatchedOpeningEnergy if match_ale else OpeningEnergy
-    energy = kind(domain=old.domain, gravity=old.gravity, rho0=old.rho0)
-    rotation.energy = energy
-    native.mechanical = rotation
-    model.ocean.energy.base.mechanical = energy
-    return energy

@@ -116,6 +116,32 @@ PRE_CLOUD_ADAPTER_SHA = "04f1cb0579116bb4710ca188812294da7acaae74d4fb33e7cac683e
 PRE_CLOUD_VERIFIER_SHA = "69f304aaf1706f0cf538a3ce0d0bcc700e6133867da8d40830de4033fdf9a7d7"
 
 
+# The main-branch checkpoint uses the historical shelf metric. The campaign
+# verifies that the saved and requested metric settings agree before this check.
+CLOSED_SHELF_TARGET = "10414cfe5cee8dbc89af83cab14f47568c88d7382eb1cf9cccc9d63be6d117e6"
+PRE_SHELF_HASHES = {
+    "vfs/ice/ocean_ice.py": "ac9a81a713ef90bba5b87bb57b7e247a084fdcdd402d535bc7a9831df40633ab",
+    "vfs/ocean/energy.py": "3f93240575d825cf392874a9a397f92acdfe4390326cee91accbd4ca5c4f0adf",
+    "vfs/ocean/mixing/lagged.py": "0013da6598ff19f89199241d82df17ded7a1fe1a5e83af39798c10f116d7a9e4",
+    "vfs/ocean/stratified/energy_columns.py": "a493ef5aa96107004465ae5eaae9e3a8f70aae343b79de9ad9763b570ca475ef",
+    "vfs/ocean/temperature/ale.py": "4e65a97ddbaee349c3cffe0797e4751f2bb97a7e05b1420ddda13568b9eb83e3",
+    "vfs/ocean/temperature/backscatter.py": "d16857f28dc506f17bc585c9650d03550d52203e63dcafb4b2777fcc1b38fb46",
+    "vfs/ocean/temperature/model.py": "0f3bfbc51594268d64cf2e376f64c14ca35310b43ea1268f5996a1b0ca7fcd5b",
+    "vfs/ocean/temperature/shelf_transport.py": "2f3f2b7b6385c0e6dc40d33b1b912981224c9ee9e6c38d00f7720b0dfbcb3392",
+    "workflows/coupled/campaign.py": "56c0c7b69030f1b4ab6c7918e6fb0bd187993a4b108cd85450925e538040ddf0",
+    "workflows/coupled/restart_compat.py": "9698e118340437353a2dd544867996de4b4f073a0f24db73a10660f27459aa11",
+}
+
+
+def pre_shelf_sources(current):
+    """Reconstruct the parent source inventory for its existing audited bridges."""
+    parent = {key: value for key, value in current.items()
+              if not key.startswith("validation/shelf_momentum/")
+              and key != "vfs/ocean/temperature/shelf_momentum.py"}
+    parent.update(PRE_SHELF_HASHES)
+    return parent
+
+
 def _without_verifier_digest(sources):
     other = {path: sha for path, sha in sources.items() if path != VERIFIER}
     return hashlib.sha256(canonical_manifest_json(other).encode()).hexdigest()
@@ -203,6 +229,12 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == CLOSED_SHELF_TARGET:
+        parent = pre_shelf_sources(current_hashes)
+        if _without_verifier_digest(parent) != CLOUD_ROUNDOFF_TARGET:
+            raise ValueError('shelf restart parent differs from the audited revision')
+        prior = verify_compatible_source_delta(old_hashes, parent)
+        return {**prior, 'shelf_momentum_configurable': True}
     if target == CLOUD_ROUNDOFF_TARGET:
         parent = {**current_hashes, "workflows/pyam21/adapter.py": PRE_CLOUD_ADAPTER_SHA,
                   verifier: PRE_CLOUD_VERIFIER_SHA}

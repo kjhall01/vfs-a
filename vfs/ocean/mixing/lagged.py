@@ -156,10 +156,12 @@ class LaggedClosure(PathWorkClosure):
             interface = (h[:, 1:] > 0) & (h[:, :-1] > 0)
             g = g * interface
             if ocean.domain is not None:
-                edges = ocean.domain.layer_edge_mask(state.u_e).expand_as(state.u_e)
+                edges = ocean.domain.layer_edge_mask(state.u_e).bool() & (metric > 0)
                 eg = eg * edges[:, :-1] * edges[:, 1:]
             solve_metric = metric if ocean.domain is None else torch.where(edges.bool(), metric, 1.)
             u=diffuse(state.u_e,solve_metric,eg,dt)
+            if ocean.domain is not None:
+                u = torch.where(edges, u, 0.)
             es=dt*eg*(u[:,1:]-u[:,:-1]).square();ez=torch.zeros_like(u[:,:1])
             shear=allocate(.5*(torch.cat((es,ez),-1)+torch.cat((ez,es),-1)))
             production=shear+allocate(.5*metric*(u-state.u_e).square())

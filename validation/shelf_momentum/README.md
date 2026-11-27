@@ -30,4 +30,27 @@ The edge drag uses the prognostic relative normal velocity and estimates tangent
 
 The shelf candidate computes kinetic energy from physical opening, differentiates it at fixed edge velocity, and uses opening-weighted transport in skew rotation. It retains the split tracer fluxes. Matching ALE uses open thickness for remapped momentum and partitions actual edge kinetic energy into columns. The old column identity involving the thickness derivative requires a homogeneous degree-one mass metric, an assumption that fails with a fixed bed and clipped openings. The isolated ALE comparison includes the intentionally mismatched case so the effect can be reproduced.
 
-The replays compare energy changes against each formulation's own initial Hamiltonian. The one-day ocean-only ledger reports mechanical and dynamic enthalpy changes. CT is conserved and the linear reference-enthalpy total is omitted from that ledger. Six-hour water runs include thermal reference energy, TKE, EKE and ice/snow energy. None of the replays project velocities when switching metrics in a checkpoint. A general campaign restart across distinct Hamiltonians would need an explicit policy for that transition.
+The replays compare energy changes against each formulation's own initial Hamiltonian. The ocean-only ledger includes mechanical energy, dynamic enthalpy and the linear reference enthalpy. The last term changes as shear kinetic energy heats the ocean during face closure. Six-hour water runs include thermal reference energy, TKE, EKE and ice/snow energy. None of the replays project velocities when switching metrics in a checkpoint. A general campaign restart across distinct Hamiltonians would need an explicit policy for that transition.
+
+
+## Closed and reopening faces
+
+The following ocean-only experiment rebuilds the resting Earth ocean using
+the original 4096-cell, 40-level Falklands checkpoint for geometry. It advances
+the four-stage third-order scheme at 1200 seconds for 15 days. Output contains
+one JSON record per six hours with the physical opening, normal velocity and
+volume flux per unit width at edge 11588, layer 35, the largest wet/closed
+speeds and the opening-weighted speed of the five-edge Falklands patch.
+
+```bash
+python -m validation.shelf_momentum.closed_face_replay "$EARTH_4096_RESTART" --days 15
+```
+
+The small-grid regressions exercise the tendency, RK and ALE paths. They
+compare a stored velocity on a closed face against an otherwise identical
+clean state, and measure finite changes in momentum, heat and kinetic energy
+on merging and reopening.
+
+```bash
+python -m pytest tests/ocean/test_closed_shelf_momentum.py -q
+```

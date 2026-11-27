@@ -24,6 +24,29 @@ initialization a 40 m column has a 10 m surface layer and 30 m of water below
 it. An 8 m column has one layer. The deepest columns have all 40. The count is
 fixed by bathymetry as layer thicknesses and sea level evolve.
 
+### Experimental shelf momentum
+
+For a fresh Earth-shelf campaign, these configuration keys enable the
+opening-weighted ocean Hamiltonian and the closed-face treatment.
+
+```yaml
+shelf_redi: true
+partial_cell_layers: true
+matched_shelf_momentum: true
+```
+
+The opening can close even while both adjacent cells still contain water in
+that layer. Rotation and backscatter use only velocities supported by the
+instantaneous opening. If a velocity slot closes or reopens during dynamics,
+overlapping water supplies its normal momentum. Mixing donor velocities
+transfers the lost shear kinetic energy to ocean heat. ALE uses the same
+opening for momentum and the column kinetic-energy budget. The option defaults
+to `false`. A restart retains the metric recorded in its configuration.
+
+`max_ocean_speed_m_s` is the largest absolute normal velocity on an actually
+open face. Use `max_ocean_edge` and `max_ocean_level` to locate its zero-based
+edge and layer in a snapshot or restart.
+
 Snapshots store `ocean_active_layer_count` for each cell (zero on land).
 Checkpoints retain rectangular tensors. Slots below a wet column's bed have
 exactly zero thickness and zero inventories of heat, salt, tracers, TKE and EKE.

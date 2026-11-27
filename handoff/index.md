@@ -1,5 +1,7 @@
 # Current package documentation
 
+The [closed shelf-face results](../docs/PASS4_RESULTS.md#closed-shelf-faces) cover moving openings, momentum on reopening, heat accounting and wet-edge peak diagnostics. See the [Earth-shelf campaign configuration](../workflows/coupled/EARTH_SHELF.md#experimental-shelf-momentum) to enable the experiment.
+
 The [day-43 cloud-area replay](../docs/PASS4_RESULTS.md#cloud-area-roundoff-in-the-day-43-earth-shelf-exchange)
 documents a verified roundoff adjustment in the PyAM21 adapter. Resume a campaign
 from main `3555b7f` using its checkpoint, original inputs and configuration,

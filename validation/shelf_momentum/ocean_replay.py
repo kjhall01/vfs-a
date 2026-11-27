@@ -13,15 +13,19 @@ def step(model, state, dt):
     # The same four half-Euler stages and convex combination as the ocean–ice SSPRK(4,3).
     def advance(x):
         rhs, _ = model.dynamics.tendency_with_report(x, dt / 2)
-        return x + (dt / 2) * rhs
+        return model.dynamics.finish_euler(x, x + (dt / 2) * rhs)
 
-    return advance((2 / 3) * state + (1 / 3) * advance(advance(advance(state))))
+    third = advance(advance(advance(state)))
+    middle = model.dynamics.finish_blend(state, third, (2 / 3) * state + (1 / 3) * third, (2 / 3, 1 / 3))
+    return advance(middle)
 
 
 def energy_components(model, s):
     base = model.ocean.energy.base
     terms = base.terms(s)
-    # The Roquet reference enthalpy is linear in h*CT, separately conserved.
+    # Closing a face can convert shear KE into reference and dynamic enthalpy.
+    terms["reference_thermal"] = (model.ocean.energy.mass_area(s)
+                                  * model.ocean.reference.cp_theta * s.temp_h).sum()
     return {k: v.item() for k, v in terms.items() if k != "total"}
 
 

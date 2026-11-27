@@ -47,6 +47,7 @@ from vfs.ocean.temperature.roquet import RoquetOcean, RoquetMixing
 from vfs.ocean.temperature.eddy import GMRedi
 from vfs.ocean.temperature.eddy_energy import EddyMixingLength, EddyDissipation
 from vfs.ocean.temperature.backscatter import EddyBackscatter
+from vfs.ocean.temperature.shelf_momentum import install_opening_momentum, wet_ocean_peak
 from vfs.land import LandState
 from vfs.ocean.domain import OceanDomain
 from vfs.ocean.stratified.remap import ThermalProjectionInfeasible
@@ -122,6 +123,7 @@ class CampaignConfig:
     redi_diffusivity_m2_s: float = 100.0
     shelf_redi: bool = False
     partial_cell_layers: bool = False
+    matched_shelf_momentum: bool = False
     redi_positive_transport: bool = True
     eddy_initial_energy_J_kg: float = 0.1
     eddy_substeps: int = 10
@@ -167,6 +169,7 @@ class CampaignConfig:
             "redi_positive_transport",
             "shelf_redi",
             "partial_cell_layers",
+            "matched_shelf_momentum",
             "eddy_dissipation",
             "backscatter",
             "ale_remap",
@@ -175,6 +178,8 @@ class CampaignConfig:
         ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
+        if self.matched_shelf_momentum and not (self.shelf_redi and self.partial_cell_layers):
+            raise ValueError("matched_shelf_momentum requires partial_cell_layers and shelf_redi")
         if self.overlap_dynamics and torch.device(self.device).type != "cpu":
             raise ValueError("overlap_dynamics requires CPU components")
         if self.start_year % 4 == 0:
@@ -551,6 +556,8 @@ def build(
     if config.shelf_redi:
         from vfs.ocean.temperature.shelf_transport import ShelfTemperatureOcean
         model.dynamics = ShelfTemperatureOcean(model.ocean)
+        if config.matched_shelf_momentum:
+            install_opening_momentum(model)
     dz = rest_thickness(config).to(mesh.cell_area)
     adapter.campaign_ocean_thickness = dz
     h = dz[None].expand(mesh.nCells, -1).clone()
@@ -820,6 +827,7 @@ def diagnostics(adapter, air, receiver, sea, ledger):
                          runoff_kg_m2=ledger.get("runoff_kg_m2", 0.),
                          runoff_gravity_heat_J_m2=ledger.get("runoff_gravity_heat_J_m2", 0.))
     wet_layers = wet[:, None] & (s.h > 0)
+    peak_speed, peak_edge, peak_level = wet_ocean_peak(receiver.H.model, s)
     return dict(
         **land_diag,
         seconds=air.time_seconds,
@@ -846,7 +854,7 @@ def diagnostics(adapter, air, receiver, sea, ledger):
         snow_mass_kg=float((A[:, None] * sea.snow_mass).sum()),
         ice_sensible_J_m2=float((A[:, None] * sea.cold_content).sum() / A.sum()),
         max_air_speed_m_s=float(air.atmosphere.u_e.abs().max()),
-        max_ocean_speed_m_s=float(s.u_e.abs().max()),
+        max_ocean_speed_m_s=peak_speed, max_ocean_edge=peak_edge, max_ocean_level=peak_level,
         max_ice_speed_m_s=float(ice.velocity.abs().max()),
         min_ocean_thickness_m=float(s.h[wet_layers].min()),
         min_eddy_energy_J_kg=float(sea.coupled.ocean.specific_eddy_energy()[wet_layers].min()),
@@ -882,15 +890,15 @@ def energy_trace_extrema(adapter, air, receiver, sea):
         k = int(f.argmax().item())
         return float(f[k]), k
     va, ia = peak(air.atmosphere.u_e)
-    vo, io = peak(ocean.u_e)
+    vo, oe, ol = wet_ocean_peak(receiver.H.model, ocean)
     vi, ii = peak(sea.coupled.ice.velocity)
     wet = torch.ones_like(ocean.h[:, 0], dtype=torch.bool) if sea.land is None else receiver.land_surface.wet
     wet_layers = wet[:, None] & (ocean.h > 0)
     e = sea.coupled.ocean.specific_eddy_energy()[wet_layers]
     return dict(max_air_speed_m_s=va, max_air_edge=ia // air.atmosphere.u_e.shape[-1],
                 max_air_level=ia % air.atmosphere.u_e.shape[-1],
-                max_ocean_speed_m_s=vo, max_ocean_edge=io // ocean.u_e.shape[-1],
-                max_ocean_level=io % ocean.u_e.shape[-1],
+                max_ocean_speed_m_s=vo, max_ocean_edge=oe,
+                max_ocean_level=ol,
                 max_ice_speed_m_s=vi, max_ice_flat_index=ii,
                 min_ocean_thickness_m=float(ocean.h[wet_layers].min()),
                 max_eddy_energy_J_kg=float(e.max()), min_eddy_energy_J_kg=float(e.min()),
@@ -963,6 +971,10 @@ def unpack(payload, adapter, receiver, template, identity):
     p = copy_tree(payload, device=adapter.model.mesh.cell_area.device)
     air = adapter.unpack(p["air"])
     physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
+    model = receiver.H.model
+    if getattr(model.dynamics, "matched_openings", False):
+        u = model.energy.base.mechanical.velocity(physical)
+        physical = physical.with_tensors(u, physical.h, physical.temp_h, physical.salt_h, physical.tracer_h)
     ocean = replace(
         template.coupled.ocean, ocean=physical, tke_h=p["tke_h"], eddy_h=p["eddy_h"]
     )
@@ -1333,7 +1345,7 @@ def main(argv=None):
                 saved_method = saved_config.get("atmosphere_dynamics_integrator", "ssprk3")
                 requested_method = config.atmosphere_dynamics_integrator
                 switch_to_four_stages = saved_method == "ssprk3" and requested_method == "ssprk43"
-                expected_config = {**saved_config, "days": config.days,
+                expected_config = {"matched_shelf_momentum": False, **saved_config, "days": config.days,
                                    "atmosphere_dynamics_integrator": requested_method}
                 if (expected_config != asdict(config) or
                         (saved_method != requested_method and not switch_to_four_stages)):
