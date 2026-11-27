@@ -24,13 +24,14 @@ def _check(stepper, dynamics):
 
 @dataclass(frozen=True, eq=False)
 class BoundedSSPRK3:
-    """Existing bounded Euler-ledger SSPRK3, with intrinsic heat release."""
+    """Bounded Euler-ledger SSPRK3, optionally donor-cell at the top wind interface."""
 
+    top_momentum_upwind: bool = field(default=False, kw_only=True)
     _dynamics: object = field(default=None, init=False, repr=False)
     _implementation: object = field(default=None, init=False, repr=False)
 
     def _bind(self, dynamics):
-        _bind_once(self, dynamics, BoundedGibbs(dynamics))
+        _bind_once(self, dynamics, BoundedGibbs(dynamics, top_momentum_upwind=self.top_momentum_upwind))
 
     @property
     def transport(self):
