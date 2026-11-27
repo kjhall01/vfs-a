@@ -1,5 +1,7 @@
 # Current package documentation
 
+Use the [coupled restart and surface-output guide](../workflows/coupled/CAMPAIGN.md#outputs-and-restarting) to continue in place, change input paths or configure precipitation, evaporation and SST averages.
+
 The [coupled Earth setup](../workflows/coupled/EARTH_SHELF.md#run-the-coupled-shelf-and-native-edge-ice-drag-together) includes a 395-day preset for native-edge ice drag with matched wet-face momentum.
 
 The [closed shelf-face results](../docs/PASS4_RESULTS.md#closed-shelf-faces) cover moving openings, momentum on reopening, heat accounting and wet-edge peak diagnostics. See the [Earth-shelf campaign configuration](../workflows/coupled/EARTH_SHELF.md#experimental-shelf-momentum) to enable the experiment.

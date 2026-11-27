@@ -114,6 +114,8 @@ FIELDS = {
 
 
 def _field_layout(name, value):
+    if name.startswith(("surface_output_sums_", "surface_output_last_")) and value.ndim == 1:
+        return ("cell",), None
     if name in FIELDS:
         return FIELDS[name]
     if name.startswith(("air_memory_", "air_surface_", "air_radiation_")):
@@ -232,6 +234,10 @@ def append_diagnostics(path, row, adapter, fingerprint):
         index = len(ds.dimensions["time"])
         for name, value in row.items():
             if name != "seconds":
+                if name not in ds.variables:
+                    var = ds.createVariable(name, "f8", ("time",), fill_value=np.nan)
+                    if units(name):
+                        var.units = units(name)
                 ds[name][index] = np.nan if value is None else value
         ds["time"][index] = row["seconds"]
 

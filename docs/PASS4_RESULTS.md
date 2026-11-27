@@ -1,5 +1,25 @@
 # Pass 4 — physical-field workflow
 
+## In-place development restart and surface means
+
+A 4,096-cell, 40-layer CPU float64 Earth run resumed an earlier-revision
+NetCDF checkpoint with matched shelf momentum and native-edge drag. It ran
+to 2,400 seconds, then continued in place through 3,600 seconds with a
+one-hour average interval. The first stored mean covered [0, 3,600] s. It
+contained precipitation and evaporation at all 4,096 cells and SST at the
+2,912 wet cells. Diagnostic times were 0, 2,400 and 3,600 s. SeaEsfRad
+was disabled in this check.
+
+A smaller interrupted-window comparison reproduced the uninterrupted
+prognostic state and surface means bitwise across a source fingerprint
+change. Separate tests cover actual snapshot rates, negative vapor flux,
+windows that cut a coupling step, both checkpoint-selection paths,
+deduplication of output after rollback, relocation of mesh and geography
+inputs and rejection of reordered cells or incompatible vertical coordinates.
+The installed-wheel portable fixtures passed 142 moist and 93 dry comparisons.
+
+See the [launch and output guide](../workflows/coupled/CAMPAIGN.md#outputs-and-restarting).
+
 ## Coupled campaign with native-edge ice drag and matched shelf momentum
 
 The fresh [395-day Earth preset](../workflows/coupled/earth_shelf_4096_395d_native_drag.yaml)

@@ -25,6 +25,10 @@ from workflows.coupled.state_io import (
     FIELDS, append_diagnostics, attach_mesh_attributes, checkpoint, clock_attrs,
     grid_coordinates, read_checkpoint,
 )
+from workflows.coupled.continuation import (archive_previous_output, check_grid, check_state_layout, latest_checkpoint,
+                                            lock_run, recover_inputs)
+from workflows.coupled.surface_output import (SurfaceAverages, sea_surface_temperature,
+                                              snapshot_fields, write_surface_mean)
 from workflows.coupled.driver import exchange_step
 from workflows.coupled.schedule import ocean_events, event_due
 from workflows.coupled.ice_temperature import (
@@ -144,6 +148,7 @@ class CampaignConfig:
     overlap_dynamics: bool = False
     atmosphere_dynamics_integrator: str = "ssprk3"
     ice_ocean_drag: str = "midpoint"
+    average_hours: float = 6
 
     def validate(self):
         validate_precision(self.device, self.dtype)
@@ -179,6 +184,9 @@ class CampaignConfig:
         ):
             if type(getattr(self, key)) is not bool:
                 raise ValueError(f"{key} must be a YAML boolean (true/false)")
+        if (type(self.average_hours) not in (int, float) or not math.isfinite(self.average_hours)
+                or self.average_hours < 0 or not float(self.average_hours * 3600).is_integer()):
+            raise ValueError("average_hours must express a nonnegative whole number of seconds")
         if self.matched_shelf_momentum and not (self.shelf_redi and self.partial_cell_layers):
             raise ValueError("matched_shelf_momentum requires partial_cell_layers and shelf_redi")
         if self.overlap_dynamics and torch.device(self.device).type != "cpu":
@@ -691,7 +699,7 @@ def interface_vapor_totals(area, correction):
                 interface_vapor_correction_kg_m2=float((area[cells] * correction["vapor_added_kg_m2"]).sum() / area.sum()))
 
 
-def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
+def advance(adapter, air, receiver, sea, dt, config, *, trace=None, surface_amounts=None):
     """Join the independent dynamics advances before the atomic surface exchange."""
     if trace is not None:
         trace.begin(adapter, air, receiver, sea)
@@ -765,6 +773,8 @@ def advance(adapter, air, receiver, sea, dt, config, *, trace=None):
                                    "ale_changed_columns": r["ale_changed_columns"],
                                    "ale_deferred_columns": r["ale_deferred_columns"]})
         accumulate_ocean(ocean_report, r)
+    if surface_amounts is not None:
+        surface_amounts.update(precipitation=x.rain + x.snow, evaporation=x.vapor.sum(-1))
     if sr.runoff_received is not None:
         ocean_report.update(runoff_kg_m2=float((sr.runoff_received * A).sum() / A.sum()),
                             runoff_gravity_heat_J_m2=float((sr.runoff_gravity_heat * A).sum() / A.sum()))
@@ -968,11 +978,12 @@ def pack(adapter, air, receiver, sea, identity, ledger):
     )
 
 
-def unpack(payload, adapter, receiver, template, identity):
-    if payload.get("schema") != 1 or payload.get("fingerprint") != identity:
+def unpack(payload, adapter, receiver, template, identity, *, verified_grid=False):
+    """Restore a supported state after fingerprint or native-grid validation."""
+    if payload.get("schema") != 1 or (not verified_grid and payload.get("fingerprint") != identity):
         raise ValueError("campaign restart configuration/source/runtime does not match")
     p = copy_tree(payload, device=adapter.model.mesh.cell_area.device)
-    air = adapter.unpack(p["air"])
+    air = adapter.unpack(p["air"], verified_grid=verified_grid)
     physical = template.coupled.ocean.ocean.with_tensors(**p["ocean"])
     model = receiver.H.model
     if getattr(model.dynamics, "matched_openings", False):
@@ -1000,12 +1011,15 @@ def atomic_json(path, value):
     temp.replace(path)
 
 
-def save_restart(path, adapter, air, receiver, sea, identity, ledger):
-    checkpoint(path, pack(adapter, air, receiver, sea, identity, ledger),
+def save_restart(path, adapter, air, receiver, sea, identity, ledger, *, averages=None):
+    payload = pack(adapter, air, receiver, sea, identity, ledger)
+    if averages is not None:
+        payload["surface_output"] = averages.pack()
+    checkpoint(path, payload,
                grid=grid_coordinates(adapter, air, receiver, sea), time_attrs=clock_attrs(adapter))
 
 
-def snapshot(path, adapter, air, receiver, sea):
+def snapshot(path, adapter, air, receiver, sea, *, last_flux=None):
     """Native mesh NetCDF; instantaneous snapshots, never time averages."""
     import xarray as xr
 
@@ -1103,6 +1117,7 @@ def snapshot(path, adapter, air, receiver, sea):
     ds = xr.Dataset(data).expand_dims(time=[air.time_seconds]).assign_coords(grid.coords)
     ds.attrs.update(grid.attrs, vfs_format="coupled_snapshot_v1", description="VFS coupled instantaneous state")
     ds.time.attrs.update(clock_attrs(adapter))
+    snapshot_fields(ds, sea, last_flux, clock_attrs(adapter))
     h = ds.ocean_thickness
     depth = (h.cumsum("ocean_level") - h / 2).where((h > 0) & (ds.land_mask == 0))
     depth.attrs.update(long_name="ocean layer midpoint below instantaneous free surface", units="m", positive="down")
@@ -1130,18 +1145,17 @@ def run_logger(output, verbose):
 
 
 @torch.no_grad()
-def main(argv=None):
+def main(argv=None, *, input_defaults=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path(__file__).with_name("coupled_aquaplanet_1yr.yaml"),
+        help="YAML configuration (on in-place restart the saved configuration is the default)",
     )
     parser.add_argument(
         "--source",
         type=Path,
-        required=True,
-        help="pinned PyAM21 checkout containing the physics namelist",
+        help="PyAM21 checkout containing the physics namelist",
     )
     coast = parser.add_mutually_exclusive_group()
     coast.add_argument("--island", action="store_true", help="idealized island and flat-bottom active ocean")
@@ -1152,8 +1166,11 @@ def main(argv=None):
         type=Path,
         help="Saved .nc or .npy unit-sphere generators; infers cells and disables extra Lloyd relaxation",
     )
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--resume", type=Path)
+    parser.add_argument("--output", type=Path, help="run directory; --restart defaults to the working directory")
+    resume = parser.add_mutually_exclusive_group()
+    resume.add_argument("--resume", type=Path, help="resume this checkpoint into a new output directory")
+    resume.add_argument("--restart", action="store_true", help="continue the latest checkpoint in the existing run directory")
+    parser.add_argument("--average-hours", type=float, help="surface time-mean interval in hours (default 6, 0 disables means)")
     parser.add_argument(
         "--resume-compatible-manifest", type=Path,
         help="Resume using the checkpoint manifest. Allows audited source changes, a longer horizon, and a switch from atmospheric ssprk3 to ssprk43.",
@@ -1194,6 +1211,23 @@ def main(argv=None):
         help="Also print initialization/progress to the terminal; run.log is always written",
     )
     args = parser.parse_args(argv)
+    if args.output is None and not args.restart:
+        parser.error("--output is required for a new run or --resume")
+    output = args.output or Path.cwd()
+    previous = {}
+    explicit_mesh, explicit_geography = args.mesh, args.geography
+    if args.restart:
+        if args.preflight or args.resume_compatible_manifest:
+            parser.error("--restart cannot be combined with --preflight or --resume-compatible-manifest")
+        if not output.is_dir() or not (output / "manifest.json").is_file():
+            parser.error(f"--restart requires an existing campaign directory: {output}")
+        previous = json.loads((output / "manifest.json").read_text())
+        recover_inputs(args, previous)
+    for key, value in (input_defaults or {}).items():
+        if getattr(args, key) is None and not (key == "radiation_data" and args.smoke_no_radiation):
+            setattr(args, key, value)
+    if not args.source:
+        parser.error("specify --source with the path to PyAM21")
     if args.energy_trace_substeps and not args.energy_trace:
         parser.error("--energy-trace-substeps requires --energy-trace")
     if args.energy_trace_ocean_stages and not args.energy_trace:
@@ -1202,9 +1236,15 @@ def main(argv=None):
         parser.error("--resume-compatible-manifest requires --resume")
     if args.preflight and args.energy_trace:
         parser.error("--energy-trace does not support --preflight")
-    overrides = {name: getattr(args, name) for name in ("device", "dtype", "threads", "compile", "overlap_dynamics")
+    overrides = {name: getattr(args, name) for name in ("device", "dtype", "threads", "compile", "overlap_dynamics", "average_hours")
                  if getattr(args, name) is not None}
-    config = CampaignConfig(**(yaml.safe_load(args.config.read_text()) | overrides)).validate()
+    if args.config:
+        settings = yaml.safe_load(args.config.read_text())
+    elif args.restart:
+        settings = previous["configuration"]
+    else:
+        settings = yaml.safe_load(Path(__file__).with_name("coupled_aquaplanet_1yr.yaml").read_text())
+    config = CampaignConfig(**(settings | overrides)).validate()
     end = (
         config.days * DAY
         if args.stop_after_days is None
@@ -1223,18 +1263,32 @@ def main(argv=None):
         parser.error(
             "radiation-OFF smoke requires --stop-after-days <=1 and no --radiation-data"
         )
-    output = args.output
-    if output.exists() and any(output.iterdir()):
-        parser.error(
-            "output directory must be new/empty; resume into a new segment directory"
-        )
     output.mkdir(parents=True, exist_ok=True)
-    atomic_json(output / "configuration.json", asdict(config))
-    air = sea = adapter = receiver = identity = ledger = None
-    energy_trace = None
-    start = time.perf_counter()
-    logger = run_logger(output, args.verbose)
     execution = ExitStack()
+    try:
+        lock_run(output, execution)
+        if args.restart:
+            if json.loads((output / "manifest.json").read_text()) != previous:
+                raise ValueError("campaign metadata changed while opening the run; retry --restart")
+            args.resume = latest_checkpoint(output)
+            # Older manifests lack the external geography path. The NetCDF
+            # checkpoint carries the ordered grid and the static land/bed fields.
+            if (explicit_mesh is None and previous.get("mesh", {}).get("kind") == "saved_generators"
+                    and (args.mesh is None or not args.mesh.is_file())):
+                args.mesh = args.resume
+            if (explicit_geography is None and not args.island and previous.get("geography_sha256")
+                    and (args.geography is None or not args.geography.is_file())):
+                args.geography = args.resume
+        elif any(path.name != ".campaign.lock" for path in output.iterdir()):
+            parser.error("output directory must be new/empty; use --restart to continue in place")
+        logger = run_logger(output, args.verbose)
+    except BaseException:
+        execution.close()
+        raise
+    air = sea = adapter = receiver = identity = ledger = averages = None
+    energy_trace = None
+    accepted = False
+    start = time.perf_counter()
     try:
         device = resolve_device(config.device)
         config = replace(config, device=str(device))
@@ -1248,7 +1302,6 @@ def main(argv=None):
             "OFF (explicit smoke test)" if args.smoke_no_radiation else "SeaEsfRad",
         )
         config, generators, mesh_info = load_mesh(config, args.mesh)
-        atomic_json(output / "configuration.json", asdict(config))
         logger.info(
             "Initializing %d cells; mesh=%s; additional Lloyd iterations=%d",
             config.cells,
@@ -1309,21 +1362,15 @@ def main(argv=None):
             config.redi_positive_transport,
             config.eddy_initial_energy_J_kg,
         )
-        atomic_json(
-            output / "manifest.json",
-            dict(
-                fingerprint=identity,
-                source_sha256=hashes,
-                radiation=adapter.radiation_manifest,
-                mesh=mesh_info,
-                geography_sha256=getattr(adapter, "geography_hash", None),
-                configuration=asdict(config),
-                radiation_enabled=not args.smoke_no_radiation,
-                compilation=adapter.compilation_manifest,
-                execution=runtime,
-                torch=str(torch.__version__),
-            ),
+        manifest = dict(
+            fingerprint=identity, source_sha256=hashes, radiation=adapter.radiation_manifest,
+            mesh=mesh_info, geography_sha256=getattr(adapter, "geography_hash", None),
+            configuration=asdict(config), radiation_enabled=not args.smoke_no_radiation,
+            compilation=adapter.compilation_manifest, execution=runtime, torch=str(torch.__version__),
+            inputs={key: str(getattr(args, key).resolve()) if getattr(args, key) else None
+                    for key in ("source", "mesh", "geography", "radiation_data")} | {"island": args.island},
         )
+        saved_output = None
         ledger = dict(
             **dict.fromkeys(OCEAN_SUMS + OCEAN_PEAKS, 0.0),
             **dict.fromkeys(VAPOR_SUMS + VAPOR_PEAKS, 0.0),
@@ -1338,6 +1385,15 @@ def main(argv=None):
         )
         if args.resume:
             payload = read_checkpoint(args.resume)
+            dev_restart = args.resume.suffix == ".nc" and not args.resume_compatible_manifest
+            if dev_restart:
+                check_grid(args.resume, grid_coordinates(adapter, air, receiver, sea), clock_attrs(adapter))
+                check_state_layout(payload, pack(adapter, air, receiver, sea, identity, {}))
+                if bool(payload["air"]["radiation"]) != bool(air.radiation):
+                    raise ValueError("incompatible restart radiation cache: radiation mode differs")
+            saved_output = payload.pop("surface_output", None)
+            manifest["continued_from"] = dict(path=str(args.resume.resolve()), fingerprint=payload["fingerprint"],
+                                              seconds=payload["air"]["time_seconds"])
             expected_restart_identity = identity
             if args.resume_compatible_manifest:
                 prior = json.loads(args.resume_compatible_manifest.read_text())
@@ -1350,7 +1406,7 @@ def main(argv=None):
                 saved_method = saved_config.get("atmosphere_dynamics_integrator", "ssprk3")
                 requested_method = config.atmosphere_dynamics_integrator
                 switch_to_four_stages = saved_method == "ssprk3" and requested_method == "ssprk43"
-                expected_config = {"matched_shelf_momentum": False, "ice_ocean_drag": "midpoint",
+                expected_config = {"matched_shelf_momentum": False, "ice_ocean_drag": "midpoint", "average_hours": 6,
                                    **saved_config, "days": config.days,
                                    "atmosphere_dynamics_integrator": requested_method}
                 if (expected_config != asdict(config) or
@@ -1404,7 +1460,7 @@ def main(argv=None):
                     json.dumps(source_delta),
                 )
             air, sea, ledger = unpack(
-                payload, adapter, receiver, sea, expected_restart_identity
+                payload, adapter, receiver, sea, expected_restart_identity, verified_grid=dev_restart
             )
             for key in VAPOR_SUMS + VAPOR_PEAKS + REDI_ENERGY_SUMS + REDI_ENERGY_PEAKS + LIMITER_SUMS + ("ale_deferred_columns",):
                 ledger.setdefault(key, 0.0)
@@ -1413,8 +1469,34 @@ def main(argv=None):
                 for key, value in interface_vapor_totals(adapter.model.mesh.cell_area, correction).items():
                     ledger[key] += value
             logger.info("Resumed %s at day %.6f", args.resume, air.time_seconds / DAY)
-        if air.time_seconds >= end:
+        if args.restart and air.time_seconds == end:
+            status_path = output / "status.json"
+            status = json.loads(status_path.read_text()) if status_path.exists() else {}
+            if (status.get("status") in ("completed", "segment_completed")
+                    and status.get("latest", {}).get("seconds") == end):
+                logger.info("Campaign is already at the requested end (second %d)", end)
+                return 0
+        elif air.time_seconds >= end:
             raise ValueError("restart is already at or beyond requested end")
+        grid = grid_coordinates(adapter, air, receiver, sea)
+        clock = clock_attrs(adapter)
+        period = int(config.average_hours * 3600)
+        if saved_output:
+            saved_output = copy_tree(saved_output, device=adapter.model.mesh.cell_area.device)
+        averages = SurfaceAverages(period, air.time_seconds, saved_output)
+
+        def emit_mean(start, stop, amounts):
+            write_surface_mean(output / "averages", grid, clock, start, stop, amounts)
+
+        row = diagnostics(adapter, air, receiver, sea, ledger)
+        fields, csv_last, nc_last = list(row), None, None
+        if args.restart:
+            fields, csv_last, nc_last = archive_previous_output(output, air.time_seconds, fields)
+        atomic_json(output / "configuration.json", asdict(config))
+        atomic_json(output / "manifest.json", manifest)
+        accepted = True
+        if (saved_output and saved_output["period"] != period) or air.time_seconds == config.days * DAY:
+            averages.flush(air.time_seconds, emit_mean)
         if args.energy_trace:
             energy_trace = EnergyTrace(output / "energy_stages.jsonl",
                                        energy_trace_measure, energy_trace_extrema,
@@ -1465,39 +1547,45 @@ def main(argv=None):
             return 0
         scheduled = set(snapshot_times(config.days))
         snapshot_dir = output / "snapshots"
-        snapshot_dir.mkdir()
+        snapshot_dir.mkdir(exist_ok=args.restart)
         restarts = output / "restarts"
-        restarts.mkdir()
-        if air.time_seconds in scheduled:
+        restarts.mkdir(exist_ok=args.restart)
+        if air.time_seconds in scheduled and not (snapshot_dir / f"state_{air.time_seconds:08d}.nc").exists():
             snapshot(
                 snapshot_dir / f"state_{air.time_seconds:08d}.nc",
                 adapter,
                 air,
                 receiver,
-                sea,
+                sea, last_flux=averages.last,
             )
             logger.info("Wrote initial snapshot at day %.6f", air.time_seconds / DAY)
-        save_restart(
-            restarts / f"restart_{air.time_seconds:08d}.nc",
-            adapter, air, receiver, sea, identity, ledger,
-        )
-        logger.info("Wrote initial restart at day %.6f", air.time_seconds / DAY)
+        initial_restart = restarts / f"restart_{air.time_seconds:08d}.nc"
+        if not initial_restart.exists():
+            save_restart(initial_restart, adapter, air, receiver, sea, identity, ledger, averages=averages)
+            logger.info("Wrote initial restart at day %.6f", air.time_seconds / DAY)
         last_log = time.perf_counter()
-        with (output / "diagnostics.csv").open("w") as f, torch.no_grad():
-            row = diagnostics(adapter, air, receiver, sea, ledger)
-            writer = csv.DictWriter(f, fieldnames=list(row), lineterminator="\n")
-            writer.writeheader()
-            writer.writerow(row)
+        csv_path = output / "diagnostics.csv"
+        with csv_path.open("a", newline="") as f, torch.no_grad():
+            writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+            if f.tell() == 0:
+                writer.writeheader()
+            if csv_last != air.time_seconds:
+                writer.writerow(row)
             f.flush()
-            append_diagnostics(output / "diagnostics.nc", row, adapter, identity)
+            if nc_last != air.time_seconds:
+                append_diagnostics(output / "diagnostics.nc", row, adapter, identity)
             tke_deferred_last_interval = ledger.get("tke_deferred_last_interval", False)
             while air.time_seconds < end:
-                dt = min(config.physics_dt, end - air.time_seconds)
+                dt = min(config.physics_dt - air.time_seconds % config.physics_dt, end - air.time_seconds)
+                amounts = {}
                 candidate, water, report = advance(
-                    adapter, air, receiver, sea, dt, config, trace=energy_trace
+                    adapter, air, receiver, sea, dt, config, trace=energy_trace, surface_amounts=amounts
                 )
                 # An asynchronous CUDA failure must be observed before commit.
                 synchronize(device)
+                averages.accumulate(air.time_seconds, candidate.time_seconds, amounts,
+                                    sea_surface_temperature(sea) if period else None,
+                                    sea_surface_temperature(water) if period else None, emit_mean)
                 air, sea = candidate, water
                 ledger["steps"] += 1
                 ledger["external"] += report["external"]
@@ -1539,13 +1627,15 @@ def main(argv=None):
                     )
                 if energy_trace is not None:
                     energy_trace.commit(ledger, seconds=seconds, report=report)
+                if seconds == config.days * DAY:
+                    averages.flush(seconds, emit_mean)
                 if seconds in scheduled:
                     snapshot(
                         snapshot_dir / f"state_{seconds:08d}.nc",
                         adapter,
                         air,
                         receiver,
-                        sea,
+                        sea, last_flux=averages.last,
                     )
                     logger.info("Wrote snapshot at day %.6f", seconds / DAY)
                 if seconds % (config.diagnostic_hours * 3600) == 0 or seconds == end:
@@ -1571,7 +1661,7 @@ def main(argv=None):
                 if seconds % (config.restart_days * DAY) == 0 or seconds == end:
                     save_restart(
                         restarts / f"restart_{seconds:08d}.nc",
-                        adapter, air, receiver, sea, identity, ledger,
+                        adapter, air, receiver, sea, identity, ledger, averages=averages,
                     )
                     logger.info("Wrote restart at day %.6f", seconds / DAY)
                 if time.perf_counter() - last_log >= 30 or seconds == end:
@@ -1612,17 +1702,18 @@ def main(argv=None):
             status["status"],
             status["last_committed_seconds"],
         )
-        if identity is not None and ledger is not None:
+        if accepted and identity is not None and ledger is not None:
             try:
                 save_restart(
                     output / "last_good_restart.nc",
-                    adapter, air, receiver, sea, identity, ledger,
+                    adapter, air, receiver, sea, identity, ledger, averages=averages,
                 )
                 logger.info("Saved last_good_restart.nc at second %d", air.time_seconds)
             except Exception as checkpoint_error:
                 status["checkpoint_error"] = str(checkpoint_error)
                 logger.exception("Could not save last-good restart")
-        atomic_json(output / "status.json", status)
+        if accepted or not args.restart:
+            atomic_json(output / "status.json", status)
         print(json.dumps(status, indent=2), file=sys.stderr, flush=True)
         return 1
     finally:

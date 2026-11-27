@@ -406,7 +406,7 @@ def test_coupled_restart_including_cached_radiation(source, config, tmp_path, na
 
 
 def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path):
-    from workflows.coupled.restart_compat import NATIVE_VAPOR_VERIFIER, PRE_CLOUD_ADAPTER_SHA, VERIFIER, PRE_DRAG_HASHES, pre_shelf_sources
+    from workflows.coupled.restart_compat import NATIVE_VAPOR_VERIFIER, PRE_CLOUD_ADAPTER_SHA, VERIFIER, PRE_DRAG_HASHES, pre_shelf_sources, pre_output_sources
 
     path = tmp_path / "config.yaml"
     args = ["--source", str(source), "--config", str(path), "--smoke-no-radiation"]
@@ -414,7 +414,7 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
     new = tmp_path / "continued"
     control = tmp_path / "control"
     path.write_text(yaml.safe_dump(c.asdict(replace(config, days=30))))
-    previous_sources = pre_shelf_sources({**c.source_hashes(), **PRE_DRAG_HASHES})
+    previous_sources = pre_shelf_sources({**pre_output_sources(c.source_hashes()), **PRE_DRAG_HASHES})
     previous_sources["workflows/pyam21/adapter.py"] = PRE_CLOUD_ADAPTER_SHA
     previous_sources[VERIFIER] = NATIVE_VAPOR_VERIFIER
     previous_sources["workflows/coupled/campaign.py"] = "200c9497dab13b00f3e7f33e5faf19fcbd30fa611a3912d0630d7c0c303dab9d"
@@ -427,6 +427,7 @@ def test_extend_campaign_horizon_with_original_manifest(source, config, tmp_path
             del fields["atmosphere_dynamics_integrator"]
             del fields["matched_shelf_momentum"]
             del fields["ice_ocean_drag"]
+            del fields["average_hours"]
         return fields
 
     with patch.object(c, "source_hashes", return_value=previous_sources), patch.object(c, "asdict", pilot_asdict):

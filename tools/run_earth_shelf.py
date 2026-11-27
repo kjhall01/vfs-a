@@ -21,6 +21,12 @@ def main(argv=None):
         legacy = data / (stem + legacy_suffix)
         return legacy if legacy.is_file() and not nc.is_file() else nc
 
+    if "--restart" in args:
+        # Saved run inputs take precedence over launcher defaults. Explicit
+        # mesh/geography flags still override their respective saved paths.
+        defaults = {"source": Path(os.environ.get("PYAM21_SOURCE") or repo.parent / "PyAM21"),
+                    "radiation_data": Path(os.environ.get("PYAM21_RADIATION_DATA") or data / "sea_esf")}
+        return campaign.main(["--verbose", *args], input_defaults=defaults)
     defaults = [
         "--config", str(repo / "workflows/coupled/earth_shelf_4096.yaml"),
         "--source", os.environ.get("PYAM21_SOURCE") or str(repo.parent / "PyAM21"),

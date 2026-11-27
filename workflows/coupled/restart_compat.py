@@ -146,6 +146,25 @@ PRE_DRAG_HASHES = {
 }
 
 
+# Only the explicit --resume-compatible-manifest path uses this historical
+# bridge. Ordinary development restarts validate the grid stored in NetCDF.
+SURFACE_OUTPUT_TARGET = "becbb1963c0c5a7366b60b2380be2d7d7355ffd2d1affaa1bbe06d175d798f22"
+PRE_OUTPUT_HASHES = {
+    "workflows/coupled/campaign.py": "425885aebe969a21adcf9ae9d8aae380c57b91b61e119141086b95cd2381b299",
+    "workflows/coupled/grid_io.py": "905b78c65a8b130aba4883c0bee3bf67bfbde040f8076b7f018905ffaf9b1cbc",
+    "workflows/coupled/state_io.py": "ab2c568a7ac1f369ef1a77d7e6c28f29f00b64a5d342aa3f5634f27f43619462",
+    "workflows/pyam21/adapter.py": "0b0f63cdb0f1288e5857ac91af433da1c2155d6632f4f14c7a196100afdcdfb0",
+    "workflows/coupled/restart_compat.py": "94bd671c03971c2cf062d76ce6cd524edcc6e778a0abf6dea0290495baab1dd0",
+}
+
+
+def pre_output_sources(current):
+    parent = current.copy()
+    for name in ("workflows/coupled/continuation.py", "workflows/coupled/surface_output.py"):
+        parent.pop(name, None)
+    return {**parent, **PRE_OUTPUT_HASHES}
+
+
 def pre_shelf_sources(current):
     """Reconstruct the parent source inventory for its existing audited bridges."""
     parent = {key: value for key, value in current.items()
@@ -242,6 +261,11 @@ def verify_compatible_source_delta(old_hashes, current_hashes):
     if verifier not in current_hashes:
         raise ValueError("missing compatible restart verifier in current source manifest")
     target = _without_verifier_digest(current_hashes)
+    if target == SURFACE_OUTPUT_TARGET:
+        parent = pre_output_sources(current_hashes)
+        if _without_verifier_digest(parent) != NATIVE_EDGE_DRAG_TARGET:
+            raise ValueError("surface output restart parent differs from the audited revision")
+        return verify_compatible_source_delta(old_hashes, parent)
     if target == NATIVE_EDGE_DRAG_TARGET:
         parent = {**current_hashes, **PRE_DRAG_HASHES}
         if _without_verifier_digest(parent) != CLOSED_SHELF_TARGET:

@@ -41,7 +41,7 @@ instantaneous opening. If a velocity slot closes or reopens during dynamics,
 overlapping water supplies its normal momentum. Mixing donor velocities
 transfers the lost shear kinetic energy to ocean heat. ALE uses the same
 opening for momentum and the column kinetic-energy budget. The option defaults
-to `false`. A restart retains the metric recorded in its configuration.
+to `false`. An in-place restart uses the saved configuration by default.
 
 `max_ocean_speed_m_s` is the largest absolute normal velocity on an actually
 open face. Use `max_ocean_edge` and `max_ocean_level` to locate its zero-based
@@ -66,10 +66,16 @@ python -u tools/run_earth_shelf.py --config "$cfg" --output runs/native-drag-395
 Set `VFS_GEOGRAPHY` to the actual archive path if it differs.
 The preflight runs one coupled interval twice and checks restart equality.
 The second command initializes at day zero. To run the first day alone, add
-`--stop-after-days 1`. Continue that run with the same config and inputs,
-`--resume runs/native-drag-395d/restarts/restart_00086400.nc` and a new output
-directory. Both operators are recorded in the startup log and manifest.
-A checkpoint carries the drag law and shelf metric of the run that wrote it.
+`--stop-after-days 1`. Continue in the same directory with
+
+```bash
+python -u tools/run_earth_shelf.py --restart --output runs/native-drag-395d
+```
+
+Use `--resume FILE --output NEW_DIR` to fork a separate segment.
+The [surface output and restart guide](CAMPAIGN.md#outputs-and-restarting)
+describes configurable means, field units, input overrides and grid checks. Both operators are recorded in the startup log and manifest.
+The saved configuration records the drag law and shelf metric of the run that wrote it.
 
 The campaign applies native-edge drag for both half steps around ocean–ice
 dynamics. It exchanges equal and opposite impulses and credits the kinetic
@@ -102,7 +108,7 @@ python -u tools/run_earth_shelf.py --device cuda:0 --stop-after-days 1 \
     --output runs/earth-shelf-day1
 ```
 
-Each output directory must be new or empty. The preflight checks one coupled
+Fresh runs and preflights require a new or empty output directory. The preflight checks one coupled
 interval and its restart replay. The day-one command starts a fresh run.
 The preset has a 30-day horizon, 600 s atmospheric dynamics, 2,400 s physics,
 600 s ocean dynamics, and 7,200 s radiation and ALE. It defaults to CPU

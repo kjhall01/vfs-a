@@ -288,8 +288,9 @@ class AM2Adapter:
             time_seconds=state.time_seconds,
         )
 
-    def unpack(self, payload):
-        if payload["fingerprint"] != self.fingerprint:
+    def unpack(self, payload, *, verified_grid=False):
+        """The coupled NetCDF reader can independently validate the checkpoint grid."""
+        if not verified_grid and payload["fingerprint"] != self.fingerprint:
             raise ValueError(
                 "restart geometry/configuration/PyAM21 source does not match"
             )
